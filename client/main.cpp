@@ -30,6 +30,7 @@ int main() try {
 	// 5 second delay
 	SDL_Delay(5000);
 
+
 	// Here all resources are automatically released and library deinitialized
 	return 0;
 } catch (std::exception& e) {

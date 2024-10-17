@@ -5,4 +5,6 @@ target_sources(taller_common
     PUBLIC
     # .h files
     foo.h
+    commands.h
+    snapshot.h
     )
