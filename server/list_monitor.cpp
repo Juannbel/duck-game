@@ -2,18 +2,18 @@
 
 QueueListMonitor::QueueListMonitor() {}
 
-void QueueListMonitor::add_element(Queue<std::string>* queue) {
+void QueueListMonitor::add_element(Queue<struct Snapshot>* queue) {
     std::lock_guard<std::mutex> lck(m);
-    msj_queue_list.push_back(queue);
+    status_queue_list.push_back(queue);
 }
-void QueueListMonitor::remove_element(Queue<std::string>* queue) {
+void QueueListMonitor::remove_element(Queue<struct Snapshot>* queue) {
     std::lock_guard<std::mutex> lck(m);
-    msj_queue_list.remove(queue);
+    status_queue_list.remove(queue);
 }
-void QueueListMonitor::send_to_every(const std::string& msj) {
+void QueueListMonitor::send_to_every(const struct Snapshot& status) {
     std::lock_guard<std::mutex> lck(m);
-    for (auto* queue: msj_queue_list) {
-        queue->try_push(msj);
+    for (auto* queue: status_queue_list) {
+        queue->try_push(status);
     }
 }
 QueueListMonitor::~QueueListMonitor() {}
