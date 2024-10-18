@@ -1,37 +1,32 @@
+#include "client/constant_looper.h"
 #include "common/foo.h"
+#include "common/snapshot.h"
 
+#include <cmath>
 #include <iostream>
 #include <exception>
 
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL2/SDL.h>
 
-using namespace SDL2pp;
 
 int main() try {
-	// Initialize SDL library
-	SDL sdl(SDL_INIT_VIDEO);
 
-	// Create main window: 640x480 dimensions, resizable, "SDL2pp demo" title
-	Window window("SDL2pp demo",
-			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-			640, 480,
-			SDL_WINDOW_RESIZABLE);
+	// Habria que conectar con el servidor
+	// arrancar los hilos de envio y recepcion de mensajes
+	// recibir el mapa y el id del pato y el primer snapshot
 
-	// Create accelerated video renderer with default driver
-	Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
+	// ConstantLooper looper(commands, snapshots, last_snapshot, duck_id);
+	Snapshot last_snapshot;
+	last_snapshot.ducks[0] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 10, 50);
+	// last_snapshot.ducks[1] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 10, 100);
+	// last_snapshot.ducks[2] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 10, 150);
+	// last_snapshot.ducks[3] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 10, 200);
 
-	// Clear screen
-	renderer.Clear();
+	last_snapshot.players_quantity = 1;
 
-	// Show rendered frame
-	renderer.Present();
-
-	// 5 second delay
-	SDL_Delay(5000);
-
-
-	// Here all resources are automatically released and library deinitialized
+	ConstantLooper looper(0, last_snapshot);
+	looper.run();
 	return 0;
 } catch (std::exception& e) {
 	// If case of error, print it and exit with error
