@@ -88,11 +88,18 @@ void GameLoop::update_game_status() {
             else if (!duck.is_lying){
                 move_x = DUCK_SPEED;
             }
-            duck.x = (duck.facing_right) ? duck.x+move_x : duck.x-move_x;
+            if (duck.facing_right && duck.x+move_x > 200) { // "Verificación" de colisiones
+                duck.x = 200;
+            }
+            else if(!duck.facing_right && duck.x < move_x){
+                duck.x = 0;
+            }else{ 
+                duck.x = (duck.facing_right) ? duck.x+move_x : duck.x-move_x;
+            }
         }
         if (duck.is_falling){
             float move_y = duck.is_flapping ? FALL_SPEED/2 : FALL_SPEED;
-            if (duck.y+move_y > 150) { // VERIFICAR COLISIONES
+            if (duck.y+move_y > 150) { // Verificacion de colisiones
                 duck.is_falling = false;
                 duck.is_flapping = false;
                 duck.y = 150;
