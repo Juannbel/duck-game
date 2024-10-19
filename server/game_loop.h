@@ -9,7 +9,12 @@
 struct Spawn{
     uint32_t x;
     uint32_t y;
-    uint8_t it_since_picked;
+    uint16_t it_since_picked;
+    bool picked;
+};
+
+struct Block{
+    uint8_t type; // 0 para casilla vacia
 };
 
 struct Map{
@@ -29,13 +34,13 @@ private:
     void verify_spawn();
     void push_responce();
     void process_action(struct action& action);
+    void update_game_status();
     void pop_and_process_all();
 
-
 public:
-    GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list);
+    GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, uint8_t players_quantity);
     /*   This class is the game loop.
-     *   Start a loop that pop a messaje of the game queue, process the request and
+     *   Start a loop that pop an action of the game queue, process it and
      *   push the responce to all the queues in the queue_list.
      *   To stop it, close the game_queue and call function stop().
      */
