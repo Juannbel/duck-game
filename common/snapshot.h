@@ -16,18 +16,21 @@ enum GunType {
     CowboyPistol = 6,
     Magnum = 7,
     Shootgun = 8,
-    Sniper = 9
+    Sniper = 9,
+    None
 };
 
 struct Duck {
     uint8_t duck_id; // del 0 al 3
     uint8_t duck_hp; // 100
-
+    uint8_t ammo;
+    uint16_t it_jumping;
     GunType gun;
 
     bool is_shooting;
     bool is_running;
     bool is_jumping;
+    bool is_falling;
     bool is_flapping;
     bool facing_right;
     bool facing_up;

@@ -10,7 +10,13 @@ enum Command {
     StopShooting,
     StartFlapping,
     StopFlapping,
-    Jump
+    Jump,
+    LayDown,
+    StandUp,
+    Pickup,
+    DropGun,
+    DropArmor,
+    DropHelmet
 };
 
 #endif
