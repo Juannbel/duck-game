@@ -6,7 +6,7 @@
 
 #include <vector>
 
-Animation::Animation(SDL2pp::Texture &texture, std::vector<Rect> frames, uint8_t iterations_per_frame) : texture(texture), currentFrame(0), iterations_since_change(0), iterations_per_frame(iterations_per_frame), frames(frames) {
+Animation::Animation(SDL2pp::Texture &texture, std::vector<Rect> frames, uint8_t iterations_per_frame, bool loops) : texture(texture), currentFrame(0), iterations_since_change(0), iterations_per_frame(iterations_per_frame), frames(frames), loops(loops) {
 }
 
 void Animation::update() {
@@ -23,20 +23,28 @@ void Animation::render(SDL2pp::Renderer &renderer, const SDL2pp::Rect dst, SDL_R
             texture,
             frames[currentFrame],
             dst,
+            0.0,
+            NullOpt,
             flipType
         );
 }
 
 void Animation::advance_frame() {
-    this->currentFrame += 1;
-    this->currentFrame = this->currentFrame % this->frames.size(); 
+    if (currentFrame == frames.size() - 1 && !loops) {
+        return;
+    }
+    currentFrame += 1;
+    currentFrame = currentFrame % frames.size(); 
 }
 
-void Animation::skip_frames(uint8_t frames) {
-    this->currentFrame += frames;
-    this->currentFrame = this->currentFrame % this->frames.size();
+void Animation::skip_frames(uint8_t frames_to_skip) {
+    currentFrame += frames_to_skip;
+    if (!loops && currentFrame > frames.size() - 1) {
+        currentFrame = frames.size() - 1;
+    }
+    currentFrame = currentFrame % frames.size();
 }
 
 void Animation::restart() {
-    this->currentFrame = 0;
+    currentFrame = 0;
 }

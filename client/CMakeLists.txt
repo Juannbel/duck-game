@@ -7,6 +7,7 @@ target_sources(taller_client
     PUBLIC
     # .h files
     constant_looper.h
+    camera.h
     renderables/animation.h
     renderables/renderable_duck.h
     )

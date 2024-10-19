@@ -36,21 +36,21 @@ struct Duck {
     bool helment_equiped;
     bool armor_equiped;
 
-    uint32_t x;
-    uint32_t y;
+    int32_t x;
+    int32_t y;
 
 } __attribute__((packed));
 
 // armas tiradas
 struct Gun {
     GunType type;
-    uint32_t x;
-    uint32_t y;
+    int32_t x;
+    int32_t y;
 } __attribute__((packed));
 
 struct Bullet {
-    uint32_t x;
-    uint32_t y;
+    int32_t x;
+    int32_t y;
 
     GunType type;
     bool facing_right;

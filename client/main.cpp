@@ -1,5 +1,4 @@
 #include "client/constant_looper.h"
-#include "common/foo.h"
 #include "common/snapshot.h"
 
 #include <cmath>
@@ -18,12 +17,12 @@ int main() try {
 
 	// ConstantLooper looper(commands, snapshots, last_snapshot, duck_id);
 	Snapshot last_snapshot;
-	last_snapshot.ducks[0] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 10, 50);
-	// last_snapshot.ducks[1] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 10, 100);
-	// last_snapshot.ducks[2] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 10, 150);
+	last_snapshot.ducks[0] = Duck(0, 100, Banana, false, false, false, false, true, false, false, false, false, 250, 300);
+	last_snapshot.ducks[1] = Duck(0, 100, Banana, false, false, false, false, true, false, false, false, false, 50, 300);
+	last_snapshot.ducks[2] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 500, 300);
 	// last_snapshot.ducks[3] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 10, 200);
 
-	last_snapshot.players_quantity = 1;
+	last_snapshot.players_quantity = 3;
 
 	ConstantLooper looper(0, last_snapshot);
 	looper.run();
