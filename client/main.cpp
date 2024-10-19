@@ -17,9 +17,9 @@ int main() try {
 
 	// ConstantLooper looper(commands, snapshots, last_snapshot, duck_id);
 	Snapshot last_snapshot;
-	last_snapshot.ducks[0] = Duck(0, 100, Banana, false, false, false, false, true, false, false, false, false, 250, 300);
-	last_snapshot.ducks[1] = Duck(0, 100, Banana, false, false, false, false, true, false, false, false, false, 50, 300);
-	last_snapshot.ducks[2] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 500, 300);
+	// last_snapshot.ducks[0] = Duck(0, 100, Banana, false, false, false, false, true, false, false, false, false, 150, 70);
+	// last_snapshot.ducks[1] = Duck(0, 100, Banana, false, false, false, false, true, false, false, false, false, 50, 70);
+	// last_snapshot.ducks[2] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 300, 70);
 	// last_snapshot.ducks[3] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 10, 200);
 
 	last_snapshot.players_quantity = 3;

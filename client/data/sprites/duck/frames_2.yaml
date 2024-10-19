@@ -1,41 +1,49 @@
-define: &y_offset 64
+define: &y_row 64
+
+hitbox_width: 15
+hitbox_height: 23
 
 width: 32
 height: 32
+
+# Offset para centrar el sprite en el hitbox
+x_offset: 10
+y_offset: 9
+
 animations:
   standing:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 0,   y: *y_offset}
+      - { x: 0,   y: *y_row}
   walking:
     iter_per_frame: 3
     loops: true
     frames:
-      - { x: 32,  y: *y_offset}
-      - { x: 64,  y: *y_offset}
-      - { x: 96,, y: *y_offset}
-      - { x: 128, y: *y_offset}
-      - { x: 160, y: *y_offset}
+      - { x: 32,  y: *y_row}
+      - { x: 64,  y: *y_row}
+      - { x: 96,, y: *y_row}
+      - { x: 128, y: *y_row}
+      - { x: 160, y: *y_row}
   jumping:
     iter_per_frame: 2
     loops: false
     frames:
-      - { x: 192, y: *y_offset}
-      - { x: 224, y: *y_offset}
+      - { x: 192, y: *y_row}
+      - { x: 224, y: *y_row}
   falling:
     iter_per_frame: 2
     loops: false
     frames:
-      - { x: 256, y: *y_offset}
-      - { x: 288, y: *y_offset}
+      - { x: 256, y: *y_row}
+      - { x: 288, y: *y_row}
   laying:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 320, y: *y_offset}
+      - { x: 320, y: *y_row}
   dead:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 320, y: *y_offset}
+      - { x: 320, y: *y_row}

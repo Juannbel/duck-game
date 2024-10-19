@@ -4,6 +4,7 @@ target_sources(taller_client
     main.cpp
     constant_looper.cpp
     renderables/animation.cpp
+    camera.cpp
     PUBLIC
     # .h files
     constant_looper.h

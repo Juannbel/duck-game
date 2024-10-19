@@ -12,11 +12,15 @@
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 800
 
-#define FLOOR_HEIGHT 100
+#define TILE_SIZE 16
+#define WORLD_WIDTH (TILE_SIZE * 35)
+#define WORLD_HEIGHT (TILE_SIZE * 20)
+
+#define FLOOR_HEIGHT 50
+
+#define DUCK_VELOCITY 4
 
 #define USE_CAMERA true
-
-#define DUCK_VELOCITY 10
 
 using namespace SDL2pp;
 
@@ -26,7 +30,6 @@ void ConstantLooper::run() try {
 	// Initialize SDL library
 	SDL sdl(SDL_INIT_VIDEO);
 
-	// Create main window: 640x480 dimensions, resizable, "SDL2pp demo" title
 	Window window("Duck game",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			WINDOW_WIDTH, WINDOW_HEIGHT,
@@ -64,7 +67,7 @@ void ConstantLooper::run() try {
         ducks_renderables[i]->update_from_snapshot(duck);
     }
 
-    Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT);
+    Camera camera(renderer);
 
     bool keep_running = true;
 	unsigned int t1 = SDL_GetTicks();
@@ -84,7 +87,7 @@ void ConstantLooper::run() try {
                     last_snapshot.ducks[i].y = 0;
                 }
             } else {
-                int floor_y = renderer.GetOutputHeight() - FLOOR_HEIGHT;
+                int floor_y = WORLD_HEIGHT - FLOOR_HEIGHT;
                 if (duck.y < floor_y - SPRITE_SIZE) {
                     last_snapshot.ducks[i].y += DUCK_VELOCITY;
                 } else {
@@ -94,8 +97,8 @@ void ConstantLooper::run() try {
             if (duck.is_running) {
                 if (duck.facing_right) {
                     last_snapshot.ducks[i].x += DUCK_VELOCITY;
-                    if (last_snapshot.ducks[i].x > renderer.GetOutputWidth() - SPRITE_SIZE) {
-                        last_snapshot.ducks[i].x = renderer.GetOutputWidth() - SPRITE_SIZE;
+                    if (last_snapshot.ducks[i].x > WORLD_WIDTH - SPRITE_SIZE) {
+                        last_snapshot.ducks[i].x = WORLD_WIDTH - SPRITE_SIZE;
                     }
                 } else {
                     last_snapshot.ducks[i].x -= DUCK_VELOCITY;
@@ -112,33 +115,29 @@ void ConstantLooper::run() try {
         // Actualizar el estado de todo lo que se renderiza
         process_snapshot();
 
-        if (USE_CAMERA) {
-            Rect target_area = get_minimum_bounding_box();
-            camera.setTarget(target_area);
+        Rect target = get_minimum_bounding_box();
+        if (!USE_CAMERA) {
+            target = Rect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
         }
 
-        camera.update();
-        Rect camera_rect = camera.getCurrentRect();
+        camera.set_target(target);
 
-        float scaleX = static_cast<float>(WINDOW_WIDTH) / camera_rect.w;
-        float scaleY = static_cast<float>(WINDOW_HEIGHT) / camera_rect.h;
-        float scale = std::min(scaleX, scaleY);
+        camera.update();
 
 		// Clear screen
 		renderer.Clear();
 
         // dibujar el fondo teniendo en cuenta la camara
-        Rect background_rect(0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight());
-        background_rect.x = -camera_rect.x * scale;
-        background_rect.y = -camera_rect.y * scale;
-        background_rect.w = renderer.GetOutputWidth() * scale;
-        background_rect.h = renderer.GetOutputHeight() * scale;
-
+        // hacemos que el fondo sea mas grand eque el mundo para que se vea en los bordes
+        Rect background_rect(-WORLD_WIDTH/2, -WORLD_HEIGHT/2, 2*WORLD_WIDTH, 2*WORLD_HEIGHT);
+        camera.transform_rect(background_rect);
+        
         renderer.Copy(background, NullOpt, background_rect);
 
         // Dibujar el piso
         renderer.SetDrawColor(200,200,200, 255);
-        Rect floor(0, (renderer.GetOutputHeight() - FLOOR_HEIGHT - camera_rect.y)*scale, renderer.GetOutputWidth()*scale, FLOOR_HEIGHT*scale);
+        Rect floor(0, WORLD_HEIGHT- FLOOR_HEIGHT, WORLD_WIDTH, FLOOR_HEIGHT);
+        camera.transform_rect(floor);
         renderer.FillRect(floor);
 
         renderer.SetDrawColor(0,0,0, 255);
@@ -151,7 +150,7 @@ void ConstantLooper::run() try {
 
         // Render de los renderizables
         for (auto& duck : ducks_renderables) {
-            duck.second->render(renderer, camera_rect, scale);
+            duck.second->render(renderer, camera);
         }
 
 		renderer.Present();
@@ -286,52 +285,17 @@ Rect ConstantLooper::get_minimum_bounding_box() {
     int top = std::numeric_limits<int>::max();
     int bottom = std::numeric_limits<int>::min();
 
-    // Recorrer todos los patos y encontrar los bordes mínimos y máximos
     for (auto& duck : ducks_renderables) {
         if (duck.second->is_dead()) {
             continue;
         }
 
         Rect bounding_box = duck.second->get_bounding_box();
-
         left = std::min(left, bounding_box.x);
         right = std::max(right, bounding_box.x + bounding_box.w);
         top = std::min(top, bounding_box.y);
         bottom = std::max(bottom, bounding_box.y + bounding_box.h);
     }
 
-    // que no se vaya de los bordes del mapa
-
-    int padding = 50;
-    left -= padding;
-    right += padding;
-    top -= padding;
-    bottom += padding;
-
-    left = std::max(left, 0);
-    right = std::min(right, WINDOW_WIDTH);
-    top = std::max(top, 0);
-    bottom = std::min(bottom, WINDOW_HEIGHT);
-
-    int width = right - left;
-    int height = bottom - top;
-
-    // Ajustar para mantener el aspect ratio de la ventana
-    float targetAspectRatio = static_cast<float>(WINDOW_WIDTH) / WINDOW_HEIGHT;
-    float currentAspectRatio = static_cast<float>(width) / height;
-
-    if (currentAspectRatio > targetAspectRatio) {
-        // Demasiado ancho, aumentar altura
-        height = static_cast<int>(width / targetAspectRatio);
-    } else {
-        // Demasiado alto, aumentar ancho
-        width = static_cast<int>(height * targetAspectRatio);
-    }
-
-    // Centrar la cámara
-    int centerX = (left + right) / 2;
-    int centerY = (top + bottom) / 2;
-
-    return Rect(centerX - width / 2, centerY - height / 2, width, height);
-
+    return Rect(left, top, right - left, bottom - top);
 }

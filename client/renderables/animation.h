@@ -1,6 +1,7 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
 
+#include "client/camera.h"
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_render.h>
 #include <cstddef>
@@ -17,7 +18,7 @@ class Animation {
     Animation(SDL2pp::Texture &texture, std::vector<Rect> frames, uint8_t iterations_per_frame, bool loops);
     ~Animation();
     void update();
-    void render(Renderer &renderer, const Rect dest, SDL_RendererFlip &flipType);
+    void render(Renderer &renderer, Camera& camera, Rect& dest, SDL_RendererFlip &flipType);
     void skip_frames(uint8_t frames_to_skip);
     void restart();
 

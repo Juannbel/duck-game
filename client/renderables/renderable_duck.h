@@ -10,15 +10,43 @@
 
 #include <yaml-cpp/yaml.h>
 
-#define SPRITE_SIZE 100
+#define SPRITE_SIZE 25
 
 class RenderableDuck {
+private:
+    Animation *curr_animation;
+
+    std::unordered_map<std::string, Animation*> animations;
+    int x;
+    int y;
+
+    bool is_facing_right;
+    bool is_alive;
+
+    int source_width;
+    int source_height;
+
+    int x_offset;
+    int y_offset;
+
+    int hitbox_width;
+    int hitbox_height;
+
 public:
     RenderableDuck(Texture *sprite, const std::string& config_path) : x(0), y(0), is_facing_right(true), is_alive(true) {
         YAML::Node config = YAML::LoadFile(config_path);
 
         int width = config["width"].as<int>();
         int height = config["height"].as<int>();
+
+        source_width = width;
+        source_height = height;
+
+        x_offset = config["x_offset"].as<int>();
+        y_offset = config["y_offset"].as<int>();
+
+        hitbox_width = config["hitbox_width"].as<int>();
+        hitbox_height = config["hitbox_height"].as<int>();
 
         for (const auto& animation : config["animations"]) {
             std::string name = animation.first.as<std::string>();
@@ -43,16 +71,23 @@ public:
         curr_animation->update();
     }
 
-    void render(SDL2pp::Renderer &renderer, Rect &camera, float &scale) {
+    void render(SDL2pp::Renderer &renderer, Camera &camera) {
         SDL_RendererFlip flip = !is_facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+
+        // Rect dst = SDL2pp::Rect(x, y, source_width * dest_scale, source_height * dest_scale);
+
+        // muestro la hitbox
+
+        Rect hitbox = SDL2pp::Rect(x, y, hitbox_width, hitbox_height);
+        camera.transform_rect(hitbox);
+        renderer.DrawRect(hitbox);
+
+        Rect dst = SDL2pp::Rect(x - x_offset, y - y_offset, source_width, source_height);
 
         curr_animation->render(
             renderer, 
-            SDL2pp::Rect(
-                (x - camera.x) * scale,
-                (y - camera.y) * scale,
-                SPRITE_SIZE * scale, SPRITE_SIZE * scale
-            ), 
+            camera,
+            dst, 
             flip);
     }
 
@@ -93,7 +128,7 @@ public:
     }
 
     SDL2pp::Rect get_bounding_box() {
-        return SDL2pp::Rect(x, y, SPRITE_SIZE, SPRITE_SIZE);
+        return SDL2pp::Rect(x, y, source_width, source_height);
     }
 
     ~RenderableDuck() {
@@ -101,15 +136,6 @@ public:
             delete animation.second;
         }
     }
-
-private:
-    Animation *curr_animation;
-
-    std::unordered_map<std::string, Animation*> animations;
-    int x;
-    int y;
-    bool is_facing_right;
-    bool is_alive;
 
 };
 

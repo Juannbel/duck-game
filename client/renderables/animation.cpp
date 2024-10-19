@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "animation.h"
+#include "SDL2pp/Rect.hh"
 
 #include <vector>
 
@@ -18,7 +19,12 @@ void Animation::update() {
     }
 }
 
-void Animation::render(SDL2pp::Renderer &renderer, const SDL2pp::Rect dst, SDL_RendererFlip &flipType) {
+void Animation::render(SDL2pp::Renderer& renderer, Camera& camera, SDL2pp::Rect& dst, SDL_RendererFlip &flipType) {
+    if (!camera.is_rect_visible(dst)) {
+        return;
+    }
+
+    camera.transform_rect(dst);
     renderer.Copy(
             texture,
             frames[currentFrame],
