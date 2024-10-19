@@ -3,13 +3,15 @@
 
 enum Command {
     StartMovingRight,
-    StopMovingRight,
     StartMovingLeft,
-    StopMovingLeft,
+    StopMoving,
     StartShooting,
     StopShooting,
     StartFlapping,
     StopFlapping,
+    StartLookup,
+    StopLookup,
+    PickUp,
     Jump
 };
 
