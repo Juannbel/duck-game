@@ -1,14 +1,14 @@
 #include "serverProtocol.h"
 
 #include <utility>
-#include <netinet/in.h>
+#include <arpa/inet.h>
 #include "../common/commands.h"
 
-explicit ServerProtocol::ServerProtocol(Socket socket):
+ServerProtocol::ServerProtocol(Socket socket):
                         socket(std::move(socket))
 {}
 
-void ServerProtocol::send_game_info(const Snapshot& snapshot){
+void ServerProtocol::send_snapshot(const Snapshot& snapshot){
     bool wasClosed = false; //harcodeo por el momento
     Snapshot serializedSS = serializeSnapshot(snapshot);
     socket.sendall(&serializedSS,sizeof(serializedSS),&wasClosed);
@@ -20,29 +20,30 @@ Snapshot ServerProtocol::serializeSnapshot(const Snapshot& snapshot){
 
     for(int i = 0; i < serializedSS.players_quantity;i++){
         Duck duck = serializedSS.ducks[i];
-        duck.x = ntohl(duck.x);
-        duck.y = ntohl(duck.y);
+        duck.x = htonl(duck.x);
+        duck.y = htonl(duck.y);
     }
 
     for(int i = 0; i < serializedSS.guns_quantity ; i++ ){
         Gun gun = serializedSS.guns[i];
-        gun.gun_id = ntohl(gun.gun_id);
-        gun.x = ntohl(gun.x);
-        gun.y = ntohl(gun.y);
+        gun.gun_id = htonl(gun.gun_id);
+        gun.x = htonl(gun.x);
+        gun.y = htonl(gun.y);
     }
 
     for(int i = 0; i < serializedSS.bullets_quantity; i++ ){
         Bullet bullet = serializedSS.bullets[i];
-        bullet.bullet_id = ntohl(bullet.bullet_id);
-        bullet.x = ntohl(bullet.x);
-        bullet.y = ntohl(bullet.y);
+        bullet.bullet_id = htonl(bullet.bullet_id);
+        bullet.x = htonl(bullet.x);
+        bullet.y = htonl(bullet.y);
     }
     return serializedSS;
 }
 
-void ServerProtocol::rec_player_command(){
+Command ServerProtocol::rec_player_command(){
     bool wasClosed = false;
     Command command; //Provisorio. aca seria tipo action, de rama fede.
     socket.recvall(&command, sizeof(command),&wasClosed);
     //excepción.
+    return command;
 }

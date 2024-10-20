@@ -3,6 +3,8 @@
 
 #include "../common/socket.h"
 #include "../common/snapshot.h"
+#include "../common/commands.h"
+
 
 class ServerProtocol {
 private:
@@ -11,9 +13,9 @@ private:
 public:
     explicit ServerProtocol(Socket socket);
 
-    void send_game_info(const Snapshot& snapshot);
+    void send_snapshot(const Snapshot& snapshot);
 
-    void rec_player_command();
+    Command rec_player_command();
 
 private:
 

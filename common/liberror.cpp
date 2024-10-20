@@ -17,6 +17,8 @@
 #undef _GNU_SOURCE
 #undef GNU_SOURCE
 
+#define _POSIX_C_SOURCE 200112L
+
 #include <errno.h>
 #include <cstdio>
 #include <cstdarg>
