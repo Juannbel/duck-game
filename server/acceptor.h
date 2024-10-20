@@ -1,5 +1,5 @@
-#ifndef ACEPTADOR_H
-#define ACEPTADOR_H
+#ifndef ACCEPTOR_H
+#define ACCEPTOR_H
 
 #include <list>
 
@@ -12,7 +12,7 @@
 #include "ServerClient.h"
 #include "socket/socket.h"
 
-class Aceptador: public Thread {
+class Acceptor: public Thread {
 private:
     Socket& sk;
     std::list<ServerClient*> clients;  // cppcheck-suppress unusedStructMember
@@ -21,7 +21,7 @@ private:
     QueueListMonitor& sv_msg_queues;
 
 public:
-    Aceptador(Socket& sk, Queue<Snapshot>& gameloop_q, QueueListMonitor& sv_msg_queues);
+    Acceptor(Socket& sk, Queue<Snapshot>& gameloop_q, QueueListMonitor& sv_msg_queues);
     void run() override;
     void reap_dead();
     void kill_all();

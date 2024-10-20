@@ -3,13 +3,13 @@
 
 #include "libs/queue.h"
 
-#include "aceptador.h"
+#include "acceptor.h"
 #include "server_client.h"
 
-Aceptador::Aceptador(Socket& sk, Queue<Snapshot>& gameloop_q, QueueListMonitor& sv_msg_queues):
+Acceptor::Acceptor(Socket& sk, Queue<Snapshot>& gameloop_q, QueueListMonitor& sv_msg_queues):
         sk(sk), gameloop_q(gameloop_q), sv_msg_queues(sv_msg_queues) {}
 
-void Aceptador::run() {
+void Acceptor::run() {
     int id = 0;  // Estaria bueno usar un uuid
     while (true) {
         try {
@@ -31,7 +31,7 @@ void Aceptador::run() {
     kill_all();
 }
 
-void Aceptador::reap_dead() {
+void Acceptor::reap_dead() {
     clients.remove_if([this](ServerClient* c) {
         if (c->is_dead()) {
             // Sacar la sender_q de la protected list
@@ -43,7 +43,7 @@ void Aceptador::reap_dead() {
     });
 }
 
-void Aceptador::kill_all() {
+void Acceptor::kill_all() {
     for (auto& c: clients) {
         c->kill();
         c->join();
