@@ -2,7 +2,7 @@
 #define SERVER_H
 
 // TODO: Todos los includes necesarios
-#include "aceptador.h"
+#include "acceptor.h"
 #include "gameloop.h"
 #include "socket/socket.h"
 
@@ -11,7 +11,7 @@ private:
     Socket sk;
     QueueListMonitor sv_msg_queues;
     Gameloop gameloop;
-    Aceptador thAceptador;
+    Acceptor thAcceptor;
 
 public:
     void start();
