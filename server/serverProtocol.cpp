@@ -40,9 +40,9 @@ Snapshot ServerProtocol::serializeSnapshot(const Snapshot& snapshot){
     return serializedSS;
 }
 
-Command ServerProtocol::rec_player_command(){
+Command ServerProtocol::recv_player_command(){
     bool wasClosed = false;
-    Command command; //Provisorio. aca seria tipo action, de rama fede.
+    Command command; 
     socket.recvall(&command, sizeof(command),&wasClosed);
     //excepción.
     return command;

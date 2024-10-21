@@ -45,15 +45,15 @@ void GameLoop::load_map() {
         
         map_info.blocks.push_back(blocks);
     }
-    int floor_index = 10;
-    std::vector<struct Block> &floor = map_info.blocks[floor_index];
+    int floor_index = MAP_HEIGHT_BLOCKS-1;
+    std::vector<struct Block> &floor = map_info.blocks[MAP_HEIGHT_BLOCKS-1];
     for (int32_t i = 0; i < MAP_WIDTH_BLOCKS; i++) { // Agrego pisos ficticias desde (0,160) a (560, 160)
         floor[i].type = 1;
         floor[i].rectangle = {i*BLOCK_SIZE, floor_index*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE};
     }
-    floor_index = 5;
+    floor_index = 0;
     std::vector<struct Block> &floor2 = map_info.blocks[floor_index];
-    for (int32_t i = 0; i < MAP_WIDTH_BLOCKS; i++) { // Agrego pisos ficticias desde (0,80) a (525, 80)
+    for (int32_t i = 0; i < MAP_WIDTH_BLOCKS; i++) {  //Agrego pisos ficticias desde (0,80) a (525, 80)
         floor2[i].type = 1;
         floor2[i].rectangle = {i*BLOCK_SIZE, floor_index*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE};
     }
@@ -74,6 +74,7 @@ void GameLoop::run(){
             milliseconds lost = behind - behind % RATE;
             t1 += lost;
             it += floor(lost / RATE);  
+            std::cout << "Me quede atras" << "\n";
         }else {
             std::this_thread::sleep_for(rest);
         }
@@ -161,7 +162,7 @@ void GameLoop::update_game_status() {
         if (duck.is_dead) {
             continue;
         }
-        //move_duck(duck);
+        move_duck(duck);
         // disparar
     }
     // Actualizar la posicion de las balas y vida de los patos si les pegan
@@ -185,7 +186,7 @@ void update_duck_status(struct Duck &duck, struct Collision &collision){
     //}
 }
 
-void GameLoop::move_duck(struct Duck &duck, struct DuckInfo &duck_info){
+void GameLoop::move_duck(struct Duck &duck){
     struct Rectangle duck_rec = {duck.x, duck.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT}; 
     int32_t new_x = duck.x;
     int32_t new_y = duck.y;
@@ -207,7 +208,7 @@ void GameLoop::move_duck(struct Duck &duck, struct DuckInfo &duck_info){
     }
     if(duck.is_jumping){
         float move_y = FALL_SPEED;
-        ++duck_info.it_jumping;
+        //++duck_info.it_jumping;
         new_y = duck.y-move_y;
     }
     struct Collision collision = check_near_blocks_collision(duck_rec, new_x, new_y);

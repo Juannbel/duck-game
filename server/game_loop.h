@@ -60,7 +60,7 @@ private:
 
     void update_game_status();
 
-    void move_duck(struct Duck &duck, struct DuckInfo &duck_info);
+    void move_duck(struct Duck &duck);
      
     struct Collision check_near_blocks_collision(struct Rectangle &duck, int32_t new_x, int32_t new_y);
     

@@ -2,11 +2,15 @@
 #include <utility>
 #include <arpa/inet.h>
 
-ClientProtocol::ClientProtocol(Socket socket):
+ClientProtocol::ClientProtocol(Socket &&socket):
                             socket(std::move(socket)){}
 
-Snapshot ClientProtocol::rec_snapshot(const Snapshot& snapshot){
-    Snapshot deserializedSnapshot = deserializeSnapshot(snapshot);
+Snapshot ClientProtocol::recv_snapshot(){
+    bool was_closed;
+    Snapshot serializedSnaphot;
+    socket.recvall(&serializedSnaphot, sizeof(Snapshot), &was_closed);
+
+    Snapshot deserializedSnapshot = deserializeSnapshot(serializedSnaphot);
     return deserializedSnapshot;
 }
 

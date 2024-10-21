@@ -27,7 +27,10 @@
 
 using namespace SDL2pp;
 
-ConstantLooper::ConstantLooper(uint8_t duck_id, Snapshot& snapshot): duck_id(duck_id), last_snapshot(snapshot) {}
+ConstantLooper::ConstantLooper(uint8_t duck_id, Queue<Snapshot> &snapshot_q, Queue<Command> &command_q) : 
+        duck_id(duck_id), 
+        snapshot_q(snapshot_q), 
+        command_q(command_q) {}
 
 void ConstantLooper::run() try {
 	// Initialize SDL library
@@ -49,12 +52,8 @@ void ConstantLooper::run() try {
     Map map_dto;
     for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
         for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
-            if (i == 0) {
-                map_dto.blocks[i][j] = BlockType::Core;
-            } else if (i == MAP_HEIGHT_BLOCKS - 3) {
+            if (i == MAP_HEIGHT_BLOCKS - 1) {
                 map_dto.blocks[i][j] = BlockType::Floor;
-            } else if (i == MAP_HEIGHT_BLOCKS - 2) {
-                map_dto.blocks[i][j] = BlockType::Core;
             } else {
                 map_dto.blocks[i][j] = BlockType::Empty;
             }
@@ -64,6 +63,9 @@ void ConstantLooper::run() try {
             }
         }
     }
+
+    Snapshot last_snapshot;
+    while (snapshot_q.try_pop(last_snapshot)) {}    
 
     for (int i = 0; i < last_snapshot.players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];
@@ -89,46 +91,47 @@ void ConstantLooper::run() try {
 
 	while (keep_running) {
 		// Event processing:
-        keep_running = process_events();
+        keep_running = process_events(last_snapshot);
+        while (snapshot_q.try_pop(last_snapshot)) {}    
 
         // aca habria que recibir el ultimo snapshot
         // last_snapshot = snapshots.try_pop();
         // lo actualizamos manual por ahora como que fueramos el server, si hay un pato corriendo, lo movemos
-        for (int i = 0; i < last_snapshot.players_quantity; i++) {
-            Duck duck = last_snapshot.ducks[i];
-            if (duck.is_jumping) {
-                last_snapshot.ducks[i].y -= DUCK_VELOCITY;
-                if (duck.y < 0) {
-                    last_snapshot.ducks[i].y = 0;
-                }
-            } else {
-                int floor_y = WORLD_HEIGHT - FLOOR_HEIGHT;
-                if (duck.y < floor_y - SPRITE_SIZE) {
-                    last_snapshot.ducks[i].y += DUCK_VELOCITY;
-                } else {
-                    last_snapshot.ducks[i].y = floor_y - SPRITE_SIZE;
-                }
-            }
-            if (duck.is_running) {
-                if (duck.facing_right) {
-                    last_snapshot.ducks[i].x += DUCK_VELOCITY;
-                    if (last_snapshot.ducks[i].x > WORLD_WIDTH - SPRITE_SIZE) {
-                        last_snapshot.ducks[i].x = WORLD_WIDTH - SPRITE_SIZE;
-                    }
-                } else {
-                    last_snapshot.ducks[i].x -= DUCK_VELOCITY;
-                    if (last_snapshot.ducks[i].x < 0) {
-                        last_snapshot.ducks[i].x = 0;
-                    }
-                }
-            }
-        }
-        if (t1 > 10000) {
-            last_snapshot.ducks[1].duck_hp = 0;
-        }
+        //for (int i = 0; i < last_snapshot.players_quantity; i++) {
+        //    Duck duck = last_snapshot.ducks[i];
+        //    if (duck.is_jumping) {
+        //        last_snapshot.ducks[i].y -= DUCK_VELOCITY;
+        //        if (duck.y < 0) {
+        //            last_snapshot.ducks[i].y = 0;
+        //        }
+        //    } else {
+        //        int floor_y = WORLD_HEIGHT - FLOOR_HEIGHT;
+        //        if (duck.y < floor_y - SPRITE_SIZE) {
+        //            last_snapshot.ducks[i].y += DUCK_VELOCITY;
+        //        } else {
+        //            last_snapshot.ducks[i].y = floor_y - SPRITE_SIZE;
+        //        }
+        //    }
+        //    if (duck.is_running) {
+        //        if (duck.facing_right) {
+        //            last_snapshot.ducks[i].x += DUCK_VELOCITY;
+        //            if (last_snapshot.ducks[i].x > WORLD_WIDTH - SPRITE_SIZE) {
+        //                last_snapshot.ducks[i].x = WORLD_WIDTH - SPRITE_SIZE;
+        //            }
+        //        } else {
+        //            last_snapshot.ducks[i].x -= DUCK_VELOCITY;
+        //            if (last_snapshot.ducks[i].x < 0) {
+        //                last_snapshot.ducks[i].x = 0;
+        //            }
+        //        }
+        //    }
+        //}
+        //if (t1 > 10000) {
+        //    last_snapshot.ducks[1].duck_hp = 0;
+        //}
 
         // Actualizar el estado de todo lo que se renderiza
-        process_snapshot();
+        process_snapshot(last_snapshot);
 
         Rect target = get_minimum_bounding_box();
         if (!USE_CAMERA) {
@@ -178,6 +181,7 @@ void ConstantLooper::run() try {
             }
 
 			t1 += lost;
+            std::cout << "Me quede atras" << "\n";
 		} else {
 			SDL_Delay(rest);
 		}
@@ -189,7 +193,7 @@ void ConstantLooper::run() try {
     std::cerr << e.what() << std::endl;
 }
 
-bool ConstantLooper::process_events() {
+bool ConstantLooper::process_events(Snapshot &last_snapshot) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
@@ -212,33 +216,33 @@ bool ConstantLooper::process_events() {
             case SDLK_d:
                 // si el pato no estaba corriendo, enviamos el comando de correr
                 if (!last_snapshot.ducks[duck_id].is_running || !last_snapshot.ducks[duck_id].facing_right) {
-                    last_snapshot.ducks[duck_id].facing_right = true;
-                    last_snapshot.ducks[duck_id].is_running = true;
-                    // commands.push(StartMovingRight)
+                    //last_snapshot.ducks[duck_id].facing_right = true;
+                    //last_snapshot.ducks[duck_id].is_running = true;
+                    command_q.push(StartMovingRight);
                 }
                 break;
 
             case SDLK_a:
                 if (!last_snapshot.ducks[duck_id].is_running || last_snapshot.ducks[duck_id].facing_right) {
-                    last_snapshot.ducks[duck_id].facing_right = false;
-                    last_snapshot.ducks[duck_id].is_running = true;
-                    // commands.push(StartMovingLeft)
+                    //last_snapshot.ducks[duck_id].facing_right = false;
+                    //last_snapshot.ducks[duck_id].is_running = true;
+                    command_q.push(StartMovingLeft);
                 }
                 break;
 
             case SDLK_w:
-                if (!last_snapshot.ducks[duck_id].is_jumping) {
-                    last_snapshot.ducks[duck_id].is_jumping = true;
-                }
+                //if (!last_snapshot.ducks[duck_id].is_jumping) {
+                //    //last_snapshot.ducks[duck_id].is_jumping = true;
+                //}
                 // siempre lo enviamos porque este o no saltando, indica tambien que quiere seguir aleteando
-                // commands.push(Jump)
+                command_q.push(Jump);
                 break;
 
             case SDLK_s:
-                if (!last_snapshot.ducks[duck_id].is_laying) {
-                    last_snapshot.ducks[duck_id].is_laying = true;
-                }
-                // commands.push(StopJumping)
+                //if (!last_snapshot.ducks[duck_id].is_laying) {
+                //    last_snapshot.ducks[duck_id].is_laying = true;
+                //}
+                command_q.push(LayDown);
                 break;
             }
 
@@ -248,29 +252,29 @@ bool ConstantLooper::process_events() {
             case SDLK_d:
                 // si el pato no estaba corriendo, enviamos el comando de correr
                 if (last_snapshot.ducks[duck_id].is_running && last_snapshot.ducks[duck_id].facing_right) {
-                    last_snapshot.ducks[duck_id].is_running = false;
-                    // commands.push(StopMovingRight)
+                    //last_snapshot.ducks[duck_id].is_running = false;
+                    command_q.push(StopMoving);
                 }
                 break;
 
             case SDLK_a:
                 if (last_snapshot.ducks[duck_id].is_running && !last_snapshot.ducks[duck_id].facing_right) {
-                    last_snapshot.ducks[duck_id].is_running = false;
-                    // commands.push(StopMovingLeft)
+                    //last_snapshot.ducks[duck_id].is_running = false;
+                    command_q.push(StopMoving);
                 }
                 break;
 
-            case SDLK_w:
-                if (last_snapshot.ducks[duck_id].is_jumping) {
-                    last_snapshot.ducks[duck_id].is_jumping = false;
-                    // commands.push(StopJumping)
+            case SDLK_e:
+                if (last_snapshot.ducks[duck_id].facing_up) {
+                    //last_snapshot.ducks[duck_id].is_jumping = false;
+                    command_q.push(StopLookup);
                 }
                 break;
 
             case SDLK_s:
                 if (last_snapshot.ducks[duck_id].is_laying) {
-                    last_snapshot.ducks[duck_id].is_laying = false;
-                    // commands.push(StopLying)
+                    //last_snapshot.ducks[duck_id].is_laying = false;
+                    command_q.push(StandUp);
                 }
                 break;
             }
@@ -280,7 +284,7 @@ bool ConstantLooper::process_events() {
     return true;
 }
 
-void ConstantLooper::process_snapshot() {
+void ConstantLooper::process_snapshot(Snapshot &last_snapshot) {
     // actualizar el estado de todos los renderizables
     for (int i = 0; i < last_snapshot.players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];

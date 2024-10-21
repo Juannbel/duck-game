@@ -15,7 +15,7 @@ public:
 
     void send_snapshot(const Snapshot& snapshot);
 
-    Command rec_player_command();
+    Command recv_player_command();
 
 private:
 
