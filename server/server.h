@@ -3,14 +3,15 @@
 
 // TODO: Todos los includes necesarios
 #include "acceptor.h"
-#include "gameloop.h"
-#include "socket/socket.h"
+#include "game_loop.h"
+#include "common/socket.h"
 
 class Server {
 private:
     Socket sk;
     QueueListMonitor sv_msg_queues;
-    Gameloop gameloop;
+    Queue <struct action> actions_q;
+    GameLoop gameloop;
     Acceptor thAcceptor;
 
 public:

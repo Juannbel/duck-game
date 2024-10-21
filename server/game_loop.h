@@ -10,8 +10,8 @@
 struct Rectangle {
     int32_t x;
     int32_t y;
-    int32_t wide;
-    int32_t high;
+    int32_t width;
+    int32_t height;
 };
 
 struct Spawn{
@@ -57,6 +57,8 @@ private:
      
     struct Collision check_near_blocks_collision(struct Rectangle &duck, int32_t new_x, int32_t new_y);
     
+    struct Collision rectangles_collision(const struct Rectangle &r1, const struct Rectangle &r2);
+
     void verify_spawn();
     
     void push_responce();

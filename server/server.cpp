@@ -7,8 +7,9 @@
 Server::Server(const char* puerto):
         sk(Socket(puerto)),
         sv_msg_queues(QueueListMonitor()),
-        gameloop(sv_msg_queues),
-        thAcceptor(sk, gameloop.getQueue(), sv_msg_queues) {}
+        actions_q(),
+        gameloop(actions_q, sv_msg_queues, 1),
+        thAcceptor(sk, actions_q, sv_msg_queues) {}
 
 void Server::start() {
     thAcceptor.start();
@@ -25,6 +26,6 @@ Server::~Server() {
     sk.close();
 
     thAcceptor.join();
-    gameloop.kill();
+    gameloop.stop();
     gameloop.join();
 }

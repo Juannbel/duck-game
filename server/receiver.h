@@ -7,15 +7,15 @@
 #include "common/thread.h"
 
 #include "common/snapshot.h"
-#include "serverProtocolo.h"
+#include "serverProtocol.h"
 
 class Receiver: public Thread {
 private:
-    ServerProtocolo& protocolo;
-    Queue<Snapshot>& gameloop_q;
+    ServerProtocol& protocolo;
+    Queue<struct action>& gameloop_q;
 
 public:
-    Receiver(ServerProtocolo& protocolo, Queue<Snapshot>& q);
+    Receiver(ServerProtocol& protocolo, Queue<struct action>& q);
 
     void run() override;
 };

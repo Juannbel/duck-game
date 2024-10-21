@@ -1,6 +1,7 @@
 #include "receiver.h"
+#include "action.h"
 
-Receiver::Receiver(ServerProtocolo& protocolo, Queue<Snapshot>& q):
+Receiver::Receiver(ServerProtocol& protocolo, Queue<struct action>& q):
         protocolo(protocolo), gameloop_q(q) {}
 
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
@@ -9,12 +10,15 @@ void Receiver::run() {
     // Snapshot msg;
 
     while (true) {
-        protocolo.recv_msg(was_closed, msg);
-
+        Command cmd = protocolo.rec_player_command();
+        // Catchear excepcion de 
         if (was_closed) {
             break;
         }
+        struct action action;
+        action.duck_id = 0;  // Agregar el n de pato
+        action.command = cmd;
 
-        gameloop_q.push(msg);
+        gameloop_q.push(action);
     }
 }

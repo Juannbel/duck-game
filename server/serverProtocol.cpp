@@ -2,10 +2,10 @@
 
 #include <utility>
 #include <arpa/inet.h>
-#include "../common/commands.h"
+#include "common/commands.h"
 
-ServerProtocol::ServerProtocol(Socket socket):
-                        socket(std::move(socket))
+ServerProtocol::ServerProtocol(Socket &socket):
+                        socket(socket)
 {}
 
 void ServerProtocol::send_snapshot(const Snapshot& snapshot){

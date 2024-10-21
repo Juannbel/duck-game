@@ -165,6 +165,24 @@ void GameLoop::update_game_status() {
     // Actualizar la posicion de las balas y vida de los patos si les pegan
 }
 
+void update_duck_status(struct Duck &duck, struct Collision &collision){
+    if (collision.vertical_collision && duck.is_falling){
+        duck.is_falling = false;
+    }else if(collision.vertical_collision && duck.is_jumping){
+        duck.is_falling = true;
+        duck.is_jumping = false;
+        duck.it_jumping = 0;
+    }
+    else if(!collision.vertical_collision && !duck.is_falling){
+        duck.is_falling = true;
+    }
+    if (duck.it_jumping > JUMP_IT){
+        duck.is_jumping = false;
+        duck.is_falling = true;
+        duck.it_jumping = 0;
+    }
+}
+
 void GameLoop::move_duck(struct Duck &duck){
     struct Rectangle duck_rec = {duck.x, duck.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT}; 
     int32_t new_x = duck.x;
@@ -204,7 +222,7 @@ struct Collision GameLoop::check_near_blocks_collision(struct Rectangle &duck, i
     int32_t column_index = duck.x/BLOCK_SIZE;
     int32_t j = (column_index < NEAR_CELLS) ?  0 : column_index-NEAR_CELLS;
     int32_t end_j = (column_index+NEAR_CELLS > map_info.columns) ? map_info.columns : column_index+NEAR_CELLS;
-    struct Rectangle final_rec = {new_x, new_y, duck.wide, duck.high};
+    struct Rectangle final_rec = {new_x, new_y, duck.width, duck.height};
     struct Collision collision = {false, false};
     int32_t count_row = 0;
     for (auto &vec : map_info.blocks) {
@@ -228,9 +246,9 @@ struct Collision GameLoop::check_near_blocks_collision(struct Rectangle &duck, i
                 collision.horizontal_collision = true;
                 bool vertical_collision = rectangles_collision(final_rec, block_rec).vertical_collision;
                 if(vertical_collision) {
-                    if (new_y > duck.y && new_y+duck.high > block_rec.y && duck.y < block_rec.y) {
-                        final_rec.y = block_rec.y-duck.high;
-                    } else if (new_y < block_rec.y+block_rec.high && duck.y > block_rec.y) {
+                    if (new_y > duck.y && new_y+duck.height > block_rec.y && duck.y < block_rec.y) {
+                        final_rec.y = block_rec.y-duck.height;
+                    } else if (new_y < block_rec.y+block_rec.height && duck.y > block_rec.y) {
                         final_rec.y = duck.y;
                     }
                     collision.vertical_collision = true;
@@ -246,31 +264,13 @@ struct Collision GameLoop::check_near_blocks_collision(struct Rectangle &duck, i
     return collision;
 }
 
-void update_duck_status(struct Duck &duck, struct Collision &collision){
-    if (collision.vertical_collision && duck.is_falling){
-        duck.is_falling = false;
-    }else if(collision.vertical_collision && duck.is_jumping){
-        duck.is_falling = true;
-        duck.is_jumping = false;
-        duck.it_jumping = 0;
-    }
-    else if(!collision.vertical_collision && !duck.is_falling){
-        duck.is_falling = true;
-    }
-    if (duck.it_jumping > JUMP_IT){
-        duck.is_jumping = false;
-        duck.is_falling = true;
-        duck.it_jumping = 0;
-    }
-}
-
-struct Collision rectangles_collision(const struct Rectangle &r1, const struct Rectangle &r2){
+struct Collision GameLoop::rectangles_collision(const struct Rectangle &r1, const struct Rectangle &r2){
     struct Collision collision = {false, false};
-    if ((r1.y <= r2.y && r1.y+r1.high >= r2.y) || (r1.y <= r2.y+r2.high && r1.y+r1.high >= r2.y+r2.high)) {
-        if((r1.x >= r2.x && r1.x <= r2.x+r2.wide) || (r1.x+r1.wide >= r2.x && r1.x+r1.wide <= r2.x+r2.wide)){
+    if ((r1.y <= r2.y && r1.y+r1.height >= r2.y) || (r1.y <= r2.y+r2.height && r1.y+r1.height >= r2.y+r2.height)) {
+        if((r1.x >= r2.x && r1.x <= r2.x+r2.width) || (r1.x+r1.width >= r2.x && r1.x+r1.width <= r2.x+r2.width)){
             collision.vertical_collision = true;
             collision.horizontal_collision = true;
-            if (r1.y+r1.high == r2.y || r1.y == r2.y+r2.high) {
+            if (r1.y+r1.height == r2.y || r1.y == r2.y+r2.height) {
                 collision.horizontal_collision = false;
             }
             return collision;

@@ -2,22 +2,19 @@
 
 #include "common/snapshot.h"
 
-Sender::Sender(ServerProtocolo& protocolo, Queue<Snapshot>& sender_q):
+Sender::Sender(ServerProtocol& protocolo, Queue<Snapshot>& sender_q):
         protocolo(protocolo), sender_q(sender_q) {}
 
 void Sender::run() {
-    bool was_closed = false;
     while (true) {
         // Espero que queue tenga algo y mando
         try {
             Snapshot msg = sender_q.pop();  // bloqueante, espera a que haya algo
 
             // Envio el msg recibido en la queue
-            protocolo.enviar_msg(msg, was_closed);
+            protocolo.send_snapshot(msg);
 
-            if (was_closed) {
-                break;
-            }
+            // Catchear la excepcion de que el skt estaba cerrado
         } catch (const ClosedQueue&) {
             break;
         }

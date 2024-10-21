@@ -5,14 +5,14 @@
 
 #include <netinet/in.h>
 
-#include "libs/queue.h"
+#include "common/blocking_queue.h"
 
 #define SIZE_QUEUE 100
 
-ServerClient::ServerClient(Socket sk, Queue<Snapshot>& gameloop_q, int id):
+ServerClient::ServerClient(Socket sk, Queue<struct action>& gameloop_q, int id):
         sk(std::move(sk)),
         sender_q(Queue<Snapshot>(SIZE_QUEUE)),
-        protocolo(ServerProtocolo(this->sk)),
+        protocolo(ServerProtocol(this->sk)),
         sender(protocolo, sender_q),
         receiver(protocolo, gameloop_q),
         id(id) {}
