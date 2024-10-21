@@ -9,6 +9,7 @@ target_sources(taller_server
     serverClient.cpp
     list_monitor.cpp
     game_loop.cpp
+    serverProtocol.cpp
     PUBLIC
     acceptor.h
     receiver.h
@@ -18,4 +19,5 @@ target_sources(taller_server
     # .h files
     list_monitor.h
     game_loop.h
+    serverProtocol.h
     )
