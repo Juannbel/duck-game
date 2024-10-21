@@ -42,8 +42,8 @@ void Camera::update() {
 void Camera::transform_rect(Rect& worldRect) {
     worldRect.x = (worldRect.x - current_rect.x) * scale;
     worldRect.y = (worldRect.y - current_rect.y) * scale;
-    worldRect.w *= scale;
-    worldRect.h *= scale;
+    worldRect.w = worldRect.w * scale;
+    worldRect.h = worldRect.h * scale;
 }
 
 bool Camera::is_rect_visible(const Rect& worldRect) {

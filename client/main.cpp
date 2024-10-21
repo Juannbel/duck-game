@@ -17,12 +17,15 @@ int main() try {
 
 	// ConstantLooper looper(commands, snapshots, last_snapshot, duck_id);
 	Snapshot last_snapshot;
-	// last_snapshot.ducks[0] = Duck(0, 100, Banana, false, false, false, false, true, false, false, false, false, 150, 70);
-	// last_snapshot.ducks[1] = Duck(0, 100, Banana, false, false, false, false, true, false, false, false, false, 50, 70);
-	// last_snapshot.ducks[2] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 300, 70);
-	// last_snapshot.ducks[3] = Duck(0, 100, Banana, false, false, false, false, false, false, false, false, false, 10, 200);
+	last_snapshot.ducks[0] = Duck(0, "", 0, 100, DuelingPistol, false, false, false, false, false, true, true, false, false, false, false, 10, 70);
+	last_snapshot.ducks[1] = Duck(0, "", 0, 100, DuelingPistol, false, false, false, false, false, true, false, false, false, false, false, 150, 70);
+	last_snapshot.ducks[2] = Duck(0, "", 0, 100, Ak47, false, false, false, false, false, true, false, false, false, false, false, 180, 70);
+	last_snapshot.ducks[3] = Duck(0, "", 0, 100, None, false, false, false, false, false, true, false, false, false, false, false, 240, 70);
 
-	last_snapshot.players_quantity = 3;
+	last_snapshot.players_quantity = 4;
+
+	last_snapshot.guns[0] = Gun{0,  Ak47, 60, 70};
+	last_snapshot.guns_quantity = 1;
 
 	ConstantLooper looper(0, last_snapshot);
 	looper.run();

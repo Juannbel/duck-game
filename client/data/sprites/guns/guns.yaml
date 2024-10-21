@@ -1,0 +1,27 @@
+guns:
+  none:
+    x: 0
+    y: 0
+    facing_right_x_offset: 0
+    facing_left_x_offset: 0
+    y_offset: 0
+    width: 0
+    height: 0
+
+  ak47:
+    x: 0
+    y: 0
+    facing_right_x_offset: 0
+    facing_left_x_offset: 15
+    y_offset: 3
+    width: 32
+    height: 32
+  
+  dueling_pistol:
+    x: 32
+    y: 0
+    facing_right_x_offset: 5
+    facing_left_x_offset: 15
+    y_offset: 3
+    width: 32
+    height: 32
