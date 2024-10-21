@@ -1,3 +1,6 @@
+#ifndef GAME_LOOP_H
+#define GAME_LOOP_H
+
 #include <map>
 #include "common/blocking_queue.h"
 #include "common/thread.h"
@@ -10,13 +13,13 @@
 struct Rectangle {
     int32_t x;
     int32_t y;
-    int32_t width;
-    int32_t height;
+    int16_t width;
+    int16_t height;
 };
 
 struct Spawn{
-    uint32_t x;
-    uint32_t y;
+    int16_t x;
+    int16_t y;
     uint16_t it_since_picked;
     bool picked;
 };
@@ -29,8 +32,8 @@ struct Block{
 struct Map{
     std::vector<std::vector<struct Block>> blocks;
     std::vector<struct Spawn> spawns;
-    int32_t rows;
-    int32_t columns;
+    int16_t rows;
+    int16_t columns;
 };
 
 struct Collision{
@@ -87,3 +90,5 @@ private:
     GameLoop(GameLoop&& other) = delete;
     GameLoop& operator=(GameLoop&& other) = delete;
 };
+
+#endif

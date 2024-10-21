@@ -4,19 +4,9 @@
 #include "client/camera.h"
 #include <SDL2pp/SDL2pp.hh>
 #include "../../common/shared_constants.h"
+#include "../../common/map_dto.h"
 
 #include <vector>
-
-enum BlockType {
-    Empty,
-    Floor,
-    Wall,
-    Core
-};
-
-struct Map {
-    BlockType blocks[MAP_HEIGHT_BLOCKS][MAP_WIDTH_BLOCKS];
-};
 
 class RenderableBlock {
 private:

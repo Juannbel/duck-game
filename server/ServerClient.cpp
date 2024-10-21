@@ -7,7 +7,7 @@
 
 #include "common/blocking_queue.h"
 
-#define SIZE_QUEUE 100
+#define SIZE_QUEUE 0
 
 ServerClient::ServerClient(Socket &&sk, Queue<struct action>& gameloop_q, int id):
         sk(std::move(sk)),

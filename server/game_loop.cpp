@@ -3,10 +3,10 @@
 #include <chrono>
 using namespace std::chrono;
 
-#define TICKS 120
+#define TICKS 30
 const milliseconds RATE(1000/TICKS);
 const uint8_t JUMP_IT = 60;
-const float DUCK_SPEED = 1;
+const float DUCK_SPEED = 4;
 const float FALL_SPEED = 1;
 const int32_t NEAR_CELLS = 3;
 
@@ -45,7 +45,7 @@ void GameLoop::load_map() {
         
         map_info.blocks.push_back(blocks);
     }
-    int floor_index = MAP_HEIGHT_BLOCKS-1;
+    int32_t floor_index = MAP_HEIGHT_BLOCKS-1;
     std::vector<struct Block> &floor = map_info.blocks[MAP_HEIGHT_BLOCKS-1];
     for (int32_t i = 0; i < MAP_WIDTH_BLOCKS; i++) { // Agrego pisos ficticias desde (0,160) a (560, 160)
         floor[i].type = 1;
@@ -74,7 +74,6 @@ void GameLoop::run(){
             milliseconds lost = behind - behind % RATE;
             t1 += lost;
             it += floor(lost / RATE);  
-            std::cout << "Me quede atras" << "\n";
         }else {
             std::this_thread::sleep_for(rest);
         }
@@ -188,8 +187,8 @@ void update_duck_status(struct Duck &duck, struct Collision &collision){
 
 void GameLoop::move_duck(struct Duck &duck){
     struct Rectangle duck_rec = {duck.x, duck.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT}; 
-    int32_t new_x = duck.x;
-    int32_t new_y = duck.y;
+    int16_t new_x = duck.x;
+    int16_t new_y = duck.y;
     if (duck.is_running) {
         float move_x = 0;
         if (duck.is_jumping){
@@ -245,6 +244,7 @@ struct Collision GameLoop::check_near_blocks_collision(struct Rectangle &duck, i
             struct Rectangle &block_rec = block.rectangle;
             struct Collision aux_collision = rectangles_collision(final_rec, block_rec);
             if (aux_collision.horizontal_collision){
+                std::cout << "Me choque con algo" << std::endl;
                 final_rec.x = duck.x;
                 collision.horizontal_collision = true;
                 bool vertical_collision = rectangles_collision(final_rec, block_rec).vertical_collision;
