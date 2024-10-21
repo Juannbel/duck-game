@@ -12,7 +12,12 @@ enum Command {
     StartLookup,
     StopLookup,
     PickUp,
-    Jump
+    Jump,
+    LayDown,
+    StandUp,
+    DropGun,
+    DropArmor,
+    DropHelmet
 };
 
 #endif

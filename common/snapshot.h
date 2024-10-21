@@ -2,6 +2,7 @@
 #define SNAPSHOT_H
 
 #include <cstdint>
+
 #include <sys/types.h>
 
 #define MAX_DUCKS 4
@@ -27,9 +28,10 @@ struct Duck {
     uint8_t player_name_length;
     char player_name[MAX_PLAYER_NAME];
 
-    uint8_t duck_id; // del 0 al 3
-    uint8_t duck_hp; // 100
-
+    uint8_t duck_id;  // del 0 al 3
+    uint8_t duck_hp;  // 100
+    uint8_t ammo;
+    uint16_t it_jumping;
     GunType gun;
 
     bool is_shooting;
@@ -39,7 +41,7 @@ struct Duck {
     bool is_flapping;
     bool facing_right;
     bool facing_up;
-    bool is_laying; // se esta haciendo el muerto
+    bool is_laying;  // se esta haciendo el muerto
     bool is_dead;
 
     bool helment_equiped;
@@ -64,7 +66,8 @@ struct Bullet {
 
     int32_t x;
     int32_t y;
-    uint16_t angle; // 0 es hacia la derecha, 90 hacia arriba, 180 hacia la izquierda, 270 hacia abajo
+    uint16_t angle;  // 0 es hacia la derecha, 90 hacia arriba, 180 hacia la izquierda, 270 hacia
+                     // abajo
 
     GunType type;
 } __attribute__((packed));
