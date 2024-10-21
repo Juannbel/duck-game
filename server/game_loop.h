@@ -6,6 +6,13 @@
 #include "action.h"
 #include "list_monitor.h"
 
+struct Rectangle {
+    uint32_t x;
+    uint32_t y;
+    uint32_t wide;
+    uint32_t high;
+};
+
 struct Spawn{
     uint32_t x;
     uint32_t y;
@@ -15,11 +22,19 @@ struct Spawn{
 
 struct Block{
     uint8_t type; // 0 para casilla vacia
+    struct Rectangle rectangle;
 };
 
 struct Map{
     std::vector<std::vector<struct Block>> blocks;
     std::vector<struct Spawn> spawns;
+    uint32_t rows;
+    uint32_t columns;
+};
+
+struct Colition{
+    bool vertical_colition;
+    bool horizontal_colition;
 };
 
 class GameLoop: public Thread {
@@ -30,6 +45,8 @@ private:
     struct Map map_info;
 
     void load_map();
+
+    struct Colition check_near_blocks_colition(struct Rectangle &duck, uint32_t new_x, uint32_t new_y);
 
     void verify_spawn();
     void push_responce();
