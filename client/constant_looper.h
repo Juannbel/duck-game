@@ -3,7 +3,8 @@
 
 #include "../common/commands.h"
 #include "../common/snapshot.h"
-#include "client/renderables/renderable_duck.h"
+#include "client/renderables/duck.h"
+#include "client/renderables/equipped_gun.h"
 #include <unordered_map>
 
 // procesa los eventos de teclado

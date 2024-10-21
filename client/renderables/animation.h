@@ -18,7 +18,7 @@ class Animation {
     Animation(SDL2pp::Texture &texture, std::vector<Rect> frames, uint8_t iterations_per_frame, bool loops);
     ~Animation();
     void update();
-    void render(Renderer &renderer, Camera& camera, Rect& dest, SDL_RendererFlip &flipType);
+    void render(Renderer &renderer, Camera& camera, Rect& dest, SDL_RendererFlip &flipType, float angle = 0.0);
     void skip_frames(uint8_t frames_to_skip);
     void restart();
 

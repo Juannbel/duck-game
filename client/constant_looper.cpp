@@ -1,9 +1,12 @@
 #include "constant_looper.h"
 #include "client/camera.h"
+#include "client/renderables/equipped_gun.h"
+#include "client/renderables/map.h"
 #include "common/snapshot.h"
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL2/SDL.h>
 #include <SDL_keycode.h>
+#include <cmath>
 #include <iostream>
 
 #define FPS 30
@@ -16,7 +19,7 @@
 #define WORLD_WIDTH (TILE_SIZE * 35)
 #define WORLD_HEIGHT (TILE_SIZE * 20)
 
-#define FLOOR_HEIGHT 50
+#define FLOOR_HEIGHT 3*TILE_SIZE
 
 #define DUCK_VELOCITY 4
 
@@ -35,39 +38,51 @@ void ConstantLooper::run() try {
 			WINDOW_WIDTH, WINDOW_HEIGHT,
 			SDL_WINDOW_RESIZABLE);
 
-	// Create accelerated video renderer with default driver
 	Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-	Texture gradient(renderer, SDL_PIXELFORMAT_BGR888, SDL_TEXTUREACCESS_STATIC, 1, 256);
-	{
-		// Array holding RGB values for 256 pixels
-		unsigned char grad[256 * 3];
-		int n = 0; // counter
-
-        for (int i = 0; i < 256; i++) {
-            grad[n++] = 255;
-            grad[n++] = 255;
-            grad[n++] = 255;
-        }
-
-
-		// Update texture with our raw color data
-		gradient.Update(NullOpt, grad, 3);
-	}
-
-	// cargo una imagen png como textura
 	Texture duck_sprite(renderer, DATA_PATH "/sprites/duck/duck_sprite.png");
     Texture background(renderer, DATA_PATH "/backgrounds/forest.png");
+    Texture blocks(renderer, DATA_PATH "/sprites/tiles/tiles.png");
+    Texture guns(renderer, DATA_PATH "/sprites/guns/guns.png");
 
+    // generamos un mapa
+    Map map_dto;
+    for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
+        for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
+            if (i == 0) {
+                map_dto.blocks[i][j] = BlockType::Core;
+            } else if (i == MAP_HEIGHT_BLOCKS - 3) {
+                map_dto.blocks[i][j] = BlockType::Floor;
+            } else if (i == MAP_HEIGHT_BLOCKS - 2) {
+                map_dto.blocks[i][j] = BlockType::Core;
+            } else {
+                map_dto.blocks[i][j] = BlockType::Empty;
+            }
+
+            if (j == 0 || j == MAP_WIDTH_BLOCKS - 1) {
+                map_dto.blocks[i][j] = BlockType::Wall;
+            }
+        }
+    }
 
     for (int i = 0; i < last_snapshot.players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];
-        ducks_renderables[i] = new RenderableDuck(&duck_sprite, DATA_PATH "/sprites/duck/frames_" + std::to_string(i) + ".yaml");
+        ducks_renderables[i] = new RenderableDuck(&duck_sprite, DATA_PATH "/sprites/duck/frames_" + std::to_string(i) + ".yaml", &guns, DATA_PATH "/sprites/guns/guns.yaml");
 
         ducks_renderables[i]->update_from_snapshot(duck);
     }
 
+    // for (int i = 0; i < last_snapshot.guns_quantity; i++) {
+    //     Gun gun = last_snapshot.guns[i];
+
+    //     dropped_guns[gun.gun_id] = new RenderableGun(&guns);
+
+    //     dropped_guns[gun.gun_id]->update_from_snapshot(gun);
+    // }
+
     Camera camera(renderer);
+
+    RenderableMap map(map_dto, &blocks, &background);
 
     bool keep_running = true;
 	unsigned int t1 = SDL_GetTicks();
@@ -127,31 +142,25 @@ void ConstantLooper::run() try {
 		// Clear screen
 		renderer.Clear();
 
-        // dibujar el fondo teniendo en cuenta la camara
-        // hacemos que el fondo sea mas grand eque el mundo para que se vea en los bordes
-        Rect background_rect(-WORLD_WIDTH/2, -WORLD_HEIGHT/2, 2*WORLD_WIDTH, 2*WORLD_HEIGHT);
-        camera.transform_rect(background_rect);
-        
-        renderer.Copy(background, NullOpt, background_rect);
-
-        // Dibujar el piso
-        renderer.SetDrawColor(200,200,200, 255);
-        Rect floor(0, WORLD_HEIGHT- FLOOR_HEIGHT, WORLD_WIDTH, FLOOR_HEIGHT);
-        camera.transform_rect(floor);
-        renderer.FillRect(floor);
-
-        renderer.SetDrawColor(0,0,0, 255);
-
+        map.render(renderer, camera);
 
         // Update de los renderizables
         for (auto& duck : ducks_renderables) {
             duck.second->update();
         }
 
+        // for (auto& gun : dropped_guns) {
+        //     gun.second->update();
+        // }
+
         // Render de los renderizables
         for (auto& duck : ducks_renderables) {
             duck.second->render(renderer, camera);
         }
+
+        // for (auto& gun : dropped_guns) {
+        //     gun.second->render(renderer, camera);
+        // }
 
 		renderer.Present();
 
@@ -199,7 +208,7 @@ bool ConstantLooper::process_events() {
 
         if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
-            
+
             case SDLK_d:
                 // si el pato no estaba corriendo, enviamos el comando de correr
                 if (!last_snapshot.ducks[duck_id].is_running || !last_snapshot.ducks[duck_id].facing_right) {
@@ -226,8 +235,8 @@ bool ConstantLooper::process_events() {
                 break;
 
             case SDLK_s:
-                if (!last_snapshot.ducks[duck_id].is_lying) {
-                    last_snapshot.ducks[duck_id].is_lying = true;
+                if (!last_snapshot.ducks[duck_id].is_laying) {
+                    last_snapshot.ducks[duck_id].is_laying = true;
                 }
                 // commands.push(StopJumping)
                 break;
@@ -250,17 +259,17 @@ bool ConstantLooper::process_events() {
                     // commands.push(StopMovingLeft)
                 }
                 break;
-            
+
             case SDLK_w:
                 if (last_snapshot.ducks[duck_id].is_jumping) {
                     last_snapshot.ducks[duck_id].is_jumping = false;
                     // commands.push(StopJumping)
                 }
                 break;
-            
+
             case SDLK_s:
-                if (last_snapshot.ducks[duck_id].is_lying) {
-                    last_snapshot.ducks[duck_id].is_lying = false;
+                if (last_snapshot.ducks[duck_id].is_laying) {
+                    last_snapshot.ducks[duck_id].is_laying = false;
                     // commands.push(StopLying)
                 }
                 break;
@@ -277,6 +286,7 @@ void ConstantLooper::process_snapshot() {
         Duck duck = last_snapshot.ducks[i];
         ducks_renderables[i]->update_from_snapshot(duck);
     }
+
 }
 
 Rect ConstantLooper::get_minimum_bounding_box() {
