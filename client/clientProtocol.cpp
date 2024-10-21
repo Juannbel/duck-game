@@ -13,23 +13,23 @@ Snapshot ClientProtocol::rec_snapshot(const Snapshot& snapshot){
 Snapshot ClientProtocol::deserializeSnapshot(const Snapshot& snapshot){
     Snapshot deserializedSS(snapshot);
     for(int i = 0; i < deserializedSS.players_quantity;i++){
-        Duck duck = deserializedSS.ducks[i];
-        duck.x = ntohl(duck.x);
-        duck.y = ntohl(duck.y);
+        Duck &duck = deserializedSS.ducks[i];
+        duck.x = ntohs(duck.x);
+        duck.y = ntohs(duck.y);
     }
 
     for(int i = 0; i < deserializedSS.guns_quantity ; i++ ){
-        Gun gun = deserializedSS.guns[i];
+        Gun &gun = deserializedSS.guns[i];
         gun.gun_id = ntohl(gun.gun_id);
-        gun.x = ntohl(gun.x);
-        gun.y = ntohl(gun.y);
+        gun.x = ntohs(gun.x);
+        gun.y = ntohs(gun.y);
     }
 
     for(int i = 0; i < deserializedSS.bullets_quantity; i++ ){
-        Bullet bullet = deserializedSS.bullets[i];
+        Bullet &bullet = deserializedSS.bullets[i];
         bullet.bullet_id = ntohl(bullet.bullet_id);
-        bullet.x = ntohl(bullet.x);
-        bullet.y = ntohl(bullet.y);
+        bullet.x = ntohs(bullet.x);
+        bullet.y = ntohs(bullet.y);
     }
     return deserializedSS;
 }

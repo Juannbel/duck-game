@@ -3,17 +3,18 @@
 #include <chrono>
 using namespace std::chrono;
 
-const milliseconds RATE(10);
-const uint32_t JUMP_IT = 10;
-const float DUCK_SPEED = 4;
-const float FALL_SPEED = 4;
+#define TICKS 120
+const milliseconds RATE(1000/TICKS);
+const uint8_t JUMP_IT = 60;
+const float DUCK_SPEED = 1;
+const float FALL_SPEED = 1;
 const int32_t NEAR_CELLS = 3;
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, uint8_t players_quantity) : 
-    actions_queue(game_queue), snaps_queue_list(queue_list) , ducks_info(), map_info(){
-    ducks_info.players_quantity = players_quantity;
+    actions_queue(game_queue), snaps_queue_list(queue_list) , game_status(), map_info(){
+    game_status.players_quantity = players_quantity;
     uint8_t i = 0;
-    for(auto &duck : ducks_info.ducks){
+    for(auto &duck : game_status.ducks){
         if (i < players_quantity) {
             duck.duck_hp = 100;
             duck.x = 20; 
@@ -92,7 +93,8 @@ void GameLoop::pop_and_process_all() {
 }
 
 void GameLoop::process_action(struct action& action) {
-    struct Duck &duck = ducks_info.ducks[action.duck_id];
+    struct Duck &duck = game_status.ducks[action.duck_id];
+    struct DuckInfo &duck_info  = ducks_info[action.duck_id];
     switch (action.command)
     {
     case StartMovingRight:
@@ -133,7 +135,7 @@ void GameLoop::process_action(struct action& action) {
         if (duck.is_falling) {
             break;
         }
-        duck.it_jumping = duck.is_jumping ? duck.it_jumping : 1;
+        duck_info.it_jumping = duck.is_jumping ? duck_info.it_jumping : 1;
         duck.is_jumping = true;
         break;
     case PickUp:
@@ -141,7 +143,7 @@ void GameLoop::process_action(struct action& action) {
         break;
     case DropGun:
         duck.gun = None;
-        duck.ammo = 0;
+        duck_info.ammo = 0;
         break;
     case DropArmor:
         duck.armor_equiped = false;
@@ -155,11 +157,11 @@ void GameLoop::process_action(struct action& action) {
 }
 
 void GameLoop::update_game_status() {
-    for (auto &duck : ducks_info.ducks) {
+    for (auto &duck : game_status.ducks) {
         if (duck.is_dead) {
             continue;
         }
-        move_duck(duck);
+        //move_duck(duck);
         // disparar
     }
     // Actualizar la posicion de las balas y vida de los patos si les pegan
@@ -171,19 +173,19 @@ void update_duck_status(struct Duck &duck, struct Collision &collision){
     }else if(collision.vertical_collision && duck.is_jumping){
         duck.is_falling = true;
         duck.is_jumping = false;
-        duck.it_jumping = 0;
+        //duck_info.it_jumping = 0;
     }
     else if(!collision.vertical_collision && !duck.is_falling){
         duck.is_falling = true;
     }
-    if (duck.it_jumping > JUMP_IT){
-        duck.is_jumping = false;
-        duck.is_falling = true;
-        duck.it_jumping = 0;
-    }
+    //if (duck_info.it_jumping > JUMP_IT){
+    //    duck.is_jumping = false;
+    //    duck.is_falling = true;
+    //    duck_info.it_jumping = 0;
+    //}
 }
 
-void GameLoop::move_duck(struct Duck &duck){
+void GameLoop::move_duck(struct Duck &duck, struct DuckInfo &duck_info){
     struct Rectangle duck_rec = {duck.x, duck.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT}; 
     int32_t new_x = duck.x;
     int32_t new_y = duck.y;
@@ -205,7 +207,7 @@ void GameLoop::move_duck(struct Duck &duck){
     }
     if(duck.is_jumping){
         float move_y = FALL_SPEED;
-        ++duck.it_jumping;
+        ++duck_info.it_jumping;
         new_y = duck.y-move_y;
     }
     struct Collision collision = check_near_blocks_collision(duck_rec, new_x, new_y);
@@ -284,7 +286,7 @@ void GameLoop::verify_spawn() {
 }
 
 void GameLoop::push_responce() {
-    snaps_queue_list.send_to_every(ducks_info);
+    snaps_queue_list.send_to_every(game_status);
 }
 
 GameLoop::~GameLoop(){}

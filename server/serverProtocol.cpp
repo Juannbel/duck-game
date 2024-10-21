@@ -19,23 +19,23 @@ Snapshot ServerProtocol::serializeSnapshot(const Snapshot& snapshot){
     Snapshot serializedSS(snapshot);
 
     for(int i = 0; i < serializedSS.players_quantity;i++){
-        Duck duck = serializedSS.ducks[i];
-        duck.x = htonl(duck.x);
-        duck.y = htonl(duck.y);
+        Duck &duck = serializedSS.ducks[i];
+        duck.x = htons(duck.x);
+        duck.y = htons(duck.y);
     }
 
     for(int i = 0; i < serializedSS.guns_quantity ; i++ ){
-        Gun gun = serializedSS.guns[i];
+        Gun &gun = serializedSS.guns[i];
         gun.gun_id = htonl(gun.gun_id);
-        gun.x = htonl(gun.x);
-        gun.y = htonl(gun.y);
+        gun.x = htons(gun.x);
+        gun.y = htons(gun.y);
     }
 
     for(int i = 0; i < serializedSS.bullets_quantity; i++ ){
-        Bullet bullet = serializedSS.bullets[i];
+        Bullet &bullet = serializedSS.bullets[i];
         bullet.bullet_id = htonl(bullet.bullet_id);
-        bullet.x = htonl(bullet.x);
-        bullet.y = htonl(bullet.y);
+        bullet.x = htons(bullet.x);
+        bullet.y = htons(bullet.y);
     }
     return serializedSS;
 }
