@@ -3,17 +3,18 @@
 
 enum Command {
     StartMovingRight,
-    StopMovingRight,
     StartMovingLeft,
-    StopMovingLeft,
+    StopMoving,
     StartShooting,
     StopShooting,
     StartFlapping,
     StopFlapping,
+    StartLookup,
+    StopLookup,
+    PickUp,
     Jump,
     LayDown,
     StandUp,
-    Pickup,
     DropGun,
     DropArmor,
     DropHelmet

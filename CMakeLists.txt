@@ -45,16 +45,24 @@ set_project_warnings(taller_common ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 # location (so our dependants will not have to explicitly request this)
 target_include_directories(taller_common PUBLIC .)
 
+add_definitions(-DDATA_PATH="${PROJECT_SOURCE_DIR}/client/data")
+
 # Install libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
 if(TALLER_CLIENT OR TALLER_EDITOR)
     include(FetchContent)
+
+    set(SDL2PP_WITH_IMAGE YES)
+
     FetchContent_Declare(
         libSDL2pp
         URL https://github.com/libSDL2pp/libSDL2pp/archive/cc198c9a5657048bee67ece82de620b2d5661084.zip
     )
 
     FetchContent_MakeAvailable(libSDL2pp)
+
+    find_package(SDL2_image REQUIRED)
+    find_package(yaml-cpp REQUIRED)
 endif()
 
 # Program section
@@ -76,7 +84,7 @@ if(TALLER_CLIENT)
     target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp)
+    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp SDL2_image::SDL2_image yaml-cpp)
 endif()
 
 if(TALLER_SERVER)
