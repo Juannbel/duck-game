@@ -33,9 +33,9 @@ struct Map{
     int32_t columns;
 };
 
-struct Colition{
-    bool vertical_colition;
-    bool horizontal_colition;
+struct Collision{
+    bool vertical_collision;
+    bool horizontal_collision;
 };
 
 class GameLoop: public Thread {
@@ -46,14 +46,20 @@ private:
     struct Map map_info;
 
     void load_map();
-
-    struct Colition check_near_blocks_colition(struct Rectangle &duck, int32_t new_x, int32_t new_y);
-
-    void verify_spawn();
-    void push_responce();
-    void process_action(struct action& action);
-    void update_game_status();
+    
     void pop_and_process_all();
+
+    void process_action(struct action& action);
+
+    void update_game_status();
+
+    void move_duck(struct Duck &duck);
+     
+    struct Collision check_near_blocks_collision(struct Rectangle &duck, int32_t new_x, int32_t new_y);
+    
+    void verify_spawn();
+    
+    void push_responce();
 
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, uint8_t players_quantity);
