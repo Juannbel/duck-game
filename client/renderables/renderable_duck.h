@@ -112,7 +112,7 @@ public:
             return;
         } else if (duck.is_running) {
             curr_animation = animations["walking"];
-        } else if (duck.is_lying) {
+        } else if (duck.is_laying) {
             curr_animation = animations["laying"];
         } else {
             curr_animation = animations["standing"];

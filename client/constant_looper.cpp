@@ -226,8 +226,8 @@ bool ConstantLooper::process_events() {
                 break;
 
             case SDLK_s:
-                if (!last_snapshot.ducks[duck_id].is_lying) {
-                    last_snapshot.ducks[duck_id].is_lying = true;
+                if (!last_snapshot.ducks[duck_id].is_laying) {
+                    last_snapshot.ducks[duck_id].is_laying = true;
                 }
                 // commands.push(StopJumping)
                 break;
@@ -259,8 +259,8 @@ bool ConstantLooper::process_events() {
                 break;
             
             case SDLK_s:
-                if (last_snapshot.ducks[duck_id].is_lying) {
-                    last_snapshot.ducks[duck_id].is_lying = false;
+                if (last_snapshot.ducks[duck_id].is_laying) {
+                    last_snapshot.ducks[duck_id].is_laying = false;
                     // commands.push(StopLying)
                 }
                 break;
