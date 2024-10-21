@@ -309,3 +309,9 @@ Rect ConstantLooper::get_minimum_bounding_box() {
 
     return Rect(left, top, right - left, bottom - top);
 }
+
+ConstantLooper::~ConstantLooper() {
+    for (auto& duck : ducks_renderables) {
+        delete duck.second;
+    }
+}

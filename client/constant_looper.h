@@ -31,6 +31,8 @@ class ConstantLooper {
         ConstantLooper(uint8_t duck_id, Snapshot& snapshot);
 
         void run();
+
+        ~ConstantLooper();
 };
 
 #endif

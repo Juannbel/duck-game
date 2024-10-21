@@ -96,6 +96,12 @@ public:
             flip,
             angle);
     }
+
+    ~RenderableEquippedGun() {
+        for (auto& gun : guns) {
+            delete gun.second;
+        }
+    }
 };
 
 #endif
