@@ -5,8 +5,6 @@ using namespace std::chrono;
 
 const milliseconds RATE(10);
 const uint32_t JUMP_IT = 10;
-const uint32_t DUCK_WIDE = 10;
-const uint32_t DUCK_HIGH = 25;
 const float DUCK_SPEED = 4;
 const float FALL_SPEED = 4;
 
@@ -26,23 +24,23 @@ struct Colition rectangles_colition(const struct Rectangle &r1, const struct Rec
     return colitions;
 }
 
-struct Colition GameLoop::check_near_blocks_colition(struct Rectangle &duck, uint32_t new_x, uint32_t new_y) {
-    uint32_t row_index = duck.y/10;
-    uint32_t i = (row_index < 10) ?  0 : row_index-10;
-    uint32_t end_i = (row_index+10 > map_info.rows) ? map_info.rows : row_index+10;
+struct Colition GameLoop::check_near_blocks_colition(struct Rectangle &duck, int32_t new_x, int32_t new_y) {
+    int32_t row_index = duck.y/BLOCK_SIZE;
+    int32_t i = (row_index < BLOCK_SIZE) ?  0 : row_index-BLOCK_SIZE;
+    int32_t end_i = (row_index+BLOCK_SIZE > map_info.rows) ? map_info.rows : row_index+BLOCK_SIZE;
     
-    uint32_t column_index = duck.x/10;
-    uint32_t j = (column_index < 10) ?  0 : column_index-10;
-    uint32_t end_j = (column_index+10 > map_info.columns) ? map_info.columns : column_index+10;
+    int32_t column_index = duck.x/BLOCK_SIZE;
+    int32_t j = (column_index < BLOCK_SIZE) ?  0 : column_index-BLOCK_SIZE;
+    int32_t end_j = (column_index+BLOCK_SIZE > map_info.columns) ? map_info.columns : column_index+BLOCK_SIZE;
     struct Rectangle final_rec = {new_x, new_y, duck.wide, duck.high};
     struct Colition colitions = {false, false};
-    uint32_t count_row = 0;
+    int32_t count_row = 0;
     for (auto &vec : map_info.blocks) {
         ++count_row;
         if (count_row < i || count_row > end_i) {
             continue;
         }
-        uint32_t count_col = 0;
+        int32_t count_col = 0;
         for (auto &block : vec) {
             ++count_col;
             if (count_col < j || count_col > end_j) {
@@ -76,36 +74,6 @@ struct Colition GameLoop::check_near_blocks_colition(struct Rectangle &duck, uin
     return colitions;
 }
 
-void GameLoop::load_map() {
-    for (uint32_t i = 0; i < 30; i++){
-        std::vector<struct Block> blocks(30);
-        for (struct Block &block : blocks) {
-            block.type = 0;
-            block.rectangle = {0, 0, 0, 0};
-            
-        }
-        // Agrego paredes ficticias al rededor de todo el mapa
-        blocks[0].type = 1; 
-        blocks[0].rectangle = {0, i*10, 10, 10};
-        blocks[29].type = 1;
-        blocks[29].rectangle = {300, i*10, 10, 10};
-        
-        map_info.blocks.push_back(blocks);
-    }
-    std::vector<struct Block> &floor = map_info.blocks[15];
-    for (uint32_t i = 0; i < 30; i++) { // Agrego pisos ficticias desde (0,150) a (300, 150)
-        floor[i].type = 1;
-        floor[i].rectangle = {i*10, 150, 10, 10};
-    }
-    std::vector<struct Block> &floor2 = map_info.blocks[8];
-    for (uint32_t i = 0; i < 30; i++) { // Agrego pisos ficticias desde (0,80) a (300, 80)
-        floor2[i].type = 1;
-        floor2[i].rectangle = {i*10, 80, 10, 10};
-    }
-    map_info.rows = 30;
-    map_info.columns = 30;
-}
-
 void GameLoop::verify_spawn() {
     // Si paso el tiempo suficiente, genera algo en ese spawn
 }
@@ -114,66 +82,11 @@ void GameLoop::push_responce() {
     snaps_queue_list.send_to_every(ducks_info);
 }
 
-void GameLoop::process_action(struct action& action) {
-    struct Duck &duck = ducks_info.ducks[action.duck_id];
-    switch (action.command)
-    {
-    case StartMovingRight:
-        if (!duck.is_lying){
-            duck.facing_right = true;
-            duck.is_running = true;
-        }
-        break;
-    case StopMovingRight:
-        duck.facing_right = true;
-        duck.is_running = false;
-        break;
-    case StartMovingLeft:
-        if (!duck.is_lying){
-            duck.facing_right = false;
-            duck.is_running = true;
-        }
-        break;
-    case StopMovingLeft:
-        duck.facing_right = false;
-        duck.is_running = false;
-        break;
-    case StartShooting:
-        duck.is_shooting = true;
-        break;
-    case StopShooting:
-        duck.is_shooting = false;
-        break;
-    case StartFlapping:
-        duck.is_flapping = duck.is_falling;
-        break;
-    case StopFlapping:
-        duck.is_flapping = false;
-        break;
-    case LayDown:
-        duck.is_lying = (duck.is_falling || duck.is_jumping) ? false : true;
-        duck.is_running = duck.is_lying ? false : duck.is_running;
-        break;
-    case StandUp:
-        duck.is_lying = false;
-        break;
-    case Jump:
-        if (duck.is_falling) {
-            break;
-        }
-        duck.it_jumping = duck.is_jumping ? duck.it_jumping : 1;
-        duck.is_jumping = true;
-        break;
-    default:
-        break;
-    }
-}
-
 void GameLoop::update_game_status() {
     for (auto &duck : ducks_info.ducks) {
-        struct Rectangle duck_rec = {duck.x, duck.y, DUCK_WIDE, DUCK_HIGH}; 
-        uint32_t new_x = duck.x;
-        uint32_t new_y = duck.y;
+        struct Rectangle duck_rec = {duck.x, duck.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT}; 
+        int32_t new_x = duck.x;
+        int32_t new_y = duck.y;
         if (duck.is_running) {
             float move_x = 0;
             if (duck.is_jumping){
@@ -181,7 +94,7 @@ void GameLoop::update_game_status() {
             }else if(duck.is_falling){
                 move_x = duck.is_flapping ? DUCK_SPEED*0.4 : DUCK_SPEED*0.7;
             }
-            else if (!duck.is_lying){
+            else if (!duck.is_laying){
                 move_x = DUCK_SPEED;
             }
             new_x = (duck.facing_right) ? new_x+move_x : new_x-move_x;
@@ -216,6 +129,56 @@ void GameLoop::update_game_status() {
     }
 }
 
+void GameLoop::process_action(struct action& action) {
+    struct Duck &duck = ducks_info.ducks[action.duck_id];
+    switch (action.command)
+    {
+    case StartMovingRight:
+        if (!duck.is_laying){
+            duck.facing_right = true;
+            duck.is_running = true;
+        }
+        break;
+    case StartMovingLeft:
+        if (!duck.is_laying){
+            duck.facing_right = false;
+            duck.is_running = true;
+        }
+        break;
+    case StopMoving:
+        duck.is_running = false;
+        break;
+    case StartShooting:
+        duck.is_shooting = true;
+        break;
+    case StopShooting:
+        duck.is_shooting = false;
+        break;
+    case StartFlapping:
+        duck.is_flapping = duck.is_falling;
+        break;
+    case StopFlapping:
+        duck.is_flapping = false;
+        break;
+    case LayDown:
+        duck.is_laying = (duck.is_falling || duck.is_jumping) ? false : true;
+        duck.is_running = duck.is_laying ? false : duck.is_running;
+        break;
+    case StandUp:
+        duck.is_laying = false;
+        break;
+    case Jump:
+        if (duck.is_falling) {
+            break;
+        }
+        duck.it_jumping = duck.is_jumping ? duck.it_jumping : 1;
+        duck.is_jumping = true;
+        break;
+    default:
+        break;
+    }
+}
+
 void GameLoop::pop_and_process_all() {
     struct action action;
     while (actions_queue.try_pop(action)){
@@ -226,14 +189,52 @@ void GameLoop::pop_and_process_all() {
     push_responce();
 }
 
+void GameLoop::load_map() {
+    for (int32_t i = 0; i < MAP_HEIGHT_BLOCKS; i++){
+        std::vector<struct Block> blocks(MAP_WIDTH_BLOCKS);
+        for (struct Block &block : blocks) {
+            block.type = 0;
+            block.rectangle = {0, 0, 0, 0};
+            
+        }
+        // Agrego paredes ficticias al rededor de todo el mapa
+        blocks[0].type = 1; 
+        blocks[0].rectangle = {0, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE};
+        blocks[MAP_WIDTH_BLOCKS-1].type = 1;
+        blocks[MAP_WIDTH_BLOCKS-1].rectangle = {MAP_WIDTH_PIXELS-BLOCK_SIZE, i*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE};
+        
+        map_info.blocks.push_back(blocks);
+    }
+    int altura_piso = 10;
+    std::vector<struct Block> &floor = map_info.blocks[altura_piso];
+    for (int32_t i = 0; i < MAP_WIDTH_BLOCKS; i++) { // Agrego pisos ficticias desde (0,160) a (560, 160)
+        floor[i].type = 1;
+        floor[i].rectangle = {i*BLOCK_SIZE, altura_piso*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE};
+    }
+    altura_piso = 5;
+    std::vector<struct Block> &floor2 = map_info.blocks[altura_piso];
+    for (int32_t i = 0; i < MAP_WIDTH_BLOCKS; i++) { // Agrego pisos ficticias desde (0,80) a (525, 80)
+        floor2[i].type = 1;
+        floor2[i].rectangle = {i*BLOCK_SIZE, altura_piso*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE};
+    }
+    map_info.rows = 30;
+    map_info.columns = 30;
+}
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, uint8_t players_quantity) : 
-    actions_queue(game_queue), snaps_queue_list(queue_list) {
+    actions_queue(game_queue), snaps_queue_list(queue_list) , ducks_info(), map_info(){
     ducks_info.players_quantity = players_quantity;
     uint8_t i = 0;
     for(auto &duck : ducks_info.ducks){
-        duck = {i, 100, 0, 0, None, false, false, false, false, false, false, false, false, false, false, 15, 150-DUCK_HIGH};
-        duck.duck_hp = 100;
+        if (i < players_quantity) {
+            duck.duck_hp = 100;
+            duck.x = 20;
+            duck.y = 160-DUCK_HITBOX_HEIGHT;
+        }else{
+            duck.is_dead = true;
+        }
+        duck.duck_id = i;
+        
         ++i;
     }
     load_map();
