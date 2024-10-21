@@ -11,11 +11,11 @@
 
 class Receiver: public Thread {
 private:
-    ServerProtocol& protocolo;
+    ServerProtocol& protocol;
     Queue<struct action>& gameloop_q;
 
 public:
-    Receiver(ServerProtocol& protocolo, Queue<struct action>& q);
+    Receiver(ServerProtocol& protocol, Queue<struct action>& q);
 
     void run() override;
 };

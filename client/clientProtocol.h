@@ -10,9 +10,9 @@ private:
     Socket socket; // protocol is the socket owner.
 
 public:
-    explicit ClientProtocol(Socket socket);
+    explicit ClientProtocol(Socket &&socket);
 
-    Snapshot rec_snapshot(const Snapshot& snapshot);
+    Snapshot recv_snapshot();
 
     void send_player_command(const Command& snapshot);
 

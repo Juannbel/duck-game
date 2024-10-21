@@ -30,8 +30,6 @@ struct Duck {
 
     uint8_t duck_id;  // del 0 al 3
     uint8_t duck_hp;  // 100
-    uint8_t ammo;
-    uint16_t it_jumping;
     GunType gun;
 
     bool is_shooting;
@@ -47,8 +45,8 @@ struct Duck {
     bool helment_equiped;
     bool armor_equiped;
 
-    int32_t x;
-    int32_t y;
+    int16_t x;
+    int16_t y;
 
 } __attribute__((packed));
 
@@ -57,15 +55,15 @@ struct Gun {
     uint32_t gun_id;
 
     GunType type;
-    int32_t x;
-    int32_t y;
+    int16_t x;
+    int16_t y;
 } __attribute__((packed));
 
 struct Bullet {
     uint32_t bullet_id;
 
-    int32_t x;
-    int32_t y;
+    int16_t x;
+    int16_t y;
     uint16_t angle;  // 0 es hacia la derecha, 90 hacia arriba, 180 hacia la izquierda, 270 hacia
                      // abajo
 

@@ -9,7 +9,7 @@
 
 #define SIZE_QUEUE 100
 
-ServerClient::ServerClient(Socket sk, Queue<struct action>& gameloop_q, int id):
+ServerClient::ServerClient(Socket &&sk, Queue<struct action>& gameloop_q, int id):
         sk(std::move(sk)),
         sender_q(Queue<Snapshot>(SIZE_QUEUE)),
         protocolo(ServerProtocol(this->sk)),

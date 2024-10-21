@@ -38,11 +38,18 @@ struct Collision{
     bool horizontal_collision;
 };
 
+struct DuckInfo{
+    Rectangle hitbox;
+    uint8_t ammo;
+    uint8_t it_jumping;
+};
+
 class GameLoop: public Thread {
 private:
     Queue<struct action>& actions_queue;
     QueueListMonitor& snaps_queue_list;
-    struct Snapshot ducks_info;
+    struct Snapshot game_status;
+    struct DuckInfo ducks_info[MAX_DUCKS];
     struct Map map_info;
 
     void load_map();

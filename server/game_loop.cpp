@@ -3,17 +3,18 @@
 #include <chrono>
 using namespace std::chrono;
 
-const milliseconds RATE(10);
-const uint32_t JUMP_IT = 10;
-const float DUCK_SPEED = 4;
-const float FALL_SPEED = 4;
+#define TICKS 120
+const milliseconds RATE(1000/TICKS);
+const uint8_t JUMP_IT = 60;
+const float DUCK_SPEED = 1;
+const float FALL_SPEED = 1;
 const int32_t NEAR_CELLS = 3;
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, uint8_t players_quantity) : 
-    actions_queue(game_queue), snaps_queue_list(queue_list) , ducks_info(), map_info(){
-    ducks_info.players_quantity = players_quantity;
+    actions_queue(game_queue), snaps_queue_list(queue_list) , game_status(), map_info(){
+    game_status.players_quantity = players_quantity;
     uint8_t i = 0;
-    for(auto &duck : ducks_info.ducks){
+    for(auto &duck : game_status.ducks){
         if (i < players_quantity) {
             duck.duck_hp = 100;
             duck.x = 20; 
@@ -44,15 +45,15 @@ void GameLoop::load_map() {
         
         map_info.blocks.push_back(blocks);
     }
-    int floor_index = 10;
-    std::vector<struct Block> &floor = map_info.blocks[floor_index];
+    int floor_index = MAP_HEIGHT_BLOCKS-1;
+    std::vector<struct Block> &floor = map_info.blocks[MAP_HEIGHT_BLOCKS-1];
     for (int32_t i = 0; i < MAP_WIDTH_BLOCKS; i++) { // Agrego pisos ficticias desde (0,160) a (560, 160)
         floor[i].type = 1;
         floor[i].rectangle = {i*BLOCK_SIZE, floor_index*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE};
     }
-    floor_index = 5;
+    floor_index = 0;
     std::vector<struct Block> &floor2 = map_info.blocks[floor_index];
-    for (int32_t i = 0; i < MAP_WIDTH_BLOCKS; i++) { // Agrego pisos ficticias desde (0,80) a (525, 80)
+    for (int32_t i = 0; i < MAP_WIDTH_BLOCKS; i++) {  //Agrego pisos ficticias desde (0,80) a (525, 80)
         floor2[i].type = 1;
         floor2[i].rectangle = {i*BLOCK_SIZE, floor_index*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE};
     }
@@ -73,6 +74,7 @@ void GameLoop::run(){
             milliseconds lost = behind - behind % RATE;
             t1 += lost;
             it += floor(lost / RATE);  
+            std::cout << "Me quede atras" << "\n";
         }else {
             std::this_thread::sleep_for(rest);
         }
@@ -92,7 +94,8 @@ void GameLoop::pop_and_process_all() {
 }
 
 void GameLoop::process_action(struct action& action) {
-    struct Duck &duck = ducks_info.ducks[action.duck_id];
+    struct Duck &duck = game_status.ducks[action.duck_id];
+    struct DuckInfo &duck_info  = ducks_info[action.duck_id];
     switch (action.command)
     {
     case StartMovingRight:
@@ -133,7 +136,7 @@ void GameLoop::process_action(struct action& action) {
         if (duck.is_falling) {
             break;
         }
-        duck.it_jumping = duck.is_jumping ? duck.it_jumping : 1;
+        duck_info.it_jumping = duck.is_jumping ? duck_info.it_jumping : 1;
         duck.is_jumping = true;
         break;
     case PickUp:
@@ -141,7 +144,7 @@ void GameLoop::process_action(struct action& action) {
         break;
     case DropGun:
         duck.gun = None;
-        duck.ammo = 0;
+        duck_info.ammo = 0;
         break;
     case DropArmor:
         duck.armor_equiped = false;
@@ -155,7 +158,7 @@ void GameLoop::process_action(struct action& action) {
 }
 
 void GameLoop::update_game_status() {
-    for (auto &duck : ducks_info.ducks) {
+    for (auto &duck : game_status.ducks) {
         if (duck.is_dead) {
             continue;
         }
@@ -171,16 +174,16 @@ void update_duck_status(struct Duck &duck, struct Collision &collision){
     }else if(collision.vertical_collision && duck.is_jumping){
         duck.is_falling = true;
         duck.is_jumping = false;
-        duck.it_jumping = 0;
+        //duck_info.it_jumping = 0;
     }
     else if(!collision.vertical_collision && !duck.is_falling){
         duck.is_falling = true;
     }
-    if (duck.it_jumping > JUMP_IT){
-        duck.is_jumping = false;
-        duck.is_falling = true;
-        duck.it_jumping = 0;
-    }
+    //if (duck_info.it_jumping > JUMP_IT){
+    //    duck.is_jumping = false;
+    //    duck.is_falling = true;
+    //    duck_info.it_jumping = 0;
+    //}
 }
 
 void GameLoop::move_duck(struct Duck &duck){
@@ -205,7 +208,7 @@ void GameLoop::move_duck(struct Duck &duck){
     }
     if(duck.is_jumping){
         float move_y = FALL_SPEED;
-        ++duck.it_jumping;
+        //++duck_info.it_jumping;
         new_y = duck.y-move_y;
     }
     struct Collision collision = check_near_blocks_collision(duck_rec, new_x, new_y);
@@ -284,7 +287,7 @@ void GameLoop::verify_spawn() {
 }
 
 void GameLoop::push_responce() {
-    snaps_queue_list.send_to_every(ducks_info);
+    snaps_queue_list.send_to_every(game_status);
 }
 
 GameLoop::~GameLoop(){}

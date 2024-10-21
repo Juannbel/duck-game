@@ -6,15 +6,17 @@
 #include <string>
 #include <unordered_map>
 #include "animation.h"
+#include "client/renderables/equipped_gun.h"
 #include "common/snapshot.h"
 
 #include <yaml-cpp/yaml.h>
 
-#define SPRITE_SIZE 25
+#define SPRITE_SIZE 20
 
 class RenderableDuck {
 private:
     Animation *curr_animation;
+    RenderableEquippedGun gun;
 
     std::unordered_map<std::string, Animation*> animations;
     int x;
@@ -33,7 +35,12 @@ private:
     int hitbox_height;
 
 public:
-    RenderableDuck(Texture *sprite, const std::string& config_path) : x(0), y(0), is_facing_right(true), is_alive(true) {
+    RenderableDuck(Texture *sprite, const std::string& config_path, Texture *guns_sprite, const std::string& guns_config) : gun(guns_sprite, guns_config), x(0), y(0), is_facing_right(true), is_alive(true) {
+        load_animations(sprite, config_path);
+        curr_animation = animations["standing"];
+    }
+
+    void load_animations(Texture *sprite, const std::string& config_path) {
         YAML::Node config = YAML::LoadFile(config_path);
 
         int width = config["width"].as<int>();
@@ -63,18 +70,15 @@ public:
             bool loops = animation.second["loops"].as<bool>();
             animations[name] = new Animation(*sprite, frames, iter_per_frame, loops);
         }
-        
-        curr_animation = animations["standing"];
     }
 
     void update() {
         curr_animation->update();
+        gun.update();
     }
 
     void render(SDL2pp::Renderer &renderer, Camera &camera) {
         SDL_RendererFlip flip = !is_facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
-
-        // Rect dst = SDL2pp::Rect(x, y, source_width * dest_scale, source_height * dest_scale);
 
         // muestro la hitbox
 
@@ -85,10 +89,23 @@ public:
         Rect dst = SDL2pp::Rect(x - x_offset, y - y_offset, source_width, source_height);
 
         curr_animation->render(
-            renderer, 
+            renderer,
             camera,
-            dst, 
+            dst,
             flip);
+
+        if (!is_alive) {
+            return;
+        }
+
+        Rect gun_dst = SDL2pp::Rect(x + 2, y-2, 32, 32);
+        if (!is_facing_right) {
+            gun_dst.x -= 20;
+        }
+
+        gun.render(
+            renderer,
+            camera);
     }
 
     void skip_frames(uint8_t frames) {
@@ -106,10 +123,8 @@ public:
         if (duck.duck_hp == 0) {
             curr_animation = animations["dead"];
             is_alive = false;
-            return;
         } else if (duck.is_jumping) {
             curr_animation = animations["jumping"];
-            return;
         } else if (duck.is_running) {
             curr_animation = animations["walking"];
         } else if (duck.is_laying) {
@@ -121,6 +136,9 @@ public:
         if (prev_animation != curr_animation) {
             curr_animation->restart();
         }
+
+        gun.update_from_snapshot(duck);
+
     }
 
     bool is_dead() {

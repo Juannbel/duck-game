@@ -10,11 +10,11 @@
 
 class Sender: public Thread {
 private:
-    ServerProtocol& protocolo;
+    ServerProtocol& protocol;
     Queue<Snapshot>& sender_q;
 
 public:
-    Sender(ServerProtocol& protocolo, Queue<Snapshot>& sender_q);
+    Sender(ServerProtocol& protocol, Queue<Snapshot>& sender_q);
 
     void run() override;
 };

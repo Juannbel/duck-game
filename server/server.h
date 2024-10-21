@@ -17,7 +17,7 @@ private:
 public:
     void start();
 
-    explicit Server(const char* puerto);
+    explicit Server(const char* port);
 
     ~Server();
 };

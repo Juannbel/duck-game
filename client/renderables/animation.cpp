@@ -19,7 +19,7 @@ void Animation::update() {
     }
 }
 
-void Animation::render(SDL2pp::Renderer& renderer, Camera& camera, SDL2pp::Rect& dst, SDL_RendererFlip &flipType) {
+void Animation::render(SDL2pp::Renderer& renderer, Camera& camera, SDL2pp::Rect& dst, SDL_RendererFlip &flipType, float angle) {
     if (!camera.is_rect_visible(dst)) {
         return;
     }
@@ -29,7 +29,7 @@ void Animation::render(SDL2pp::Renderer& renderer, Camera& camera, SDL2pp::Rect&
             texture,
             frames[currentFrame],
             dst,
-            0.0,
+            angle,
             NullOpt,
             flipType
         );

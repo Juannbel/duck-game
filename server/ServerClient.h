@@ -25,7 +25,7 @@ private:
     std::atomic<bool> is_alive;
 
 public:
-    ServerClient(Socket sk, Queue<struct action>& gameloop_q, int id);
+    ServerClient(Socket &&sk, Queue<struct action>& gameloop_q, int id);
     Queue<Snapshot>& get_sender_queue() { return sender_q; }
     int get_id() { return id; }
     void start();

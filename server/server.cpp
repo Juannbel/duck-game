@@ -4,8 +4,8 @@
 
 #define EXIT 'q'
 
-Server::Server(const char* puerto):
-        sk(Socket(puerto)),
+Server::Server(const char* port):
+        sk(Socket(port)),
         sv_msg_queues(QueueListMonitor()),
         actions_q(),
         gameloop(actions_q, sv_msg_queues, 1),
