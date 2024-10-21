@@ -20,7 +20,6 @@ void Client::run() {
 //
 	//last_snapshot.guns[0] = Gun{0,  Ak47, 60, 70};
 	//last_snapshot.guns_quantity = 1;
-
 	ConstantLooper looper(0, snapshot_q, command_q);
 	looper.run();
 }

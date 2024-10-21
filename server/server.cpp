@@ -14,7 +14,7 @@ Server::Server(const char* port):
 void Server::start() {
     thAcceptor.start();
     gameloop.start();
-
+    
     char c = getchar();
     while (c != EXIT) {
         c = getchar();
