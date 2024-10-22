@@ -6,6 +6,7 @@
 #include "../common/blocking_queue.h"
 #include "../common/commands.h"
 #include "../common/snapshot.h"
+#include "client/duck_controller.h"
 #include "client/renderables/duck.h"
 #include "client/renderables/equipped_gun.h"
 
@@ -17,12 +18,15 @@ private:
     uint8_t duck_id;
     Queue<Snapshot>& snapshot_q;
     Queue<Command>& command_q;
+    Snapshot last_snapshot;
+
+    DuckController p1_controller;
 
     std::unordered_map<uint8_t, RenderableDuck*> ducks_renderables;
 
-    bool process_events(const Snapshot& last_snapshot);
+    void process_snapshot();
 
-    void process_snapshot(const Snapshot& last_snapshot);
+    void sleep_or_catch_up(uint32_t& t1);
 
     SDL2pp::Rect get_minimum_bounding_box();
 

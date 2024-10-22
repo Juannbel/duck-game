@@ -1,15 +1,13 @@
 #include "constant_looper.h"
 
-#include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <limits>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
-#include <SDL_keycode.h>
 
 #include "client/camera.h"
+#include "client/duck_controller.h"
 #include "client/renderables/map.h"
 #include "common/snapshot.h"
 
@@ -19,17 +17,8 @@
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 800
 
-#define TILE_SIZE 16
-#define WORLD_WIDTH (TILE_SIZE * 35)
-#define WORLD_HEIGHT (TILE_SIZE * 20)
-
-#define FLOOR_HEIGHT 3 * TILE_SIZE
-
-#define DUCK_VELOCITY 4
-
 #define USE_CAMERA true
 
-using SDL2pp::Rect;
 using SDL2pp::Renderer;
 using SDL2pp::SDL;
 using SDL2pp::Texture;
@@ -37,16 +26,20 @@ using SDL2pp::Window;
 
 ConstantLooper::ConstantLooper(uint8_t duck_id, Queue<Snapshot>& snapshot_q,
                                Queue<Command>& command_q):
-        duck_id(duck_id), snapshot_q(snapshot_q), command_q(command_q) {}
+        duck_id(duck_id),
+        snapshot_q(snapshot_q),
+        command_q(command_q),
+        last_snapshot(snapshot_q.pop()),
+        p1_controller(duck_id, command_q, last_snapshot, {SDLK_d, SDLK_a, SDLK_w, SDLK_s}) {}
 
 void ConstantLooper::run() try {
-    // Initialize SDL library
     SDL sdl(SDL_INIT_VIDEO);
 
     Window window("Duck game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,
                   WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 
     Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
+
 
     Texture duck_sprite(renderer, DATA_PATH "/sprites/duck/duck_sprite.png");
     Texture background(renderer, DATA_PATH "/backgrounds/forest.png");
@@ -69,7 +62,6 @@ void ConstantLooper::run() try {
         }
     }
 
-    Snapshot last_snapshot;
     while (snapshot_q.try_pop(last_snapshot)) {}
 
     for (int i = 0; i < last_snapshot.players_quantity; i++) {
@@ -94,24 +86,20 @@ void ConstantLooper::run() try {
     RenderableMap map(map_dto, &blocks, &background);
 
     bool keep_running = true;
-    unsigned int t1 = SDL_GetTicks();
+    uint32_t t1 = SDL_GetTicks();
 
     while (keep_running) {
         // Event processing:
-        keep_running = process_events(last_snapshot);
+        keep_running = p1_controller.process_events();
+
         while (snapshot_q.try_pop(last_snapshot)) {}
 
         // Actualizar el estado de todo lo que se renderiza
-        process_snapshot(last_snapshot);
+        process_snapshot();
 
-        Rect target = get_minimum_bounding_box();
-        if (!USE_CAMERA) {
-            target = Rect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+        if (USE_CAMERA) {
+            camera.update(last_snapshot);
         }
-
-        camera.set_target(target);
-
-        camera.update();
 
         // Clear screen
         renderer.Clear();
@@ -138,131 +126,39 @@ void ConstantLooper::run() try {
 
         renderer.Present();
 
-        unsigned int t2 = SDL_GetTicks();
-        int rest = RATE - (t2 - t1);
-        if (rest < 0) {
-            int behind = -rest;
-            int lost = behind - behind % int(RATE);
-
-            // recuperamos los frames perdidos
-            uint8_t frames_to_skip = int(lost / RATE);
-
-            for (auto& duck: ducks_renderables) {
-                duck.second->skip_frames(frames_to_skip);
-            }
-
-            t1 += lost;
-            std::cout << "Me quede atras"
-                      << "\n";
-        } else {
-            SDL_Delay(rest);
-        }
-
-        t1 += RATE;
+        sleep_or_catch_up(t1);
     }
 
 } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
 }
 
-bool ConstantLooper::process_events(const Snapshot& last_snapshot) {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT ||
-            (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
-            return false;
+void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
+    uint32_t t2 = SDL_GetTicks();
+
+    int rest = RATE - (t2 - t1);
+    if (rest < 0) {
+        int behind = -rest;
+        int lost = behind - behind % int(RATE);
+
+        // recuperamos los frames perdidos
+        uint8_t frames_to_skip = int(lost / RATE);
+
+        for (auto& duck: ducks_renderables) {
+            duck.second->skip_frames(frames_to_skip);
         }
 
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
-            // cambiar de pato (por ahora)
-            duck_id = (duck_id + 1) % last_snapshot.players_quantity;
-            return true;
-        }
-
-        if (last_snapshot.ducks[duck_id].duck_hp == 0) {
-            return true;
-        }
-
-        if (event.type == SDL_KEYDOWN) {
-            switch (event.key.keysym.sym) {
-
-                case SDLK_d:
-                    // si el pato no estaba corriendo, enviamos el comando de correr
-                    if (!last_snapshot.ducks[duck_id].is_running ||
-                        !last_snapshot.ducks[duck_id].facing_right) {
-                        // last_snapshot.ducks[duck_id].facing_right = true;
-                        // last_snapshot.ducks[duck_id].is_running = true;
-                        command_q.push(StartMovingRight);
-                    }
-                    break;
-
-                case SDLK_a:
-                    if (!last_snapshot.ducks[duck_id].is_running ||
-                        last_snapshot.ducks[duck_id].facing_right) {
-                        // last_snapshot.ducks[duck_id].facing_right = false;
-                        // last_snapshot.ducks[duck_id].is_running = true;
-                        command_q.push(StartMovingLeft);
-                    }
-                    break;
-
-                case SDLK_w:
-                    // if (!last_snapshot.ducks[duck_id].is_jumping) {
-                    //     //last_snapshot.ducks[duck_id].is_jumping = true;
-                    // }
-                    //  siempre lo enviamos porque este o no saltando, indica tambien que quiere
-                    //  seguir aleteando
-                    command_q.push(Jump);
-                    break;
-
-                case SDLK_s:
-                    // if (!last_snapshot.ducks[duck_id].is_laying) {
-                    //     last_snapshot.ducks[duck_id].is_laying = true;
-                    // }
-                    command_q.push(LayDown);
-                    break;
-            }
-
-        } else if (event.type == SDL_KEYUP) {
-            switch (event.key.keysym.sym) {
-
-                case SDLK_d:
-                    // si el pato no estaba corriendo, enviamos el comando de correr
-                    if (last_snapshot.ducks[duck_id].is_running &&
-                        last_snapshot.ducks[duck_id].facing_right) {
-                        // last_snapshot.ducks[duck_id].is_running = false;
-                        command_q.push(StopMoving);
-                    }
-                    break;
-
-                case SDLK_a:
-                    if (last_snapshot.ducks[duck_id].is_running &&
-                        !last_snapshot.ducks[duck_id].facing_right) {
-                        // last_snapshot.ducks[duck_id].is_running = false;
-                        command_q.push(StopMoving);
-                    }
-                    break;
-
-                case SDLK_e:
-                    if (last_snapshot.ducks[duck_id].facing_up) {
-                        // last_snapshot.ducks[duck_id].is_jumping = false;
-                        command_q.push(StopLookup);
-                    }
-                    break;
-
-                case SDLK_s:
-                    if (last_snapshot.ducks[duck_id].is_laying) {
-                        // last_snapshot.ducks[duck_id].is_laying = false;
-                        command_q.push(StandUp);
-                    }
-                    break;
-            }
-        }
+        t1 += lost;
+        std::cout << "Me quede atras"
+                  << "\n";
+    } else {
+        SDL_Delay(rest);
     }
 
-    return true;
+    t1 += RATE;
 }
 
-void ConstantLooper::process_snapshot(const Snapshot& last_snapshot) {
+void ConstantLooper::process_snapshot() {
     // actualizar el estado de todos los renderizables
     for (int i = 0; i < last_snapshot.players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];
@@ -270,26 +166,6 @@ void ConstantLooper::process_snapshot(const Snapshot& last_snapshot) {
     }
 }
 
-Rect ConstantLooper::get_minimum_bounding_box() {
-    int left = std::numeric_limits<int>::max();
-    int right = std::numeric_limits<int>::min();
-    int top = std::numeric_limits<int>::max();
-    int bottom = std::numeric_limits<int>::min();
-
-    for (auto& duck: ducks_renderables) {
-        if (duck.second->is_dead()) {
-            continue;
-        }
-
-        Rect bounding_box = duck.second->get_bounding_box();
-        left = std::min(left, bounding_box.x);
-        right = std::max(right, bounding_box.x + bounding_box.w);
-        top = std::min(top, bounding_box.y);
-        bottom = std::max(bottom, bounding_box.y + bounding_box.h);
-    }
-
-    return Rect(left, top, right - left, bottom - top);
-}
 
 ConstantLooper::~ConstantLooper() {
     for (auto& duck: ducks_renderables) {

@@ -2,6 +2,10 @@
 
 #include <algorithm>
 #include <cassert>
+#include <limits>
+
+#include "common/map_dto.h"
+#include "common/snapshot.h"
 
 using SDL2pp::Rect;
 using SDL2pp::Renderer;
@@ -16,15 +20,9 @@ Camera::Camera(Renderer& renderer):
     assert(CAMERA_LERP_FACTOR >= 0.0f && CAMERA_LERP_FACTOR <= 1.0f);
 }
 
-void Camera::set_target(Rect& target) {
-    target.x -= PADDING;
-    target.y -= PADDING;
-    target.w += 2 * PADDING;
-    target.h += 2 * PADDING;
-    target_rect = adjust_aspect_ratio(target);
-}
+void Camera::update(const Snapshot& snapshot) {
+    update_target(snapshot);
 
-void Camera::update() {
     float dx = target_rect.x - current_rect.x;
     float dy = target_rect.y - current_rect.y;
     float dw = target_rect.w - current_rect.w;
@@ -55,7 +53,7 @@ void Camera::transform_rect(Rect& worldRect) {
 
 bool Camera::is_rect_visible(const Rect& worldRect) { return current_rect.Intersects(worldRect); }
 
-Rect Camera::adjust_aspect_ratio(const Rect& target) {
+void Camera::adjust_aspect_ratio(Rect& target) {
     float windowAspectRatio = (float)renderer.GetOutputWidth() / renderer.GetOutputHeight();
     float targetAspectRatio = (float)target.w / target.h;
 
@@ -71,5 +69,36 @@ Rect Camera::adjust_aspect_ratio(const Rect& target) {
     int centerX = target.x + target.w / 2;
     int centerY = target.y + target.h / 2;
 
-    return Rect(centerX - width / 2, centerY - height / 2, width, height);
+    target.x = centerX - width / 2;
+    target.y = centerY - height / 2;
+    target.w = width;
+    target.h = height;
+}
+
+void Camera::update_target(const Snapshot& snapshot) {
+    int16_t left = std::numeric_limits<int16_t>::max();
+    int16_t right = std::numeric_limits<int16_t>::min();
+    int16_t top = std::numeric_limits<int16_t>::max();
+    int16_t bottom = std::numeric_limits<int16_t>::min();
+
+    for (auto& duck: snapshot.ducks) {
+        if (duck.is_dead) {
+            continue;
+        }
+
+        left = std::min(left, duck.x);
+        right = std::max(right, (int16_t)(duck.x + DUCK_HITBOX_WIDTH));
+        top = std::min(top, duck.y);
+        bottom = std::max(bottom, (int16_t)(duck.y + DUCK_HITBOX_HEIGHT));
+    }
+
+    left -= PADDING;
+    top -= PADDING;
+    right += PADDING;
+    bottom += PADDING;
+
+    Rect target(left, top, right - left, bottom - top);
+    adjust_aspect_ratio(target);
+
+    target_rect = target;
 }

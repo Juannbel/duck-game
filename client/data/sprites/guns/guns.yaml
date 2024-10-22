@@ -12,7 +12,7 @@ guns:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 0, y: 0, x_offset_right: 0, x_offset_left: 15, y_offset: 3}
+      - { x: 0, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3}
   
   dueling_pistol:
     iter_per_frame: 1

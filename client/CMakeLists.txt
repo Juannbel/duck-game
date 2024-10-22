@@ -4,6 +4,9 @@ target_sources(taller_client
     main.cpp
     constant_looper.cpp
     renderables/animation.cpp
+    renderables/duck.cpp
+    renderables/equipped_gun.cpp
+    renderables/map.cpp
     camera.cpp
     clientProtocol.cpp
     client.cpp
@@ -15,6 +18,8 @@ target_sources(taller_client
     camera.h
     renderables/animation.h
     renderables/duck.h
+    renderables/equipped_gun.h
+    renderables/map.h
     clientProtocol.h
     client.h
     client_receiver.h
