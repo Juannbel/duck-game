@@ -2,26 +2,25 @@
 #define GAME_LOOP_H
 
 #include "common/blocking_queue.h"
+#include "common/thread.h"
+#include "common/snapshot.h"
 #include "common/commands.h"
 #include "common/map_dto.h"
 #include "duck_player.h"
 #include "common/shared_constants.h"
-#include "common/snapshot.h"
-#include "common/thread.h"
-
 #include "action.h"
 #include "list_monitor.h"
 #include "entitys_manager.h"
 
-struct Spawn {
+struct Spawn{
     int16_t x;
     int16_t y;
     uint16_t it_since_picked;
     bool picked;
 };
 
-struct Block {
-    uint8_t type;  // 0 para casilla vacia
+struct Block{
+    uint8_t type; // 0 para casilla vacia
     struct Rectangle rectangle;
 };
 
@@ -55,27 +54,25 @@ private:
     EntityManager entity_manager;
 
     void load_map();
-
+    
     void pop_and_process_all();
 
-    void process_action(const struct action& action);
+    void process_action(struct action& action);
 
     void update_game_status();
 
-    void move_duck(struct Duck& duck);
-
-    struct Collision check_near_blocks_collision(struct Rectangle& duck, int32_t new_x,
-                                                 int32_t new_y);
-
-    struct Collision rectangles_collision(const struct Rectangle& r1, const struct Rectangle& r2);
+    void move_duck(struct Duck &duck);
+     
+    struct Collision check_near_blocks_collision(struct Rectangle &duck, int32_t new_x, int32_t new_y);
+    
+    struct Collision rectangles_collision(const struct Rectangle &r1, const struct Rectangle &r2);
 
     void verify_spawn();
-
+    
     void push_responce();
 
 public:
-    GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list,
-             uint8_t players_quantity);
+    GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, uint8_t players_quantity);
     /*   This class is the game loop.
      *   Start a loop that pop an action of the game queue, process it and
      *   push the responce to all the queues in the queue_list.
