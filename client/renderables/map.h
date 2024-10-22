@@ -72,7 +72,7 @@ public:
         SDL2pp::Rect background_rect(-MAP_WIDTH_PIXELS / 2, -MAP_HEIGHT_PIXELS / 2,
                                      MAP_WIDTH_PIXELS * 2, MAP_HEIGHT_PIXELS * 2);
         camera.transform_rect(background_rect);
-        renderer.Copy(*background_texture, NullOpt, background_rect);
+        renderer.Copy(*background_texture, SDL2pp::NullOpt, background_rect);
 
         renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
         renderer.SetDrawColor(0, 0, 0, 50);
