@@ -1,13 +1,20 @@
 #include "camera.h"
+
+#include <algorithm>
 #include <cassert>
 
-Camera::Camera(Renderer& renderer) 
-    : renderer(renderer),
-        current_rect(0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()), 
+using SDL2pp::Rect;
+using SDL2pp::Renderer;
+
+Camera::Camera(Renderer& renderer):
+        renderer(renderer),
+        current_rect(0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()),
         target_rect(0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()),
-        scale_x(1.0f), scale_y(1.0f), scale(1.0f) {
-            assert(CAMERA_LERP_FACTOR >= 0.0f && CAMERA_LERP_FACTOR <= 1.0f);
-        }
+        scale_x(1.0f),
+        scale_y(1.0f),
+        scale(1.0f) {
+    assert(CAMERA_LERP_FACTOR >= 0.0f && CAMERA_LERP_FACTOR <= 1.0f);
+}
 
 void Camera::set_target(Rect& target) {
     target.x -= PADDING;
@@ -34,8 +41,8 @@ void Camera::update() {
     current_rect.w += dw * CAMERA_LERP_FACTOR;
     current_rect.h += dh * CAMERA_LERP_FACTOR;
 
-    scale_x = (float) renderer.GetOutputWidth() / current_rect.w;
-    scale_y = (float) renderer.GetOutputHeight() / current_rect.h;
+    scale_x = (float)renderer.GetOutputWidth() / current_rect.w;
+    scale_y = (float)renderer.GetOutputHeight() / current_rect.h;
     scale = std::min(scale_x, scale_y);
 }
 
@@ -46,13 +53,11 @@ void Camera::transform_rect(Rect& worldRect) {
     worldRect.h = worldRect.h * scale;
 }
 
-bool Camera::is_rect_visible(const Rect& worldRect) {
-    return current_rect.Intersects(worldRect);
-}
+bool Camera::is_rect_visible(const Rect& worldRect) { return current_rect.Intersects(worldRect); }
 
 Rect Camera::adjust_aspect_ratio(const Rect& target) {
-    float windowAspectRatio = (float) renderer.GetOutputWidth() / renderer.GetOutputHeight();
-    float targetAspectRatio = (float) target.w / target.h;
+    float windowAspectRatio = (float)renderer.GetOutputWidth() / renderer.GetOutputHeight();
+    float targetAspectRatio = (float)target.w / target.h;
 
     int width = target.w;
     int height = target.h;

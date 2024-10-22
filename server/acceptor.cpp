@@ -1,9 +1,11 @@
+#include "acceptor.h"
+
 #include <cstdio>
 #include <exception>
+#include <utility>
 
 #include "common/blocking_queue.h"
 
-#include "acceptor.h"
 #include "ServerClient.h"
 
 Acceptor::Acceptor(Socket& sk, Queue<struct action>& gameloop_q, QueueListMonitor& sv_msg_queues):
@@ -35,7 +37,8 @@ void Acceptor::reap_dead() {
     clients.remove_if([this](ServerClient* c) {
         if (c->is_dead()) {
             // Sacar la sender_q de la protected list
-            sv_msg_queues.remove_element(&(c->get_sender_queue())); // Para usarla asi tengo q usar mi implementacion de monitor
+            sv_msg_queues.remove_element(&(c->get_sender_queue()));  // Para usarla asi tengo q usar
+                                                                     // mi implementacion de monitor
             c->join();
             return true;
         }

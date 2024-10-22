@@ -2,9 +2,9 @@
 #define CLIENT_SENDER_H
 
 #include "../common/blocking_queue.h"
+#include "../common/snapshot.h"
 #include "../common/thread.h"
 
-#include "../common/snapshot.h"
 #include "clientProtocol.h"
 
 class ClientSender: public Thread {
@@ -16,8 +16,6 @@ public:
     ClientSender(ClientProtocol& protocolo, Queue<Command>& sender_q);
 
     void run() override;
-
-
 };
 
 #endif

@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
         return EXIT_SUCCESS;
     } catch (const std::exception& e) {
         std::cerr << "Something went wrong: " << e.what() << std::endl;
-	} catch (...) {
+    } catch (...) {
         std::cerr << "Something went wrong" << std::endl;
         return EXIT_FAILURE;
     }

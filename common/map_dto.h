@@ -3,15 +3,10 @@
 
 #include "shared_constants.h"
 
-enum BlockType {
-    Empty,
-    Floor,
-    Wall,
-    Core
-};
+enum BlockType { Empty, Floor, Wall, Core };
 
 struct Map {
     BlockType blocks[MAP_HEIGHT_BLOCKS][MAP_WIDTH_BLOCKS];
-}__attribute__((packed));
+} __attribute__((packed));
 
 #endif

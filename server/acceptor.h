@@ -4,18 +4,18 @@
 #include <list>
 
 // TODO: Todos los includes necesarios
-#include "list_monitor.h"
-#include "common/thread.h"
 #include "common/blocking_queue.h"
 #include "common/snapshot.h"
+#include "common/socket.h"
+#include "common/thread.h"
 
 #include "ServerClient.h"
-#include "common/socket.h"
+#include "list_monitor.h"
 
 class Acceptor: public Thread {
 private:
     Socket& sk;
-    std::list<ServerClient*> clients;  // cppcheck-suppress unusedStructMember
+    std::list<ServerClient*> clients;
     Queue<struct action>& gameloop_q;
 
     QueueListMonitor& sv_msg_queues;

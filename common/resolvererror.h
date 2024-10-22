@@ -6,11 +6,11 @@
 /*
  * Clase que encapsula un "gai" error. Vease getaddrinfo()
  * */
-class ResolverError : public std::exception {
-    private:
+class ResolverError: public std::exception {
+private:
     int gai_errno;
 
-    public:
+public:
     explicit ResolverError(int gai_errno);
 
     virtual const char* what() const noexcept override;

@@ -3,13 +3,13 @@
 
 // TODO: Todos los includes necesarios
 #include "common/blocking_queue.h"
+#include "common/snapshot.h"
+#include "common/socket.h"
 #include "common/thread.h"
 
-#include "common/snapshot.h"
-#include "serverProtocol.h"
 #include "receiver.h"
 #include "sender.h"
-#include "common/socket.h"
+#include "serverProtocol.h"
 
 class ServerClient {
 private:
@@ -25,7 +25,7 @@ private:
     std::atomic<bool> is_alive;
 
 public:
-    ServerClient(Socket &&sk, Queue<struct action>& gameloop_q, int id);
+    ServerClient(Socket&& sk, Queue<struct action>& gameloop_q, int id);
     Queue<Snapshot>& get_sender_queue() { return sender_q; }
     int get_id() { return id; }
     void start();

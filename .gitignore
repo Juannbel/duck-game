@@ -2,5 +2,3 @@ build/
 tags.*
 .cache/
 .vscode/
-.clang-format
-.pre-commit-config.yaml

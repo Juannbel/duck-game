@@ -1,4 +1,5 @@
 #include "receiver.h"
+
 #include "action.h"
 
 Receiver::Receiver(ServerProtocol& protocol, Queue<struct action>& q):
@@ -6,15 +7,17 @@ Receiver::Receiver(ServerProtocol& protocol, Queue<struct action>& q):
 
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
 void Receiver::run() {
-    bool was_closed = false;
+    // bool was_closed = false; // comento hasta que se use por cppcheck
     // Snapshot msg;
 
     while (true) {
         Command cmd = protocol.recv_player_command();
         // Catchear excepcion de socket cerrado
-        if (was_closed) {
-            break;
-        }
+
+        // if (was_closed) {
+        //     break;
+        // }
+
         struct action action;
         action.duck_id = 0;  // Agregar el n de pato
         action.command = cmd;

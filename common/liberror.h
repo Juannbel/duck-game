@@ -8,10 +8,10 @@
  * Es una excepción genérica que se encarga de los detalles
  * de decodificar el `errno` en un mensaje más entendible.
  * */
-class LibError : public std::exception {
+class LibError: public std::exception {
     char msg_error[256];
 
-    public:
+public:
     /*
      * Dado que `errno` es una variable global y puede ser modificada por
      * cualquier función, hay que hacer una copia apenas se haya detectado

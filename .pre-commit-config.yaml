@@ -1,0 +1,20 @@
+---
+repos:
+  - repo: https://github.com/ssciwr/clang-format-hook
+    rev: v14.0.0
+    hooks:
+      - id: clang-format
+        files: ^(.*[.]cpp|.*[.]h)$
+        args: ["--style=file", "-i"]
+  - repo: https://github.com/cpplint/cpplint
+    rev: 1.6.0
+    hooks:
+      - id: cpplint
+        files: ^(.*[.]cpp|.*[.]h)$
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: 9a9bbc00895bbdb7670231c2565d4f1309c42905  # SHA of v1.3.5
+    hooks:
+      - id: cppcheck
+        files: ^(.*[.]cpp|.*[.]h)$
+        args: ["--inline-suppr", "--enable=all", "--suppress=missingIncludeSystem", "--suppress=missingInclude", "--suppress=unusedFunction", "--suppress=unmatchedSuppression", "--language=c++", "--std=c++20", "--error-exitcode=1"]
+
