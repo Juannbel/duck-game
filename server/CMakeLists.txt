@@ -10,6 +10,8 @@ target_sources(taller_server
     list_monitor.cpp
     game_loop.cpp
     serverProtocol.cpp
+    duck_player.cpp
+    entitys_manager.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -20,4 +22,6 @@ target_sources(taller_server
     list_monitor.h
     game_loop.h
     serverProtocol.h
+    duck_player.h
+    entitys_manager.h
     )
