@@ -5,12 +5,10 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
+#include "SDL2pp/Point.hh"
 #include "SDL2pp/Rect.hh"
 
-using SDL2pp::NullOpt;
-using SDL2pp::Rect;
-
-Animation::Animation(SDL2pp::Texture& texture, std::vector<Rect> frames,
+Animation::Animation(SDL2pp::Texture& texture, std::vector<FrameData> frames,
                      uint8_t iterations_per_frame, bool loops):
         texture(texture),
         currentFrame(0),
@@ -28,14 +26,20 @@ void Animation::update() {
     }
 }
 
-void Animation::render(SDL2pp::Renderer& renderer, Camera& camera, SDL2pp::Rect& dst,
-                       SDL_RendererFlip& flipType, float angle) {
-    if (!camera.is_rect_visible(dst)) {
+void Animation::render(SDL2pp::Renderer& renderer, Camera& camera, SDL2pp::Point& dest, bool facing_right, float angle) {
+    const FrameData& frame_data = frames[currentFrame];
+    int x_offset = facing_right ? frame_data.x_offset_right : frame_data.x_offset_left;
+    SDL_RendererFlip flipType = facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+
+    SDL2pp::Rect dest_rect = SDL2pp::Rect(dest.x - x_offset, dest.y - frame_data.y_offset, frame_data.rect.w, frame_data.rect.h);
+
+    if (!camera.is_rect_visible(dest_rect)) {
         return;
     }
 
-    camera.transform_rect(dst);
-    renderer.Copy(texture, frames[currentFrame], dst, angle, NullOpt, flipType);
+    camera.transform_rect(dest_rect);
+
+    renderer.Copy(texture, frame_data.rect, dest_rect, angle, SDL2pp::Point(0, 0), flipType);
 }
 
 void Animation::advance_frame() {

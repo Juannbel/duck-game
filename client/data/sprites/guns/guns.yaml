@@ -1,27 +1,21 @@
+width: 32
+height: 32
+
 guns:
   none:
-    x: 0
-    y: 0
-    facing_right_x_offset: 0
-    facing_left_x_offset: 0
-    y_offset: 0
-    width: 0
-    height: 0
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 0, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: 0}
 
   ak47:
-    x: 0
-    y: 0
-    facing_right_x_offset: 0
-    facing_left_x_offset: 15
-    y_offset: 3
-    width: 32
-    height: 32
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 0, y: 0, x_offset_right: 0, x_offset_left: 15, y_offset: 3}
   
   dueling_pistol:
-    x: 32
-    y: 0
-    facing_right_x_offset: 5
-    facing_left_x_offset: 15
-    y_offset: 3
-    width: 32
-    height: 32
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 32, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3}

@@ -10,26 +10,14 @@
 #include "common/snapshot.h"
 
 #include "animation.h"
-
-struct SpriteInfo {
-    int width;
-    int height;
-
-    int facing_right_x_offset;
-    int facing_left_x_offset;
-    int y_offset;
-};
-
 class RenderableEquippedGun {
 private:
     Animation* curr_animation;
 
     GunType current_gun;
     std::unordered_map<GunType, Animation*> guns;
-    std::unordered_map<GunType, SpriteInfo> sprites_info;
 
-    int x;
-    int y;
+    SDL2pp::Point position;
 
     bool facing_right;
     bool facing_up;
@@ -38,28 +26,36 @@ private:
 
 public:
     RenderableEquippedGun(SDL2pp::Texture* sprite, const std::string& config_path):
-            x(0), y(0), facing_right(true), facing_up(false) {
+            position(0, 0), facing_right(true), facing_up(false) {
         string_to_gun["none"] = None;
         string_to_gun["ak47"] = Ak47;
         string_to_gun["dueling_pistol"] = DuelingPistol;
 
         YAML::Node config = YAML::LoadFile(config_path);
 
+        int width = config["width"].as<int>();
+        int height = config["height"].as<int>();
+
+
         for (const auto& gun: config["guns"]) {
             GunType gun_type = string_to_gun[gun.first.as<std::string>()];
-            int source_x = gun.second["x"].as<int>();
-            int source_y = gun.second["y"].as<int>();
-            int facing_right_x_offset = gun.second["facing_right_x_offset"].as<int>();
-            int facing_left_x_offset = gun.second["facing_left_x_offset"].as<int>();
-            int y_offset = gun.second["y_offset"].as<int>();
-            int width = gun.second["width"].as<int>();
-            int height = gun.second["height"].as<int>();
 
-            guns[gun_type] = new Animation(
-                    *sprite, {SDL2pp::Rect(source_x, source_y, width, height)}, 1, false);
-            SpriteInfo offset = {width, height, facing_right_x_offset, facing_left_x_offset,
-                                 y_offset};
-            sprites_info[gun_type] = offset;
+            std::vector<FrameData> frames;
+
+            for (const auto& frame: gun.second["frames"]) {
+                int source_x = frame["x"].as<int>();
+                int source_y = frame["y"].as<int>();
+                int x_offset_right = frame["x_offset_right"].as<int>();
+                int x_offset_left = frame["x_offset_left"].as<int>();
+                int y_offset = frame["y_offset"].as<int>();
+
+                SDL2pp::Rect rect = SDL2pp::Rect(source_x, source_y, width, height);
+                frames.push_back({rect, x_offset_right, x_offset_left, y_offset});
+            }
+
+            uint8_t iter_per_frame = gun.second["iter_per_frame"].as<uint8_t>();
+            bool loops = gun.second["loops"].as<bool>();
+            guns[gun_type] = new Animation(*sprite, frames, iter_per_frame, loops);
         }
 
         current_gun = None;
@@ -69,8 +65,8 @@ public:
     void update() { curr_animation->update(); }
 
     void update_from_snapshot(const Duck& duck) {
-        x = duck.x;
-        y = duck.y;
+        position.x = duck.x;
+        position.y = duck.y;
 
         facing_right = duck.facing_right;
         facing_up = duck.facing_up;
@@ -84,16 +80,9 @@ public:
             return;
         }
 
-        SpriteInfo info = sprites_info[current_gun];
-
-        int x_offset = facing_right ? info.facing_right_x_offset : info.facing_left_x_offset;
-        SDL2pp::Rect dst = SDL2pp::Rect(x - x_offset, y - info.y_offset, info.width, info.height);
-
-        SDL_RendererFlip flip = facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
-
         float angle = facing_up ? facing_right ? 290 : 70 : 0;
+        curr_animation->render(renderer, camera, position, facing_right, angle);
 
-        curr_animation->render(renderer, camera, dst, flip, angle);
     }
 
     ~RenderableEquippedGun() {

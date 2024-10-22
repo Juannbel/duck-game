@@ -9,8 +9,10 @@
 #include <SDL_render.h>
 #include <yaml-cpp/yaml.h>
 
+#include "SDL2pp/Point.hh"
 #include "client/renderables/equipped_gun.h"
 #include "common/snapshot.h"
+#include "server/game_loop.h"
 
 #include "animation.h"
 
@@ -22,25 +24,16 @@ private:
     RenderableEquippedGun gun;
 
     std::unordered_map<std::string, Animation*> animations;
-    int x;
-    int y;
+
+    SDL2pp::Point position;
 
     bool is_facing_right;
     bool is_alive;
 
-    int source_width;
-    int source_height;
-
-    int x_offset;
-    int y_offset;
-
-    int hitbox_width;
-    int hitbox_height;
-
 public:
     RenderableDuck(SDL2pp::Texture* sprite, const std::string& config_path,
                    SDL2pp::Texture* guns_sprite, const std::string& guns_config):
-            gun(guns_sprite, guns_config), x(0), y(0), is_facing_right(true), is_alive(true) {
+            gun(guns_sprite, guns_config), position(0, 0), is_facing_right(true), is_alive(true) {
         load_animations(sprite, config_path);
         curr_animation = animations["standing"];
     }
@@ -51,24 +44,19 @@ public:
         int width = config["width"].as<int>();
         int height = config["height"].as<int>();
 
-        source_width = width;
-        source_height = height;
-
-        x_offset = config["x_offset"].as<int>();
-        y_offset = config["y_offset"].as<int>();
-
-        hitbox_width = config["hitbox_width"].as<int>();
-        hitbox_height = config["hitbox_height"].as<int>();
-
         for (const auto& animation: config["animations"]) {
             std::string name = animation.first.as<std::string>();
-            std::vector<SDL2pp::Rect> frames;
+            std::vector<FrameData> frames;
 
             for (const auto& frame: animation.second["frames"]) {
                 int source_x = frame["x"].as<int>();
                 int source_y = frame["y"].as<int>();
+                int x_offset_right = frame["x_offset_right"].as<int>();
+                int x_offset_left = frame["x_offset_left"].as<int>();
+                int y_offset = frame["y_offset"].as<int>();
 
-                frames.push_back(SDL2pp::Rect(source_x, source_y, width, height));
+                SDL2pp::Rect rect = SDL2pp::Rect(source_x, source_y, width, height);
+                frames.push_back({rect, x_offset_right, x_offset_left, y_offset});
             }
             uint8_t iter_per_frame = animation.second["iter_per_frame"].as<uint8_t>();
             bool loops = animation.second["loops"].as<bool>();
@@ -82,26 +70,24 @@ public:
     }
 
     void render(SDL2pp::Renderer& renderer, Camera& camera) {
-        SDL_RendererFlip flip = !is_facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+        // SDL_RendererFlip flip = !is_facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 
         // muestro la hitbox
 
-        SDL2pp::Rect hitbox = SDL2pp::Rect(x, y, hitbox_width, hitbox_height);
+        SDL2pp::Rect hitbox = SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
         camera.transform_rect(hitbox);
         renderer.DrawRect(hitbox);
 
-        SDL2pp::Rect dst = SDL2pp::Rect(x - x_offset, y - y_offset, source_width, source_height);
-
-        curr_animation->render(renderer, camera, dst, flip);
+        curr_animation->render(renderer, camera, position, is_facing_right);
 
         if (!is_alive) {
             return;
         }
 
-        SDL2pp::Rect gun_dst = SDL2pp::Rect(x + 2, y - 2, 32, 32);
-        if (!is_facing_right) {
-            gun_dst.x -= 20;
-        }
+        // SDL2pp::Rect gun_dst = SDL2pp::Rect(x + 2, y - 2, 32, 32);
+        // if (!is_facing_right) {
+        //     gun_dst.x -= 20;
+        // }
 
         gun.render(renderer, camera);
     }
@@ -111,8 +97,8 @@ public:
     void update_from_snapshot(const Duck& duck) {
         Animation* prev_animation = curr_animation;
 
-        x = duck.x;
-        y = duck.y;
+        position.x = duck.x;
+        position.y = duck.y;
 
         is_facing_right = duck.facing_right;
 
@@ -138,7 +124,7 @@ public:
 
     bool is_dead() { return !is_alive; }
 
-    SDL2pp::Rect get_bounding_box() { return SDL2pp::Rect(x, y, source_width, source_height); }
+    SDL2pp::Rect get_bounding_box() { return SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT); }
 
     ~RenderableDuck() {
         for (auto& animation: animations) {

@@ -12,8 +12,15 @@
 
 #define FRAME_RATE 1000.0f / 30.0f
 
+struct FrameData {
+    SDL2pp::Rect rect;
+    int x_offset_right;
+    int x_offset_left;
+    int y_offset;
+};
+
 class Animation {
-private:
+protected:
     SDL2pp::Texture& texture;
 
     size_t currentFrame;
@@ -21,7 +28,7 @@ private:
     uint8_t iterations_since_change;
     // Cantidad de iteraciones que deben pasar para cambiar de frame
     uint8_t iterations_per_frame;
-    std::vector<SDL2pp::Rect> frames;
+    std::vector<FrameData> frames;
 
     void advance_frame();
 
@@ -29,13 +36,13 @@ private:
 
 public:
     // Recibe la textura y el path del archivo de configuracion
-    Animation(SDL2pp::Texture& texture, std::vector<SDL2pp::Rect> frames,
+    Animation(SDL2pp::Texture& texture, std::vector<FrameData> frames,
               uint8_t iterations_per_frame, bool loops);
 
     void update();
 
-    void render(SDL2pp::Renderer& renderer, Camera& camera, SDL2pp::Rect& dest,
-                SDL_RendererFlip& flipType, float angle = 0.0);
+    void render(SDL2pp::Renderer& renderer, Camera& camera, SDL2pp::Point& dest,
+                bool facing_right = true, float angle = 0.0f);
 
     void skip_frames(uint8_t frames_to_skip);
 
