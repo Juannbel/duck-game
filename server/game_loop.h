@@ -1,21 +1,16 @@
 #ifndef GAME_LOOP_H
 #define GAME_LOOP_H
 
-#include <map>
 #include "common/blocking_queue.h"
 #include "common/thread.h"
 #include "common/snapshot.h"
 #include "common/commands.h"
+#include "common/map_dto.h"
+#include "duck_player.h"
 #include "common/shared_constants.h"
 #include "action.h"
 #include "list_monitor.h"
-
-struct Rectangle {
-    int32_t x;
-    int32_t y;
-    int16_t width;
-    int16_t height;
-};
+#include "entitys_manager.h"
 
 struct Spawn{
     int16_t x;
@@ -29,31 +24,34 @@ struct Block{
     struct Rectangle rectangle;
 };
 
-struct Map{
+struct GameMap{
     std::vector<std::vector<struct Block>> blocks;
     std::vector<struct Spawn> spawns;
     int16_t rows;
     int16_t columns;
 };
 
-struct Collision{
-    bool vertical_collision;
-    bool horizontal_collision;
-};
+//struct Collision{
+//    bool vertical_collision;
+//    bool horizontal_collision;
+//};
 
-struct DuckInfo{
-    Rectangle hitbox;
-    uint8_t ammo;
-    uint8_t it_jumping;
-};
+//struct DuckInfo{
+//    Rectangle hitbox;
+//    uint8_t ammo;
+//    uint8_t it_jumping;
+//};
 
 class GameLoop: public Thread {
 private:
     Queue<struct action>& actions_queue;
     QueueListMonitor& snaps_queue_list;
     struct Snapshot game_status;
-    struct DuckInfo ducks_info[MAX_DUCKS];
-    struct Map map_info;
+    DuckPlayer ducks_info[MAX_DUCKS];
+    Map map_blocks_info;
+    std::vector<struct Spawn> spawns;
+
+    EntityManager entity_manager;
 
     void load_map();
     
