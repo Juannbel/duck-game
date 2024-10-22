@@ -73,6 +73,8 @@ void RenderableDuck::update_from_snapshot(const Duck& duck) {
         is_alive = false;
     } else if (duck.is_jumping) {
         curr_animation = animations["jumping"];
+    } else if (duck.is_falling) {
+        curr_animation = animations["falling"];
     } else if (duck.is_running) {
         curr_animation = animations["walking"];
     } else if (duck.is_laying) {

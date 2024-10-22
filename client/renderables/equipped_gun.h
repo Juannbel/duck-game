@@ -22,7 +22,7 @@ private:
     bool facing_right;
     bool facing_up;
 
-    std::unordered_map<std::string, GunType> string_to_gun;
+    static std::unordered_map<std::string, GunType> string_to_gun;
 
 public:
     RenderableEquippedGun(SDL2pp::Texture* sprite, const std::string& config_path);

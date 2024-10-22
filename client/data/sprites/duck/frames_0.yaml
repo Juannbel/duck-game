@@ -24,11 +24,10 @@ animations:
       - { x: 160, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9}
 
   jumping:
-    iter_per_frame: 2
+    iter_per_frame: 1
     loops: false
     frames:
       - { x: 192, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9}
-      - { x: 224, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9}
 
   falling:
     iter_per_frame: 2

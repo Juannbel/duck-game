@@ -1,17 +1,13 @@
 #include "equipped_gun.h"
-
+#include <unordered_map>
+#include "common/snapshot.h"
 
 RenderableEquippedGun::RenderableEquippedGun(SDL2pp::Texture* sprite, const std::string& config_path):
         position(0, 0), facing_right(true), facing_up(false) {
-    string_to_gun["none"] = None;
-    string_to_gun["ak47"] = Ak47;
-    string_to_gun["dueling_pistol"] = DuelingPistol;
-
     YAML::Node config = YAML::LoadFile(config_path);
 
     int width = config["width"].as<int>();
     int height = config["height"].as<int>();
-
 
     for (const auto& gun: config["guns"]) {
         GunType gun_type = string_to_gun[gun.first.as<std::string>()];
@@ -36,6 +32,20 @@ RenderableEquippedGun::RenderableEquippedGun(SDL2pp::Texture* sprite, const std:
     current_gun = None;
     curr_animation = guns[None];
 }
+
+std::unordered_map<std::string, GunType> RenderableEquippedGun::string_to_gun {
+    {"none", None},
+    {"grenade", Grenade},
+    {"banana", Banana},
+    {"pew_pew_laser", PewPewLaser},
+    {"laser_rifle", LaserRifle},
+    {"ak47", Ak47},
+    {"dueling_pistol", DuelingPistol},
+    {"cowboy_pistol", CowboyPistol},
+    {"magnum", Magnum},
+    {"shootgun", Shootgun},
+    {"sniper", Sniper}
+};
 
 void RenderableEquippedGun::update() { curr_animation->update(); }
 
