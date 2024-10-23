@@ -17,7 +17,7 @@ Duck DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     return status;
 }
 
-void DuckPlayer::actualice_status(const Command& command) {
+void DuckPlayer::update_status(const Command& command) {
     if (status.is_jumping) {
         ++it_jumping;
     }
@@ -81,7 +81,7 @@ void DuckPlayer::actualice_status(const Command& command) {
     }
 }
 
-void DuckPlayer::update_duck_status(struct Collision& collision) {
+void DuckPlayer::status_after_move(struct Collision& collision) {
     if (collision.vertical_collision && status.is_falling) {
         status.is_falling = false;
     } else if (collision.vertical_collision && status.is_jumping) {
@@ -127,7 +127,7 @@ Duck DuckPlayer::move_duck(EntityManager& entity_manager) {
     struct Collision collision = entity_manager.check_near_blocks_collision(duck_rec, new_x, new_y);
     x = collision.last_valid_position.x;
     y = collision.last_valid_position.y;
-    update_duck_status(collision);
+    status_after_move(collision);
     status.x = collision.last_valid_position.x;
     status.y = collision.last_valid_position.y;
     return status;

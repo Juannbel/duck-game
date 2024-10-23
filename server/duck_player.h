@@ -13,14 +13,14 @@ private:
     uint8_t ammo;
     uint8_t it_jumping;
 
-    void update_duck_status(struct Collision& collision);
+    void status_after_move(struct Collision& collision);
 
 public:
     float x;
     float y;
     DuckPlayer();
     Duck set_coordenades_and_id(int16_t x, int16_t y, uint8_t id);
-    void actualice_status(const Command& command);
+    void update_status(const Command& command);
     Duck move_duck(EntityManager& entity_manager);
 };
 

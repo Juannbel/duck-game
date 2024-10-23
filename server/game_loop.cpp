@@ -88,7 +88,7 @@ void GameLoop::pop_and_process_all() {
 
 void GameLoop::process_action(struct action& action) {
     DuckPlayer& player = ducks_info[action.duck_id];
-    player.actualice_status(action.command);
+    player.update_status(action.command);
 }
 
 void GameLoop::update_game_status() {
