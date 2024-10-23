@@ -2,8 +2,8 @@
 
 #include <chrono>
 #include <cmath>
-#include <vector>
 
+#include "maps/yaml.h"
 #include "common/snapshot.h"
 
 using std::chrono::high_resolution_clock;
@@ -32,27 +32,8 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
 }
 
 void GameLoop::load_map() {
-    for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
-        for (int16_t j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
-            map_blocks_info.blocks[i][j] = Empty;
-        }
-        map_blocks_info.blocks[0][i] = Wall;
-        map_blocks_info.blocks[MAP_WIDTH_BLOCKS - 1][i] = Wall;
-        entity_manager.add_block(0, i * BLOCK_SIZE);
-        entity_manager.add_block(MAP_WIDTH_PIXELS - BLOCK_SIZE, i * BLOCK_SIZE);
-    }
-    int32_t floor_index = MAP_HEIGHT_BLOCKS - 1;
-    for (int32_t i = 0; i < MAP_WIDTH_BLOCKS;
-         i++) {  // Agrego pisos ficticias desde (0,160) a (560, 160)
-        map_blocks_info.blocks[floor_index][i] = Floor;
-        entity_manager.add_block(i * BLOCK_SIZE, floor_index * BLOCK_SIZE);
-    }
-    floor_index = 0;
-    for (int32_t i = 0; i < MAP_WIDTH_BLOCKS;
-         i++) {  // Agrego pisos ficticias desde (0,80) a (525, 80)
-        map_blocks_info.blocks[floor_index][i] = Floor;
-        entity_manager.add_block(i * BLOCK_SIZE, floor_index * BLOCK_SIZE);
-    }
+    YAMLLoader yaml;
+    yaml.loadMap(&map_blocks_info, &entity_manager);
 }
 
 void GameLoop::run() {
