@@ -1,8 +1,9 @@
 #include "duck_player.h"
 
-const uint8_t JUMP_IT = 45;
+const uint8_t JUMP_IT = 40;
+const uint8_t FLAPPING_IT = 5;
 const float DUCK_SPEED = 4;
-const float FALL_SPEED = 2;
+const float FALL_SPEED = 4;
 
 DuckPlayer::DuckPlayer() : status(), ammo(), it_jumping(), x(), y() {
     status.is_dead = true;
@@ -44,12 +45,6 @@ void DuckPlayer::actualice_status(const Command &command) {
     case StopShooting:
         status.is_shooting = false;
         break;
-    case StartFlapping:
-        status.is_flapping = status.is_falling;
-        break;
-    case StopFlapping:
-        status.is_flapping = false;
-        break;
     case LayDown:
         status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
         status.is_running = status.is_laying ? false : status.is_running;
@@ -59,9 +54,11 @@ void DuckPlayer::actualice_status(const Command &command) {
         break;
     case Jump:
         if (status.is_falling) {
+            it_flapping = status.is_flapping ? it_flapping : 1;
+            status.is_flapping = true;
             break;
         }
-        it_jumping = status.is_jumping ? it_jumping : 1;
+        it_jumping = status.is_jumping ? it_jumping : 4;
         status.is_jumping = true;
         break;
     case PickUp:
@@ -83,21 +80,26 @@ void DuckPlayer::actualice_status(const Command &command) {
 }
 
 void DuckPlayer::update_duck_status(struct Collision &collision){
-    if (collision.vertical_collision && status.is_falling){
+    if (collision.vertical_collision && status.is_falling) {
         status.is_falling = false;
-    }else if(collision.vertical_collision && status.is_jumping){
+    }else if(collision.vertical_collision && status.is_jumping) {
         status.is_falling = true;
         status.is_jumping = false;
         it_jumping = 0;
     }
-    else if(!collision.vertical_collision && !status.is_falling){
+    else if(!collision.vertical_collision && !status.is_falling) {
         status.is_falling = true;
     }
-    if (it_jumping > JUMP_IT){
+    if (it_jumping > JUMP_IT) {
         status.is_jumping = false;
         status.is_falling = true;
         it_jumping = 0;
     }
+    if (it_flapping > FLAPPING_IT) {
+        status.is_flapping = false;
+        it_flapping = 0;
+    }
+    
 }
 
 Duck DuckPlayer::move_duck(EntityManager &entity_manager){
@@ -107,9 +109,9 @@ Duck DuckPlayer::move_duck(EntityManager &entity_manager){
     if (status.is_running) {
         float move_x = 0;
         if (status.is_jumping){
-            move_x = DUCK_SPEED*0.7;
+            move_x = DUCK_SPEED;
         }else if(status.is_falling){
-            move_x = status.is_flapping ? DUCK_SPEED*0.5 : DUCK_SPEED*0.7;
+            move_x = status.is_flapping ? DUCK_SPEED-1 : DUCK_SPEED;
         }
         else if (!status.is_laying){
             move_x = DUCK_SPEED;
@@ -117,12 +119,16 @@ Duck DuckPlayer::move_duck(EntityManager &entity_manager){
         new_x = (status.facing_right) ? new_x+move_x : new_x-move_x;
     }
     if (status.is_falling){
-        float move_y = status.is_flapping ? FALL_SPEED/2 : FALL_SPEED*1.5;
+        float move_y = FALL_SPEED;
+        if (status.is_flapping) { 
+            move_y/=4;
+            ++it_flapping; 
+        }
         new_y+=move_y;
     }
     if(status.is_jumping){
-        float move_y = FALL_SPEED;
-        ++it_jumping;
+        float move_y = FALL_SPEED* static_cast<float>((JUMP_IT-it_jumping)/10);
+        it_jumping+=4;
         new_y = y-move_y;
     }
     struct Rectangle duck_rec = {static_cast<int16_t>(x), static_cast<int16_t> (y), DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT}; 

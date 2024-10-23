@@ -11,6 +11,7 @@ class DuckPlayer{
     Duck status;
     uint8_t ammo;
     uint8_t it_jumping;
+    uint8_t it_flapping;
 
     void update_duck_status(struct Collision &collision);
 
