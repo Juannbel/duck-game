@@ -12,8 +12,13 @@ private:
 public:
     explicit ClientProtocol(Socket&& socket);
 
-    Snapshot recv_snapshot();
+    /*
+    Definiciones provisorias por el momento.
+    */
+    void recv_id_player(const uint8_t& duck_id);
+    void recv_map(void *map);
 
+    Snapshot recv_snapshot();
     void send_player_command(const Command& snapshot);
 
 private:
