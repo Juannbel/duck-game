@@ -44,12 +44,6 @@ void DuckPlayer::update_status(const Command& command) {
         case StopShooting:
             status.is_shooting = false;
             break;
-        case StartFlapping:
-            status.is_flapping = status.is_falling;
-            break;
-        case StopFlapping:
-            status.is_flapping = false;
-            break;
         case LayDown:
             status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
             status.is_running = status.is_laying ? false : status.is_running;
@@ -59,6 +53,8 @@ void DuckPlayer::update_status(const Command& command) {
             break;
         case Jump:
             if (status.is_falling) {
+                it_flapping = status.is_flapping ? it_flapping : 1;
+                status.is_flapping = true;
                 break;
             }
             it_jumping = status.is_jumping ? it_jumping : 1;
@@ -92,7 +88,6 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
     } else if (!collision.vertical_collision && !status.is_falling) {
         status.is_falling = true;
     }
-    if (it_jumping > JUMP_IT) {
     if (it_jumping > JUMP_IT) {
         status.is_jumping = false;
         status.is_falling = true;
