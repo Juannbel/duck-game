@@ -9,6 +9,10 @@
 
 ClientProtocol::ClientProtocol(Socket&& socket): socket(std::move(socket)) {}
 
+void ClientProtocol::recv_id_player(const uint8_t& duck_id){}
+
+void ClientProtocol::recv_map(void *map){}
+
 Snapshot ClientProtocol::recv_snapshot() {
     bool was_closed;
     Snapshot serializedSnaphot;

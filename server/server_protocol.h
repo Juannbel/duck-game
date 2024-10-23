@@ -16,6 +16,12 @@ public:
 
     void send_match_info(const MatchInfo& match_info);
 
+    /*
+    Definiciones provisorias por el momento.
+    */
+    void send_id_player(const uint8_t& duck_id);
+    void send_map(void *map);
+
     void send_snapshot(const Snapshot& snapshot);
 
     Command recv_player_command();

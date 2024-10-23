@@ -50,3 +50,7 @@ Command ServerProtocol::recv_player_command() {
     // excepción.
     return command;
 }
+
+void ServerProtocol::send_id_player(const uint8_t& duck_id){}
+
+void ServerProtocol::send_map(void *map){}
