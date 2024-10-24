@@ -5,11 +5,12 @@
 #include <utility>
 
 #include "common/blocking_queue.h"
+#include "common/map_dto.h"
 
-#include "ServerClient.h"
+#include "server_client.h"
 
-Acceptor::Acceptor(Socket& sk, Queue<struct action>& gameloop_q, QueueListMonitor& sv_msg_queues):
-        sk(sk), gameloop_q(gameloop_q), sv_msg_queues(sv_msg_queues) {}
+Acceptor::Acceptor(Socket& sk, Queue<struct action>& gameloop_q, QueueListMonitor& sv_msg_queues, Map& map):
+        sk(sk), gameloop_q(gameloop_q), sv_msg_queues(sv_msg_queues), map(map) {}
 
 void Acceptor::run() {
     int id = 0;  // Estaria bueno usar un uuid
@@ -17,7 +18,8 @@ void Acceptor::run() {
         try {
             Socket peer = sk.accept();
 
-            ServerClient* th = new ServerClient(std::move(peer), gameloop_q, id);
+            // por ahora mandamos el id del cliente como id del jugador
+            ServerClient* th = new ServerClient(std::move(peer), gameloop_q, id, MatchInfo(id%4, map));
             sv_msg_queues.add_element(&(th->get_sender_queue()));
 
             th->start();
@@ -53,4 +55,8 @@ void Acceptor::kill_all() {
         delete c;
     }
     clients.clear();
+}
+
+int Acceptor::get_clients_count() {
+    return clients.size();
 }

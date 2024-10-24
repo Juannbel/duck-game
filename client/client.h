@@ -1,7 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "clientProtocol.h"
+#include "client_protocol.h"
 #include "client_receiver.h"
 #include "client_sender.h"
 

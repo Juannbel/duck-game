@@ -4,7 +4,7 @@
 #include "common/blocking_queue.h"
 #include "common/thread.h"
 
-#include "clientProtocol.h"
+#include "client_protocol.h"
 
 class ClientSender: public Thread {
 private:

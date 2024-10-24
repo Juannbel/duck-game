@@ -6,10 +6,10 @@ target_sources(taller_server
     receiver.cpp
     sender.cpp
     server.cpp
-    ServerClient.cpp
+    server_client.cpp
     list_monitor.cpp
     game_loop.cpp
-    serverProtocol.cpp
+    server_protocol.cpp
     duck_player.cpp
     entitys_manager.cpp
     maps/yaml.cpp
@@ -19,10 +19,10 @@ target_sources(taller_server
     receiver.h
     sender.h
     server.h
-    ServerClient.h
+    server_client.h
     list_monitor.h
     game_loop.h
-    serverProtocol.h
+    server_protocol.h
     duck_player.h
     entitys_manager.h
     maps/yaml.h

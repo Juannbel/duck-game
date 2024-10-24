@@ -3,18 +3,18 @@
 
 // TODO: Todos los includes necesarios
 #include "common/blocking_queue.h"
-#include "common/snapshot.h"
 #include "common/thread.h"
 
-#include "serverProtocol.h"
+#include "server_protocol.h"
 
-class Receiver: public Thread {
+class ServerReceiver: public Thread {
 private:
     ServerProtocol& protocol;
     Queue<struct action>& gameloop_q;
+    uint8_t duck_id;
 
 public:
-    Receiver(ServerProtocol& protocol, Queue<struct action>& q);
+    ServerReceiver(ServerProtocol& protocol, Queue<struct action>& q, uint8_t duck_id);
 
     void run() override;
 };

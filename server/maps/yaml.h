@@ -7,7 +7,8 @@
 
 class YAMLLoader {
 public:
-    int loadMap(Map* map_blocks_info, EntityManager* entity_manager);
+    // int loadMap(Map* map_blocks_info, EntityManager* entity_manager);
+    Map loadMap(const std::string& path);
 };
 
 #endif //YAML_H

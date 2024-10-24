@@ -1,4 +1,5 @@
 #include "client.h"
+#include "common/map_dto.h"
 
 #include "constant_looper.h"
 
@@ -8,22 +9,23 @@ Client::Client(const char* hostname, const char* servname):
         sender(protocol, command_q) {}
 
 void Client::run() {
+    MatchInfo match_info = protocol.recv_match_info();
+    std::cout << "Match info received" << std::endl;
+    std::cout << "Duck id: " << (int) match_info.duck_id << std::endl;
+
     receiver.start();
     sender.start();
-    // Snapshot last_snapshot;
-    // last_snapshot.ducks[0] = {0, "", 0, 100, DuelingPistol, false, false, false, false, false,
-    // true, true, false, false, false, false, 10, 70}; last_snapshot.ducks[1] = {0, "", 0, 100,
-    // DuelingPistol, false, false, false, false, false, true, false, false, false, false, false,
-    // 150, 70}; last_snapshot.ducks[2] = {0, "", 0, 100, Ak47, false, false, false, false, false,
-    // true, false, false, false, false, false, 180, 70}; last_snapshot.ducks[3] = {0, "", 0, 100,
-    // None, false, false, false, false, false, true, false, false, false, false, false, 240, 70};
-    //
-    // last_snapshot.players_quantity = 4;
-    //
-    // last_snapshot.guns[0] = Gun{0,  Ak47, 60, 70};
-    // last_snapshot.guns_quantity = 1;
-    ConstantLooper looper(0, snapshot_q, command_q);
+
+    ConstantLooper looper(match_info, snapshot_q, command_q);
     looper.run();
+
+    std::cout << "Game ended" << std::endl;
 }
 
-Client::~Client() {}
+Client::~Client() {
+    protocol.shutdown();
+    snapshot_q.close();
+    command_q.close();
+    receiver.join();
+    sender.join();
+}

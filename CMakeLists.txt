@@ -46,6 +46,7 @@ set_project_warnings(taller_common ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 target_include_directories(taller_common PUBLIC .)
 
 add_definitions(-DDATA_PATH="${PROJECT_SOURCE_DIR}/client/data")
+add_definitions(-DSERVER_DATA_PATH="${PROJECT_SOURCE_DIR}/server/maps")
 
 # Install libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)

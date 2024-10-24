@@ -3,8 +3,8 @@
 #include <chrono>
 #include <cmath>
 
-#include "maps/yaml.h"
 #include "common/snapshot.h"
+#include "server/entitys_manager.h"
 
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
@@ -17,8 +17,9 @@ const float FALL_SPEED = 1;
 const int32_t NEAR_CELLS = 3;
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list,
-                   uint8_t players_quantity):
-        actions_queue(game_queue), snaps_queue_list(queue_list), game_status(), ducks_info() {
+                   Map &map_dto, uint8_t players_quantity):
+        actions_queue(game_queue), snaps_queue_list(queue_list), game_status(), ducks_info(), entity_manager(map_dto) {
+
     game_status.players_quantity = players_quantity;
     uint8_t i = 0;
     for (auto& duck: ducks_info) {
@@ -28,12 +29,6 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         }
         ++i;
     }
-    load_map();
-}
-
-void GameLoop::load_map() {
-    YAMLLoader yaml;
-    yaml.loadMap(&map_blocks_info, &entity_manager);
 }
 
 void GameLoop::run() {

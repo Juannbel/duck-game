@@ -2,6 +2,7 @@
 #define CLIENT_PROTOCOL_H
 
 #include "common/commands.h"
+#include "common/map_dto.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
 
@@ -15,6 +16,10 @@ public:
     Snapshot recv_snapshot();
 
     void send_player_command(const Command& snapshot);
+
+    MatchInfo recv_match_info();
+
+    void shutdown();
 
 private:
     Snapshot deserializeSnapshot(const Snapshot& snapshot);

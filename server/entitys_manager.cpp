@@ -2,11 +2,20 @@
 
 #include <iostream>
 
+#include "common/map_dto.h"
 #include "common/shared_constants.h"
 
 const int16_t NEAR_CELLS = 3;
 
-EntityManager::EntityManager(): blocks() {}
+EntityManager::EntityManager(Map& map_dto) {
+    for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
+        for (int16_t j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
+            if (map_dto.blocks[i][j] != BlockType::Empty) {
+                add_block(j * BLOCK_SIZE, i * BLOCK_SIZE);
+            }
+        }
+    }
+}
 
 void EntityManager::add_block(int16_t x, int16_t y) {
     Rectangle rectangle = {x, y, BLOCK_SIZE, BLOCK_SIZE};
