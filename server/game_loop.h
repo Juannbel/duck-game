@@ -54,20 +54,11 @@ private:
 
     EntityManager entity_manager;
 
-    void load_map();
-
     void pop_and_process_all();
 
     void process_action(struct action& action);
 
     void update_game_status();
-
-    void move_duck(struct Duck& duck);
-
-    struct Collision check_near_blocks_collision(struct Rectangle& duck, int32_t new_x,
-                                                 int32_t new_y);
-
-    struct Collision rectangles_collision(const struct Rectangle& r1, const struct Rectangle& r2);
 
     void verify_spawn();
 
