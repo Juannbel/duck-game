@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <map>
 #include <vector>
+#include "common/map_dto.h"
 
 struct Rectangle {
     int16_t x;
@@ -23,7 +24,7 @@ private:
     std::map<uint16_t, std::vector<Rectangle>> blocks;
 
 public:
-    EntityManager();
+    EntityManager(Map& map_dto);
     void add_block(int16_t x, int16_t y);
     struct Collision check_near_blocks_collision(struct Rectangle& entity, int16_t new_x,
                                                  int16_t new_y);

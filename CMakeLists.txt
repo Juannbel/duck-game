@@ -46,6 +46,7 @@ set_project_warnings(taller_common ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 target_include_directories(taller_common PUBLIC .)
 
 add_definitions(-DDATA_PATH="${PROJECT_SOURCE_DIR}/client/data")
+add_definitions(-DSERVER_DATA_PATH="${PROJECT_SOURCE_DIR}/server/maps")
 
 # Install libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
@@ -53,6 +54,8 @@ if(TALLER_CLIENT OR TALLER_EDITOR)
     include(FetchContent)
 
     set(SDL2PP_WITH_IMAGE YES)
+    set(SDL2PP_WITH_MIXER YES)
+    set(SDL2PP_WITH_TTF YES)
 
     FetchContent_Declare(
         libSDL2pp
@@ -61,8 +64,6 @@ if(TALLER_CLIENT OR TALLER_EDITOR)
 
     FetchContent_MakeAvailable(libSDL2pp)
 
-    find_package(SDL2_image REQUIRED)
-    find_package(yaml-cpp REQUIRED)
 endif()
 
 # Program section
@@ -84,7 +85,7 @@ if(TALLER_CLIENT)
     target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp SDL2_image::SDL2_image yaml-cpp)
+    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp yaml-cpp)
 endif()
 
 if(TALLER_SERVER)
@@ -95,13 +96,15 @@ if(TALLER_SERVER)
     add_dependencies(taller_server taller_common)
 
     # Add source files and enable warnings
-    # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(server)
 
     set_project_warnings(taller_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
+    # Add yaml-cpp
+    find_package(yaml-cpp REQUIRED)
+
     # Link the taller_common lib target
-    target_link_libraries(taller_server taller_common)
+    target_link_libraries(taller_server PRIVATE yaml-cpp taller_common)
 endif()
 
 if(TALLER_EDITOR)

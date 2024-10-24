@@ -1,27 +1,34 @@
 #include "receiver.h"
+#include <iostream>
+#include "common/blocking_queue.h"
+#include "common/commands.h"
+#include "common/liberror.h"
 
 #include "action.h"
 
-Receiver::Receiver(ServerProtocol& protocol, Queue<struct action>& q):
-        protocol(protocol), gameloop_q(q) {}
+ServerReceiver::ServerReceiver(ServerProtocol& protocol, Queue<struct action>& q, uint8_t duck_id):
+        protocol(protocol), gameloop_q(q), duck_id(duck_id) {}
 
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
-void Receiver::run() {
+void ServerReceiver::run() {
     // bool was_closed = false; // comento hasta que se use por cppcheck
     // Snapshot msg;
-
-    while (true) {
-        Command cmd = protocol.recv_player_command();
-        // Catchear excepcion de socket cerrado
-
-        // if (was_closed) {
-        //     break;
-        // }
+    while (_keep_running) {
+        Command cmd;
+        try {
+            cmd = protocol.recv_player_command();
+        } catch (const LibError& le) { // Catchear excepcion de socket cerrado
+            std::cout << "LibError en receiver id: " << (int) duck_id << " " << le.what() << std::endl;
+        }
 
         struct action action;
-        action.duck_id = 0;  // Agregar el n de pato
+        action.duck_id = duck_id;  // Agregar el n de pato
         action.command = cmd;
 
-        gameloop_q.push(action);
+        try {
+            gameloop_q.push(action);
+        } catch (const ClosedQueue& e) {
+            std::cout << "ClosedQueue en receiver id: " << (int) duck_id << " " << e.what() << std::endl;
+        }
     }
 }

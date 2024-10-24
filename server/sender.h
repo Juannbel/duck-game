@@ -6,15 +6,16 @@
 #include "common/snapshot.h"
 #include "common/thread.h"
 
-#include "serverProtocol.h"
+#include "server_protocol.h"
 
-class Sender: public Thread {
+class ServerSender: public Thread {
 private:
     ServerProtocol& protocol;
     Queue<Snapshot>& sender_q;
+    uint8_t duck_id;
 
 public:
-    Sender(ServerProtocol& protocol, Queue<Snapshot>& sender_q);
+    ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, uint8_t duck_id);
 
     void run() override;
 };

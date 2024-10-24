@@ -1,8 +1,11 @@
-#include "clientProtocol.h"
+#include "client_protocol.h"
 
+#include <stdexcept>
 #include <utility>
 
 #include <arpa/inet.h>
+#include <sys/socket.h>
+#include "common/map_dto.h"
 
 ClientProtocol::ClientProtocol(Socket&& socket): socket(std::move(socket)) {}
 
@@ -47,4 +50,17 @@ void ClientProtocol::send_player_command(const Command& command) {
     bool wasClosed = false;
     socket.sendall(&command, sizeof(command), &wasClosed);
     // excepción.
+}
+
+MatchInfo ClientProtocol::recv_match_info() {
+    bool was_closed;
+    MatchInfo match_info;
+    socket.recvall(&match_info, sizeof(match_info), &was_closed);
+
+    return match_info;
+}
+
+void ClientProtocol::shutdown() {
+    socket.shutdown(SHUT_RDWR);
+    socket.close();
 }

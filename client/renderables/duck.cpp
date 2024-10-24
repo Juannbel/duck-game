@@ -3,7 +3,7 @@
 #include <yaml-cpp/yaml.h>
 #include <vector>
 
-#include "../../common/shared_constants.h"
+#include "common/shared_constants.h"
 
 RenderableDuck::RenderableDuck(SDL2pp::Texture* sprite, const std::string& config_path,
                    SDL2pp::Texture* guns_sprite, const std::string& guns_config):
@@ -45,9 +45,9 @@ void RenderableDuck::update() {
 }
 
 void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
-    SDL2pp::Rect hitbox = SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
-    camera.transform_rect(hitbox);
-    renderer.DrawRect(hitbox);
+    // SDL2pp::Rect hitbox = SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
+    // camera.transform_rect(hitbox);
+    // renderer.DrawRect(hitbox);
 
     curr_animation->render(renderer, camera, position, is_facing_right);
 

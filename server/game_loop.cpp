@@ -2,9 +2,9 @@
 
 #include <chrono>
 #include <cmath>
-#include <vector>
 
 #include "common/snapshot.h"
+#include "server/entitys_manager.h"
 
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
@@ -17,8 +17,9 @@ const float FALL_SPEED = 1;
 const int32_t NEAR_CELLS = 3;
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list,
-                   uint8_t players_quantity):
-        actions_queue(game_queue), snaps_queue_list(queue_list), game_status(), ducks_info() {
+                   Map &map_dto, uint8_t players_quantity):
+        actions_queue(game_queue), snaps_queue_list(queue_list), game_status(), ducks_info(), entity_manager(map_dto) {
+
     game_status.players_quantity = players_quantity;
     uint8_t i = 0;
     for (auto& duck: ducks_info) {
@@ -27,31 +28,6 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
             game_status.ducks[i] = duck.set_coordenades_and_id(50, 50 - DUCK_HITBOX_HEIGHT, i);
         }
         ++i;
-    }
-    load_map();
-}
-
-void GameLoop::load_map() {
-    for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
-        for (int16_t j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
-            map_blocks_info.blocks[i][j] = Empty;
-        }
-        map_blocks_info.blocks[0][i] = Wall;
-        map_blocks_info.blocks[MAP_WIDTH_BLOCKS - 1][i] = Wall;
-        entity_manager.add_block(0, i * BLOCK_SIZE);
-        entity_manager.add_block(MAP_WIDTH_PIXELS - BLOCK_SIZE, i * BLOCK_SIZE);
-    }
-    int32_t floor_index = MAP_HEIGHT_BLOCKS - 1;
-    for (int32_t i = 0; i < MAP_WIDTH_BLOCKS;
-         i++) {  // Agrego pisos ficticias desde (0,160) a (560, 160)
-        map_blocks_info.blocks[floor_index][i] = Floor;
-        entity_manager.add_block(i * BLOCK_SIZE, floor_index * BLOCK_SIZE);
-    }
-    floor_index = 0;
-    for (int32_t i = 0; i < MAP_WIDTH_BLOCKS;
-         i++) {  // Agrego pisos ficticias desde (0,80) a (525, 80)
-        map_blocks_info.blocks[floor_index][i] = Floor;
-        entity_manager.add_block(i * BLOCK_SIZE, floor_index * BLOCK_SIZE);
     }
 }
 

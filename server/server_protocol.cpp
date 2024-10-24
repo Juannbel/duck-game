@@ -1,6 +1,4 @@
-#include "serverProtocol.h"
-
-#include <utility>
+#include "server_protocol.h"
 
 #include <arpa/inet.h>
 
@@ -13,6 +11,11 @@ void ServerProtocol::send_snapshot(const Snapshot& snapshot) {
     Snapshot serializedSS = serializeSnapshot(snapshot);
     socket.sendall(&serializedSS, sizeof(serializedSS), &wasClosed);
     // lanzar excepcion si was closed fue cerrada, esto nos ayudara a stopear el protocolo.
+}
+
+void ServerProtocol::send_match_info(const MatchInfo& matchInfo) {
+    bool wasClosed = false;
+    socket.sendall(&matchInfo, sizeof(matchInfo), &wasClosed);
 }
 
 Snapshot ServerProtocol::serializeSnapshot(const Snapshot& snapshot) {

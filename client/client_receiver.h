@@ -6,7 +6,7 @@
 #include "common/snapshot.h"
 #include "common/thread.h"
 
-#include "clientProtocol.h"
+#include "client_protocol.h"
 
 class ClientReceiver: public Thread {
 private:
