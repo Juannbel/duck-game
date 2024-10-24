@@ -12,6 +12,7 @@ target_sources(taller_server
     serverProtocol.cpp
     duck_player.cpp
     entitys_manager.cpp
+    maps/yaml.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -24,4 +25,5 @@ target_sources(taller_server
     serverProtocol.h
     duck_player.h
     entitys_manager.h
+    maps/yaml.h
     )

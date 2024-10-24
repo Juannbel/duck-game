@@ -95,13 +95,15 @@ if(TALLER_SERVER)
     add_dependencies(taller_server taller_common)
 
     # Add source files and enable warnings
-    # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(server)
 
     set_project_warnings(taller_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
+    # Add yaml-cpp
+    find_package(yaml-cpp REQUIRED)
+
     # Link the taller_common lib target
-    target_link_libraries(taller_server taller_common)
+    target_link_libraries(taller_server PRIVATE yaml-cpp taller_common)
 endif()
 
 if(TALLER_EDITOR)
