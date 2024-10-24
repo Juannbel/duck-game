@@ -2,10 +2,8 @@
 #define SERVER_PROTOCOL_H
 
 #include "common/commands.h"
-#include "common/map_dto.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
-
 
 class ServerProtocol {
 private:
