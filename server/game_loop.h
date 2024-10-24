@@ -65,8 +65,8 @@ private:
     void push_responce();
 
 public:
-    GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list,
-             Map &map_dto, uint8_t players_quantity);
+    GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, Map& map_dto,
+             uint8_t players_quantity);
     /*   This class is the game loop.
      *   Start a loop that pop an action of the game queue, process it and
      *   push the responce to all the queues in the queue_list.
