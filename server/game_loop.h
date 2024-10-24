@@ -13,6 +13,8 @@
 #include "entitys_manager.h"
 #include "list_monitor.h"
 
+#include <map>
+
 struct Spawn {
     int16_t x;
     int16_t y;
@@ -20,37 +22,15 @@ struct Spawn {
     bool picked;
 };
 
-struct Block {
-    uint8_t type;  // 0 para casilla vacia
-    struct Rectangle rectangle;
-};
-
-struct GameMap {
-    std::vector<std::vector<struct Block>> blocks;
-    std::vector<struct Spawn> spawns;
-    int16_t rows;
-    int16_t columns;
-};
-
-// struct Collision{
-//     bool vertical_collision;
-//     bool horizontal_collision;
-// };
-
-// struct DuckInfo{
-//     Rectangle hitbox;
-//     uint8_t ammo;
-//     uint8_t it_jumping;
-// };
-
 class GameLoop: public Thread {
 private:
+    uint8_t players_quantity;
     Queue<struct action>& actions_queue;
     QueueListMonitor& snaps_queue_list;
-    Snapshot game_status;
     DuckPlayer ducks_info[MAX_DUCKS];
     Map map_blocks_info;
-    std::vector<struct Spawn> spawns;
+    std::vector<Spawn> spawns;
+
 
     EntityManager entity_manager;
 

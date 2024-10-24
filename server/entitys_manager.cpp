@@ -22,6 +22,10 @@ void EntityManager::add_block(int16_t x, int16_t y) {
     blocks[y / BLOCK_SIZE].push_back(rectangle);
 }
 
+void EntityManager::add_gun(Gun& gun) {
+    guns[gun.gun_id] = gun;
+}
+
 struct Collision EntityManager::check_near_blocks_collision(struct Rectangle& entity, int16_t new_x,
                                                             int16_t new_y) {
     int16_t row_index = entity.y / BLOCK_SIZE;
@@ -61,13 +65,26 @@ struct Collision EntityManager::check_near_blocks_collision(struct Rectangle& en
     return collision;
 }
 
+GunType EntityManager::pickup(const Rectangle &duck) {
+    Rectangle gun_r = {0, 0, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
+    for (auto const& [id, gun] : guns) {
+        gun_r.x = gun.x;
+        gun_r.y = gun.y;
+        Collision collision = rectangles_collision(duck, gun_r);
+        if(collision.horizontal_collision && collision.vertical_collision){
+            return gun.type;
+        }
+    }
+    return None;
+}
+
 struct Collision EntityManager::rectangles_collision(const struct Rectangle& r1,
                                                      const struct Rectangle& r2) {
     struct Collision collision;
     collision.horizontal_collision = false;
     collision.vertical_collision = false;
-    if (r1.y <= r2.y +r2.height && r1.y + r1.height >= r2.y) {
-        if (r1.x <= r2.x +r2.width && r1.x + r1.width >= r2.x) {
+    if (r1.y <= r2.y + r2.height && r1.y + r1.height >= r2.y) {
+        if (r1.x <= r2.x + r2.width && r1.x + r1.width >= r2.x) {
             collision.vertical_collision = true;
             collision.horizontal_collision = true;
             if (r1.y + r1.height == r2.y || r1.y == r2.y + r2.height) {
@@ -79,5 +96,19 @@ struct Collision EntityManager::rectangles_collision(const struct Rectangle& r1,
     return collision;
 }
 
+void EntityManager::add_guns_bullets_to_snapshot(Snapshot &snapshot) {
+    int i = 0;
+    for(auto const&[id, gun] : guns){
+        snapshot.guns[i] = gun;
+        ++i;
+    }
+    snapshot.guns_quantity = i;
+    i = 0;
+    for(auto const&[id, bullet] : bullets){
+        snapshot.bullets[i] = bullet;
+        ++i;
+    }
+    snapshot.bullets_quantity = i;
+}
 
 EntityManager::~EntityManager() {}

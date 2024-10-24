@@ -16,19 +16,22 @@ const float DUCK_SPEED = 4;
 const float FALL_SPEED = 1;
 const int32_t NEAR_CELLS = 3;
 
-GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list,
-                   Map &map_dto, uint8_t players_quantity):
-        actions_queue(game_queue), snaps_queue_list(queue_list), game_status(), ducks_info(), entity_manager(map_dto) {
-
-    game_status.players_quantity = players_quantity;
+GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, Map& map_dto,
+                   uint8_t players_quantity):
+        players_quantity(players_quantity),
+        actions_queue(game_queue),
+        snaps_queue_list(queue_list),
+        ducks_info(),
+        entity_manager(map_dto) {
     uint8_t i = 0;
     for (auto& duck: ducks_info) {
-        game_status.ducks[i].duck_id = i;
         if (i < players_quantity) {
-            game_status.ducks[i] = duck.set_coordenades_and_id(50, 50 - DUCK_HITBOX_HEIGHT, i);
+            duck.set_coordenades_and_id(50, 50 - DUCK_HITBOX_HEIGHT, i);
         }
         ++i;
     }
+    //game_status.guns[0] = {1, Ak47, 150, 150};
+    //entity_manager.add_gun(game_status.guns[0]);
 }
 
 void GameLoop::run() {
@@ -68,14 +71,9 @@ void GameLoop::process_action(struct action& action) {
 }
 
 void GameLoop::update_game_status() {
-    int i = 0;
     for (auto& duck: ducks_info) {
-        if (game_status.ducks[i].is_dead) {
-            continue;
-        }
-        game_status.ducks[i] = duck.move_duck(entity_manager);
-        // disparar
-        ++i;
+        duck.move_duck(entity_manager);
+        duck.pickup(entity_manager);
     }
     // Actualizar la posicion de las balas y vida de los patos si les pegan
 }
@@ -84,6 +82,17 @@ void GameLoop::verify_spawn() {
     // Si paso el tiempo suficiente, genera algo en ese spawn
 }
 
-void GameLoop::push_responce() { snaps_queue_list.send_to_every(game_status); }
+void GameLoop::push_responce() { 
+    Snapshot actual_status = {};
+    actual_status.players_quantity = players_quantity;
+    int i = 0;
+    for (auto &duck : ducks_info) {
+        actual_status.ducks[i] = duck.get_status();
+        ++i;
+    }
+    entity_manager.add_guns_bullets_to_snapshot(actual_status);
+    
+    snaps_queue_list.send_to_every(actual_status); 
+}
 
 GameLoop::~GameLoop() {}

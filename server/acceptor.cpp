@@ -9,7 +9,8 @@
 
 #include "server_client.h"
 
-Acceptor::Acceptor(Socket& sk, Queue<struct action>& gameloop_q, QueueListMonitor& sv_msg_queues, Map& map):
+Acceptor::Acceptor(Socket& sk, Queue<struct action>& gameloop_q, QueueListMonitor& sv_msg_queues,
+                   Map& map):
         sk(sk), gameloop_q(gameloop_q), sv_msg_queues(sv_msg_queues), map(map) {}
 
 void Acceptor::run() {
@@ -19,7 +20,8 @@ void Acceptor::run() {
             Socket peer = sk.accept();
 
             // por ahora mandamos el id del cliente como id del jugador
-            ServerClient* th = new ServerClient(std::move(peer), gameloop_q, id, MatchInfo(id%4, map));
+            ServerClient* th =
+                    new ServerClient(std::move(peer), gameloop_q, id, MatchInfo(id % 4, map));
             sv_msg_queues.add_element(&(th->get_sender_queue()));
 
             th->start();
@@ -57,6 +59,4 @@ void Acceptor::kill_all() {
     clients.clear();
 }
 
-int Acceptor::get_clients_count() {
-    return clients.size();
-}
+int Acceptor::get_clients_count() { return clients.size(); }
