@@ -4,6 +4,7 @@ const uint8_t JUMP_IT = 40;
 const uint8_t FLAPPING_IT = 5;
 const float DUCK_SPEED = 4;
 const float FALL_SPEED = 4;
+const float MAP_EDGE = 50;
 
 DuckPlayer::DuckPlayer(): status(), ammo(), it_jumping(), x(), y() { status.is_dead = true; }
 
@@ -61,7 +62,7 @@ void DuckPlayer::update_status(const Command& command) {
             status.is_jumping = true;
             break;
         case PickUp:
-            // Agarrar si hay algo cerca
+            pickup = true;
             break;
         case DropGun:
             status.gun = None;
@@ -79,6 +80,7 @@ void DuckPlayer::update_status(const Command& command) {
 }
 
 void DuckPlayer::status_after_move(struct Collision& collision) {
+    
     if (collision.vertical_collision && status.is_falling) {
         status.is_falling = false;
     } else if (collision.vertical_collision && status.is_jumping) {
@@ -96,6 +98,10 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
     if (it_flapping > FLAPPING_IT) {
         status.is_flapping = false;
         it_flapping = 0;
+    }
+    if (x < -MAP_EDGE || x > MAP_WIDTH_PIXELS+MAP_EDGE  || y > MAP_HEIGHT_PIXELS+MAP_EDGE) {
+        status.is_dead = true;
+        status.is_laying = true;
     }
 }
 

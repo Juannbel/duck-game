@@ -13,6 +13,7 @@ private:
     uint8_t ammo;
     uint8_t it_jumping;
     uint8_t it_flapping;
+    bool pickup;
 
     void status_after_move(struct Collision& collision);
 
