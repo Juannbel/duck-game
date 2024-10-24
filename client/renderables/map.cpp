@@ -1,6 +1,6 @@
 #include "map.h"
 
-#include "../../common/shared_constants.h"
+#include "common/shared_constants.h"
 
 RenderableMap::RenderableMap(const Map& map_dto, SDL2pp::Texture* blocks_texture,
                 SDL2pp::Texture* background_texture):

@@ -5,7 +5,7 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
-#include "../../common/map_dto.h"
+#include "common/map_dto.h"
 #include "client/camera.h"
 
 #include "block.h"

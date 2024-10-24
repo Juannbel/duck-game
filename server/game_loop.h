@@ -47,7 +47,7 @@ class GameLoop: public Thread {
 private:
     Queue<struct action>& actions_queue;
     QueueListMonitor& snaps_queue_list;
-    struct Snapshot game_status;
+    Snapshot game_status;
     DuckPlayer ducks_info[MAX_DUCKS];
     Map map_blocks_info;
     std::vector<struct Spawn> spawns;
@@ -75,7 +75,7 @@ private:
 
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list,
-             uint8_t players_quantity);
+             Map &map_dto, uint8_t players_quantity);
     /*   This class is the game loop.
      *   Start a loop that pop an action of the game queue, process it and
      *   push the responce to all the queues in the queue_list.

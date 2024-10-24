@@ -16,9 +16,7 @@ public:
 
     void render(SDL2pp::Renderer& renderer, Camera& camera) {
         SDL2pp::Rect d_rect = dst_rect;
-        if (!camera.is_rect_visible(d_rect)) {
-            return;
-        }
+
         camera.transform_rect(d_rect);
         renderer.Copy(*texture, src_rect, d_rect);
     }

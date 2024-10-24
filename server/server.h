@@ -3,17 +3,19 @@
 
 // TODO: Todos los includes necesarios
 #include "common/socket.h"
+#include "server/maps/yaml.h"
 
 #include "acceptor.h"
-#include "game_loop.h"
 
 class Server {
 private:
     Socket sk;
     QueueListMonitor sv_msg_queues;
     Queue<struct action> actions_q;
-    GameLoop gameloop;
+    YAMLLoader map_loader;
+    Map map;
     Acceptor thAcceptor;
+
 
 public:
     void start();

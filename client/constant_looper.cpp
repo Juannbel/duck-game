@@ -5,17 +5,21 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
+#include <SDL_events.h>
+#include <SDL_timer.h>
 
+#include "SDL2pp/Music.hh"
 #include "client/camera.h"
 #include "client/duck_controller.h"
 #include "client/renderables/map.h"
+#include "common/map_dto.h"
 #include "common/snapshot.h"
 
 #define FPS 30
 #define RATE 1000 / FPS
 
 #define WINDOW_WIDTH 1200
-#define WINDOW_HEIGHT 800
+#define WINDOW_HEIGHT 690
 
 #define USE_CAMERA true
 
@@ -24,13 +28,14 @@ using SDL2pp::SDL;
 using SDL2pp::Texture;
 using SDL2pp::Window;
 
-ConstantLooper::ConstantLooper(uint8_t duck_id, Queue<Snapshot>& snapshot_q,
+ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_q,
                                Queue<Command>& command_q):
-        duck_id(duck_id),
+        duck_id(match_info.duck_id),
         snapshot_q(snapshot_q),
         command_q(command_q),
         last_snapshot(snapshot_q.pop()),
-        p1_controller(duck_id, command_q, last_snapshot, {SDLK_d, SDLK_a, SDLK_w, SDLK_s}) {}
+        p1_controller(duck_id, command_q, last_snapshot, {SDLK_d, SDLK_a, SDLK_w, SDLK_s}),
+        map_dto(match_info.map) {}
 
 void ConstantLooper::run() try {
     SDL sdl(SDL_INIT_VIDEO);
@@ -40,29 +45,17 @@ void ConstantLooper::run() try {
 
     Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
 
+    SDL2pp::Mixer mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
+
+    SDL2pp::Music music(DATA_PATH "/sounds/background_music.mp3");
+
+    mixer.SetMusicVolume(0);
+    mixer.PlayMusic(music, -1);
 
     Texture duck_sprite(renderer, DATA_PATH "/sprites/duck/duck_sprite.png");
     Texture background(renderer, DATA_PATH "/backgrounds/forest.png");
     Texture blocks(renderer, DATA_PATH "/sprites/tiles/tiles.png");
     Texture guns(renderer, DATA_PATH "/sprites/guns/guns.png");
-
-    // generamos un mapa
-    Map map_dto;
-    for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
-        for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
-            if (i == MAP_HEIGHT_BLOCKS - 1) {
-                map_dto.blocks[i][j] = BlockType::Floor;
-            } else {
-                map_dto.blocks[i][j] = BlockType::Empty;
-            }
-
-            if (j == 0 || j == MAP_WIDTH_BLOCKS - 1) {
-                map_dto.blocks[i][j] = BlockType::Wall;
-            }
-        }
-    }
-
-    while (snapshot_q.try_pop(last_snapshot)) {}
 
     for (int i = 0; i < last_snapshot.players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];
@@ -73,16 +66,7 @@ void ConstantLooper::run() try {
         ducks_renderables[i]->update_from_snapshot(duck);
     }
 
-    // for (int i = 0; i < last_snapshot.guns_quantity; i++) {
-    //     Gun gun = last_snapshot.guns[i];
-
-    //     dropped_guns[gun.gun_id] = new RenderableGun(&guns);
-
-    //     dropped_guns[gun.gun_id]->update_from_snapshot(gun);
-    // }
-
     Camera camera(renderer);
-
     RenderableMap map(map_dto, &blocks, &background);
 
     bool keep_running = true;
@@ -130,7 +114,9 @@ void ConstantLooper::run() try {
     }
 
 } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
+    std::cerr << "Excepction on constant looper" << e.what() << std::endl;
+} catch (...) {
+    std::cerr << "Unknown exception on constant looper" << std::endl;
 }
 
 void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
@@ -149,8 +135,6 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
         }
 
         t1 += lost;
-        std::cout << "Me quede atras"
-                  << "\n";
     } else {
         SDL_Delay(rest);
     }

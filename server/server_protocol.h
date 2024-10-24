@@ -2,6 +2,7 @@
 #define SERVER_PROTOCOL_H
 
 #include "common/commands.h"
+#include "common/map_dto.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
 
@@ -12,6 +13,8 @@ private:
 
 public:
     explicit ServerProtocol(Socket& socket);
+
+    void send_match_info(const MatchInfo& match_info);
 
     void send_snapshot(const Snapshot& snapshot);
 

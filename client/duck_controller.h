@@ -1,9 +1,9 @@
 #ifndef DUCK_CONTROLLER_H
 #define DUCK_CONTROLLER_H
 
-#include "../common/blocking_queue.h"
-#include "../common/commands.h"
-#include "../common/snapshot.h"
+#include "common/blocking_queue.h"
+#include "common/commands.h"
+#include "common/snapshot.h"
 
 #include <SDL2/SDL.h>
 
