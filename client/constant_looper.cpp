@@ -14,6 +14,7 @@
 #include "client/renderables/collectable.h"
 #include "client/renderables/map.h"
 #include "client/textures_provider.h"
+#include "animation_data_provider.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 
@@ -36,30 +37,7 @@ ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_
         command_q(command_q),
         last_snapshot(snapshot_q.pop()),
         p1_controller(duck_id, command_q, last_snapshot, {SDLK_d, SDLK_a, SDLK_w, SDLK_s}),
-        map_dto(match_info.map) {
-
-            // provisionalmente hago esto aca
-            YAML::Node config = YAML::LoadFile(DATA_PATH "/sprites/collectables/collectables.yaml");
-
-            int width = config["width"].as<int>();
-            int height = config["height"].as<int>();
-
-            for (const auto& collectable: config["collectables"]) {
-                GunType collectable_type = string_to_collectable[collectable.first.as<std::string>()];
-
-                FrameData frame;
-                int source_x = collectable.second["x"].as<int>();
-                int source_y = collectable.second["y"].as<int>();
-                int x_offset_right = collectable.second["x_offset_right"].as<int>();
-                int x_offset_left = collectable.second["x_offset_left"].as<int>();
-                int y_offset = collectable.second["y_offset"].as<int>();
-
-                SDL2pp::Rect rect = SDL2pp::Rect(source_x, source_y, width, height);
-                frame = {rect, x_offset_right, x_offset_left, y_offset};
-
-                collectables_frames[collectable_type] = frame;
-            }
-        }
+        map_dto(match_info.map) {}
 
 void ConstantLooper::run() try {
     SDL sdl(SDL_INIT_VIDEO);
@@ -77,19 +55,17 @@ void ConstantLooper::run() try {
     mixer.PlayMusic(music, -1);
 
     TexturesProvider::loadTextures(renderer);
+    AnimationDataProvider::load_animations_data();
 
     for (int i = 0; i < last_snapshot.players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];
-        ducks_renderables[i] = new RenderableDuck(
-                TexturesProvider::getTexture("duck"), DATA_PATH "/sprites/duck/frames_" + std::to_string(i) + ".yaml",
-                TexturesProvider::getTexture("guns"), DATA_PATH "/sprites/guns/guns.yaml");
-
+        ducks_renderables[i] = new RenderableDuck(duck.duck_id);
         ducks_renderables[i]->update_from_snapshot(duck);
     }
 
     for (int i = 0; i < last_snapshot.guns_quantity; i++) {
         Gun gun = last_snapshot.guns[i];
-        collectables_renderables[i] = new RenderableCollectable(gun.gun_id, TexturesProvider::getTexture("collectables"), collectables_frames[gun.type]);
+        collectables_renderables[i] = new RenderableCollectable(gun.gun_id, gun.type);
         collectables_renderables[i]->update_from_snapshot(gun);
     }
 
@@ -174,15 +150,13 @@ void ConstantLooper::process_snapshot() {
     }
 
     // updateadmos los collectables, y los que no esten en el snapshot los eliminamos
-
     std::unordered_map<int, bool> collectables_to_remove;
 
     for (int i = 0; i < last_snapshot.guns_quantity; i++) {
         Gun& gun = last_snapshot.guns[i];
         if (collectables_renderables.find(gun.gun_id) == collectables_renderables.end()) {
-            collectables_renderables[gun.gun_id] = 
-                new RenderableCollectable(gun.gun_id, TexturesProvider::getTexture("collectables"),
-                                         collectables_frames[gun.type]);
+            collectables_renderables[gun.gun_id] =
+                new RenderableCollectable(gun.gun_id, gun.type);
         }
         collectables_renderables[gun.gun_id]->update_from_snapshot(gun);
         collectables_to_remove[gun.gun_id] = true;
@@ -203,18 +177,8 @@ ConstantLooper::~ConstantLooper() {
     for (auto& duck: ducks_renderables) {
         delete duck.second;
     }
-}
 
-std::unordered_map<std::string, GunType> ConstantLooper::string_to_collectable {
-    {"none", None},
-    {"grenade", Grenade},
-    {"banana", Banana},
-    {"pew_pew_laser", PewPewLaser},
-    {"laser_rifle", LaserRifle},
-    {"ak47", Ak47},
-    {"dueling_pistol", DuelingPistol},
-    {"cowboy_pistol", CowboyPistol},
-    {"magnum", Magnum},
-    {"shootgun", Shootgun},
-    {"sniper", Sniper}
-};
+    for (auto& collectable: collectables_renderables) {
+        delete collectable.second;
+    }
+}

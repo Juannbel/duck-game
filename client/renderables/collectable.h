@@ -13,10 +13,10 @@ class RenderableCollectable {
     Animation animation;
 
     SDL2pp::Point position;
-    static std::unordered_map<std::string, GunType> string_to_collectable;
+    static std::unordered_map<GunType, std::string> collectable_to_string;
 
     public:
-    RenderableCollectable(uint32_t id, SDL2pp::Texture* sprite, FrameData frame_data);
+    RenderableCollectable(uint32_t id, GunType type);
 
     void update_from_snapshot(const Gun& snapshot);
 

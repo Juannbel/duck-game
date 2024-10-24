@@ -29,6 +29,11 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         }
         ++i;
     }
+    game_status.guns_quantity = 1;
+    game_status.guns[0].gun_id = 0;
+    game_status.guns[0].type = Ak47;
+    game_status.guns[0].x = 100;
+    game_status.guns[0].y = 300;
 }
 
 void GameLoop::run() {

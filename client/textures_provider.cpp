@@ -11,15 +11,12 @@ void TexturesProvider::loadTextures(SDL2pp::Renderer& renderer) {
 }
 
 SDL2pp::Texture* TexturesProvider::getTexture(const std::string& texture_name) {
-    auto it = textures.find(texture_name);
-    if (it != textures.end()) {
-        return it->second;
-    }
-    return nullptr;  // O maneja el caso de error si no se encuentra la textura
+    return textures[texture_name];
 }
 
 TexturesProvider::~TexturesProvider() {
     for (auto& texture_pair : textures) {
         delete texture_pair.second;
     }
+    textures.clear();
 }

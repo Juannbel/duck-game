@@ -1,11 +1,8 @@
 define: &y_row 32
-hitbox_width: 15
-hitbox_height: 23
-
 width: 32
 height: 32
 
-animations:
+duck_1:
   standing:
     iter_per_frame: 1
     loops: false

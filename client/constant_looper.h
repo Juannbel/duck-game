@@ -24,9 +24,6 @@ private:
     DuckController p1_controller;
     Map map_dto;
 
-    static std::unordered_map<std::string, GunType> string_to_collectable;
-    std::unordered_map<GunType, FrameData> collectables_frames;
-
     std::unordered_map<uint8_t, RenderableDuck*> ducks_renderables;
     std::unordered_map<uint32_t, RenderableCollectable*> collectables_renderables;
 
