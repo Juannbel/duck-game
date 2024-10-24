@@ -1,7 +1,5 @@
 #include "client.h"
 
-#include "../common/snapshot.h"
-
 #include "constant_looper.h"
 
 Client::Client(const char* hostname, const char* servname):

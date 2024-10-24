@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
 
+#include "SDL2pp/Music.hh"
 #include "client/camera.h"
 #include "client/duck_controller.h"
 #include "client/renderables/map.h"
@@ -15,7 +16,7 @@
 #define RATE 1000 / FPS
 
 #define WINDOW_WIDTH 1200
-#define WINDOW_HEIGHT 800
+#define WINDOW_HEIGHT 690
 
 #define USE_CAMERA true
 
@@ -40,6 +41,12 @@ void ConstantLooper::run() try {
 
     Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
 
+    SDL2pp::Mixer mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
+    
+    SDL2pp::Music music(DATA_PATH "/sounds/background_music.mp3");
+
+    mixer.SetMusicVolume(15);
+    mixer.PlayMusic(music, -1);
 
     Texture duck_sprite(renderer, DATA_PATH "/sprites/duck/duck_sprite.png");
     Texture background(renderer, DATA_PATH "/backgrounds/forest.png");

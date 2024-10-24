@@ -53,6 +53,8 @@ if(TALLER_CLIENT OR TALLER_EDITOR)
     include(FetchContent)
 
     set(SDL2PP_WITH_IMAGE YES)
+    set(SDL2PP_WITH_MIXER YES)
+    set(SDL2PP_WITH_TTF YES)
 
     FetchContent_Declare(
         libSDL2pp
@@ -61,8 +63,6 @@ if(TALLER_CLIENT OR TALLER_EDITOR)
 
     FetchContent_MakeAvailable(libSDL2pp)
 
-    find_package(SDL2_image REQUIRED)
-    find_package(yaml-cpp REQUIRED)
 endif()
 
 # Program section
@@ -84,7 +84,7 @@ if(TALLER_CLIENT)
     target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp SDL2_image::SDL2_image yaml-cpp)
+    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp yaml-cpp)
 endif()
 
 if(TALLER_SERVER)

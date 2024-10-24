@@ -3,7 +3,7 @@
 #include <yaml-cpp/yaml.h>
 #include <vector>
 
-#include "../../common/shared_constants.h"
+#include "common/shared_constants.h"
 
 RenderableDuck::RenderableDuck(SDL2pp::Texture* sprite, const std::string& config_path,
                    SDL2pp::Texture* guns_sprite, const std::string& guns_config):

@@ -1,9 +1,9 @@
 #ifndef CLIENT_PROTOCOL_H
 #define CLIENT_PROTOCOL_H
 
-#include "../common/commands.h"
-#include "../common/snapshot.h"
-#include "../common/socket.h"
+#include "common/commands.h"
+#include "common/snapshot.h"
+#include "common/socket.h"
 
 class ClientProtocol {
 private:

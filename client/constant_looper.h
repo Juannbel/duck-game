@@ -3,12 +3,11 @@
 
 #include <unordered_map>
 
-#include "../common/blocking_queue.h"
-#include "../common/commands.h"
-#include "../common/snapshot.h"
-#include "client/duck_controller.h"
-#include "client/renderables/duck.h"
-#include "client/renderables/equipped_gun.h"
+#include "common/blocking_queue.h"
+#include "common/commands.h"
+#include "common/snapshot.h"
+#include "duck_controller.h"
+#include "renderables/duck.h"
 
 // procesa los eventos de teclado
 // crea el Renderer, y que guarde las texturas de los sprites, y vaya generando los renderables

@@ -33,10 +33,10 @@ public:
 
     // Transorma un rectángulo con las coordenadas y la escala del mundo
     // a las coordenadas de la cámara
-    void transform_rect(SDL2pp::Rect& worldRect);
+    void transform_rect(SDL2pp::Rect& world_rect);
 
     // Devuelve true si el rectángulo es visible en la cámara
-    bool is_rect_visible(const SDL2pp::Rect& worldRect);
+    bool is_rect_visible(const SDL2pp::Rect& world_rect);
 };
 
 #endif
