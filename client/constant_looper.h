@@ -3,6 +3,8 @@
 
 #include <unordered_map>
 
+#include "client/renderables/animation.h"
+#include "client/renderables/collectable.h"
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/map_dto.h"
@@ -19,12 +21,14 @@ private:
     Queue<Snapshot>& snapshot_q;
     Queue<Command>& command_q;
     Snapshot last_snapshot;
-
     DuckController p1_controller;
-
     Map map_dto;
 
+    static std::unordered_map<std::string, GunType> string_to_collectable;
+    std::unordered_map<GunType, FrameData> collectables_frames;
+
     std::unordered_map<uint8_t, RenderableDuck*> ducks_renderables;
+    std::unordered_map<uint32_t, RenderableCollectable*> collectables_renderables;
 
     void process_snapshot();
 
