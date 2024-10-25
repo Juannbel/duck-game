@@ -2,8 +2,11 @@
 
 #include <chrono>
 #include <cmath>
+#include <utility>
+#include <vector>
 
 #include "common/snapshot.h"
+#include "server/duck_player.h"
 #include "server/entitys_manager.h"
 
 using std::chrono::high_resolution_clock;
@@ -23,10 +26,16 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         snaps_queue_list(queue_list),
         ducks_info(),
         entity_manager(map_dto) {
+    std::vector<std::pair<int16_t, int16_t>> spawn_points = {
+        {50, 50},
+        {MAP_WIDTH_PIXELS - 50, 50},
+        {50, 200},
+        {MAP_WIDTH_PIXELS - 50, 200}
+    };
     uint8_t i = 0;
     for (auto& duck: ducks_info) {
         if (i < players_quantity) {
-            duck.set_coordenades_and_id(50, 50 - DUCK_HITBOX_HEIGHT, i);
+            duck.set_coordenades_and_id(spawn_points[i].first, spawn_points[i].second, i);
         }
         ++i;
     }
