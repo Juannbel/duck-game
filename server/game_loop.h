@@ -15,32 +15,13 @@
 
 #include <map>
 
-struct Spawn {
-    int16_t x;
-    int16_t y;
-    uint16_t it_since_picked;
-    bool picked;
-};
-
 class GameLoop: public Thread {
 private:
-    uint8_t players_quantity;
     Queue<struct action>& actions_queue;
     QueueListMonitor& snaps_queue_list;
-    DuckPlayer ducks_info[MAX_DUCKS];
-    Map map_blocks_info;
-    std::vector<Spawn> spawns;
-
-
     EntityManager entity_manager;
 
     void pop_and_process_all();
-
-    void process_action(struct action& action);
-
-    void update_game_status();
-
-    void verify_spawn();
 
     void push_responce();
 
