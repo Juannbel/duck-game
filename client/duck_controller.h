@@ -12,6 +12,8 @@ struct ControlScheme {
     SDL_Keycode move_left;
     SDL_Keycode jump;
     SDL_Keycode lay_down;
+    SDL_Keycode pick_up;
+    SDL_Keycode shoot;
 };
 
 
@@ -27,7 +29,7 @@ public:
         : duck_id(duck_id), command_q(command_q), snapshot(snapshot), controls(controls) {}
 
     void handleKeyDown(const SDL_Event& event) {
-        if (snapshot.ducks[duck_id].duck_hp == 0) return;
+        if (snapshot.ducks[duck_id].is_dead) return;
 
         if (event.key.keysym.sym == controls.move_right) {
             if (!snapshot.ducks[duck_id].is_running || !snapshot.ducks[duck_id].facing_right) {
@@ -41,6 +43,10 @@ public:
             command_q.push(Jump);
         } else if (event.key.keysym.sym == controls.lay_down) {
             command_q.push(LayDown);
+        } else if (event.key.keysym.sym == controls.shoot) {
+            command_q.push(StartShooting);
+        } else if (event.key.keysym.sym == controls.pick_up) {
+            command_q.push(PickUp);
         }
     }
 
@@ -57,6 +63,8 @@ public:
             if (snapshot.ducks[duck_id].is_laying) {
                 command_q.push(StandUp);
             }
+        } else if (event.key.keysym.sym == controls.shoot) {
+            command_q.push(StopShooting);
         }
     }
 
