@@ -9,9 +9,6 @@
 #define MAX_PLAYER_NAME 32
 #define MAX_GUNS 32
 #define MAX_BULLETS 128
-// #define MAX_PLAYER_NAME 1
-// #define MAX_GUNS 1
-// #define MAX_BULLETS 1
 
 enum GunType {
     None,

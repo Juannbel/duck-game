@@ -39,7 +39,7 @@ ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_
         p1_controller(duck_id, command_q, last_snapshot, {SDLK_d, SDLK_a, SDLK_w, SDLK_s, SDLK_c, SDLK_v}),
         map_dto(match_info.map) {}
 
-void ConstantLooper::run() try {
+void ConstantLooper::run() { try {
     SDL sdl(SDL_INIT_VIDEO);
 
     Window window("Duck game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,
@@ -53,24 +53,19 @@ void ConstantLooper::run() try {
 
     mixer.SetMusicVolume(0);
     mixer.PlayMusic(music, -1);
-
-    Texture duck_sprite(renderer, DATA_PATH "/sprites/duck/duck_sprite.png");
-    Texture background(renderer, DATA_PATH "/backgrounds/forest.png");
-    Texture blocks(renderer, DATA_PATH "/sprites/tiles/tiles.png");
-    Texture guns(renderer, DATA_PATH "/sprites/guns/guns.png");
     
     int players_quantity = last_snapshot.ducks.size();
     for (int i = 0; i < players_quantity; i++) {
-    TexturesProvider::loadTextures(renderer);
-    AnimationDataProvider::load_animations_data();
-
-    for (int i = 0; i < last_snapshot.players_quantity; i++) {
+        TexturesProvider::loadTextures(renderer);
+        AnimationDataProvider::load_animations_data();
+    }
+    for (int i = 0; i < players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];
         ducks_renderables[i] = new RenderableDuck(duck.duck_id);
         ducks_renderables[i]->update_from_snapshot(duck);
     }
-
-    for (int i = 0; i < last_snapshot.guns_quantity; i++) {
+    int guns_quantity = last_snapshot.ducks.size();
+    for (int i = 0; i < guns_quantity; i++) {
         Gun gun = last_snapshot.guns[i];
         collectables_renderables[i] = new RenderableCollectable(gun.gun_id, gun.type);
         collectables_renderables[i]->update_from_snapshot(gun);
@@ -125,7 +120,7 @@ void ConstantLooper::run() try {
 } catch (...) {
     std::cerr << "Unknown exception on constant looper" << std::endl;
 }
-
+}
 void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
     uint32_t t2 = SDL_GetTicks();
 
@@ -159,8 +154,8 @@ void ConstantLooper::process_snapshot() {
 
     // updateadmos los collectables, y los que no esten en el snapshot los eliminamos
     std::unordered_map<int, bool> collectables_to_remove;
-
-    for (int i = 0; i < last_snapshot.guns_quantity; i++) {
+    int guns_quantity = last_snapshot.guns.size();
+    for (int i = 0; i < guns_quantity; i++) {
         Gun& gun = last_snapshot.guns[i];
         if (collectables_renderables.find(gun.gun_id) == collectables_renderables.end()) {
             collectables_renderables[gun.gun_id] =

@@ -5,11 +5,7 @@
 
 const int16_t NEAR_CELLS = 3;
 
-MapCollisions::MapCollisions() : collectable_id() {
-    Gun gun = {get_and_inc_collectable_id(), Ak47, 150, 200};
-    add_gun(gun);
-    
-}
+MapCollisions::MapCollisions() : collectable_id() {}
 
 void MapCollisions::add_block(int16_t x, int16_t y) {
     Rectangle rectangle = {x, y, BLOCK_SIZE, BLOCK_SIZE};

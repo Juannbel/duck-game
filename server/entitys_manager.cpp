@@ -7,7 +7,7 @@
 #include "common/shared_constants.h"
 
 const int16_t NEAR_CELLS = 3;
-const int16_t COLLECTABLE_SPAWN_IT = 200;
+const int16_t COLLECTABLE_SPAWN_IT = 400;
 
 EntityManager::EntityManager(Map& map_dto, uint8_t players_quantity) {
     for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
@@ -25,7 +25,7 @@ EntityManager::EntityManager(Map& map_dto, uint8_t players_quantity) {
         players.push_back(player);
     }
 
-    Spawn spawn = {200, 200, 0, 0, true, 0};
+    Spawn spawn = {200, 200, 0, 50, true, 0};
     spawns.push_back(spawn);
     //spawn = {250, 200, 1, 0, true, 0};
     //spawns.push_back(spawn);

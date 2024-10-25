@@ -1,10 +1,12 @@
 #include "duck_player.h"
 
-const uint8_t JUMP_IT = 40;
-const uint8_t FLAPPING_IT = 5;
-const float DUCK_SPEED = 4;
-const float FALL_SPEED = 4;
+const uint8_t JUMP_IT = 80;
+const uint8_t FLAPPING_IT = 10;
+const float DUCK_SPEED = 2;
+const float FALL_SPEED = 2;
 const float MAP_EDGE = 50;
+
+#include <iostream>
 
 DuckPlayer::DuckPlayer(MapCollisions& map_collisions): status(), it_jumping(), x(), y(), map_collisions(map_collisions) { status.is_dead = true; }
 
@@ -80,6 +82,7 @@ uint32_t DuckPlayer::update_status(const Command& command) {
             status.gun = None;
             map_collisions.add_gun(equipped_gun);
             equipped_gun.drop();
+            std::cout << "drop arma" << std::endl;
             break;
         case DropArmor:
             status.armor_equiped = false;
@@ -146,7 +149,7 @@ void DuckPlayer::move_duck() {
         new_y += move_y;
     }
     if (status.is_jumping) {
-        float move_y = FALL_SPEED * static_cast<float>((JUMP_IT - it_jumping) / 10);
+        float move_y = FALL_SPEED * static_cast<float>((JUMP_IT - it_jumping) / 15);
         it_jumping += 4;
         new_y = y - move_y;
     }
