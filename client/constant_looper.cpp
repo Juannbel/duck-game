@@ -53,22 +53,18 @@ void ConstantLooper::run() { try {
 
     mixer.SetMusicVolume(0);
     mixer.PlayMusic(music, -1);
-    
-    int players_quantity = last_snapshot.ducks.size();
-    for (int i = 0; i < players_quantity; i++) {
-        TexturesProvider::loadTextures(renderer);
-        AnimationDataProvider::load_animations_data();
+
+    TexturesProvider::loadTextures(renderer);
+    AnimationDataProvider::load_animations_data();
+
+    for (auto& duck : last_snapshot.ducks) {
+        ducks_renderables[duck.duck_id] = new RenderableDuck(duck.duck_id);
+        ducks_renderables[duck.duck_id]->update_from_snapshot(duck);
     }
-    for (int i = 0; i < players_quantity; i++) {
-        Duck duck = last_snapshot.ducks[i];
-        ducks_renderables[i] = new RenderableDuck(duck.duck_id);
-        ducks_renderables[i]->update_from_snapshot(duck);
-    }
-    int guns_quantity = last_snapshot.ducks.size();
-    for (int i = 0; i < guns_quantity; i++) {
-        Gun gun = last_snapshot.guns[i];
-        collectables_renderables[i] = new RenderableCollectable(gun.gun_id, gun.type);
-        collectables_renderables[i]->update_from_snapshot(gun);
+
+    for (auto& gun : last_snapshot.guns) {
+        collectables_renderables[gun.gun_id] = new RenderableCollectable(gun.gun_id, gun.type);
+        collectables_renderables[gun.gun_id]->update_from_snapshot(gun);
     }
 
     Camera camera(renderer);
@@ -99,7 +95,6 @@ void ConstantLooper::run() { try {
         for (auto& duck: ducks_renderables) {
             duck.second->update();
         }
-
 
         // Render de los renderizables
         for (auto& duck: ducks_renderables) {

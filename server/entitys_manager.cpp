@@ -5,6 +5,7 @@
 
 #include "common/map_dto.h"
 #include "common/shared_constants.h"
+#include "common/snapshot.h"
 
 const int16_t NEAR_CELLS = 3;
 const int16_t COLLECTABLE_SPAWN_IT = 400;
@@ -27,8 +28,8 @@ EntityManager::EntityManager(Map& map_dto, uint8_t players_quantity) {
 
     Spawn spawn = {200, 200, 0, 50, true, 0};
     spawns.push_back(spawn);
-    //spawn = {250, 200, 1, 0, true, 0};
-    //spawns.push_back(spawn);
+    spawn = {250, 200, 1, 0, true, 0};
+    spawns.push_back(spawn);
 }
 
 void EntityManager::process_action(action& action){
@@ -43,7 +44,7 @@ void EntityManager::process_action(action& action){
                 spawn.it_to_spawn = COLLECTABLE_SPAWN_IT + rand() % 100;
             }
         }
-    } 
+    }
 }
 
 void EntityManager::update_game_status() {
@@ -54,19 +55,33 @@ void EntityManager::update_game_status() {
     verify_spawn();
 }
 
+GunType EntityManager::get_random_guntype() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    //
+    //
+    // DESPUES CAMBIAR A -1, queda en -3 porque faltan esos sprites de armas
+    //
+    //
+    std::uniform_int_distribution<> dis(1, GunTypeCount - 3);
+    return static_cast<GunType>(dis(gen));
+}
+
 void EntityManager::verify_spawn() {
     for (auto &spawn : spawns) {
-        if (spawn.picked) {
-            if (spawn.it_since_picked > spawn.it_to_spawn) {
-                uint32_t collectable_id = map_collisions.get_and_inc_collectable_id();
-                Gun new_gun = { collectable_id, Ak47 , spawn.x, spawn.y };
-                map_collisions.add_gun(new_gun);
-                spawn.collectable_id = collectable_id;
-                spawn.it_since_picked = 0;
-                spawn.picked = false;
-            }else{
-                ++spawn.it_since_picked;
-            }
+        if (!spawn.picked)
+            continue;
+
+        if (spawn.it_since_picked > spawn.it_to_spawn) {
+            uint32_t collectable_id = map_collisions.get_and_inc_collectable_id();
+
+            Gun new_gun = { collectable_id, get_random_guntype(), spawn.x, spawn.y };
+            map_collisions.add_gun(new_gun);
+            spawn.collectable_id = collectable_id;
+            spawn.it_since_picked = 0;
+            spawn.picked = false;
+        } else {
+            ++spawn.it_since_picked;
         }
     }
 }

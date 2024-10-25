@@ -6,8 +6,6 @@ const float DUCK_SPEED = 2;
 const float FALL_SPEED = 2;
 const float MAP_EDGE = 50;
 
-#include <iostream>
-
 DuckPlayer::DuckPlayer(MapCollisions& map_collisions): status(), it_jumping(), x(), y(), map_collisions(map_collisions) { status.is_dead = true; }
 
 void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
@@ -25,6 +23,15 @@ void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
 }
 
 uint32_t DuckPlayer::pickup(){
+    if (equipped_gun.type != None) {
+        equipped_gun.x = x;
+        equipped_gun.y = y;
+        map_collisions.add_gun(equipped_gun);
+        equipped_gun.drop();
+        status.gun = None;
+        return 0;
+    }
+
     GunEntity new_gun = map_collisions.pickup(hitbox);
     if (new_gun.type == None) {
         return 0;
@@ -78,18 +85,6 @@ uint32_t DuckPlayer::update_status(const Command& command) {
             break;
         case PickUp:
             return pickup();
-        case DropGun:
-            status.gun = None;
-            map_collisions.add_gun(equipped_gun);
-            equipped_gun.drop();
-            std::cout << "drop arma" << std::endl;
-            break;
-        case DropArmor:
-            status.armor_equiped = false;
-            break;
-        case DropHelmet:
-            status.helment_equiped = false;
-            break;
         default:
             break;
     }
@@ -126,7 +121,7 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
 void DuckPlayer::move_duck() {
     // Actualizar la posicion de las balas y vida de los patos si les pegan
     if (status.is_dead) { return; }
-    
+
     int16_t new_x = x;
     int16_t new_y = y;
     if (status.is_running) {

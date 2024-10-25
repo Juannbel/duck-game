@@ -1,4 +1,5 @@
 #include "collectable.h"
+#include <iostream>
 #include "SDL2pp/Rect.hh"
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"

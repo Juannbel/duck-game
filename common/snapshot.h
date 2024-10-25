@@ -21,7 +21,10 @@ enum GunType {
     CowboyPistol,
     Magnum,
     Shootgun,
-    Sniper
+    Sniper,
+    Helmet,
+    Armor,
+    GunTypeCount
 };
 
 struct Duck {
@@ -42,7 +45,7 @@ struct Duck {
     bool is_laying;  // se esta haciendo el muerto
     bool is_dead;
 
-    bool helment_equiped;
+    bool helmet_equiped;
     bool armor_equiped;
 
     int16_t x;
@@ -71,11 +74,9 @@ struct Bullet {
 } __attribute__((packed));
 
 struct Snapshot {
-
     std::vector<Duck> ducks;
     std::vector<Gun> guns;
     std::vector<Bullet> bullets;
-
 };
 
 

@@ -7,17 +7,13 @@ enum Command {
     StopMoving,
     StartShooting,
     StopShooting,
-    StartFlapping,
-    StopFlapping,
     StartLookup,
     StopLookup,
-    PickUp,
-    Jump,
+    PickUp, // si tiene algo agarrado, es soltar
+    Jump, // si estaba saltando se interpreta como flapping
+    StopJump,
     LayDown,
     StandUp,
-    DropGun,
-    DropArmor,
-    DropHelmet
 };
 
 #endif

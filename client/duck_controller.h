@@ -52,11 +52,11 @@ public:
 
     void handleKeyUp(const SDL_Event& event) {
         if (event.key.keysym.sym == controls.move_right) {
-            if (snapshot.ducks[duck_id].is_running && snapshot.ducks[duck_id].facing_right) {
+            if (snapshot.ducks[duck_id].is_running) {
                 command_q.push(StopMoving);
             }
         } else if (event.key.keysym.sym == controls.move_left) {
-            if (snapshot.ducks[duck_id].is_running && !snapshot.ducks[duck_id].facing_right) {
+            if (snapshot.ducks[duck_id].is_running) {
                 command_q.push(StopMoving);
             }
         } else if (event.key.keysym.sym == controls.lay_down) {
