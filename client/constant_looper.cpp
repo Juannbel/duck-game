@@ -18,7 +18,7 @@
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 
-#define FPS 30
+#define FPS 60
 #define RATE 1000 / FPS
 
 #define WINDOW_WIDTH 1200

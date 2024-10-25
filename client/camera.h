@@ -5,10 +5,6 @@
 
 #include "common/snapshot.h"
 
-#define CAMERA_LERP_FACTOR 0.1f  // que tan rápido se mueve la cámara (entre 0.0 y 1.0)
-#define CAMERA_DEAD_ZONE 20.0f   // distancia mínima para mover la cámara
-#define PADDING 40
-
 class Camera {
 
 private:
