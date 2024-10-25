@@ -22,8 +22,8 @@ private:
     bool facing_right;
     bool facing_up;
 
-    static std::unordered_map<std::string, GunType> string_to_gun;
-    void load_gun_animation(const std::string& gun_name);
+    static std::unordered_map<GunType, std::string> gun_to_string;
+    void load_gun_animation(const GunType& gun);
 
 public:
     RenderableEquippedGun();

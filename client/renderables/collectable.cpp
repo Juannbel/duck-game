@@ -1,5 +1,4 @@
 #include "collectable.h"
-#include <iostream>
 #include "SDL2pp/Rect.hh"
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
@@ -44,5 +43,7 @@ std::unordered_map<GunType, std::string> RenderableCollectable::collectable_to_s
     {CowboyPistol, "cowboy_pistol"},
     {Magnum, "magnum"},
     {Shootgun, "shootgun"},
-    {Sniper, "sniper"}
+    {Sniper, "sniper"},
+    {Helmet, "helmet"},
+    {Armor, "armor"}
 };

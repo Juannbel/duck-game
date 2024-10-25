@@ -58,12 +58,7 @@ void EntityManager::update_game_status() {
 GunType EntityManager::get_random_guntype() {
     std::random_device rd;
     std::mt19937 gen(rd());
-    //
-    //
-    // DESPUES CAMBIAR A -1, queda en -3 porque faltan esos sprites de armas
-    //
-    //
-    std::uniform_int_distribution<> dis(1, GunTypeCount - 3);
+    std::uniform_int_distribution<> dis(1, GunTypeCount - 1); // 0 es None
     return static_cast<GunType>(dis(gen));
 }
 

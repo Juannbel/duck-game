@@ -12,58 +12,70 @@ collectables:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 0, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+      - { x: 0, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
   banana:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 32, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+      - { x: 32, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
   pew_pew_laser:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 64, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+      - { x: 64, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
   laser_rifle:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 96, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+      - { x: 96, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
   ak47:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 128, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+      - { x: 128, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
   dueling_pistol:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 160, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+      - { x: 160, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
   cowboy_pistol:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 192, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+      - { x: 192, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
   magnum:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 224, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+      - { x: 224, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
   shootgun:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 256, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+      - { x: 256, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
   sniper:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 288, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+      - { x: 288, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
+
+  helmet:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 320, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
+
+  armor:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 352, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }

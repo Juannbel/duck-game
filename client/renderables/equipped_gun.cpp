@@ -7,32 +7,34 @@
 RenderableEquippedGun::RenderableEquippedGun() :
         position(0, 0), facing_right(true), facing_up(false) {
 
-    for (auto& gun: string_to_gun) {
+    for (auto& gun: gun_to_string) {
         load_gun_animation(gun.first);
     }
     current_gun = None;
     curr_animation = guns[None];
 }
 
-void RenderableEquippedGun::load_gun_animation(const std::string& gun_name) {
-    guns[string_to_gun[gun_name]] = new Animation(
+void RenderableEquippedGun::load_gun_animation(const GunType& gun) {
+    guns[gun] = new Animation(
         *TexturesProvider::getTexture("guns"),
-        AnimationDataProvider::get_animation_data("guns_" + gun_name)
+        AnimationDataProvider::get_animation_data("guns_" + gun_to_string[gun])
     );
 }
 
-std::unordered_map<std::string, GunType> RenderableEquippedGun::string_to_gun {
-    {"none", None},
-    {"grenade", Grenade},
-    {"banana", Banana},
-    {"pew_pew_laser", PewPewLaser},
-    {"laser_rifle", LaserRifle},
-    {"ak47", Ak47},
-    {"dueling_pistol", DuelingPistol},
-    {"cowboy_pistol", CowboyPistol},
-    {"magnum", Magnum},
-    {"shootgun", Shootgun},
-    {"sniper", Sniper}
+std::unordered_map<GunType, std::string> RenderableEquippedGun::gun_to_string {
+    {None, "none"},
+    {Grenade, "grenade"},
+    {Banana, "banana"},
+    {PewPewLaser, "pew_pew_laser"},
+    {LaserRifle, "laser_rifle"},
+    {Ak47, "ak47"},
+    {DuelingPistol, "dueling_pistol"},
+    {CowboyPistol, "cowboy_pistol"},
+    {Magnum, "magnum"},
+    {Shootgun, "shootgun"},
+    {Sniper, "sniper"},
+    {Helmet, "helmet"},
+    {Armor, "armor"}
 };
 
 void RenderableEquippedGun::update() { curr_animation->update(); }
