@@ -10,15 +10,16 @@
 
 #define SIZE_QUEUE 0
 
-ServerClient::ServerClient(Socket&& sk, Queue<struct action>& gameloop_q, int id, MatchInfo match_info):
+ServerClient::ServerClient(Socket&& sk, Queue<struct action>& gameloop_q, int id,
+                           MatchInfo match_info):
         sk(std::move(sk)),
         sender_q(Queue<Snapshot>(SIZE_QUEUE)),
         protocolo(ServerProtocol(this->sk)),
         sender(protocolo, sender_q, match_info.duck_id),
         receiver(protocolo, gameloop_q, match_info.duck_id),
         id(id) {
-            protocolo.send_match_info(match_info);
-        }
+    protocolo.send_match_info(match_info);
+}
 
 /* Inicializo los threads sender y receiver, para establecer comunicacion con el cliente */
 void ServerClient::start() {

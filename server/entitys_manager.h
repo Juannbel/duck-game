@@ -5,30 +5,38 @@
 #include <map>
 #include <vector>
 #include "common/map_dto.h"
+#include "common/snapshot.h"
+#include "map_collisions.h"
+#include "server/duck_player.h"
+#include "server/action.h"
 
-struct Rectangle {
+struct GunPosition {
     int16_t x;
     int16_t y;
-    int16_t width;
-    int16_t height;
+    uint32_t id;
 };
 
-struct Collision {
-    Rectangle last_valid_position;
-    bool vertical_collision;
-    bool horizontal_collision;
+struct Spawn {
+    int16_t x;
+    int16_t y;
+    uint16_t it_since_picked;
+    bool picked;
 };
 
 class EntityManager {
 private:
-    std::map<uint16_t, std::vector<Rectangle>> blocks;
+    std::vector<DuckPlayer> players;
+    MapCollisions map_collisions;
+    std::map<uint32_t, Bullet> bullets;
+    std::vector<Spawn> spanws;
 
+    void verify_spawn();
 public:
-    EntityManager(Map& map_dto);
-    void add_block(int16_t x, int16_t y);
-    struct Collision check_near_blocks_collision(struct Rectangle& entity, int16_t new_x,
-                                                 int16_t new_y);
-    struct Collision rectangles_collision(const struct Rectangle& r1, const struct Rectangle& r2);
+    EntityManager(Map& map_dto, uint8_t players_quantity);
+    void process_action(action &action);
+    void update_game_status();
+
+    void get_snapshot(Snapshot &snapshot);
 
     ~EntityManager();
 };

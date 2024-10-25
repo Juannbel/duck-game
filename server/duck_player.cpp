@@ -4,10 +4,11 @@ const uint8_t JUMP_IT = 40;
 const uint8_t FLAPPING_IT = 5;
 const float DUCK_SPEED = 4;
 const float FALL_SPEED = 4;
+const float MAP_EDGE = 50;
 
-DuckPlayer::DuckPlayer(): status(), ammo(), it_jumping(), x(), y() { status.is_dead = true; }
+DuckPlayer::DuckPlayer(MapCollisions& map_collisions): status(), ammo(), it_jumping(), x(), y(), map_collisions(map_collisions) { status.is_dead = true; }
 
-Duck DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
+void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     this->x = static_cast<float>(x);
     this->y = static_cast<float>(y);
     status.duck_hp = 100;
@@ -15,7 +16,10 @@ Duck DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     status.x = x;
     status.y = y;
     status.duck_id = id;
-    return status;
+    hitbox.x = x;
+    hitbox.y = y;
+    hitbox.height = DUCK_HITBOX_HEIGHT;
+    hitbox.width = DUCK_HITBOX_WIDTH;
 }
 
 void DuckPlayer::update_status(const Command& command) {
@@ -61,7 +65,7 @@ void DuckPlayer::update_status(const Command& command) {
             status.is_jumping = true;
             break;
         case PickUp:
-            // Agarrar si hay algo cerca
+            status.gun = map_collisions.pickup(hitbox);
             break;
         case DropGun:
             status.gun = None;
@@ -97,10 +101,18 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
         status.is_flapping = false;
         it_flapping = 0;
     }
+    if (x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE) {
+        status.is_dead = true;
+        status.duck_hp = 0;
+    }
+    status.x = collision.last_valid_position.x;
+    status.y = collision.last_valid_position.y;
 }
 
-Duck DuckPlayer::move_duck(EntityManager& entity_manager) {
+void DuckPlayer::move_duck() {
     // Actualizar la posicion de las balas y vida de los patos si les pegan
+    if (status.is_dead) { return; }
+    
     int16_t new_x = x;
     int16_t new_y = y;
     if (status.is_running) {
@@ -114,26 +126,27 @@ Duck DuckPlayer::move_duck(EntityManager& entity_manager) {
         }
         new_x = (status.facing_right) ? new_x + move_x : new_x - move_x;
     }
-    if (status.is_falling){
+    if (status.is_falling) {
         float move_y = FALL_SPEED;
-        if (status.is_flapping) { 
-            move_y/=4;
-            ++it_flapping; 
+        if (status.is_flapping) {
+            move_y /= 4;
+            ++it_flapping;
         }
-        new_y+=move_y;
+        new_y += move_y;
     }
     if (status.is_jumping) {
-        float move_y = FALL_SPEED* static_cast<float>((JUMP_IT-it_jumping)/10);
-        it_jumping+=4;
+        float move_y = FALL_SPEED * static_cast<float>((JUMP_IT - it_jumping) / 10);
+        it_jumping += 4;
         new_y = y - move_y;
     }
-    struct Rectangle duck_rec = {static_cast<int16_t>(x), static_cast<int16_t>(y),
-                                 DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT};
-    struct Collision collision = entity_manager.check_near_blocks_collision(duck_rec, new_x, new_y);
+    hitbox.x = static_cast<int16_t>(x);
+    hitbox.y = static_cast<int16_t>(y);
+    struct Collision collision = map_collisions.check_near_blocks_collision(hitbox, new_x, new_y);
     x = collision.last_valid_position.x;
     y = collision.last_valid_position.y;
+    hitbox.x = static_cast<int16_t>(x);
+    hitbox.y = static_cast<int16_t>(y);
     status_after_move(collision);
-    status.x = collision.last_valid_position.x;
-    status.y = collision.last_valid_position.y;
-    return status;
 }
+
+Duck DuckPlayer::get_status() { return status; }

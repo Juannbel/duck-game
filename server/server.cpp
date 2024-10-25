@@ -1,6 +1,7 @@
 #include "server.h"
 
 #include <cstdio>
+
 #include "server/game_loop.h"
 #include "server/maps/yaml.h"
 
