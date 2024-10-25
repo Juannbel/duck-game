@@ -104,13 +104,8 @@ struct Collision MapCollisions::rectangles_collision(const struct Rectangle& r1,
 }
 
 void MapCollisions::add_guns_to_snapshot(Snapshot& snapshot) {
-    int i = 0;
     for (auto &[id, gun] : guns) {
-        snapshot.guns[i].x = gun.x;
-        snapshot.guns[i].y = gun.y;
-        snapshot.guns[i].gun_id = gun.id;
-        snapshot.guns[i].type = gun.type;
-        ++i;
+        Gun snapshot_gun = {gun.id, gun.type, gun.x, gun.y};
+        snapshot.guns.push_back(snapshot_gun);
     }
-    snapshot.guns_quantity = i;
 }

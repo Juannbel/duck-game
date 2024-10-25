@@ -54,6 +54,13 @@ void ConstantLooper::run() try {
     mixer.SetMusicVolume(0);
     mixer.PlayMusic(music, -1);
 
+    Texture duck_sprite(renderer, DATA_PATH "/sprites/duck/duck_sprite.png");
+    Texture background(renderer, DATA_PATH "/backgrounds/forest.png");
+    Texture blocks(renderer, DATA_PATH "/sprites/tiles/tiles.png");
+    Texture guns(renderer, DATA_PATH "/sprites/guns/guns.png");
+    
+    int players_quantity = last_snapshot.ducks.size();
+    for (int i = 0; i < players_quantity; i++) {
     TexturesProvider::loadTextures(renderer);
     AnimationDataProvider::load_animations_data();
 
@@ -144,7 +151,8 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 
 void ConstantLooper::process_snapshot() {
     // actualizar el estado de todos los renderizables
-    for (int i = 0; i < last_snapshot.players_quantity; i++) {
+    int players_quantity = last_snapshot.ducks.size();
+    for (int i = 0; i < players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];
         ducks_renderables[i]->update_from_snapshot(duck);
     }

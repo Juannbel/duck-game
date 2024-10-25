@@ -72,19 +72,13 @@ void EntityManager::verify_spawn() {
 }
 
 void EntityManager::get_snapshot(Snapshot &snapshot) {
-    int i = 0;
     for (auto duck : players) {
-        snapshot.ducks[i] = duck.get_status();
-        ++i;
+        snapshot.ducks.push_back(duck.get_status());
     }
-    snapshot.players_quantity = i;
     map_collisions.add_guns_to_snapshot(snapshot);
-    i = 0;
     for(auto const&[id, bullet] : bullets){
-        snapshot.bullets[i] = bullet;
-        ++i;
+        snapshot.bullets.push_back(bullet);
     }
-    snapshot.bullets_quantity = i;
 }
 
 EntityManager::~EntityManager() {}
