@@ -4,6 +4,8 @@
 #include "common/commands.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
+#include "../common/map_dto.h"
+#include <vector>
 
 class ServerProtocol {
 private:
@@ -14,18 +16,21 @@ public:
 
     void send_match_info(const MatchInfo& match_info);
 
-    /*
-    Definiciones provisorias por el momento.
-    */
-    void send_id_player(const uint8_t& duck_id);
-    void send_map(void *map);
-
     void send_snapshot(const Snapshot& snapshot);
 
     Command recv_player_command();
 
 private:
     Snapshot serializeSnapshot(const Snapshot& snapshot);
+
+    template <typename T>
+    void send_snapshot_vector(const std::vector<T>& vector, bool &wasClosed);
+
+    void send_ducks_vector(const std::vector<Duck>& vector, bool &wasClosed);
+
+    void send_guns_vector(const std::vector<Gun>& vector, bool &wasClosed);
+
+    void send_bullets_vector(const std::vector<Bullet>& vector, bool &wasClosed);
 
     ServerProtocol(const ServerProtocol&) = delete;
     ServerProtocol& operator=(const ServerProtocol&) = delete;

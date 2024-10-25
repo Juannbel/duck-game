@@ -2,7 +2,7 @@
 #define SNAPSHOT_H
 
 #include <cstdint>
-
+#include <vector>
 #include <sys/types.h>
 
 #define MAX_DUCKS 4
@@ -71,15 +71,12 @@ struct Bullet {
 } __attribute__((packed));
 
 struct Snapshot {
-    uint8_t players_quantity;
-    Duck ducks[MAX_DUCKS];
 
-    uint8_t guns_quantity;
-    Gun guns[MAX_GUNS];
+    std::vector<Duck> ducks;
+    std::vector<Gun> guns;
+    std::vector<Bullet> bullets;
 
-    uint8_t bullets_quantity;
-    Bullet bullets[MAX_BULLETS];
-} __attribute__((packed));
+};
 
 
 #endif

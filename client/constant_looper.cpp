@@ -56,8 +56,9 @@ void ConstantLooper::run() try {
     Texture background(renderer, DATA_PATH "/backgrounds/forest.png");
     Texture blocks(renderer, DATA_PATH "/sprites/tiles/tiles.png");
     Texture guns(renderer, DATA_PATH "/sprites/guns/guns.png");
-
-    for (int i = 0; i < last_snapshot.players_quantity; i++) {
+    
+    int players_quantity = last_snapshot.ducks.size();
+    for (int i = 0; i < players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];
         ducks_renderables[i] = new RenderableDuck(
                 &duck_sprite, DATA_PATH "/sprites/duck/frames_" + std::to_string(i) + ".yaml",
@@ -144,7 +145,8 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 
 void ConstantLooper::process_snapshot() {
     // actualizar el estado de todos los renderizables
-    for (int i = 0; i < last_snapshot.players_quantity; i++) {
+    int players_quantity = last_snapshot.ducks.size();
+    for (int i = 0; i < players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];
         ducks_renderables[i]->update_from_snapshot(duck);
     }
