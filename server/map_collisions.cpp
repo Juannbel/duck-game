@@ -1,12 +1,14 @@
 #include "map_collisions.h"
 
 #include "common/shared_constants.h"
+#include <iostream>
 
 const int16_t NEAR_CELLS = 3;
 
-MapCollisions::MapCollisions() {
-    Gun gun = {1, Ak47, 150, 150};
+MapCollisions::MapCollisions() : collectable_id() {
+    Gun gun = {get_and_inc_collectable_id(), Ak47, 150, 200};
     add_gun(gun);
+    
 }
 
 void MapCollisions::add_block(int16_t x, int16_t y) {
@@ -14,22 +16,34 @@ void MapCollisions::add_block(int16_t x, int16_t y) {
     blocks[y / BLOCK_SIZE].push_back(rectangle);
 }
 
+uint32_t MapCollisions::get_and_inc_collectable_id() { return ++collectable_id; }
+
 void MapCollisions::add_gun(Gun& gun) {
-    guns[gun.gun_id] = gun;
+    GunEntity gun_entity(gun);
+    guns[gun.gun_id] = gun_entity;
 }
 
-GunType MapCollisions::pickup(const Rectangle &duck) {
+void MapCollisions::add_gun(GunEntity& gun) {
+    if (gun.type == None) {
+        return;
+    }
+    guns[gun.id] = gun;
+}
+
+GunEntity MapCollisions::pickup(const Rectangle &duck) {
     Rectangle gun_r = {0, 0, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
+    GunEntity new_gun;
     for (auto const& [id, gun] : guns) {
         gun_r.x = gun.x;
         gun_r.y = gun.y;
         Collision collision = rectangles_collision(duck, gun_r);
         if(collision.horizontal_collision && collision.vertical_collision) {
+            new_gun = guns[id];
             guns.erase(id);
-            return gun.type;
+            return new_gun;
         }
     }
-    return None;
+    return new_gun;
 }
 
 struct Collision MapCollisions::check_near_blocks_collision(struct Rectangle& entity, int16_t new_x,
@@ -92,7 +106,10 @@ struct Collision MapCollisions::rectangles_collision(const struct Rectangle& r1,
 void MapCollisions::add_guns_to_snapshot(Snapshot& snapshot) {
     int i = 0;
     for (auto &[id, gun] : guns) {
-        snapshot.guns[i] = gun;
+        snapshot.guns[i].x = gun.x;
+        snapshot.guns[i].y = gun.y;
+        snapshot.guns[i].gun_id = gun.id;
+        snapshot.guns[i].type = gun.type;
         ++i;
     }
     snapshot.guns_quantity = i;

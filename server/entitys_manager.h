@@ -10,17 +10,13 @@
 #include "server/duck_player.h"
 #include "server/action.h"
 
-struct GunPosition {
-    int16_t x;
-    int16_t y;
-    uint32_t id;
-};
-
 struct Spawn {
     int16_t x;
     int16_t y;
     uint16_t it_since_picked;
+    uint16_t it_to_spawn;
     bool picked;
+    uint32_t collectable_id;
 };
 
 class EntityManager {
@@ -28,7 +24,7 @@ private:
     std::vector<DuckPlayer> players;
     MapCollisions map_collisions;
     std::map<uint32_t, Bullet> bullets;
-    std::vector<Spawn> spanws;
+    std::vector<Spawn> spawns;
 
     void verify_spawn();
 public:

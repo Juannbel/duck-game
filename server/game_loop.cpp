@@ -14,10 +14,6 @@ using std::chrono::milliseconds;
 
 #define TICKS 30
 const milliseconds RATE(1000 / TICKS);
-const uint8_t JUMP_IT = 60;
-const float DUCK_SPEED = 4;
-const float FALL_SPEED = 1;
-const int32_t NEAR_CELLS = 3;
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, Map& map_dto,
                    uint8_t players_quantity):

@@ -2,6 +2,7 @@
 #define MAP_COLLISION_H
 
 #include "common/snapshot.h"
+#include "gun_entity.h"
 
 #include <map>
 #include <vector>
@@ -23,15 +24,18 @@ struct Collision {
 class MapCollisions{
 private:
     std::map<uint16_t, std::vector<Rectangle>> blocks;
-    std::map<uint32_t, Gun> guns;
+    std::map<uint32_t, GunEntity> guns;
+    uint32_t collectable_id;
 
 public:
     MapCollisions();
     
     void add_block(int16_t x, int16_t y);
+    uint32_t get_and_inc_collectable_id();
     void add_gun(Gun& gun);
+    void add_gun(GunEntity& gun);
 
-    GunType pickup(const Rectangle &duck);
+    GunEntity pickup(const Rectangle &duck);
 
     struct Collision check_near_blocks_collision(struct Rectangle& entity, int16_t new_x,
                                                  int16_t new_y);
