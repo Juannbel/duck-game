@@ -15,6 +15,7 @@ target_sources(taller_client
     client_sender.cpp
     textures_provider.cpp
     animation_data_provider.cpp
+    duck_controller.cpp
     PUBLIC
     # .h files
     constant_looper.h
@@ -30,5 +31,5 @@ target_sources(taller_client
     client_sender.h
     textures_provider.h
     animation_data_provider.h
-
+    duck_controller.h
     )

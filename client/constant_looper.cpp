@@ -36,7 +36,7 @@ ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_
         snapshot_q(snapshot_q),
         command_q(command_q),
         last_snapshot(snapshot_q.pop()),
-        p1_controller(duck_id, command_q, last_snapshot, {SDLK_d, SDLK_a, SDLK_w, SDLK_s, SDLK_c, SDLK_v}),
+        p1_controller(duck_id, command_q, last_snapshot, {SDLK_d, SDLK_a, SDLK_w, SDLK_s, SDLK_c, SDLK_v, SDLK_e}),
         map_dto(match_info.map) {}
 
 void ConstantLooper::run() { try {
