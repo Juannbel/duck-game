@@ -23,12 +23,12 @@ private:
     bool facing_up;
 
     static std::unordered_map<std::string, GunType> string_to_gun;
+    void load_gun_animation(const std::string& gun_name);
 
 public:
-    RenderableEquippedGun(SDL2pp::Texture* sprite, const std::string& config_path);
+    RenderableEquippedGun();
 
     void update();
-
 
     void update_from_snapshot(const Duck& duck);
 

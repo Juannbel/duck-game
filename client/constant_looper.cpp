@@ -11,7 +11,10 @@
 #include "SDL2pp/Music.hh"
 #include "client/camera.h"
 #include "client/duck_controller.h"
+#include "client/renderables/collectable.h"
 #include "client/renderables/map.h"
+#include "client/textures_provider.h"
+#include "animation_data_provider.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 
@@ -25,7 +28,6 @@
 
 using SDL2pp::Renderer;
 using SDL2pp::SDL;
-using SDL2pp::Texture;
 using SDL2pp::Window;
 
 ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_q,
@@ -52,22 +54,23 @@ void ConstantLooper::run() try {
     mixer.SetMusicVolume(0);
     mixer.PlayMusic(music, -1);
 
-    Texture duck_sprite(renderer, DATA_PATH "/sprites/duck/duck_sprite.png");
-    Texture background(renderer, DATA_PATH "/backgrounds/forest.png");
-    Texture blocks(renderer, DATA_PATH "/sprites/tiles/tiles.png");
-    Texture guns(renderer, DATA_PATH "/sprites/guns/guns.png");
+    TexturesProvider::loadTextures(renderer);
+    AnimationDataProvider::load_animations_data();
 
     for (int i = 0; i < last_snapshot.players_quantity; i++) {
         Duck duck = last_snapshot.ducks[i];
-        ducks_renderables[i] = new RenderableDuck(
-                &duck_sprite, DATA_PATH "/sprites/duck/frames_" + std::to_string(i) + ".yaml",
-                &guns, DATA_PATH "/sprites/guns/guns.yaml");
-
+        ducks_renderables[i] = new RenderableDuck(duck.duck_id);
         ducks_renderables[i]->update_from_snapshot(duck);
     }
 
+    for (int i = 0; i < last_snapshot.guns_quantity; i++) {
+        Gun gun = last_snapshot.guns[i];
+        collectables_renderables[i] = new RenderableCollectable(gun.gun_id, gun.type);
+        collectables_renderables[i]->update_from_snapshot(gun);
+    }
+
     Camera camera(renderer);
-    RenderableMap map(map_dto, &blocks, &background);
+    RenderableMap map(map_dto, TexturesProvider::getTexture("blocks"), TexturesProvider::getTexture("forest_background"));
 
     bool keep_running = true;
     uint32_t t1 = SDL_GetTicks();
@@ -95,18 +98,15 @@ void ConstantLooper::run() try {
             duck.second->update();
         }
 
-        // for (auto& gun : dropped_guns) {
-        //     gun.second->update();
-        // }
 
         // Render de los renderizables
         for (auto& duck: ducks_renderables) {
             duck.second->render(renderer, camera);
         }
 
-        // for (auto& gun : dropped_guns) {
-        //     gun.second->render(renderer, camera);
-        // }
+        for (auto& collectable: collectables_renderables) {
+            collectable.second->render(renderer, camera);
+        }
 
         renderer.Present();
 
@@ -148,11 +148,37 @@ void ConstantLooper::process_snapshot() {
         Duck duck = last_snapshot.ducks[i];
         ducks_renderables[i]->update_from_snapshot(duck);
     }
+
+    // updateadmos los collectables, y los que no esten en el snapshot los eliminamos
+    std::unordered_map<int, bool> collectables_to_remove;
+
+    for (int i = 0; i < last_snapshot.guns_quantity; i++) {
+        Gun& gun = last_snapshot.guns[i];
+        if (collectables_renderables.find(gun.gun_id) == collectables_renderables.end()) {
+            collectables_renderables[gun.gun_id] =
+                new RenderableCollectable(gun.gun_id, gun.type);
+        }
+        collectables_renderables[gun.gun_id]->update_from_snapshot(gun);
+        collectables_to_remove[gun.gun_id] = true;
+    }
+
+    for (auto it = collectables_renderables.begin(); it != collectables_renderables.end();) {
+        if (collectables_to_remove.find(it->first) == collectables_to_remove.end()) {
+            delete it->second;
+            it = collectables_renderables.erase(it);
+        } else {
+            it++;
+        }
+    }
 }
 
 
 ConstantLooper::~ConstantLooper() {
     for (auto& duck: ducks_renderables) {
         delete duck.second;
+    }
+
+    for (auto& collectable: collectables_renderables) {
+        delete collectable.second;
     }
 }

@@ -22,6 +22,12 @@ struct FrameData {
     int y_offset;
 };
 
+struct AnimationData {
+    std::vector<FrameData> frames;
+    uint8_t iter_per_frame;
+    bool loops;
+};
+
 class Animation {
 private:
     SDL2pp::Texture& texture;
@@ -30,17 +36,14 @@ private:
     // Cantidad de iteraciones que pasaron desde el ultimo cambio de frame
     uint8_t iterations_since_change;
     // Cantidad de iteraciones que deben pasar para cambiar de frame
-    uint8_t iterations_per_frame;
-    std::vector<FrameData> frames;
+
+    const AnimationData& data;
 
     void advance_frame();
 
-    bool loops;
-
 public:
     // Recibe la textura y el path del archivo de configuracion
-    Animation(SDL2pp::Texture& texture, const std::vector<FrameData>& frames,
-              uint8_t iterations_per_frame, bool loops);
+    Animation(SDL2pp::Texture& texture, const AnimationData& data);
 
     void update();
 

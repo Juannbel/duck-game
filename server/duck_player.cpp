@@ -103,7 +103,7 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
     }
     if (x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE) {
         status.is_dead = true;
-        status.is_laying = true;
+        status.duck_hp = 0;
     }
     status.x = collision.last_valid_position.x;
     status.y = collision.last_valid_position.y;
