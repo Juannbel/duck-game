@@ -38,6 +38,7 @@ std::unordered_map<GunType, std::string> RenderableEquippedGun::gun_to_string {
 };
 
 void RenderableEquippedGun::update(const Duck& duck) {
+    if (duck.is_laying) return;
     position.x = duck.x;
     position.y = duck.y;
 
