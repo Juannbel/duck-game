@@ -6,10 +6,12 @@
 #include "common/map_dto.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
+#include "ticks.h"
 
 const int16_t NEAR_CELLS = 3;
-const int16_t COLLECTABLE_SPAWN_IT = 900;
-const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = 300;
+const int16_t COLLECTABLE_SPAWN_IT = TICKS*15;
+const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS*5;
+
 
 EntityManager::EntityManager(Map& map_dto, uint8_t players_quantity) {
     for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
@@ -90,6 +92,7 @@ void EntityManager::update_game_status() {
     }
     // Actualizar la posicion de las balas y vida de los patos si les pegan
     verify_spawn();
+    map_collisions.move_guns_falling();
 }
 
 GunType EntityManager::get_random_guntype() {

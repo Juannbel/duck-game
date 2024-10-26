@@ -1,8 +1,8 @@
 #include "duck_player.h"
+#include "ticks.h"
 
 #include <iostream>
 
-#define TICKS 60
 const uint8_t JUMP_IT = TICKS * 1.5;
 const uint8_t INC_JUMP_IT = TICKS/20;
 const uint8_t DECREACENT_JUMP_SPEED = TICKS / 3;
@@ -10,7 +10,6 @@ const uint8_t FLAPPING_TIME = TICKS / 3;
 const float DUCK_SPEED = 120/TICKS;
 const float FALL_SPEED = 120/TICKS;
 const float MAP_EDGE = 50;
-const float LAYED_HITBOX = static_cast<float>(DUCK_HITBOX_HEIGHT/2);
 
 DuckPlayer::DuckPlayer(MapCollisions& map_collisions): status(), it_jumping(), hitbox(), map_collisions(map_collisions) { status.is_dead = true; }
 
@@ -116,8 +115,8 @@ void DuckPlayer::lay_down() {
     status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
     status.is_running = status.is_laying ? false : status.is_running;
     if (status.is_laying) {
-        hitbox.coords.y += LAYED_HITBOX;
-        hitbox.height = LAYED_HITBOX;
+        hitbox.coords.y += DUCK_LAYED_HITBOX_HEIGHT;
+        hitbox.height = DUCK_LAYED_HITBOX_HEIGHT;
     }
     
 }
@@ -125,7 +124,7 @@ void DuckPlayer::lay_down() {
 void DuckPlayer::stand_up() {
     if (!status.is_laying) { return; }
     status.is_laying = false;
-    hitbox.coords.y -= (LAYED_HITBOX+1);
+    hitbox.coords.y -= (DUCK_LAYED_HITBOX_HEIGHT+1);
     hitbox.height = DUCK_HITBOX_HEIGHT;
 }
 
@@ -147,7 +146,7 @@ void DuckPlayer::stop_jump() {
 
 uint32_t DuckPlayer::drop_and_pickup(){
     GunEntity new_gun = map_collisions.pickup(hitbox);
-    map_collisions.drop_gun(std::move(equipped_gun), hitbox.coords.x, hitbox.coords.y);
+    map_collisions.drop_gun(std::move(equipped_gun), hitbox);
     equipped_gun = new_gun;
     status.gun = equipped_gun.type;
     return equipped_gun.id;
