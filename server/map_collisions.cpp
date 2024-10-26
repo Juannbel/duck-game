@@ -46,7 +46,6 @@ void MapCollisions::drop_gun(GunEntity &&gun, int16_t x, int16_t y){
     if (gun.type == None) {
         return;
     }
-    
     gun.x = x;
     gun.y = y+DUCK_HITBOX_HEIGHT-COLLECTABLE_HITBOX_HEIGHT;
     add_gun(gun);
@@ -79,7 +78,7 @@ struct Collision MapCollisions::check_near_blocks_collision(struct Rectangle& en
                     if (new_y > entity.y && new_y + entity.height > block.y && entity.y < block.y) {
                         final_rec.y = block.y - entity.height;
                     } else if (new_y < block.y + block.height && entity.y > block.y) {
-                        final_rec.y = entity.y;
+                        final_rec.y = block.y+block.height;
                     }
                     collision.vertical_collision = true;
                 }
@@ -103,6 +102,9 @@ struct Collision MapCollisions::rectangles_collision(const struct Rectangle& r1,
             collision.horizontal_collision = true;
             if (r1.y + r1.height == r2.y || r1.y == r2.y + r2.height) {
                 collision.horizontal_collision = false;
+            }
+            if (r1.y == r2.y+r2.height) {
+                collision.vertical_collision = false;
             }
             return collision;
         }

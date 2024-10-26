@@ -1,9 +1,9 @@
 #include "duck_player.h"
 
-const uint8_t JUMP_IT = 80;
+const uint8_t JUMP_IT = 150;
 const uint8_t FLAPPING_IT = 10;
-const float DUCK_SPEED = 2;
-const float FALL_SPEED = 2;
+const float DUCK_SPEED = 1;
+const float FALL_SPEED = 1;
 const float MAP_EDGE = 50;
 
 DuckPlayer::DuckPlayer(MapCollisions& map_collisions): status(), it_jumping(), x(), y(), map_collisions(map_collisions) { status.is_dead = true; }
@@ -114,14 +114,14 @@ void DuckPlayer::move_duck() {
     int16_t new_x = x;
     int16_t new_y = y;
     if (status.is_running) {
-        float move_x = 0;
-        if (status.is_jumping) {
-            move_x = DUCK_SPEED * 0.7;
-        } else if (status.is_falling) {
-            move_x = status.is_flapping ? DUCK_SPEED * 0.5 : DUCK_SPEED * 0.7;
-        } else if (!status.is_laying) {
-            move_x = DUCK_SPEED;
-        }
+        float move_x = DUCK_SPEED;
+        //if (status.is_jumping) {
+        //    float move_x = DUCK_SPEED;
+        //} else if (status.is_falling) {
+        //    move_x = status.is_flapping ? DUCK_SPEED * 0.5 : DUCK_SPEED * 0.7;
+        //} else if (!status.is_laying) {
+        //    move_x = DUCK_SPEED;
+        //}
         new_x = (status.facing_right) ? new_x + move_x : new_x - move_x;
     }
     if (status.is_falling) {
@@ -133,7 +133,7 @@ void DuckPlayer::move_duck() {
         new_y += move_y;
     }
     if (status.is_jumping) {
-        float move_y = FALL_SPEED * static_cast<float>((JUMP_IT - it_jumping) / 15);
+        float move_y = FALL_SPEED * static_cast<float>((JUMP_IT - it_jumping) / 20);
         it_jumping += 4;
         new_y = y - move_y;
     }

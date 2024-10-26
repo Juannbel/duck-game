@@ -8,7 +8,8 @@
 #include "common/snapshot.h"
 
 const int16_t NEAR_CELLS = 3;
-const int16_t COLLECTABLE_SPAWN_IT = 400;
+const int16_t COLLECTABLE_SPAWN_IT = 900;
+const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = 300;
 
 EntityManager::EntityManager(Map& map_dto, uint8_t players_quantity) {
     for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
@@ -41,7 +42,7 @@ void EntityManager::process_action(action& action){
                 spawn.picked = true;
                 spawn.collectable_id = 0;
                 spawn.it_since_picked = 0;
-                spawn.it_to_spawn = COLLECTABLE_SPAWN_IT + rand() % 100;
+                spawn.it_to_spawn = COLLECTABLE_SPAWN_IT + rand() % COLLECTABLE_EXTRA_SPAWN_TIME;
             }
         }
     }

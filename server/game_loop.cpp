@@ -12,7 +12,7 @@
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 
-#define TICKS 60
+#define TICKS 120
 const milliseconds RATE(1000 / TICKS);
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, Map& map_dto,
