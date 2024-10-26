@@ -20,10 +20,8 @@ void GamesMonitor::add_player(ServerClient* player) {
 
 std::vector<int> GamesMonitor::list_lobbies() {
     std::vector<int> lobbies;
-    printf("Listando lobbies\n");
     for (auto& game: map_games) {
         if (game.second->is_open()) {
-            printf("Lobby abierto: %d\n", game.first);
             lobbies.push_back(game.first);
         }
     }
@@ -33,7 +31,6 @@ std::vector<int> GamesMonitor::list_lobbies() {
 
 Game* GamesMonitor::create_game() {
     Game* game = new Game(id);
-    printf("Juego creado con id: %d\n", id);
     map_games.emplace(id, game);
     id++;
     return game;
