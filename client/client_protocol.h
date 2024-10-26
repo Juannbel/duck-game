@@ -19,6 +19,9 @@ public:
 
     MatchInfo recv_match_info();
 
+    void send_option(int option);
+    int recv_lobby();
+
     void shutdown();
 
 private:
