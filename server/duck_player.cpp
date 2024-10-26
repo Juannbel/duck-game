@@ -130,7 +130,7 @@ void DuckPlayer::jump() {
     if (!ready_to_jump || status.is_jumping) { return; }
     ready_to_jump = false;
     if (status.is_falling) {
-        it_flapping = status.is_flapping ? it_flapping : 1;
+        it_flapping = 1;
         status.is_flapping = true;
         return;
     }
