@@ -5,13 +5,13 @@ DuckController::DuckController(int duck_id, Queue<Command>& command_q, const Sna
 
 void DuckController::handle_key_down(const SDL_Event& event) {
     if (event.key.keysym.sym == controls.move_right) {
-        if (!moving_right) {
+        if (!moving_right && !(snapshot.ducks[duck_id].is_running && snapshot.ducks[duck_id].facing_right)) {
             moving_right = true;
             last_move_command = StartMovingRight;
             move_command = true;
         }
     } else if (event.key.keysym.sym == controls.move_left) {
-        if (!moving_left) {
+        if (!moving_left && !(snapshot.ducks[duck_id].is_running && !snapshot.ducks[duck_id].facing_right)) {
             moving_left = true;
             last_move_command = StartMovingLeft;
             move_command = true;
