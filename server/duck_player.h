@@ -13,6 +13,7 @@ private:
     GunEntity equipped_gun;
     uint8_t it_jumping;
     uint8_t it_flapping;
+    bool ready_to_jump;
     float x;
     float y;
     Rectangle hitbox;

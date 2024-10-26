@@ -1,7 +1,9 @@
 #include "duck_player.h"
 
-const uint8_t JUMP_IT = 150;
-const uint8_t FLAPPING_IT = 10;
+const uint8_t JUMP_IT = 120;
+const uint8_t INC_JUMP_IT = 4;
+const uint8_t DECREACENT_JUMP_SPEED = 20;
+const uint8_t FLAPPING_TIME = 10;
 const float DUCK_SPEED = 1;
 const float FALL_SPEED = 1;
 const float MAP_EDGE = 50;
@@ -16,6 +18,7 @@ void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     status.x = x;
     status.y = y;
     status.duck_id = id;
+    ready_to_jump = true;
     hitbox.x = x;
     hitbox.y = y;
     hitbox.height = DUCK_HITBOX_HEIGHT;
@@ -64,6 +67,10 @@ uint32_t DuckPlayer::update_status(const Command& command) {
             status.is_laying = false;
             break;
         case Jump:
+            if (!ready_to_jump) {
+                break;
+            }
+            ready_to_jump = false;
             if (status.is_falling) {
                 it_flapping = status.is_flapping ? it_flapping : 1;
                 status.is_flapping = true;
@@ -71,6 +78,9 @@ uint32_t DuckPlayer::update_status(const Command& command) {
             }
             it_jumping = status.is_jumping ? it_jumping : 1;
             status.is_jumping = true;
+            break;
+        case StopJump:
+            ready_to_jump = true;
             break;
         case PickUp:
             return pickup();
@@ -95,7 +105,7 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
         status.is_falling = true;
         it_jumping = 0;
     }
-    if (it_flapping > FLAPPING_IT) {
+    if (it_flapping > FLAPPING_TIME) {
         status.is_flapping = false;
         it_flapping = 0;
     }
@@ -133,8 +143,8 @@ void DuckPlayer::move_duck() {
         new_y += move_y;
     }
     if (status.is_jumping) {
-        float move_y = FALL_SPEED * static_cast<float>((JUMP_IT - it_jumping) / 20);
-        it_jumping += 4;
+        float move_y = FALL_SPEED * static_cast<float>((JUMP_IT - it_jumping) / DECREACENT_JUMP_SPEED);
+        it_jumping += INC_JUMP_IT;
         new_y = y - move_y;
     }
     hitbox.x = static_cast<int16_t>(x);

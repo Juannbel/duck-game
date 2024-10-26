@@ -65,6 +65,8 @@ public:
             }
         } else if (event.key.keysym.sym == controls.shoot) {
             command_q.push(StopShooting);
+        } else if (event.key.keysym.sym == controls.jump) {
+            command_q.push(StopJump);
         }
     }
 
