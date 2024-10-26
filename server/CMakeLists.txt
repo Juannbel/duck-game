@@ -13,6 +13,8 @@ target_sources(taller_server
     duck_player.cpp
     entitys_manager.cpp
     maps/yaml.cpp
+    game.cpp
+    games_monitor.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -26,4 +28,6 @@ target_sources(taller_server
     duck_player.h
     entitys_manager.h
     maps/yaml.h
+    game.h
+    games_monitor.h
     )
