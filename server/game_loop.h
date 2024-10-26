@@ -20,10 +20,14 @@ private:
     Queue<struct action>& actions_queue;
     QueueListMonitor& snaps_queue_list;
     EntityManager entity_manager;
+    uint8_t match_number;
+    std::map<uint8_t, uint8_t> winners_id_count;
 
     void pop_and_process_all();
 
-    void push_responce();
+    void push_responce(Snapshot& actual_status);
+
+    void check_for_winner(Snapshot&);
 
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, Map& map_dto,

@@ -58,7 +58,6 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
 }
 
 void DuckPlayer::move_duck() {
-    // Actualizar la posicion de las balas y vida de los patos si les pegan
     if (status.is_dead) { return; }
     float new_x = hitbox.coords.x;
     float new_y = hitbox.coords.y;
@@ -118,7 +117,6 @@ void DuckPlayer::lay_down() {
         hitbox.coords.y += DUCK_LAYED_HITBOX_HEIGHT;
         hitbox.height = DUCK_LAYED_HITBOX_HEIGHT;
     }
-    
 }
 
 void DuckPlayer::stand_up() {
@@ -129,14 +127,14 @@ void DuckPlayer::stand_up() {
 }
 
 void DuckPlayer::jump() {
-    if (!ready_to_jump) { return; }
+    if (!ready_to_jump || status.is_jumping) { return; }
     ready_to_jump = false;
     if (status.is_falling) {
         it_flapping = status.is_flapping ? it_flapping : 1;
         status.is_flapping = true;
         return;
     }
-    it_jumping = status.is_jumping ? it_jumping : 1;
+    it_jumping = 1;
     status.is_jumping = true;
 }
 
