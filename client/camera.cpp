@@ -70,13 +70,8 @@ void Camera::adjust_aspect_ratio(Rect& target) {
         target.w = target.h * window_aspect_ratio;
     }
 
-    if (std::abs(center_x - target.x - (target.w / 2)) > CAMERA_DEAD_ZONE) {
-        target.x = center_x - (target.w / 2);
-    }
-
-    if (std::abs(center_y - target.y - (target.h / 2)) > CAMERA_DEAD_ZONE) {
-        target.y = center_y - (target.h / 2);
-    }
+    target.x = center_x - (target.w / 2);
+    target.y = center_y - (target.h / 2);
 }
 
 void Camera::update_target(const Snapshot& snapshot) {
