@@ -8,7 +8,7 @@
 #include "common/shared_constants.h"
 
 RenderableDuck::RenderableDuck(uint8_t duck_id):
-            duck_id(duck_id), position(0, 0), is_facing_right(true), is_alive(true) {
+            duck_id(duck_id), wings(duck_id), position(0, 0), is_facing_right(true), is_alive(true) {
         load_animations();
         curr_animation = animations["standing"];
     }
@@ -59,6 +59,7 @@ void RenderableDuck::update(const Duck& duck) {
     curr_animation->update();
 
     gun.update(duck);
+    wings.update(duck);
 }
 
 void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
@@ -73,6 +74,7 @@ void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
     }
 
     gun.render(renderer, camera);
+    wings.render(renderer, camera);
 }
 
 void RenderableDuck::skip_frames(uint8_t frames) { curr_animation->skip_frames(frames); }

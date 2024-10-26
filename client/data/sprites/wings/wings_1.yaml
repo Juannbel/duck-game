@@ -1,0 +1,47 @@
+define: &y_row 16
+width: 16
+height: 16
+
+wings_1:
+  standing:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 0, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -5 }
+
+  walking:
+    iter_per_frame: 5
+    loops: false
+    frames:
+      - { x: 0, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -3 }
+      - { x: 0, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -4 }
+      - { x: 0, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -5 }
+      - { x: 0, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -3 }
+      - { x: 0, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -4 }
+
+  armed:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 16, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -5 }
+
+  laying:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 16, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -5 }
+
+  flapping:
+    iter_per_frame: 4
+    loops: true
+    frames:
+      - { x: 32, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -5 }
+      - { x: 48, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -5 }
+      - { x: 64, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -5 }
+      - { x: 80, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -5 }
+
+  falling:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 64, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -5 }
