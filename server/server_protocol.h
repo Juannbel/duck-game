@@ -18,6 +18,10 @@ public:
 
     void send_snapshot(const Snapshot& snapshot);
 
+    int receive_cmd();
+    void send_lobby_info(int lobby);
+
+
     Command recv_player_command();
 
 private:
