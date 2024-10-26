@@ -2,11 +2,10 @@
 
 #include <cmath>
 #include <iostream>
+#include <unordered_set>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
-#include <SDL_events.h>
-#include <SDL_timer.h>
 
 #include "SDL2pp/Music.hh"
 #include "client/camera.h"
@@ -39,7 +38,7 @@ ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_
         p1_controller(duck_id, command_q, last_snapshot, {SDLK_d, SDLK_a, SDLK_w, SDLK_s, SDLK_c, SDLK_v, SDLK_e}),
         map_dto(match_info.map) {}
 
-void ConstantLooper::run() { try {
+void ConstantLooper::run() try {
     SDL sdl(SDL_INIT_VIDEO);
 
     Window window("Duck game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,
@@ -57,15 +56,7 @@ void ConstantLooper::run() { try {
     TexturesProvider::loadTextures(renderer);
     AnimationDataProvider::load_animations_data();
 
-    for (auto& duck : last_snapshot.ducks) {
-        ducks_renderables[duck.duck_id] = new RenderableDuck(duck.duck_id);
-        ducks_renderables[duck.duck_id]->update_from_snapshot(duck);
-    }
-
-    for (auto& gun : last_snapshot.guns) {
-        collectables_renderables[gun.gun_id] = new RenderableCollectable(gun.gun_id, gun.type);
-        collectables_renderables[gun.gun_id]->update_from_snapshot(gun);
-    }
+    process_snapshot();
 
     Camera camera(renderer);
     RenderableMap map(map_dto, TexturesProvider::getTexture("blocks"), TexturesProvider::getTexture("forest_background"));
@@ -78,7 +69,6 @@ void ConstantLooper::run() { try {
         keep_running = p1_controller.process_events();
 
         while (snapshot_q.try_pop(last_snapshot)) {}
-
         // Actualizar el estado de todo lo que se renderiza
         process_snapshot();
 
@@ -86,26 +76,7 @@ void ConstantLooper::run() { try {
             camera.update(last_snapshot);
         }
 
-        // Clear screen
-        renderer.Clear();
-
-        map.render(renderer, camera);
-
-        // Update de los renderizables
-        for (auto& duck: ducks_renderables) {
-            duck.second->update();
-        }
-
-        // Render de los renderizables
-        for (auto& duck: ducks_renderables) {
-            duck.second->render(renderer, camera);
-        }
-
-        for (auto& collectable: collectables_renderables) {
-            collectable.second->render(renderer, camera);
-        }
-
-        renderer.Present();
+        render(renderer, camera, map);
 
         sleep_or_catch_up(t1);
     }
@@ -115,7 +86,7 @@ void ConstantLooper::run() { try {
 } catch (...) {
     std::cerr << "Unknown exception on constant looper" << std::endl;
 }
-}
+
 void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
     uint32_t t2 = SDL_GetTicks();
 
@@ -141,33 +112,50 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 
 void ConstantLooper::process_snapshot() {
     // actualizar el estado de todos los renderizables
-    int players_quantity = last_snapshot.ducks.size();
-    for (int i = 0; i < players_quantity; i++) {
-        Duck duck = last_snapshot.ducks[i];
-        ducks_renderables[i]->update_from_snapshot(duck);
+    for (auto& duck : last_snapshot.ducks) {
+        if (ducks_renderables.find(duck.duck_id) == ducks_renderables.end()) {
+            ducks_renderables[duck.duck_id] = new RenderableDuck(duck.duck_id);
+        }
+        ducks_renderables[duck.duck_id]->update(duck);
     }
 
     // updateadmos los collectables, y los que no esten en el snapshot los eliminamos
-    std::unordered_map<int, bool> collectables_to_remove;
-    int guns_quantity = last_snapshot.guns.size();
-    for (int i = 0; i < guns_quantity; i++) {
-        Gun& gun = last_snapshot.guns[i];
+    std::unordered_set<int> collectables_in_snapshot;
+
+    for (const Gun& gun : last_snapshot.guns) {
+        collectables_in_snapshot.insert(gun.gun_id);
         if (collectables_renderables.find(gun.gun_id) == collectables_renderables.end()) {
-            collectables_renderables[gun.gun_id] =
-                new RenderableCollectable(gun.gun_id, gun.type);
+            // apareció un nuevo collectable
+            collectables_renderables[gun.gun_id] = new RenderableCollectable(gun.gun_id, gun.type);
         }
-        collectables_renderables[gun.gun_id]->update_from_snapshot(gun);
-        collectables_to_remove[gun.gun_id] = true;
+        collectables_renderables[gun.gun_id]->update(gun);
     }
 
+    // eliminamos los collectables que no esten en el snapshot
     for (auto it = collectables_renderables.begin(); it != collectables_renderables.end();) {
-        if (collectables_to_remove.find(it->first) == collectables_to_remove.end()) {
+        if (collectables_in_snapshot.find(it->first) == collectables_in_snapshot.end()) {
             delete it->second;
             it = collectables_renderables.erase(it);
         } else {
-            it++;
+            ++it;
         }
     }
+}
+
+void ConstantLooper::render(SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map) {
+    renderer.Clear();
+
+    map.render(renderer, camera);
+
+    for (auto& duck: ducks_renderables) {
+        duck.second->render(renderer, camera);
+    }
+
+    for (auto& collectable: collectables_renderables) {
+        collectable.second->render(renderer, camera);
+    }
+
+    renderer.Present();
 }
 
 

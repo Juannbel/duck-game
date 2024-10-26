@@ -28,9 +28,7 @@ private:
 public:
     RenderableEquippedGun();
 
-    void update();
-
-    void update_from_snapshot(const Duck& duck);
+    void update(const Duck& duck);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 

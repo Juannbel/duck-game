@@ -37,9 +37,7 @@ std::unordered_map<GunType, std::string> RenderableEquippedGun::gun_to_string {
     {Armor, "armor"}
 };
 
-void RenderableEquippedGun::update() { curr_animation->update(); }
-
-void RenderableEquippedGun::update_from_snapshot(const Duck& duck) {
+void RenderableEquippedGun::update(const Duck& duck) {
     position.x = duck.x;
     position.y = duck.y;
 
@@ -48,6 +46,8 @@ void RenderableEquippedGun::update_from_snapshot(const Duck& duck) {
 
     curr_animation = guns[duck.gun];
     current_gun = duck.gun;
+
+    curr_animation->update();
 }
 
 void RenderableEquippedGun::render(SDL2pp::Renderer& renderer, Camera& camera) {
@@ -57,7 +57,6 @@ void RenderableEquippedGun::render(SDL2pp::Renderer& renderer, Camera& camera) {
 
     float angle = facing_up ? facing_right ? 290 : 70 : 0;
     curr_animation->render(renderer, camera, position, facing_right, angle);
-
 }
 
 RenderableEquippedGun::~RenderableEquippedGun() {

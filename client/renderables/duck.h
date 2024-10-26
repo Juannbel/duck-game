@@ -36,13 +36,11 @@ private:
 public:
     RenderableDuck(uint8_t duck_id);
 
-    void update();
+    void update(const Duck& duck);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 
     void skip_frames(uint8_t frames);
-
-    void update_from_snapshot(const Duck& duck);
 
     bool is_dead();
 
