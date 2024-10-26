@@ -7,7 +7,7 @@ const int16_t NEAR_CELLS = 3;
 
 MapCollisions::MapCollisions() : collectable_id() {}
 
-void MapCollisions::add_block(int16_t x, int16_t y) {
+void MapCollisions::add_block(float x, float y) {
     Rectangle rectangle = {x, y, BLOCK_SIZE, BLOCK_SIZE};
     blocks[y / BLOCK_SIZE].push_back(rectangle);
 }
@@ -30,8 +30,8 @@ GunEntity MapCollisions::pickup(const Rectangle &duck) {
     Rectangle gun_r = {0, 0, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
     GunEntity new_gun;
     for (auto const& [id, gun] : guns) {
-        gun_r.x = gun.x;
-        gun_r.y = gun.y;
+        gun_r.coords.x = gun.x;
+        gun_r.coords.y = gun.y;
         Collision collision = rectangles_collision(duck, gun_r);
         if(collision.horizontal_collision && collision.vertical_collision) {
             new_gun = std::move(guns[id]);
@@ -42,7 +42,7 @@ GunEntity MapCollisions::pickup(const Rectangle &duck) {
     return new_gun;
 }
 
-void MapCollisions::drop_gun(GunEntity &&gun, int16_t x, int16_t y){
+void MapCollisions::drop_gun(GunEntity &&gun, float x, float y){
     if (gun.type == None) {
         return;
     }
@@ -52,9 +52,9 @@ void MapCollisions::drop_gun(GunEntity &&gun, int16_t x, int16_t y){
     gun.drop();
 }
 
-struct Collision MapCollisions::check_near_blocks_collision(struct Rectangle& entity, int16_t new_x,
-                                                            int16_t new_y) {
-    int16_t row_index = entity.y / BLOCK_SIZE;
+struct Collision MapCollisions::check_near_blocks_collision(struct Rectangle& entity, float new_x,
+                                                            float new_y) {
+    int16_t row_index = entity.coords.y / BLOCK_SIZE;
     int16_t i = (row_index < NEAR_CELLS) ? 0 : row_index - NEAR_CELLS;
     int16_t end_i = (row_index + NEAR_CELLS > MAP_HEIGHT_BLOCKS) ? MAP_HEIGHT_BLOCKS :
                                                                    row_index + NEAR_CELLS;
@@ -71,14 +71,16 @@ struct Collision MapCollisions::check_near_blocks_collision(struct Rectangle& en
         for (auto& block: block_columns) {
             struct Collision aux_collision = rectangles_collision(final_rec, block);
             if (aux_collision.horizontal_collision) {
-                final_rec.x = entity.x;
+                final_rec.coords.x = entity.coords.x;
                 collision.horizontal_collision = true;
                 bool vertical_collision = rectangles_collision(final_rec, block).vertical_collision;
                 if (vertical_collision) {
-                    if (new_y > entity.y && new_y + entity.height > block.y && entity.y < block.y) {
-                        final_rec.y = block.y - entity.height;
-                    } else if (new_y < block.y + block.height && entity.y > block.y) {
-                        final_rec.y = block.y+block.height;
+                    Coordenades& entity_c = entity.coords;
+                    Coordenades& block_c = block.coords;
+                    if (new_y > entity_c.y && new_y + entity.height > block_c.y && entity_c.y < block_c.y) {
+                        final_rec.coords.y = block_c.y - entity.height;
+                    } else if (new_y < block_c.y + block.height && entity_c.y > block_c.y) {
+                        final_rec.coords.y = block_c.y+block.height;
                     }
                     collision.vertical_collision = true;
                 }
@@ -87,7 +89,7 @@ struct Collision MapCollisions::check_near_blocks_collision(struct Rectangle& en
             }
         }
     }
-    collision.last_valid_position = final_rec;
+    collision.last_valid_position = final_rec.coords;
     return collision;
 }
 
@@ -96,14 +98,16 @@ struct Collision MapCollisions::rectangles_collision(const struct Rectangle& r1,
     struct Collision collision;
     collision.horizontal_collision = false;
     collision.vertical_collision = false;
-    if (r1.y <= r2.y + r2.height && r1.y + r1.height >= r2.y) {
-        if (r1.x <= r2.x + r2.width && r1.x + r1.width >= r2.x) {
+    const Coordenades& r1_c = r1.coords;
+    const Coordenades& r2_c = r2.coords;
+    if (r1_c.y <= r2_c.y + r2.height && r1_c.y + r1.height >= r2_c.y) {
+        if (r1.coords.x <= r2_c.x + r2.width && r1_c.x + r1.width >= r2_c.x) {
             collision.vertical_collision = true;
             collision.horizontal_collision = true;
-            if (r1.y + r1.height == r2.y || r1.y == r2.y + r2.height) {
+            if (r1_c.y + r1.height == r2_c.y || r1_c.y == r2_c.y + r2.height) {
                 collision.horizontal_collision = false;
             }
-            if (r1.y == r2.y+r2.height) {
+            if (r1_c.y == r2_c.y+r2.height) {
                 collision.vertical_collision = false;
             }
             return collision;

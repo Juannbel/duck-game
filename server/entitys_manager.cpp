@@ -55,6 +55,7 @@ void EntityManager::process_action(action& action){
             player.lay_down();
             break;
         case StandUp:
+            player.stand_up();
             break;
         case Jump:
             player.jump();

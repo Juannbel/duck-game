@@ -8,15 +8,19 @@
 #include <vector>
 #include <cstdint>
 
+struct Coordenades {
+    float x;
+    float y;
+};
+
 struct Rectangle {
-    int16_t x;
-    int16_t y;
-    int16_t width;
-    int16_t height;
+    Coordenades coords;
+    float width;
+    float height;
 };
 
 struct Collision {
-    Rectangle last_valid_position;
+    Coordenades last_valid_position;
     bool vertical_collision;
     bool horizontal_collision;
 };
@@ -30,15 +34,15 @@ private:
 public:
     MapCollisions();
     
-    void add_block(int16_t x, int16_t y);
+    void add_block(float x, float y);
     uint32_t get_and_inc_collectable_id();
     void add_gun(Gun& gun);
     void add_gun(GunEntity& gun);
-    void drop_gun(GunEntity &&gun, int16_t x, int16_t y);
+    void drop_gun(GunEntity &&gun, float x, float y);
     GunEntity pickup(const Rectangle &duck);
 
-    struct Collision check_near_blocks_collision(struct Rectangle& entity, int16_t new_x,
-                                                 int16_t new_y);
+    struct Collision check_near_blocks_collision(struct Rectangle& entity, float new_x,
+                                                 float new_y);
     struct Collision rectangles_collision(const struct Rectangle& r1, const struct Rectangle& r2);
 
     void add_guns_to_snapshot(Snapshot& snapshot);
