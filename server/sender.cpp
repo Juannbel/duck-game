@@ -4,8 +4,8 @@
 #include "common/liberror.h"
 #include "common/snapshot.h"
 
-ServerSender::ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, uint8_t duck_id):
-        protocol(protocol), sender_q(sender_q), duck_id(duck_id) {}
+ServerSender::ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q):
+        protocol(protocol), sender_q(sender_q) {}
 
 void ServerSender::run() {
     while (_keep_running) {

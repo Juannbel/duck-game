@@ -6,8 +6,8 @@
 
 #include "action.h"
 
-ServerReceiver::ServerReceiver(ServerProtocol& protocol, Queue<struct action>& q, uint8_t duck_id):
-        protocol(protocol), gameloop_q(q), duck_id(duck_id) {}
+ServerReceiver::ServerReceiver(ServerProtocol& protocol):
+        protocol(protocol) {}
 
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
 void ServerReceiver::run() {
@@ -26,9 +26,13 @@ void ServerReceiver::run() {
         action.command = cmd;
 
         try {
-            gameloop_q.push(action);
+            gameloop_q->push(action);
         } catch (const ClosedQueue& e) {
             std::cout << "ClosedQueue en receiver id: " << (int) duck_id << " " << e.what() << std::endl;
         }
     }
+}
+
+void ServerReceiver::set_gameloop_queue(Queue<struct action>* queue) {
+    gameloop_q = queue;
 }

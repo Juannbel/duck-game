@@ -15,7 +15,9 @@ private:
     uint8_t duck_id;
 
 public:
-    ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, uint8_t duck_id);
+    ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q);
+
+    void set_duck_id(uint8_t duck_id) { this->duck_id = duck_id; }
 
     void run() override;
 };
