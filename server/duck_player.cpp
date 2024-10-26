@@ -25,71 +25,6 @@ void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     hitbox.width = DUCK_HITBOX_WIDTH;
 }
 
-uint32_t DuckPlayer::pickup(){
-    GunEntity new_gun = map_collisions.pickup(hitbox);
-    map_collisions.drop_gun(std::move(equipped_gun), x, y);
-    equipped_gun = new_gun;
-    status.gun = equipped_gun.type;
-    return equipped_gun.id;
-}
-
-uint32_t DuckPlayer::update_status(const Command& command) {
-    if (status.is_jumping) {
-        ++it_jumping;
-    }
-    switch (command) {
-        case StartMovingRight:
-            if (!status.is_laying) {
-                status.facing_right = true;
-                status.is_running = true;
-            }
-            break;
-        case StartMovingLeft:
-            if (!status.is_laying) {
-                status.facing_right = false;
-                status.is_running = true;
-            }
-            break;
-        case StopMoving:
-            status.is_running = false;
-            break;
-        case StartShooting:
-            status.is_shooting = true;
-            break;
-        case StopShooting:
-            status.is_shooting = false;
-            break;
-        case LayDown:
-            status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
-            status.is_running = status.is_laying ? false : status.is_running;
-            break;
-        case StandUp:
-            status.is_laying = false;
-            break;
-        case Jump:
-            if (!ready_to_jump) {
-                break;
-            }
-            ready_to_jump = false;
-            if (status.is_falling) {
-                it_flapping = status.is_flapping ? it_flapping : 1;
-                status.is_flapping = true;
-                break;
-            }
-            it_jumping = status.is_jumping ? it_jumping : 1;
-            status.is_jumping = true;
-            break;
-        case StopJump:
-            ready_to_jump = true;
-            break;
-        case PickUp:
-            return pickup();
-        default:
-            break;
-    }
-    return 0;
-}
-
 void DuckPlayer::status_after_move(struct Collision& collision) {
     if (collision.vertical_collision && status.is_falling) {
         status.is_falling = false;
@@ -108,7 +43,7 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
     if (it_flapping > FLAPPING_TIME) {
         status.is_flapping = false;
         it_flapping = 0;
-    }
+    } 
     if (x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE) {
         status.is_dead = true;
         status.duck_hp = 0;
@@ -155,6 +90,62 @@ void DuckPlayer::move_duck() {
     hitbox.x = static_cast<int16_t>(x);
     hitbox.y = static_cast<int16_t>(y);
     status_after_move(collision);
+}
+
+void DuckPlayer::run(bool right) {
+    if (status.is_laying) { return; }
+    status.facing_right = right;
+    status.is_running = true;
+}
+
+void DuckPlayer::stop_running() {
+    status.is_running = false;
+}
+
+void DuckPlayer::shoot() {    
+    status.is_shooting = true;
+}
+
+void DuckPlayer::stop_shooting() {
+    status.is_shooting = false;
+}
+
+void DuckPlayer::lay_down() {
+    status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
+    status.is_running = status.is_laying ? false : status.is_running;
+    if (status.is_laying) {
+        hitbox.height = DUCK_HITBOX_HEIGHT/2;
+    }
+    
+}
+
+void DuckPlayer::stand_up() {
+    status.is_laying = false;
+    hitbox.height = DUCK_HITBOX_HEIGHT;
+}
+
+void DuckPlayer::jump() {
+    if (!ready_to_jump) { return; }
+    ready_to_jump = false;
+    if (status.is_falling) {
+        it_flapping = status.is_flapping ? it_flapping : 1;
+        status.is_flapping = true;
+        return;
+    }
+    it_jumping = status.is_jumping ? it_jumping : 1;
+    status.is_jumping = true;
+}
+
+void DuckPlayer::stop_jump() {
+    ready_to_jump = true;
+}
+
+uint32_t DuckPlayer::drop_and_pickup(){
+    GunEntity new_gun = map_collisions.pickup(hitbox);
+    map_collisions.drop_gun(std::move(equipped_gun), x, y);
+    equipped_gun = new_gun;
+    status.gun = equipped_gun.type;
+    return equipped_gun.id;
 }
 
 Duck DuckPlayer::get_status() { return status; }

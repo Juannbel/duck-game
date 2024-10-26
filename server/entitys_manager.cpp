@@ -35,7 +35,41 @@ EntityManager::EntityManager(Map& map_dto, uint8_t players_quantity) {
 
 void EntityManager::process_action(action& action){
     DuckPlayer& player = players[action.duck_id];
-    uint32_t id = player.update_status(action.command);
+    switch (action.command) {
+        case StartMovingRight:
+            player.run(true);
+            break;
+        case StartMovingLeft:
+            player.run(false);
+            break;
+        case StopMoving:
+            player.stop_running();
+            break;
+        case StartShooting:
+            player.shoot();
+            break;
+        case StopShooting:
+            player.stop_shooting();
+            break;
+        case LayDown:
+            player.lay_down();
+            break;
+        case StandUp:
+            break;
+        case Jump:
+            player.jump();
+            break;
+        case StopJump:
+            player.stop_jump();
+            break;
+        case PickUp:
+            check_spawn_picked(player.drop_and_pickup());
+        default:
+            break;
+    }    
+}
+
+void EntityManager::check_spawn_picked(uint32_t id) {
     if (id > 0) {
         for (auto &spawn : spawns) {
             if (spawn.collectable_id == id) {
@@ -47,6 +81,7 @@ void EntityManager::process_action(action& action){
         }
     }
 }
+
 
 void EntityManager::update_game_status() {
     for (auto& duck: players) {
