@@ -23,19 +23,8 @@ void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
 }
 
 uint32_t DuckPlayer::pickup(){
-    if (equipped_gun.type != None) {
-        equipped_gun.x = x;
-        equipped_gun.y = y;
-        map_collisions.add_gun(equipped_gun);
-        equipped_gun.drop();
-        status.gun = None;
-        return 0;
-    }
-
     GunEntity new_gun = map_collisions.pickup(hitbox);
-    if (new_gun.type == None) {
-        return 0;
-    }
+    map_collisions.drop_gun(std::move(equipped_gun), x, y);
     equipped_gun = new_gun;
     status.gun = equipped_gun.type;
     return equipped_gun.id;

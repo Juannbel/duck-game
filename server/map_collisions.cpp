@@ -34,12 +34,23 @@ GunEntity MapCollisions::pickup(const Rectangle &duck) {
         gun_r.y = gun.y;
         Collision collision = rectangles_collision(duck, gun_r);
         if(collision.horizontal_collision && collision.vertical_collision) {
-            new_gun = guns[id];
+            new_gun = std::move(guns[id]);
             guns.erase(id);
             return new_gun;
         }
     }
     return new_gun;
+}
+
+void MapCollisions::drop_gun(GunEntity &&gun, int16_t x, int16_t y){
+    if (gun.type == None) {
+        return;
+    }
+    
+    gun.x = x;
+    gun.y = y+DUCK_HITBOX_HEIGHT-COLLECTABLE_HITBOX_HEIGHT;
+    add_gun(gun);
+    gun.drop();
 }
 
 struct Collision MapCollisions::check_near_blocks_collision(struct Rectangle& entity, int16_t new_x,
