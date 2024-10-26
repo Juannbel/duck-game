@@ -8,7 +8,8 @@
 #include "common/snapshot.h"
 
 const int16_t NEAR_CELLS = 3;
-const int16_t COLLECTABLE_SPAWN_IT = 400;
+const int16_t COLLECTABLE_SPAWN_IT = 900;
+const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = 300;
 
 EntityManager::EntityManager(Map& map_dto, uint8_t players_quantity) {
     for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
@@ -34,18 +35,53 @@ EntityManager::EntityManager(Map& map_dto, uint8_t players_quantity) {
 
 void EntityManager::process_action(action& action){
     DuckPlayer& player = players[action.duck_id];
-    uint32_t id = player.update_status(action.command);
+    switch (action.command) {
+        case StartMovingRight:
+            player.run(true);
+            break;
+        case StartMovingLeft:
+            player.run(false);
+            break;
+        case StopMoving:
+            player.stop_running();
+            break;
+        case StartShooting:
+            player.shoot();
+            break;
+        case StopShooting:
+            player.stop_shooting();
+            break;
+        case LayDown:
+            player.lay_down();
+            break;
+        case StandUp:
+            break;
+        case Jump:
+            player.jump();
+            break;
+        case StopJump:
+            player.stop_jump();
+            break;
+        case PickUp:
+            check_spawn_picked(player.drop_and_pickup());
+        default:
+            break;
+    }    
+}
+
+void EntityManager::check_spawn_picked(uint32_t id) {
     if (id > 0) {
         for (auto &spawn : spawns) {
             if (spawn.collectable_id == id) {
                 spawn.picked = true;
                 spawn.collectable_id = 0;
                 spawn.it_since_picked = 0;
-                spawn.it_to_spawn = COLLECTABLE_SPAWN_IT + rand() % 100;
+                spawn.it_to_spawn = COLLECTABLE_SPAWN_IT + rand() % COLLECTABLE_EXTRA_SPAWN_TIME;
             }
         }
     }
 }
+
 
 void EntityManager::update_game_status() {
     for (auto& duck: players) {

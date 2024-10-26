@@ -25,6 +25,11 @@ private:
     const Snapshot& snapshot;
     ControlScheme controls;
 
+    Command last_move_command;
+    bool move_command;
+    bool moving_left;
+    bool moving_right;
+
 public:
     DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot, ControlScheme controls);
 

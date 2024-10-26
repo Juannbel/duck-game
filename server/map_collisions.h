@@ -34,7 +34,7 @@ public:
     uint32_t get_and_inc_collectable_id();
     void add_gun(Gun& gun);
     void add_gun(GunEntity& gun);
-
+    void drop_gun(GunEntity &&gun, int16_t x, int16_t y);
     GunEntity pickup(const Rectangle &duck);
 
     struct Collision check_near_blocks_collision(struct Rectangle& entity, int16_t new_x,

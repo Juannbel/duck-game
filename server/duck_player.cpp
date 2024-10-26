@@ -1,9 +1,11 @@
 #include "duck_player.h"
 
-const uint8_t JUMP_IT = 80;
-const uint8_t FLAPPING_IT = 10;
-const float DUCK_SPEED = 2;
-const float FALL_SPEED = 2;
+const uint8_t JUMP_IT = 120;
+const uint8_t INC_JUMP_IT = 4;
+const uint8_t DECREACENT_JUMP_SPEED = 20;
+const uint8_t FLAPPING_TIME = 10;
+const float DUCK_SPEED = 1;
+const float FALL_SPEED = 1;
 const float MAP_EDGE = 50;
 
 DuckPlayer::DuckPlayer(MapCollisions& map_collisions): status(), it_jumping(), x(), y(), map_collisions(map_collisions) { status.is_dead = true; }
@@ -16,79 +18,11 @@ void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     status.x = x;
     status.y = y;
     status.duck_id = id;
+    ready_to_jump = true;
     hitbox.x = x;
     hitbox.y = y;
     hitbox.height = DUCK_HITBOX_HEIGHT;
     hitbox.width = DUCK_HITBOX_WIDTH;
-}
-
-uint32_t DuckPlayer::pickup(){
-    if (equipped_gun.type != None) {
-        equipped_gun.x = x;
-        equipped_gun.y = y;
-        map_collisions.add_gun(equipped_gun);
-        equipped_gun.drop();
-        status.gun = None;
-        return 0;
-    }
-
-    GunEntity new_gun = map_collisions.pickup(hitbox);
-    if (new_gun.type == None) {
-        return 0;
-    }
-    equipped_gun = new_gun;
-    status.gun = equipped_gun.type;
-    return equipped_gun.id;
-}
-
-uint32_t DuckPlayer::update_status(const Command& command) {
-    if (status.is_jumping) {
-        ++it_jumping;
-    }
-    switch (command) {
-        case StartMovingRight:
-            if (!status.is_laying) {
-                status.facing_right = true;
-                status.is_running = true;
-            }
-            break;
-        case StartMovingLeft:
-            if (!status.is_laying) {
-                status.facing_right = false;
-                status.is_running = true;
-            }
-            break;
-        case StopMoving:
-            status.is_running = false;
-            break;
-        case StartShooting:
-            status.is_shooting = true;
-            break;
-        case StopShooting:
-            status.is_shooting = false;
-            break;
-        case LayDown:
-            status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
-            status.is_running = status.is_laying ? false : status.is_running;
-            break;
-        case StandUp:
-            status.is_laying = false;
-            break;
-        case Jump:
-            if (status.is_falling) {
-                it_flapping = status.is_flapping ? it_flapping : 1;
-                status.is_flapping = true;
-                break;
-            }
-            it_jumping = status.is_jumping ? it_jumping : 1;
-            status.is_jumping = true;
-            break;
-        case PickUp:
-            return pickup();
-        default:
-            break;
-    }
-    return 0;
 }
 
 void DuckPlayer::status_after_move(struct Collision& collision) {
@@ -106,10 +40,10 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
         status.is_falling = true;
         it_jumping = 0;
     }
-    if (it_flapping > FLAPPING_IT) {
+    if (it_flapping > FLAPPING_TIME) {
         status.is_flapping = false;
         it_flapping = 0;
-    }
+    } 
     if (x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE) {
         status.is_dead = true;
         status.duck_hp = 0;
@@ -125,14 +59,14 @@ void DuckPlayer::move_duck() {
     int16_t new_x = x;
     int16_t new_y = y;
     if (status.is_running) {
-        float move_x = 0;
-        if (status.is_jumping) {
-            move_x = DUCK_SPEED * 0.7;
-        } else if (status.is_falling) {
-            move_x = status.is_flapping ? DUCK_SPEED * 0.5 : DUCK_SPEED * 0.7;
-        } else if (!status.is_laying) {
-            move_x = DUCK_SPEED;
-        }
+        float move_x = DUCK_SPEED;
+        //if (status.is_jumping) {
+        //    float move_x = DUCK_SPEED;
+        //} else if (status.is_falling) {
+        //    move_x = status.is_flapping ? DUCK_SPEED * 0.5 : DUCK_SPEED * 0.7;
+        //} else if (!status.is_laying) {
+        //    move_x = DUCK_SPEED;
+        //}
         new_x = (status.facing_right) ? new_x + move_x : new_x - move_x;
     }
     if (status.is_falling) {
@@ -144,8 +78,8 @@ void DuckPlayer::move_duck() {
         new_y += move_y;
     }
     if (status.is_jumping) {
-        float move_y = FALL_SPEED * static_cast<float>((JUMP_IT - it_jumping) / 15);
-        it_jumping += 4;
+        float move_y = FALL_SPEED * static_cast<float>((JUMP_IT - it_jumping) / DECREACENT_JUMP_SPEED);
+        it_jumping += INC_JUMP_IT;
         new_y = y - move_y;
     }
     hitbox.x = static_cast<int16_t>(x);
@@ -156,6 +90,62 @@ void DuckPlayer::move_duck() {
     hitbox.x = static_cast<int16_t>(x);
     hitbox.y = static_cast<int16_t>(y);
     status_after_move(collision);
+}
+
+void DuckPlayer::run(bool right) {
+    if (status.is_laying) { return; }
+    status.facing_right = right;
+    status.is_running = true;
+}
+
+void DuckPlayer::stop_running() {
+    status.is_running = false;
+}
+
+void DuckPlayer::shoot() {    
+    status.is_shooting = true;
+}
+
+void DuckPlayer::stop_shooting() {
+    status.is_shooting = false;
+}
+
+void DuckPlayer::lay_down() {
+    status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
+    status.is_running = status.is_laying ? false : status.is_running;
+    if (status.is_laying) {
+        hitbox.height = DUCK_HITBOX_HEIGHT/2;
+    }
+    
+}
+
+void DuckPlayer::stand_up() {
+    status.is_laying = false;
+    hitbox.height = DUCK_HITBOX_HEIGHT;
+}
+
+void DuckPlayer::jump() {
+    if (!ready_to_jump) { return; }
+    ready_to_jump = false;
+    if (status.is_falling) {
+        it_flapping = status.is_flapping ? it_flapping : 1;
+        status.is_flapping = true;
+        return;
+    }
+    it_jumping = status.is_jumping ? it_jumping : 1;
+    status.is_jumping = true;
+}
+
+void DuckPlayer::stop_jump() {
+    ready_to_jump = true;
+}
+
+uint32_t DuckPlayer::drop_and_pickup(){
+    GunEntity new_gun = map_collisions.pickup(hitbox);
+    map_collisions.drop_gun(std::move(equipped_gun), x, y);
+    equipped_gun = new_gun;
+    status.gun = equipped_gun.type;
+    return equipped_gun.id;
 }
 
 Duck DuckPlayer::get_status() { return status; }

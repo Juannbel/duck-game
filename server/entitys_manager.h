@@ -27,6 +27,7 @@ private:
     std::vector<Spawn> spawns;
 
     void verify_spawn();
+    void check_spawn_picked(uint32_t id);
     GunType get_random_guntype();
 public:
     EntityManager(Map& map_dto, uint8_t players_quantity);
