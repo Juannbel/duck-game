@@ -71,7 +71,7 @@ duck_3:
           y: *y_row,
           x_offset_right: 10,
           x_offset_left: 10,
-          y_offset: 9,
+          y_offset: 20,
         }
 
   dead:
