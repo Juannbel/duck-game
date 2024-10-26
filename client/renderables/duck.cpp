@@ -37,7 +37,7 @@ void RenderableDuck::update(const Duck& duck) {
 
     is_facing_right = duck.facing_right;
 
-    if (duck.duck_hp == 0) {
+    if (duck.is_dead) {
         curr_animation = animations["dead"];
         is_alive = false;
     } else if (duck.is_jumping) {
@@ -59,6 +59,7 @@ void RenderableDuck::update(const Duck& duck) {
     curr_animation->update();
 
     gun.update(duck);
+    helmet.update(duck);
 }
 
 void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
@@ -73,6 +74,7 @@ void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
     }
 
     gun.render(renderer, camera);
+    helmet.render(renderer, camera);
 }
 
 void RenderableDuck::skip_frames(uint8_t frames) { curr_animation->skip_frames(frames); }

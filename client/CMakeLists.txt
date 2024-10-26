@@ -7,6 +7,7 @@ target_sources(taller_client
     renderables/duck.cpp
     renderables/equipped_gun.cpp
     renderables/collectable.cpp
+    renderables/helmet.h
     renderables/map.cpp
     camera.cpp
     client_protocol.cpp
@@ -24,6 +25,7 @@ target_sources(taller_client
     renderables/duck.h
     renderables/equipped_gun.h
     renderables/collectable.h
+    renderables/helmet.cpp
     renderables/map.h
     client_protocol.h
     client.h

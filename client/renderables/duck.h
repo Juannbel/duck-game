@@ -10,6 +10,7 @@
 
 #include "SDL2pp/Point.hh"
 #include "client/renderables/equipped_gun.h"
+#include "client/renderables/helmet.h"
 #include "common/snapshot.h"
 
 #include "animation.h"
@@ -20,6 +21,7 @@ private:
 
     Animation* curr_animation;
     RenderableEquippedGun gun;
+    RenderableHelmet helmet;
 
     std::unordered_map<std::string, Animation*> animations;
 

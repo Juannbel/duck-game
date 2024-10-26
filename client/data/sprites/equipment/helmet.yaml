@@ -1,0 +1,21 @@
+width: 32
+height: 32
+
+helmet:
+  standing:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 0, y: 0, x_offset_right: 13, x_offset_left: 7, y_offset: 17 }
+  
+  running:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 0, y: 0, x_offset_right: 13, x_offset_left: 7, y_offset: 17 }
+
+  laying:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 32, y: 0, x_offset_right: 19, x_offset_left: 3, y_offset: 0 }
