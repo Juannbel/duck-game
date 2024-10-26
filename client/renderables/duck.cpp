@@ -8,7 +8,7 @@
 #include "common/shared_constants.h"
 
 RenderableDuck::RenderableDuck(uint8_t duck_id):
-            duck_id(duck_id), position(0, 0), is_facing_right(true), is_alive(true) {
+            duck_id(duck_id), wings(duck_id), position(0, 0), is_facing_right(true), is_alive(true) {
         load_animations();
         curr_animation = animations["standing"];
     }
@@ -29,31 +29,7 @@ void RenderableDuck::load_animations() {
     load_animation("walking");
 }
 
-void RenderableDuck::update() {
-    curr_animation->update();
-    gun.update();
-}
-
-void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
-    SDL2pp::Rect hitbox = SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
-    if (curr_animation == animations["laying"]) {
-        hitbox.h = DUCK_HITBOX_HEIGHT / 2;
-    }
-    camera.transform_rect(hitbox);
-    renderer.DrawRect(hitbox);
-
-    curr_animation->render(renderer, camera, position, is_facing_right);
-
-    if (!is_alive) {
-        return;
-    }
-
-    gun.render(renderer, camera);
-}
-
-void RenderableDuck::skip_frames(uint8_t frames) { curr_animation->skip_frames(frames); }
-
-void RenderableDuck::update_from_snapshot(const Duck& duck) {
+void RenderableDuck::update(const Duck& duck) {
     Animation* prev_animation = curr_animation;
 
     position.x = duck.x;
@@ -80,8 +56,31 @@ void RenderableDuck::update_from_snapshot(const Duck& duck) {
         curr_animation->restart();
     }
 
-    gun.update_from_snapshot(duck);
+    curr_animation->update();
+
+    gun.update(duck);
+    wings.update(duck);
 }
+
+void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
+    SDL2pp::Rect hitbox = SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
+    if (curr_animation == animations["laying"]) {
+        hitbox.h = DUCK_HITBOX_HEIGHT / 2;
+    }
+    camera.transform_rect(hitbox);
+    renderer.DrawRect(hitbox);
+
+    curr_animation->render(renderer, camera, position, is_facing_right);
+
+    if (!is_alive) {
+        return;
+    }
+
+    gun.render(renderer, camera);
+    wings.render(renderer, camera);
+}
+
+void RenderableDuck::skip_frames(uint8_t frames) { curr_animation->skip_frames(frames); }
 
 bool RenderableDuck::is_dead() { return !is_alive; }
 

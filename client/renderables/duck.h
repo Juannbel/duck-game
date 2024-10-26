@@ -10,6 +10,7 @@
 
 #include "SDL2pp/Point.hh"
 #include "client/renderables/equipped_gun.h"
+#include "client/renderables/wings.h"
 #include "common/snapshot.h"
 
 #include "animation.h"
@@ -20,6 +21,7 @@ private:
 
     Animation* curr_animation;
     RenderableEquippedGun gun;
+    RenderableWings wings;
 
     std::unordered_map<std::string, Animation*> animations;
 
@@ -36,13 +38,11 @@ private:
 public:
     RenderableDuck(uint8_t duck_id);
 
-    void update();
+    void update(const Duck& duck);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 
     void skip_frames(uint8_t frames);
-
-    void update_from_snapshot(const Duck& duck);
 
     bool is_dead();
 

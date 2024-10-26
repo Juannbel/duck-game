@@ -1,8 +1,8 @@
-define: &y_row 32
+define: &y_row 0
 width: 32
 height: 32
 
-duck_1:
+duck_0:
   standing:
     iter_per_frame: 1
     loops: false
@@ -10,7 +10,7 @@ duck_1:
       - { x: 0, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9 }
 
   walking:
-    iter_per_frame: 3
+    iter_per_frame: 6
     loops: true
     frames:
       - { x: 32, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9 }
@@ -44,7 +44,7 @@ duck_1:
         }
 
   falling:
-    iter_per_frame: 2
+    iter_per_frame: 4
     loops: false
     frames:
       - {

@@ -18,7 +18,7 @@ class RenderableCollectable {
     public:
     RenderableCollectable(uint32_t id, GunType type);
 
-    void update_from_snapshot(const Gun& snapshot);
+    void update(const Gun& snapshot);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 

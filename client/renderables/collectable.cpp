@@ -1,5 +1,4 @@
 #include "collectable.h"
-#include <iostream>
 #include "SDL2pp/Rect.hh"
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
@@ -17,7 +16,7 @@ uint32_t RenderableCollectable::get_id() {
     return id;
 }
 
-void RenderableCollectable::update_from_snapshot(const Gun& snapshot) {
+void RenderableCollectable::update(const Gun& snapshot) {
     assert(snapshot.gun_id == id);
     position.x = snapshot.x;
     position.y = snapshot.y;
@@ -28,7 +27,6 @@ void RenderableCollectable::render(SDL2pp::Renderer& renderer, Camera& camera) {
     SDL2pp::Rect hitbox(position.x, position.y, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT);
     camera.transform_rect(hitbox);
     renderer.DrawRect(hitbox);
-
 
     animation.render(renderer, camera, position);
 }
@@ -44,5 +42,7 @@ std::unordered_map<GunType, std::string> RenderableCollectable::collectable_to_s
     {CowboyPistol, "cowboy_pistol"},
     {Magnum, "magnum"},
     {Shootgun, "shootgun"},
-    {Sniper, "sniper"}
+    {Sniper, "sniper"},
+    {Helmet, "helmet"},
+    {Armor, "armor"}
 };
