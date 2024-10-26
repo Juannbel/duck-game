@@ -9,17 +9,14 @@
 #include "SDL2pp/Point.hh"
 #include "SDL2pp/Rect.hh"
 
-Animation::Animation(SDL2pp::Texture& texture, const std::vector<FrameData>& frames,
-                     uint8_t iterations_per_frame, bool loops):
+Animation::Animation(SDL2pp::Texture& texture, const AnimationData& data) :
         texture(texture),
         current_frame(0),
         iterations_since_change(0),
-        iterations_per_frame(iterations_per_frame),
-        frames(frames),
-        loops(loops) {}
+        data(data) {}
 
 void Animation::update() {
-    if (iterations_since_change == iterations_per_frame) {
+    if (iterations_since_change == data.iter_per_frame) {
         this->advance_frame();
         iterations_since_change = 0;
     } else {
@@ -29,7 +26,7 @@ void Animation::update() {
 
 void Animation::render(SDL2pp::Renderer& renderer, Camera& camera, const SDL2pp::Point& dest,
                        bool facing_right, float angle) {
-    const FrameData& frame_data = frames[current_frame];
+    const FrameData& frame_data = data.frames[current_frame];
     int x_offset = facing_right ? frame_data.x_offset_right : frame_data.x_offset_left;
     SDL_RendererFlip flipType = facing_right ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
@@ -46,19 +43,19 @@ void Animation::render(SDL2pp::Renderer& renderer, Camera& camera, const SDL2pp:
 }
 
 void Animation::advance_frame() {
-    if (current_frame == frames.size() - 1 && !loops) {
+    if (current_frame == data.frames.size() - 1 && !data.loops) {
         return;
     }
     current_frame += 1;
-    current_frame = current_frame % frames.size();
+    current_frame = current_frame % data.frames.size();
 }
 
 void Animation::skip_frames(uint8_t frames_to_skip) {
     current_frame += frames_to_skip;
-    if (!loops && current_frame > frames.size() - 1) {
-        current_frame = frames.size() - 1;
+    if (!data.loops && current_frame > data.frames.size() - 1) {
+        current_frame = data.frames.size() - 1;
     }
-    current_frame = current_frame % frames.size();
+    current_frame = current_frame % data.frames.size();
 }
 
 void Animation::restart() { current_frame = 0; }

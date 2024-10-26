@@ -7,6 +7,10 @@
 #include "common/snapshot.h"
 #include "common/shared_constants.h"
 
+#define CAMERA_LERP_FACTOR 0.1f  // que tan rápido se mueve la cámara (entre 0.0 y 1.0)
+#define CAMERA_DEAD_ZONE 20.0f   // distancia mínima para mover la cámara
+#define PADDING 40
+
 using SDL2pp::Rect;
 using SDL2pp::Renderer;
 
@@ -54,25 +58,20 @@ void Camera::transform_rect(Rect& world_rect) {
 bool Camera::is_rect_visible(const Rect& world_rect) { return current_rect.Intersects(world_rect); }
 
 void Camera::adjust_aspect_ratio(Rect& target) {
+    int center_x = target.x + (target.w / 2);
+    int center_y = target.y + (target.h / 2);
+
     float window_aspect_ratio = (float)renderer.GetOutputWidth() / renderer.GetOutputHeight();
     float target_aspect_ratio = (float)target.w / target.h;
 
-    int width = target.w;
-    int height = target.h;
-
     if (target_aspect_ratio > window_aspect_ratio) {
-        height = width / window_aspect_ratio;
+        target.h = target.w / window_aspect_ratio;
     } else {
-        width = height * window_aspect_ratio;
+        target.w = target.h * window_aspect_ratio;
     }
 
-    int center_x = target.x + target.w / 2;
-    int centerY = target.y + target.h / 2;
-
-    target.x = center_x - width / 2;
-    target.y = centerY - height / 2;
-    target.w = width;
-    target.h = height;
+    target.x = center_x - (target.w / 2);
+    target.y = center_y - (target.h / 2);
 }
 
 void Camera::update_target(const Snapshot& snapshot) {
@@ -92,13 +91,10 @@ void Camera::update_target(const Snapshot& snapshot) {
         bottom = std::max(bottom, (int16_t)(duck.y + DUCK_HITBOX_HEIGHT));
     }
 
-    left -= PADDING;
-    top -= PADDING;
-    right += PADDING;
-    bottom += PADDING;
+    target_rect.x = left - PADDING;
+    target_rect.y = top - PADDING;
+    target_rect.w = right - left + 2 * PADDING;
+    target_rect.h = bottom - top + 2 * PADDING;
 
-    Rect target(left, top, right - left, bottom - top);
-    adjust_aspect_ratio(target);
-
-    target_rect = target;
+    adjust_aspect_ratio(target_rect);
 }

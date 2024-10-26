@@ -1,4 +1,5 @@
 #include "sender.h"
+
 #include <iostream>
 
 #include "common/liberror.h"
@@ -14,15 +15,15 @@ void ServerSender::run() {
         try {
             msg = sender_q.pop();  // bloqueante, espera a que haya algo
         } catch (const ClosedQueue&) {
-            std::cout << "Closed queue en sender id: " << (int) duck_id << std::endl;
+            std::cout << "Closed queue en sender id: " << (int)duck_id << std::endl;
             break;
         }
 
         try {
             // Envio el msg recibido en la queue
             protocol.send_snapshot(msg);
-        } catch (const LibError& le) { // Catchear excepcion de socket cerrado
-            std::cout << "LibError en sender id: " << (int) duck_id << " " << le.what() << std::endl;
+        } catch (const LibError& le) {  // Catchear excepcion de socket cerrado
+            std::cout << "LibError en sender id: " << (int)duck_id << " " << le.what() << std::endl;
         }
     }
 }

@@ -6,14 +6,17 @@
 #include "common/snapshot.h"
 
 #include <SDL2/SDL.h>
+#include <SDL_events.h>
 
 struct ControlScheme {
     SDL_Keycode move_right;
     SDL_Keycode move_left;
     SDL_Keycode jump;
     SDL_Keycode lay_down;
+    SDL_Keycode pick_up;
+    SDL_Keycode shoot;
+    SDL_Keycode look_up;
 };
-
 
 class DuckController {
 private:
@@ -23,61 +26,14 @@ private:
     ControlScheme controls;
 
 public:
-    DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot, ControlScheme controls)
-        : duck_id(duck_id), command_q(command_q), snapshot(snapshot), controls(controls) {}
+    DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot, ControlScheme controls);
 
-    void handleKeyDown(const SDL_Event& event) {
-        if (snapshot.ducks[duck_id].duck_hp == 0) return;
+    void handle_key_down(const SDL_Event& event);
 
-        if (event.key.keysym.sym == controls.move_right) {
-            if (!snapshot.ducks[duck_id].is_running || !snapshot.ducks[duck_id].facing_right) {
-                command_q.push(StartMovingRight);
-            }
-        } else if (event.key.keysym.sym == controls.move_left) {
-            if (!snapshot.ducks[duck_id].is_running || snapshot.ducks[duck_id].facing_right) {
-                command_q.push(StartMovingLeft);
-            }
-        } else if (event.key.keysym.sym == controls.jump) {
-            command_q.push(Jump);
-        } else if (event.key.keysym.sym == controls.lay_down) {
-            command_q.push(LayDown);
-        }
-    }
+    void handle_key_up(const SDL_Event& event);
 
-    void handleKeyUp(const SDL_Event& event) {
-        if (event.key.keysym.sym == controls.move_right) {
-            if (snapshot.ducks[duck_id].is_running && snapshot.ducks[duck_id].facing_right) {
-                command_q.push(StopMoving);
-            }
-        } else if (event.key.keysym.sym == controls.move_left) {
-            if (snapshot.ducks[duck_id].is_running && !snapshot.ducks[duck_id].facing_right) {
-                command_q.push(StopMoving);
-            }
-        } else if (event.key.keysym.sym == controls.lay_down) {
-            if (snapshot.ducks[duck_id].is_laying) {
-                command_q.push(StandUp);
-            }
-        }
-    }
+    bool process_events();
 
-    bool process_events() {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT ||
-                (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
-                return false;
-            }
-
-            if (snapshot.ducks[duck_id].is_dead) return true;
-
-            if (event.type == SDL_KEYDOWN) {
-                handleKeyDown(event);
-            } else if (event.type == SDL_KEYUP) {
-                handleKeyUp(event);
-            }
-        }
-        return true;
-    }
 };
 
 #endif

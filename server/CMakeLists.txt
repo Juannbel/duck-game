@@ -12,6 +12,8 @@ target_sources(taller_server
     server_protocol.cpp
     duck_player.cpp
     entitys_manager.cpp
+    map_collisions.cpp
+    gun_entity.cpp
     maps/yaml.cpp
     game.cpp
     games_monitor.cpp
@@ -27,6 +29,8 @@ target_sources(taller_server
     server_protocol.h
     duck_player.h
     entitys_manager.h
+    map_collisions.h
+    gun_entity.h
     maps/yaml.h
     game.h
     games_monitor.h

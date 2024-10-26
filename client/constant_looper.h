@@ -3,6 +3,10 @@
 
 #include <unordered_map>
 
+#include "SDL2pp/Renderer.hh"
+#include "client/renderables/animation.h"
+#include "client/renderables/collectable.h"
+#include "client/renderables/map.h"
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/map_dto.h"
@@ -19,14 +23,15 @@ private:
     Queue<Snapshot>& snapshot_q;
     Queue<Command>& command_q;
     Snapshot last_snapshot;
-
     DuckController p1_controller;
-
     Map map_dto;
 
     std::unordered_map<uint8_t, RenderableDuck*> ducks_renderables;
+    std::unordered_map<uint32_t, RenderableCollectable*> collectables_renderables;
 
     void process_snapshot();
+
+    void render(SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map);
 
     void sleep_or_catch_up(uint32_t& t1);
 

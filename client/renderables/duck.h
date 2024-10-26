@@ -6,6 +6,7 @@
 
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_render.h>
+#include <SDL_stdinc.h>
 
 #include "SDL2pp/Point.hh"
 #include "client/renderables/equipped_gun.h"
@@ -15,7 +16,7 @@
 
 class RenderableDuck {
 private:
-    void load_animations(SDL2pp::Texture* sprite, const std::string& config_path);
+    uint8_t duck_id;
 
     Animation* curr_animation;
     RenderableEquippedGun gun;
@@ -27,18 +28,19 @@ private:
     bool is_facing_right;
     bool is_alive;
 
+    void load_animations();
+
+    void load_animation(const std::string& animation_name);
+
+
 public:
-    RenderableDuck(SDL2pp::Texture* sprite, const std::string& config_path,
-                   SDL2pp::Texture* guns_sprite, const std::string& guns_config);
+    RenderableDuck(uint8_t duck_id);
 
-
-    void update();
+    void update(const Duck& duck);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 
     void skip_frames(uint8_t frames);
-
-    void update_from_snapshot(const Duck& duck);
 
     bool is_dead();
 

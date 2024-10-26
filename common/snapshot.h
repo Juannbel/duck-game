@@ -2,7 +2,7 @@
 #define SNAPSHOT_H
 
 #include <cstdint>
-
+#include <vector>
 #include <sys/types.h>
 
 #define MAX_DUCKS 4
@@ -21,7 +21,10 @@ enum GunType {
     CowboyPistol,
     Magnum,
     Shootgun,
-    Sniper
+    Sniper,
+    Helmet,
+    Armor,
+    GunTypeCount
 };
 
 struct Duck {
@@ -42,7 +45,7 @@ struct Duck {
     bool is_laying;  // se esta haciendo el muerto
     bool is_dead;
 
-    bool helment_equiped;
+    bool helmet_equiped;
     bool armor_equiped;
 
     int16_t x;
@@ -71,15 +74,10 @@ struct Bullet {
 } __attribute__((packed));
 
 struct Snapshot {
-    uint8_t players_quantity;
-    Duck ducks[MAX_DUCKS];
-
-    uint8_t guns_quantity;
-    Gun guns[MAX_GUNS];
-
-    uint8_t bullets_quantity;
-    Bullet bullets[MAX_BULLETS];
-} __attribute__((packed));
+    std::vector<Duck> ducks;
+    std::vector<Gun> guns;
+    std::vector<Bullet> bullets;
+};
 
 
 #endif

@@ -1,5 +1,7 @@
 #include "receiver.h"
+
 #include <iostream>
+
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/liberror.h"
@@ -17,8 +19,9 @@ void ServerReceiver::run() {
         Command cmd;
         try {
             cmd = protocol.recv_player_command();
-        } catch (const LibError& le) { // Catchear excepcion de socket cerrado
-            std::cout << "LibError en receiver id: " << (int) duck_id << " " << le.what() << std::endl;
+        } catch (const LibError& le) {  // Catchear excepcion de socket cerrado
+            std::cout << "LibError en receiver id: " << (int)duck_id << " " << le.what()
+                      << std::endl;
         }
 
         struct action action;
@@ -28,7 +31,8 @@ void ServerReceiver::run() {
         try {
             gameloop_q->push(action);
         } catch (const ClosedQueue& e) {
-            std::cout << "ClosedQueue en receiver id: " << (int) duck_id << " " << e.what() << std::endl;
+            std::cout << "ClosedQueue en receiver id: " << (int)duck_id << " " << e.what()
+                      << std::endl;
         }
     }
 }

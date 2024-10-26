@@ -1,11 +1,8 @@
 define: &y_row 32
-hitbox_width: 15
-hitbox_height: 23
-
 width: 32
 height: 32
 
-animations:
+duck_1:
   standing:
     iter_per_frame: 1
     loops: false
@@ -13,7 +10,7 @@ animations:
       - { x: 0, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9 }
 
   walking:
-    iter_per_frame: 3
+    iter_per_frame: 6
     loops: true
     frames:
       - { x: 32, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9 }
@@ -47,7 +44,7 @@ animations:
         }
 
   falling:
-    iter_per_frame: 2
+    iter_per_frame: 4
     loops: false
     frames:
       - {

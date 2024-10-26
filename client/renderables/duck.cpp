@@ -1,66 +1,35 @@
 #include "duck.h"
 
 #include <yaml-cpp/yaml.h>
-#include <vector>
+#include <string>
 
+#include "client/animation_data_provider.h"
+#include "client/textures_provider.h"
 #include "common/shared_constants.h"
 
-RenderableDuck::RenderableDuck(SDL2pp::Texture* sprite, const std::string& config_path,
-                   SDL2pp::Texture* guns_sprite, const std::string& guns_config):
-            gun(guns_sprite, guns_config), position(0, 0), is_facing_right(true), is_alive(true) {
-        load_animations(sprite, config_path);
+RenderableDuck::RenderableDuck(uint8_t duck_id):
+            duck_id(duck_id), position(0, 0), is_facing_right(true), is_alive(true) {
+        load_animations();
         curr_animation = animations["standing"];
     }
 
-void RenderableDuck::load_animations(SDL2pp::Texture* sprite, const std::string& config_path) {
-    YAML::Node config = YAML::LoadFile(config_path);
-
-    int width = config["width"].as<int>();
-    int height = config["height"].as<int>();
-
-    for (const auto& animation: config["animations"]) {
-        std::string name = animation.first.as<std::string>();
-        std::vector<FrameData> frames;
-
-        for (const auto& frame: animation.second["frames"]) {
-            int source_x = frame["x"].as<int>();
-            int source_y = frame["y"].as<int>();
-            int x_offset_right = frame["x_offset_right"].as<int>();
-            int x_offset_left = frame["x_offset_left"].as<int>();
-            int y_offset = frame["y_offset"].as<int>();
-
-            SDL2pp::Rect rect = SDL2pp::Rect(source_x, source_y, width, height);
-            frames.push_back({rect, x_offset_right, x_offset_left, y_offset});
-        }
-        uint8_t iter_per_frame = animation.second["iter_per_frame"].as<uint8_t>();
-        bool loops = animation.second["loops"].as<bool>();
-        animations[name] = new Animation(*sprite, frames, iter_per_frame, loops);
-    }
+void RenderableDuck::load_animation(const std::string& animation_name) {
+    animations[animation_name] =
+        new Animation(
+            *TexturesProvider::getTexture("duck"),
+            AnimationDataProvider::get_animation_data("duck_" + std::to_string(duck_id) + "_" + animation_name));
 }
 
-
-void RenderableDuck::update() {
-    curr_animation->update();
-    gun.update();
+void RenderableDuck::load_animations() {
+    load_animation("dead");
+    load_animation("falling");
+    load_animation("jumping");
+    load_animation("laying");
+    load_animation("standing");
+    load_animation("walking");
 }
 
-void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
-    // SDL2pp::Rect hitbox = SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
-    // camera.transform_rect(hitbox);
-    // renderer.DrawRect(hitbox);
-
-    curr_animation->render(renderer, camera, position, is_facing_right);
-
-    if (!is_alive) {
-        return;
-    }
-
-    gun.render(renderer, camera);
-}
-
-void RenderableDuck::skip_frames(uint8_t frames) { curr_animation->skip_frames(frames); }
-
-void RenderableDuck::update_from_snapshot(const Duck& duck) {
+void RenderableDuck::update(const Duck& duck) {
     Animation* prev_animation = curr_animation;
 
     position.x = duck.x;
@@ -87,8 +56,26 @@ void RenderableDuck::update_from_snapshot(const Duck& duck) {
         curr_animation->restart();
     }
 
-    gun.update_from_snapshot(duck);
+    curr_animation->update();
+
+    gun.update(duck);
 }
+
+void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
+    // SDL2pp::Rect hitbox = SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
+    // camera.transform_rect(hitbox);
+    // renderer.DrawRect(hitbox);
+
+    curr_animation->render(renderer, camera, position, is_facing_right);
+
+    if (!is_alive) {
+        return;
+    }
+
+    gun.render(renderer, camera);
+}
+
+void RenderableDuck::skip_frames(uint8_t frames) { curr_animation->skip_frames(frames); }
 
 bool RenderableDuck::is_dead() { return !is_alive; }
 
