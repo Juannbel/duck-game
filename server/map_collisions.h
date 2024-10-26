@@ -38,7 +38,8 @@ public:
     uint32_t get_and_inc_collectable_id();
     void add_gun(Gun& gun);
     void add_gun(GunEntity& gun);
-    void drop_gun(GunEntity &&gun, float x, float y);
+    void drop_gun(GunEntity &&gun, const Rectangle& duck_hitbox);
+    void move_guns_falling();
     GunEntity pickup(const Rectangle &duck);
 
     struct Collision check_near_blocks_collision(struct Rectangle& entity, float new_x,

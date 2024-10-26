@@ -1,8 +1,8 @@
 #include "map_collisions.h"
 
 #include "common/shared_constants.h"
-#include <iostream>
-
+#include "ticks.h"
+#define GUN_FALL_SPEED (120/TICKS)
 const int16_t NEAR_CELLS = 3;
 
 MapCollisions::MapCollisions() : collectable_id() {}
@@ -42,14 +42,26 @@ GunEntity MapCollisions::pickup(const Rectangle &duck) {
     return new_gun;
 }
 
-void MapCollisions::drop_gun(GunEntity &&gun, float x, float y){
+void MapCollisions::drop_gun(GunEntity &&gun, const Rectangle& duck_hitbox){
     if (gun.type == None) {
         return;
     }
-    gun.x = x;
-    gun.y = y+DUCK_HITBOX_HEIGHT-COLLECTABLE_HITBOX_HEIGHT;
+    gun.x = duck_hitbox.coords.x;
+    gun.y = duck_hitbox.coords.y+duck_hitbox.height-COLLECTABLE_HITBOX_HEIGHT;
     add_gun(gun);
     gun.drop();
+}
+
+void MapCollisions::move_guns_falling() {
+    Rectangle gun_r = {0, 0, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
+    for (auto &[id, gun] : guns) {
+        gun_r.coords.x = gun.x;
+        gun_r.coords.y = gun.y;
+        Coordenades coords = check_near_blocks_collision(gun_r, gun.x, gun.y+GUN_FALL_SPEED).last_valid_position;
+        gun.x = coords.x;
+        gun.y = coords.y;
+    }
+    
 }
 
 struct Collision MapCollisions::check_near_blocks_collision(struct Rectangle& entity, float new_x,
