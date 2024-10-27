@@ -60,7 +60,7 @@ void ConstantLooper::run() try {
     process_snapshot();
 
     Camera camera(renderer);
-    RenderableMap map(map_dto, TexturesProvider::getTexture("blocks"), TexturesProvider::getTexture("forest_background"));
+    RenderableMap map(map_dto, 0);
 
     bool keep_running = true;
     uint32_t t1 = SDL_GetTicks();
