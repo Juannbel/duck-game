@@ -8,7 +8,7 @@
 #include "common/shared_constants.h"
 
 RenderableDuck::RenderableDuck(uint8_t duck_id):
-            duck_id(duck_id), wings(duck_id), position(0, 0), is_facing_right(true), is_alive(true) {
+            duck_id(duck_id), wings(duck_id), position(50, 50), is_facing_right(true), is_alive(true) {
         load_animations();
         curr_animation = animations["standing"];
     }

@@ -13,7 +13,7 @@ void ClientSender::run() {
         try {
             command = sender_q.pop();  // bloqueante, espera a que haya algo
         } catch (const ClosedQueue&) {
-            std::cout << "Sender closed queue" << std::endl;
+            // std::cout << "closed queue en sender, todo bien, es para salir" << std::endl;
             break;
         }
 
@@ -21,7 +21,7 @@ void ClientSender::run() {
             // Envio el command recibido en la queue
             protocol.send_player_command(command);
         } catch (const LibError& le) {
-            std::cout << "Sender liberror" << std::endl;
+            // std::cout << "liberror en sender, todo bien, es para salir" << std::endl;
             break;
         }
     }

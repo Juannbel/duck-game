@@ -9,8 +9,8 @@
 
 #define CAMERA_LERP_FACTOR 0.1f  // que tan rápido se mueve la cámara (entre 0.0 y 1.0)
 #define CAMERA_DEAD_ZONE 20.0f   // distancia mínima para mover la cámara
-#define PADDING 250
-#define SCALE 6
+#define PADDING 200
+#define SCALE 4
 
 #define MARGIN_W (MAP_WIDTH_PIXELS / 2)
 #define MARGIN_H (MAP_HEIGHT_PIXELS / 2)

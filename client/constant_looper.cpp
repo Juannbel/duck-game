@@ -3,7 +3,9 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <string>
 #include <unordered_set>
+#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
@@ -16,6 +18,7 @@
 #include "SDL2pp/SDLTTF.hh"
 #include "client/camera.h"
 #include "client/duck_controller.h"
+#include "client/renderables/animation.h"
 #include "client/renderables/bullet.h"
 #include "client/renderables/collectable.h"
 #include "client/renderables/duck.h"
@@ -190,16 +193,27 @@ void ConstantLooper::render(SDL2pp::Renderer& renderer, Camera& camera, Renderab
 }
 
 bool ConstantLooper::waiting_screen(Renderer& renderer) {
-    SDL2pp::Font font(DATA_PATH "/fonts/primary.ttf", 30);
-    SDL2pp::Texture text_0(renderer, font.RenderText_Solid("Waiting for players   ", SDL_Color{255, 255, 255, 255}));
-    SDL2pp::Texture text_1(renderer, font.RenderText_Solid("Waiting for players.  ", SDL_Color{255, 255, 255, 255}));
-    SDL2pp::Texture text_2(renderer, font.RenderText_Solid("Waiting for players.. ", SDL_Color{255, 255, 255, 255}));
-    SDL2pp::Texture text_3(renderer, font.RenderText_Solid("Waiting for players...", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture *duck_texture(TexturesProvider::getTexture("duck"));
+    AnimationData duck_data(AnimationDataProvider::get_animation_data("duck_" + std::to_string(duck_id) + "_standing"));
 
-    std::array<SDL2pp::Texture*, 4> texts = {&text_0, &text_1, &text_2, &text_3};
+    SDL2pp::Font font(DATA_PATH "/fonts/primary.ttf", 30);
+    SDL2pp::Texture info(renderer, font.RenderText_Solid("Your duck id is " + std::to_string(duck_id), SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture waiting_0(renderer, font.RenderText_Solid("Waiting for players   ", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture waiting_1(renderer, font.RenderText_Solid("Waiting for players.  ", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture waiting_2(renderer, font.RenderText_Solid("Waiting for players.. ", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture waiting_3(renderer, font.RenderText_Solid("Waiting for players...", SDL_Color{255, 255, 255, 255}));
+
+    std::array<SDL2pp::Texture*, 4> texts = {&waiting_0, &waiting_1, &waiting_2, &waiting_3};
 
     uint8_t it = 0;
     uint8_t it_since_change = 0;
+
+    SDL2pp::Rect dst = duck_data.frames[0].rect;
+    dst.w *= 5;
+    dst.h *= 5;
+    dst.x = renderer.GetOutputWidth() / 2 - dst.w / 2;
+    dst.y = renderer.GetOutputHeight() / 4 * 3 - dst.h / 2;
+
     while (!snapshot_q.try_pop(last_snapshot)) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -209,6 +223,13 @@ bool ConstantLooper::waiting_screen(Renderer& renderer) {
         }
 
         renderer.Clear();
+
+        renderer.Copy(*duck_texture, duck_data.frames[0].rect, dst);
+        renderer.Copy(info, SDL2pp::NullOpt, SDL2pp::Rect(
+            SDL2pp::Point(
+                renderer.GetOutputWidth() / 2 - info.GetSize().x / 2,
+                renderer.GetOutputHeight() / 4 - info.GetSize().y / 2),
+            info.GetSize()));
 
         renderer.Copy(*texts[it], SDL2pp::NullOpt, SDL2pp::Rect(
             SDL2pp::Point(
