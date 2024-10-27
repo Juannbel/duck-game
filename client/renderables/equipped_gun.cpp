@@ -38,10 +38,6 @@ std::unordered_map<GunType, std::string> RenderableEquippedGun::gun_to_string {
 };
 
 void RenderableEquippedGun::update(const Duck& duck) {
-    if (duck.is_laying) return;
-    position.x = duck.x;
-    position.y = duck.y;
-
     facing_right = duck.facing_right;
     facing_up = duck.facing_up;
 
@@ -49,12 +45,14 @@ void RenderableEquippedGun::update(const Duck& duck) {
     current_gun = duck.gun;
 
     curr_animation->update();
+
+    if (duck.is_laying) return;
+    position.x = duck.x;
+    position.y = duck.y;
 }
 
 void RenderableEquippedGun::render(SDL2pp::Renderer& renderer, Camera& camera) {
-    if (current_gun == None) {
-        return;
-    }
+    if (current_gun == None) return;
 
     float angle = facing_up ? facing_right ? 290 : 70 : 0;
     curr_animation->render(renderer, camera, position, facing_right, angle);
@@ -64,4 +62,5 @@ RenderableEquippedGun::~RenderableEquippedGun() {
     for (auto& gun: guns) {
         delete gun.second;
     }
+    guns.clear();
 }

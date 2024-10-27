@@ -163,8 +163,10 @@ ConstantLooper::~ConstantLooper() {
     for (auto& duck: ducks_renderables) {
         delete duck.second;
     }
+    ducks_renderables.clear();
 
     for (auto& collectable: collectables_renderables) {
         delete collectable.second;
     }
+    collectables_renderables.clear();
 }

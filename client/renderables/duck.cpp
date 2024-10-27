@@ -65,7 +65,7 @@ void RenderableDuck::update(const Duck& duck) {
 void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
     SDL2pp::Rect hitbox = SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
     if (curr_animation == animations["laying"]) {
-        hitbox.h = DUCK_HITBOX_HEIGHT / 2;
+        hitbox.h = DUCK_LAYED_HITBOX_HEIGHT;
     }
     camera.transform_rect(hitbox);
     renderer.DrawRect(hitbox);

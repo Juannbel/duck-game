@@ -9,15 +9,18 @@
 
 #define CAMERA_LERP_FACTOR 0.1f  // que tan rápido se mueve la cámara (entre 0.0 y 1.0)
 #define CAMERA_DEAD_ZONE 20.0f   // distancia mínima para mover la cámara
-#define PADDING 40
+#define PADDING 50
+
+#define MARGIN_W (MAP_WIDTH_PIXELS / 2)
+#define MARGIN_H (MAP_HEIGHT_PIXELS / 2)
 
 using SDL2pp::Rect;
 using SDL2pp::Renderer;
 
 Camera::Camera(Renderer& renderer):
         renderer(renderer),
-        current_rect(-MAP_WIDTH_PIXELS/2, -MAP_HEIGHT_PIXELS/2, MAP_WIDTH_PIXELS * 2, MAP_HEIGHT_PIXELS*2),
-        target_rect(-MAP_WIDTH_PIXELS/2, -MAP_HEIGHT_PIXELS/2, MAP_WIDTH_PIXELS * 2, MAP_HEIGHT_PIXELS*2),
+        current_rect(-MARGIN_W, -MARGIN_H, MAP_WIDTH_PIXELS + 2 * MARGIN_W, MAP_HEIGHT_PIXELS + 2 * MARGIN_H),
+        target_rect(-MARGIN_W, -MARGIN_H, MAP_WIDTH_PIXELS + 2 * MARGIN_W, MAP_HEIGHT_PIXELS + 2 * MARGIN_H),
         scale_x((float)renderer.GetOutputWidth() / current_rect.w),
         scale_y((float)renderer.GetOutputHeight() / current_rect.h),
         scale(std::min(scale_x, scale_y)) {
@@ -32,7 +35,6 @@ void Camera::update(const Snapshot& snapshot) {
     float dw = target_rect.w - current_rect.w;
     float dh = target_rect.h - current_rect.h;
 
-    // No actualizar si estamos dentro de la zona muerta
     if (std::abs(dx) < CAMERA_DEAD_ZONE && std::abs(dy) < CAMERA_DEAD_ZONE &&
         std::abs(dw) < CAMERA_DEAD_ZONE && std::abs(dh) < CAMERA_DEAD_ZONE) {
         return;
@@ -58,9 +60,6 @@ void Camera::transform_rect(Rect& world_rect) {
 bool Camera::is_rect_visible(const Rect& world_rect) { return current_rect.Intersects(world_rect); }
 
 void Camera::adjust_aspect_ratio(Rect& target) {
-    int center_x = target.x + (target.w / 2);
-    int center_y = target.y + (target.h / 2);
-
     float window_aspect_ratio = (float)renderer.GetOutputWidth() / renderer.GetOutputHeight();
     float target_aspect_ratio = (float)target.w / target.h;
 
@@ -70,8 +69,21 @@ void Camera::adjust_aspect_ratio(Rect& target) {
         target.w = target.h * window_aspect_ratio;
     }
 
-    target.x = center_x - (target.w / 2);
-    target.y = center_y - (target.h / 2);
+    if (target.x < -MARGIN_W) {
+        target.x = -MARGIN_W;
+    }
+
+    if (target.y < -MARGIN_H) {
+        target.y = -MARGIN_H;
+    }
+
+    if (target.x + target.w > MAP_WIDTH_PIXELS + MARGIN_W) {
+        target.x = MAP_WIDTH_PIXELS + MARGIN_W - target.w;
+    }
+
+    if (target.y + target.h > MAP_HEIGHT_PIXELS + MARGIN_H) {
+        target.y = MAP_HEIGHT_PIXELS + MARGIN_H - target.h;
+    }
 }
 
 void Camera::update_target(const Snapshot& snapshot) {
