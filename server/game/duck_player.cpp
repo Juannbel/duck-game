@@ -146,8 +146,9 @@ uint32_t DuckPlayer::drop_and_pickup(){
     GunEntity new_gun = map_collisions.pickup(hitbox);
     map_collisions.drop_gun(std::move(equipped_gun), hitbox);
     equipped_gun = new_gun;
-    status.gun = equipped_gun.type;
-    return equipped_gun.id;
+    Gun gun_info = new_gun.get_gun_info();
+    status.gun = gun_info.type;
+    return gun_info.gun_id;
 }
 
 Duck DuckPlayer::get_status() { return status; }

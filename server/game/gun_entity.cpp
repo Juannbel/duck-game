@@ -14,3 +14,13 @@ void GunEntity::drop() {
     ammo = 0;
     trigger_pulled = false;
 }
+
+void GunEntity::set_new_coords(int16_t x, int16_t y) {
+    this->x = x;
+    this->y = y;
+}
+
+Gun GunEntity::get_gun_info() {
+    Gun gun_info = {id, type, x, y};
+    return gun_info;
+}
