@@ -61,27 +61,19 @@ void DuckController::handle_key_up(const SDL_Event& event) {
     }
 }
 
-bool DuckController::process_events() {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT ||
-            (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
-            return false;
-        }
+void DuckController::process_event(const SDL_Event& event) {
+    if (snapshot.ducks[duck_id].is_dead) return;
 
-        if (snapshot.ducks[duck_id].is_dead) return true;
-
-        if (event.type == SDL_KEYDOWN) {
-            handle_key_down(event);
-        } else if (event.type == SDL_KEYUP) {
-            handle_key_up(event);
-        }
+    if (event.type == SDL_KEYDOWN) {
+        handle_key_down(event);
+    } else if (event.type == SDL_KEYUP) {
+        handle_key_up(event);
     }
+}
 
+void DuckController::send_last_move_command() {
     if (move_command) {
         command_q.push(last_move_command);
         move_command = false;
     }
-
-    return true;
 }

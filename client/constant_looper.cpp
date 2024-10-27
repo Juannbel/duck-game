@@ -1,17 +1,24 @@
 #include "constant_looper.h"
 
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <unordered_set>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
+#include <SDL_events.h>
 
+#include "SDL2pp/Font.hh"
 #include "SDL2pp/Music.hh"
+#include "SDL2pp/Optional.hh"
+#include "SDL2pp/Renderer.hh"
+#include "SDL2pp/SDLTTF.hh"
 #include "client/camera.h"
 #include "client/duck_controller.h"
 #include "client/renderables/bullet.h"
 #include "client/renderables/collectable.h"
+#include "client/renderables/duck.h"
 #include "client/renderables/map.h"
 #include "client/textures_provider.h"
 #include "animation_data_provider.h"
@@ -35,9 +42,10 @@ ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_
         duck_id(match_info.duck_id),
         snapshot_q(snapshot_q),
         command_q(command_q),
-        last_snapshot(snapshot_q.pop()),
+        // last_snapshot(snapshot_q.pop()),
         p1_controller(duck_id, command_q, last_snapshot, {SDLK_d, SDLK_a, SDLK_w, SDLK_s, SDLK_c, SDLK_v, SDLK_e}),
         map_dto(match_info.map) {}
+
 
 void ConstantLooper::run() try {
     SDL sdl(SDL_INIT_VIDEO);
@@ -46,6 +54,8 @@ void ConstantLooper::run() try {
                   WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 
     Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    SDL2pp::SDLTTF sdl_ttf;
 
     SDL2pp::Mixer mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
 
@@ -57,6 +67,8 @@ void ConstantLooper::run() try {
     TexturesProvider::loadTextures(renderer);
     AnimationDataProvider::load_animations_data();
 
+    if (!waiting_screen(renderer)) return;
+
     process_snapshot();
 
     Camera camera(renderer);
@@ -66,8 +78,7 @@ void ConstantLooper::run() try {
     uint32_t t1 = SDL_GetTicks();
 
     while (keep_running) {
-        // Event processing:
-        keep_running = p1_controller.process_events();
+        keep_running = process_events();
 
         while (snapshot_q.try_pop(last_snapshot)) {}
         // Actualizar el estado de todo lo que se renderiza
@@ -112,7 +123,6 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 }
 
 void ConstantLooper::process_snapshot() {
-    // actualizar el estado de todos los renderizables
     for (auto& duck : last_snapshot.ducks) {
         if (ducks_renderables.find(duck.duck_id) == ducks_renderables.end()) {
             ducks_renderables[duck.duck_id] = new RenderableDuck(duck.duck_id);
@@ -120,19 +130,15 @@ void ConstantLooper::process_snapshot() {
         ducks_renderables[duck.duck_id]->update(duck);
     }
 
-    // updateadmos los collectables, y los que no esten en el snapshot los eliminamos
     std::unordered_set<uint32_t> collectables_in_snapshot;
-
     for (const Gun& gun : last_snapshot.guns) {
         collectables_in_snapshot.insert(gun.gun_id);
         if (collectables_renderables.find(gun.gun_id) == collectables_renderables.end()) {
-            // apareció un nuevo collectable
             collectables_renderables[gun.gun_id] = new RenderableCollectable(gun.gun_id, gun.type);
         }
         collectables_renderables[gun.gun_id]->update(gun);
     }
 
-    // eliminamos los collectables que no esten en el snapshot
     for (auto it = collectables_renderables.begin(); it != collectables_renderables.end();) {
         if (collectables_in_snapshot.find(it->first) == collectables_in_snapshot.end()) {
             delete it->second;
@@ -146,13 +152,11 @@ void ConstantLooper::process_snapshot() {
     for (const Bullet& bullet : last_snapshot.bullets) {
         bullets_in_snapshot.insert(bullet.bullet_id);
         if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end()) {
-            // apareció una nueva bala
             bullets_renderables[bullet.bullet_id] = new RenderableBullet(bullet.bullet_id, bullet.type);
         }
         bullets_renderables[bullet.bullet_id]->update(bullet);
     }
 
-    // eliminamos las balas que no esten en el snapshot
     for (auto it = bullets_renderables.begin(); it != bullets_renderables.end();) {
         if (bullets_in_snapshot.find(it->first) == bullets_in_snapshot.end()) {
             delete it->second;
@@ -183,6 +187,59 @@ void ConstantLooper::render(SDL2pp::Renderer& renderer, Camera& camera, Renderab
     renderer.Present();
 }
 
+bool ConstantLooper::waiting_screen(Renderer& renderer) {
+    SDL2pp::Font font(DATA_PATH "/fonts/primary.ttf", 30);
+    SDL2pp::Texture text_0(renderer, font.RenderText_Solid("Waiting for players   ", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture text_1(renderer, font.RenderText_Solid("Waiting for players.  ", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture text_2(renderer, font.RenderText_Solid("Waiting for players.. ", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture text_3(renderer, font.RenderText_Solid("Waiting for players...", SDL_Color{255, 255, 255, 255}));
+
+    std::array<SDL2pp::Texture*, 4> texts = {&text_0, &text_1, &text_2, &text_3};
+
+    uint8_t it = 0;
+    uint8_t it_since_change = 0;
+    while (!snapshot_q.try_pop(last_snapshot)) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                return false;
+            }
+        }
+
+        renderer.Clear();
+
+        renderer.Copy(*texts[it], SDL2pp::NullOpt, SDL2pp::Rect(
+            SDL2pp::Point(
+                renderer.GetOutputWidth() / 2 - texts[it]->GetSize().x / 2,
+                renderer.GetOutputHeight() / 2 - texts[it]->GetSize().y / 2),
+            texts[it]->GetSize()));
+        renderer.Present();
+
+        it_since_change++;
+        if (it_since_change == 40) {
+            it = (it + 1) % texts.size();
+            it_since_change = 0;
+        }
+
+        SDL_Delay(RATE);
+    }
+
+    return true;
+}
+
+bool ConstantLooper::process_events() {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            return false;
+        }
+
+        p1_controller.process_event(event);
+    }
+
+    p1_controller.send_last_move_command();
+    return true;
+}
 
 ConstantLooper::~ConstantLooper() {
     for (auto& duck: ducks_renderables) {

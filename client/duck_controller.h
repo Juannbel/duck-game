@@ -30,15 +30,15 @@ private:
     bool moving_left;
     bool moving_right;
 
+    void handle_key_down(const SDL_Event& event);
+    void handle_key_up(const SDL_Event& event);
+
 public:
     DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot, ControlScheme controls);
 
-    void handle_key_down(const SDL_Event& event);
+    void process_event(const SDL_Event& event);
 
-    void handle_key_up(const SDL_Event& event);
-
-    bool process_events();
-
+    void send_last_move_command();
 };
 
 #endif

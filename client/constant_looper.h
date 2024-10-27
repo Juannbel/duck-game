@@ -31,7 +31,11 @@ private:
     std::unordered_map<uint32_t, RenderableCollectable*> collectables_renderables;
     std::unordered_map<uint32_t, RenderableBullet*> bullets_renderables;
 
+    bool process_events();
+
     void process_snapshot();
+
+    bool waiting_screen(SDL2pp::Renderer& renderer);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map);
 
