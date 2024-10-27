@@ -3,16 +3,19 @@
 
 #include <cstdint>
 #include "client/camera.h"
+#include "client/renderables/animation.h"
 #include "common/snapshot.h"
 #include <SDL2pp/SDL2pp.hh>
 
 class RenderableBullet {
 private:
     uint32_t id;
-    // Animation animation;
-    GunType type;
+    Animation animation;
 
     SDL2pp::Point position;
+    uint16_t angle;
+
+    static std::unordered_map<GunType, std::string> gun_to_string;
 
     public:
     RenderableBullet(uint32_t id, GunType type);

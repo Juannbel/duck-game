@@ -20,6 +20,8 @@ void RenderableDuck::load_animation(const std::string& animation_name) {
             AnimationDataProvider::get_animation_data("duck_" + std::to_string(duck_id) + "_" + animation_name));
 }
 
+uint8_t RenderableDuck::get_id() { return duck_id; }
+
 void RenderableDuck::load_animations() {
     load_animation("dead");
     load_animation("falling");

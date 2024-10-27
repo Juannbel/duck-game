@@ -172,16 +172,18 @@ void ConstantLooper::render(SDL2pp::Renderer& renderer, Camera& camera, Renderab
 
     map.render(renderer, camera);
 
+    for (auto& bullet: bullets_renderables) {
+        bullet.second->render(renderer, camera);
+    }
+
     for (auto& duck: ducks_renderables) {
+        if (duck.first == duck_id) continue;
         duck.second->render(renderer, camera);
     }
+    ducks_renderables[duck_id]->render(renderer, camera);
 
     for (auto& collectable: collectables_renderables) {
         collectable.second->render(renderer, camera);
-    }
-
-    for (auto& bullet: bullets_renderables) {
-        bullet.second->render(renderer, camera);
     }
 
     renderer.Present();
@@ -235,6 +237,8 @@ bool ConstantLooper::process_events() {
         }
 
         p1_controller.process_event(event);
+        // para cuando haya un segundo jugador
+        // p2_controller.process_event(event);
     }
 
     p1_controller.send_last_move_command();
