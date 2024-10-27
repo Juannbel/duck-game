@@ -10,7 +10,7 @@
 
 #include "action.h"
 #include "game/duck_player.h"
-#include "game/entitys_manager.h"
+#include "game/game_operator.h"
 #include "list_monitor.h"
 
 #include <map>
@@ -19,7 +19,7 @@ class GameLoop: public Thread {
 private:
     Queue<struct action>& actions_queue;
     QueueListMonitor& snaps_queue_list;
-    EntityManager entity_manager;
+    GameOperator game_operator;
     uint8_t match_number;
     std::map<uint8_t, uint8_t> winners_id_count;
 

@@ -5,9 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "common/snapshot.h"
-#include "game/duck_player.h"
-#include "game/entitys_manager.h"
 #include "game/ticks.h"
 
 using std::chrono::high_resolution_clock;
@@ -19,7 +16,7 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
                    uint8_t players_quantity):
         actions_queue(game_queue),
         snaps_queue_list(queue_list),
-        entity_manager(map_dto, players_quantity),
+        game_operator(map_dto, players_quantity),
         match_number(1) {}
 
 void GameLoop::run() {
@@ -46,11 +43,11 @@ void GameLoop::run() {
 void GameLoop::pop_and_process_all() {
     struct action action;
     while (actions_queue.try_pop(action)) {
-        entity_manager.process_action(action);
+        game_operator.process_action(action);
     }
-    entity_manager.update_game_status();
+    game_operator.update_game_status();
     Snapshot actual_status = {};
-    entity_manager.get_snapshot(actual_status);
+    game_operator.get_snapshot(actual_status);
     check_for_winner(actual_status);
     push_responce(actual_status);
 }

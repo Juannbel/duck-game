@@ -4,7 +4,8 @@
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 
-#include "map_collisions.h"
+#include "collectables_manager.h"
+#include "collisions.h"
 
 class DuckPlayer {
 private:
@@ -14,11 +15,12 @@ private:
     uint8_t it_flapping;
     bool ready_to_jump;
     Rectangle hitbox;
-    MapCollisions& map_collisions;
+    CollisionChecks& collisions;
+    CollectablesManager& collectables;
 
     void status_after_move(struct Collision& collision);
 public:
-    DuckPlayer(MapCollisions& map_collisions);
+    DuckPlayer(CollectablesManager& collectables, CollisionChecks &collisions);
     void set_coordenades_and_id(int16_t x, int16_t y, uint8_t id);
     void move_duck();
     void run(bool right);

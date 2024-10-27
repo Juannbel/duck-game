@@ -9,9 +9,8 @@ const uint8_t DECREACENT_JUMP_SPEED = TICKS / 3;
 const uint8_t FLAPPING_TIME = TICKS / 3;
 const float DUCK_SPEED = 120/TICKS;
 const float FALL_SPEED = 120/TICKS;
-const float MAP_EDGE = 50;
 
-DuckPlayer::DuckPlayer(MapCollisions& map_collisions): status(), it_jumping(), hitbox(), map_collisions(map_collisions) { status.is_dead = true; }
+DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks &collisions): status(), it_jumping(), hitbox(), collisions(collisions), collectables(collectables) { status.is_dead = true; }
 
 void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     status.duck_hp = 100;
@@ -24,10 +23,6 @@ void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     status.y = y;
     status.duck_id = id;
     ready_to_jump = true;
-}
-
-bool out_of_map(float x, float y) {
-    return x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE;
 }
 
 void DuckPlayer::status_after_move(struct Collision& collision) {
@@ -49,7 +44,7 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
         status.is_flapping = false;
         it_flapping = 0;
     } 
-    if (out_of_map(hitbox.coords.x, hitbox.coords.y)) {
+    if (collisions.out_of_map(hitbox.coords.x, hitbox.coords.y)) {
         status.is_dead = true;
         status.duck_hp = 0;
     }
@@ -85,7 +80,7 @@ void DuckPlayer::move_duck() {
         it_jumping += INC_JUMP_IT;
         new_y -= move_y;
     }
-    struct Collision collision = map_collisions.check_near_blocks_collision(hitbox, new_x, new_y);
+    struct Collision collision = collisions.check_near_blocks_collision(hitbox, new_x, new_y);
     hitbox.coords.x = collision.last_valid_position.x;
     hitbox.coords.y = collision.last_valid_position.y;
     status_after_move(collision);
@@ -138,14 +133,12 @@ void DuckPlayer::jump() {
     status.is_jumping = true;
 }
 
-void DuckPlayer::stop_jump() {
-    ready_to_jump = true;
-}
+void DuckPlayer::stop_jump() { ready_to_jump = true; }
 
 uint32_t DuckPlayer::drop_and_pickup(){
-    GunEntity new_gun = map_collisions.pickup(hitbox);
-    map_collisions.drop_gun(std::move(equipped_gun), hitbox);
-    equipped_gun = new_gun;
+    GunEntity new_gun = collectables.pickup(hitbox);
+    collectables.drop_gun(std::move(equipped_gun), hitbox);
+    equipped_gun = std::move(new_gun);
     Gun gun_info = new_gun.get_gun_info();
     status.gun = gun_info.type;
     return gun_info.gun_id;

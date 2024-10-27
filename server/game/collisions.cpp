@@ -1,72 +1,31 @@
-#include "map_collisions.h"
+#include "collisions.h"
 
 #include "common/shared_constants.h"
-#include "ticks.h"
-#define GUN_FALL_SPEED (120/TICKS)
+
 const int16_t NEAR_CELLS = 3;
+const float MAP_EDGE = 50;
 
-MapCollisions::MapCollisions() : collectable_id() {}
-
-void MapCollisions::add_block(float x, float y) {
+void CollisionChecks::add_block(float x, float y) {
     Rectangle rectangle = {x, y, BLOCK_SIZE, BLOCK_SIZE};
     blocks[y / BLOCK_SIZE].push_back(rectangle);
 }
 
-uint32_t MapCollisions::get_and_inc_collectable_id() { return ++collectable_id; }
-
-void MapCollisions::add_gun(Gun& gun) {
-    GunEntity gun_entity(gun);
-    guns[gun.gun_id] = gun_entity;
-}
-
-void MapCollisions::add_gun(GunEntity& gun) {
-    Gun gun_info = gun.get_gun_info();
-    if (gun_info.type == None) {
-        return;
-    }
-    guns[gun_info.gun_id] = gun;
-}
-
-GunEntity MapCollisions::pickup(const Rectangle &duck) {
-    Rectangle gun_r = {0, 0, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
-    GunEntity new_gun;
-    for (auto& [id, gun] : guns) {
-        Gun gun_info = gun.get_gun_info();
-        gun_r.coords.x = gun_info.x;
-        gun_r.coords.y = gun_info.y;
-        Collision collision = rectangles_collision(duck, gun_r);
-        if(collision.horizontal_collision && collision.vertical_collision) {
-            new_gun = std::move(guns[id]);
-            guns.erase(id);
-            return new_gun;
+void CollisionChecks::load_map(Map& map_dto) {
+    blocks.clear();
+    for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
+        for (int16_t j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
+            if (map_dto.blocks[i][j] != BlockType::Empty) {
+                add_block(j * BLOCK_SIZE, i * BLOCK_SIZE);
+            }
         }
     }
-    return new_gun;
 }
 
-void MapCollisions::drop_gun(GunEntity &&gun, const Rectangle& duck_hitbox){
-    Gun gun_info = gun.get_gun_info();
-    if (gun_info.type == None) {
-        return;
-    }
-    gun.set_new_coords(duck_hitbox.coords.x, duck_hitbox.coords.y+duck_hitbox.height-COLLECTABLE_HITBOX_HEIGHT);
-    add_gun(gun);
-    gun.drop();
+bool CollisionChecks::out_of_map(float x, float y) {
+    return x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE;
 }
 
-void MapCollisions::move_guns_falling() {
-    Rectangle gun_r = {0, 0, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
-    for (auto &[id, gun] : guns) {
-        Gun gun_info = gun.get_gun_info();
-        gun_r.coords.x = gun_info.x;
-        gun_r.coords.y = gun_info.y;
-        Coordenades coords = check_near_blocks_collision(gun_r, gun_info.x, gun_info.y+GUN_FALL_SPEED).last_valid_position;
-        gun.set_new_coords(coords.x, coords.y);
-    }
-    
-}
-
-struct Collision MapCollisions::check_near_blocks_collision(struct Rectangle& entity, float new_x,
+struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& entity, float new_x,
                                                             float new_y) {
     int16_t row_index = entity.coords.y / BLOCK_SIZE;
     int16_t i = (row_index < NEAR_CELLS) ? 0 : row_index - NEAR_CELLS;
@@ -107,7 +66,7 @@ struct Collision MapCollisions::check_near_blocks_collision(struct Rectangle& en
     return collision;
 }
 
-struct Collision MapCollisions::rectangles_collision(const struct Rectangle& r1,
+struct Collision CollisionChecks::rectangles_collision(const struct Rectangle& r1,
                                                      const struct Rectangle& r2) {
     struct Collision collision;
     collision.horizontal_collision = false;
@@ -128,11 +87,4 @@ struct Collision MapCollisions::rectangles_collision(const struct Rectangle& r1,
         }
     }
     return collision;
-}
-
-void MapCollisions::add_guns_to_snapshot(Snapshot& snapshot) {
-    for (auto &[id, gun] : guns) {
-        Gun snapshot_gun = gun.get_gun_info();
-        snapshot.guns.push_back(snapshot_gun);
-    }
 }

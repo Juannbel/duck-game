@@ -10,10 +10,12 @@ target_sources(taller_server
     list_monitor.cpp
     game_loop.cpp
     server_protocol.cpp
+    game/game_operator.cpp
+    game/collectables_manager.cpp
+    game/collisions.cpp
     game/duck_player.cpp
-    game/entitys_manager.cpp
-    game/map_collisions.cpp
     game/gun_entity.cpp
+    game/gun_types.cpp
     maps/yaml.cpp
     PUBLIC
     # .h files
@@ -25,10 +27,12 @@ target_sources(taller_server
     list_monitor.h
     game_loop.h
     server_protocol.h
+    game/game_operator.h
+    game/collectables_manager.h
+    game/collisions.h
     game/duck_player.h
-    game/entitys_manager.h
-    game/map_collisions.h
     game/gun_entity.h
+    game/gun_types.h
     game/ticks.h
     maps/yaml.h
     )
