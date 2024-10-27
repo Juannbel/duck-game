@@ -7,8 +7,8 @@
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 #include "map_collisions.h"
-#include "server/duck_player.h"
-#include "server/action.h"
+#include "duck_player.h"
+#include "../action.h"
 
 struct Spawn {
     int16_t x;

@@ -6,9 +6,9 @@
 #include <vector>
 
 #include "common/snapshot.h"
-#include "server/duck_player.h"
-#include "server/entitys_manager.h"
-#include "ticks.h"
+#include "game/duck_player.h"
+#include "game/entitys_manager.h"
+#include "game/ticks.h"
 
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;

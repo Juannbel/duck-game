@@ -3,7 +3,7 @@
 
 #include <common/map_dto.h>
 #include <yaml-cpp/yaml.h>
-#include "server/entitys_manager.h"
+#include "server/game/entitys_manager.h"
 
 class YAMLLoader {
 public:

@@ -9,8 +9,8 @@
 #include "common/thread.h"
 
 #include "action.h"
-#include "duck_player.h"
-#include "entitys_manager.h"
+#include "game/duck_player.h"
+#include "game/entitys_manager.h"
 #include "list_monitor.h"
 
 #include <map>
