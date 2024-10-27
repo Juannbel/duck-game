@@ -10,6 +10,7 @@
 #include "SDL2pp/Music.hh"
 #include "client/camera.h"
 #include "client/duck_controller.h"
+#include "client/renderables/bullet.h"
 #include "client/renderables/collectable.h"
 #include "client/renderables/map.h"
 #include "client/textures_provider.h"
@@ -120,7 +121,7 @@ void ConstantLooper::process_snapshot() {
     }
 
     // updateadmos los collectables, y los que no esten en el snapshot los eliminamos
-    std::unordered_set<int> collectables_in_snapshot;
+    std::unordered_set<uint32_t> collectables_in_snapshot;
 
     for (const Gun& gun : last_snapshot.guns) {
         collectables_in_snapshot.insert(gun.gun_id);
@@ -140,6 +141,26 @@ void ConstantLooper::process_snapshot() {
             ++it;
         }
     }
+
+    std::unordered_set<uint32_t> bullets_in_snapshot;
+    for (const Bullet& bullet : last_snapshot.bullets) {
+        bullets_in_snapshot.insert(bullet.bullet_id);
+        if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end()) {
+            // apareció una nueva bala
+            bullets_renderables[bullet.bullet_id] = new RenderableBullet(bullet.bullet_id, bullet.type);
+        }
+        bullets_renderables[bullet.bullet_id]->update(bullet);
+    }
+
+    // eliminamos las balas que no esten en el snapshot
+    for (auto it = bullets_renderables.begin(); it != bullets_renderables.end();) {
+        if (bullets_in_snapshot.find(it->first) == bullets_in_snapshot.end()) {
+            delete it->second;
+            it = bullets_renderables.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 void ConstantLooper::render(SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map) {
@@ -153,6 +174,10 @@ void ConstantLooper::render(SDL2pp::Renderer& renderer, Camera& camera, Renderab
 
     for (auto& collectable: collectables_renderables) {
         collectable.second->render(renderer, camera);
+    }
+
+    for (auto& bullet: bullets_renderables) {
+        bullet.second->render(renderer, camera);
     }
 
     renderer.Present();
@@ -169,4 +194,9 @@ ConstantLooper::~ConstantLooper() {
         delete collectable.second;
     }
     collectables_renderables.clear();
+
+    for (auto& bullet: bullets_renderables) {
+        delete bullet.second;
+    }
+    bullets_renderables.clear();
 }

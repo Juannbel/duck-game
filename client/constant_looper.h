@@ -5,6 +5,7 @@
 
 #include "SDL2pp/Renderer.hh"
 #include "client/renderables/animation.h"
+#include "client/renderables/bullet.h"
 #include "client/renderables/collectable.h"
 #include "client/renderables/map.h"
 #include "common/blocking_queue.h"
@@ -28,6 +29,7 @@ private:
 
     std::unordered_map<uint8_t, RenderableDuck*> ducks_renderables;
     std::unordered_map<uint32_t, RenderableCollectable*> collectables_renderables;
+    std::unordered_map<uint32_t, RenderableBullet*> bullets_renderables;
 
     void process_snapshot();
 
