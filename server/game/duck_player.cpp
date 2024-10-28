@@ -1,5 +1,4 @@
 #include "duck_player.h"
-#include <functional>
 #include <memory>
 #include "ticks.h"
 
@@ -37,6 +36,7 @@ void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
 void DuckPlayer::status_after_move(struct Collision& collision) {
     if (collision.vertical_collision && status.is_falling) {
         status.is_falling = false;
+        status.is_flapping = false;
     } else if (collision.vertical_collision && status.is_jumping) {
         status.is_falling = true;
         status.is_jumping = false;
@@ -73,7 +73,7 @@ void DuckPlayer::move_duck() {
             move_x = status.is_flapping ? DUCK_SPEED * 0.7 : DUCK_SPEED;
         } else if (!status.is_laying) {
             move_x = DUCK_SPEED;
-        }
+        }   
         new_x = (status.facing_right) ? new_x + move_x : new_x - move_x;
     }
     if (status.is_falling) {
@@ -85,7 +85,7 @@ void DuckPlayer::move_duck() {
         new_y += move_y;
     }
     if (status.is_jumping) {
-        float move_y = FALL_SPEED * static_cast<float>((JUMP_IT - it_jumping) / DECREACENT_JUMP_SPEED);
+        float move_y = FALL_SPEED * (static_cast<float>(JUMP_IT - it_jumping) / DECREACENT_JUMP_SPEED);
         it_jumping += INC_JUMP_IT;
         new_y -= move_y;
     }
