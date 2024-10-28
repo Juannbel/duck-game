@@ -36,6 +36,7 @@ void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
 void DuckPlayer::status_after_move(struct Collision& collision) {
     if (collision.vertical_collision && status.is_falling) {
         status.is_falling = false;
+        status.is_flapping = false;
     } else if (collision.vertical_collision && status.is_jumping) {
         status.is_falling = true;
         status.is_jumping = false;
