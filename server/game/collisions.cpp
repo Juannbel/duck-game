@@ -26,7 +26,7 @@ bool CollisionChecks::out_of_map(float x, float y) {
 }
 
 struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& entity, float new_x,
-                                                            float new_y) {
+                                                              float new_y) {
     int16_t row_index = entity.coords.y / BLOCK_SIZE;
     int16_t i = (row_index < NEAR_CELLS) ? 0 : row_index - NEAR_CELLS;
     int16_t end_i = (row_index + NEAR_CELLS > MAP_HEIGHT_BLOCKS) ? MAP_HEIGHT_BLOCKS :
@@ -43,7 +43,8 @@ struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& 
         std::vector<Rectangle>& block_columns = blocks[i];
         for (auto& block: block_columns) {
             struct Collision aux_collision = rectangles_collision(final_rec, block);
-            if (/* con un tipo de bloque y esta subiendo*/ new_y < entity.coords.y && aux_collision.vertical_collision) {
+            if (/* con un tipo de bloque y esta subiendo*/ new_y < entity.coords.y &&
+                aux_collision.vertical_collision) {
                 continue;
             }
             if (aux_collision.horizontal_collision) {
@@ -53,10 +54,11 @@ struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& 
                 if (vertical_collision) {
                     Coordenades& entity_c = entity.coords;
                     Coordenades& block_c = block.coords;
-                    if (new_y > entity_c.y && new_y + entity.height > block_c.y && entity_c.y < block_c.y) {
+                    if (new_y > entity_c.y && new_y + entity.height > block_c.y &&
+                        entity_c.y < block_c.y) {
                         final_rec.coords.y = block_c.y - entity.height;
-                    } else if (new_y < block_c.y + block.height && entity_c.y > block_c.y) {   
-                        final_rec.coords.y = block_c.y+block.height;
+                    } else if (new_y < block_c.y + block.height && entity_c.y > block_c.y) {
+                        final_rec.coords.y = block_c.y + block.height;
                     }
                     collision.vertical_collision = true;
                 }
@@ -70,7 +72,7 @@ struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& 
 }
 
 struct Collision CollisionChecks::rectangles_collision(const struct Rectangle& r1,
-                                                     const struct Rectangle& r2) {
+                                                       const struct Rectangle& r2) {
     struct Collision collision;
     collision.horizontal_collision = false;
     collision.vertical_collision = false;
@@ -83,7 +85,7 @@ struct Collision CollisionChecks::rectangles_collision(const struct Rectangle& r
             if (r1_c.y + r1.height == r2_c.y || r1_c.y == r2_c.y + r2.height) {
                 collision.horizontal_collision = false;
             }
-            if (r1_c.y == r2_c.y+r2.height) {
+            if (r1_c.y == r2_c.y + r2.height) {
                 collision.vertical_collision = false;
             }
             return collision;

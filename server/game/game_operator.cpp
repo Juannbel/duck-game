@@ -1,6 +1,5 @@
 #include "game_operator.h"
 
-#include <iostream>
 #include <random>
 
 #include "common/shared_constants.h"
