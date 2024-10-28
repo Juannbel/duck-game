@@ -8,6 +8,7 @@
 #include "client/renderables/bullet.h"
 #include "client/renderables/collectable.h"
 #include "client/renderables/map.h"
+#include "client/sound_manager.h"
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/map_dto.h"
@@ -21,6 +22,7 @@
 class ConstantLooper {
 private:
     uint8_t duck_id;
+    SoundManager sound_manager;
     Queue<Snapshot>& snapshot_q;
     Queue<Command>& command_q;
     Snapshot last_snapshot;

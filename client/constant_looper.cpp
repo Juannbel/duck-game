@@ -10,7 +10,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_events.h>
+#include <SDL_keycode.h>
 
+#include "SDL2pp/Chunk.hh"
 #include "SDL2pp/Font.hh"
 #include "SDL2pp/Music.hh"
 #include "SDL2pp/Optional.hh"
@@ -45,7 +47,6 @@ ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_
         duck_id(match_info.duck_id),
         snapshot_q(snapshot_q),
         command_q(command_q),
-        // last_snapshot(snapshot_q.pop()),
         p1_controller(duck_id, command_q, last_snapshot, {SDLK_d, SDLK_a, SDLK_w, SDLK_s, SDLK_c, SDLK_v, SDLK_e}),
         map_dto(match_info.map) {}
 
@@ -59,13 +60,6 @@ void ConstantLooper::run() try {
     Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL2pp::SDLTTF sdl_ttf;
-
-    SDL2pp::Mixer mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
-
-    SDL2pp::Music music(DATA_PATH "/sounds/background_music.mp3");
-
-    mixer.SetMusicVolume(0);
-    mixer.PlayMusic(music, -1);
 
     TexturesProvider::loadTextures(renderer);
     AnimationDataProvider::load_animations_data();
@@ -156,6 +150,7 @@ void ConstantLooper::process_snapshot() {
         bullets_in_snapshot.insert(bullet.bullet_id);
         if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end()) {
             if (bullet.type == Helmet || bullet.type == Armor) continue;
+            sound_manager.shoot_sound(bullet.type);
             bullets_renderables[bullet.bullet_id] = new RenderableBullet(bullet.bullet_id, bullet.type);
         }
         bullets_renderables[bullet.bullet_id]->update(bullet);
@@ -258,12 +253,18 @@ bool ConstantLooper::process_events() {
             return false;
         }
 
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_1) {
+            sound_manager.toggle_mute();
+            return true;
+        }
+
         p1_controller.process_event(event);
         // para cuando haya un segundo jugador
         // p2_controller.process_event(event);
     }
 
     p1_controller.send_last_move_command();
+    // p2_controller.send_last_move_command();
     return true;
 }
 
