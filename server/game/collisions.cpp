@@ -43,10 +43,10 @@ struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& 
         std::vector<Rectangle>& block_columns = blocks[i];
         for (auto& block: block_columns) {
             struct Collision aux_collision = rectangles_collision(final_rec, block);
-            if (/* con un tipo de bloque y esta subiendo*/ new_y < entity.coords.y &&
-                aux_collision.vertical_collision) {
-                continue;
-            }
+            // if (/* con un tipo de bloque y esta subiendo*/ new_y < entity.coords.y &&
+            //     aux_collision.vertical_collision) {
+            //     continue;
+            // }
             if (aux_collision.horizontal_collision) {
                 final_rec.coords.x = entity.coords.x;
                 collision.horizontal_collision = true;
