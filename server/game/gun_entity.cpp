@@ -1,6 +1,7 @@
 #include "gun_entity.h"
 #include <cstdint>
 
+
 GunEntity::GunEntity(BulletManager* bullets) : 
         id(), type(), x(), y(), ammo(), 
         trigger_pulled(), ready_to_shoot(), 

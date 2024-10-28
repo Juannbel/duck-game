@@ -6,7 +6,7 @@ const int16_t NEAR_CELLS = 3;
 const float MAP_EDGE = 50;
 
 void CollisionChecks::add_block(float x, float y) {
-    Rectangle rectangle = {x, y, BLOCK_SIZE, BLOCK_SIZE};
+    Rectangle rectangle = {{x, y}, BLOCK_SIZE, BLOCK_SIZE};
     blocks[y / BLOCK_SIZE].push_back(rectangle);
 }
 
@@ -32,7 +32,7 @@ struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& 
     int16_t end_i = (row_index + NEAR_CELLS > MAP_HEIGHT_BLOCKS) ? MAP_HEIGHT_BLOCKS :
                                                                    row_index + NEAR_CELLS;
 
-    struct Rectangle final_rec = {new_x, new_y, entity.width, entity.height};
+    struct Rectangle final_rec = {{new_x, new_y}, entity.width, entity.height};
     struct Collision collision;
     collision.horizontal_collision = false;
     collision.vertical_collision = false;

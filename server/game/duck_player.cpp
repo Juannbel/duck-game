@@ -1,4 +1,5 @@
 #include "duck_player.h"
+#include <functional>
 #include <memory>
 #include "ticks.h"
 
@@ -118,7 +119,7 @@ void DuckPlayer::stop_shooting() {
 
 void DuckPlayer::update_gun_status() { 
     if (!equipped_gun) return;   
-    equipped_gun->update_bullets(status); 
+    equipped_gun->update_bullets(*this); 
 }
 
 void DuckPlayer::lay_down() {
