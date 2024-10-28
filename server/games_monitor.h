@@ -13,14 +13,15 @@ private:
     std::map<int, Game*> map_games;
     int id = 0;
 public:
-void add_player(ServerClient* player);
+    void add_player(ServerClient* player);
 
-Game* create_game();
+    Game* create_game();
 
-void delete_game(int id);
+    void delete_game(int id);
 
-std::vector<int> list_lobbies();
+    std::vector<int> list_lobbies() const;
 
+    ~GamesMonitor();
 };
 
 #endif

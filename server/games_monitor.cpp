@@ -23,7 +23,7 @@ void GamesMonitor::add_player(ServerClient* player) {
     } 
 }
 
-std::vector<int> GamesMonitor::list_lobbies() {
+std::vector<int> GamesMonitor::list_lobbies() const {
     std::vector<int> lobbies;
     for (auto& game: map_games) {
         if (game.second->is_open()) {
@@ -42,3 +42,9 @@ Game* GamesMonitor::create_game() {
 }
 
 //void GamesMonitor::delete_game(int id) {}
+
+GamesMonitor::~GamesMonitor() {
+    for (auto& game: map_games) {
+        delete game.second;
+    }
+}
