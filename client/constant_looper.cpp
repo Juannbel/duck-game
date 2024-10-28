@@ -155,6 +155,7 @@ void ConstantLooper::process_snapshot() {
     for (const Bullet& bullet : last_snapshot.bullets) {
         bullets_in_snapshot.insert(bullet.bullet_id);
         if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end()) {
+            if (bullet.type == Helmet || bullet.type == Armor) continue;
             bullets_renderables[bullet.bullet_id] = new RenderableBullet(bullet.bullet_id, bullet.type);
         }
         bullets_renderables[bullet.bullet_id]->update(bullet);
