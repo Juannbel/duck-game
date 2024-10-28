@@ -15,7 +15,9 @@ void Client::run() {
     protocol.send_option(option);
     
     if (option == JOIN) {
-        joinLobby();
+        if (!joinLobby()) {
+            run();
+        }
     }
 
     MatchInfo match_info = protocol.recv_match_info();
@@ -40,18 +42,30 @@ int Client::displayMenuAndGetOption() {
     return option;
 }
 
-void Client::joinLobby() {
-    displayLobbyList();
+bool Client::joinLobby() {
+    if (!displayLobbyList()) {
+        return false;
+    }
     const int lobbyId = getLobbyIdFromUser();
     protocol.send_option(lobbyId);
+    return true;
 }
 
-void Client::displayLobbyList() {
+// Devuelve false si no hay lobbies disponibles, true en caso contrario
+bool Client::displayLobbyList() {
+    int countLobbys = 0;
+    // TODO:? cambiar el protocolo y que lo primero que recibo sea la cantidad de lobbies?
     int id = protocol.recv_lobby();
     while (id != -1) {
         std::cout << "Lobby: " << id << std::endl;
+        countLobbys++;
         id = protocol.recv_lobby();
     }
+    if (countLobbys == 0) {
+        std::cout << "No lobbies available" << std::endl;
+        return false;
+    }
+    return true;
 }
 
 int Client::getLobbyIdFromUser() {

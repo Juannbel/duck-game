@@ -20,9 +20,9 @@ public:
 
     int displayMenuAndGetOption();
 
-    void joinLobby();
+    bool joinLobby();
 
-    void displayLobbyList();
+    bool displayLobbyList();
 
     int getLobbyIdFromUser();
 
