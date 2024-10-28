@@ -8,6 +8,7 @@ target_sources(taller_client
     renderables/equipped_gun.cpp
     renderables/collectable.cpp
     renderables/wings.cpp
+    renderables/helmet.cpp
     renderables/map.cpp
     renderables/bullet.cpp
     camera.cpp
@@ -27,6 +28,7 @@ target_sources(taller_client
     renderables/equipped_gun.h
     renderables/collectable.h
     renderables/wings.h
+    renderables/helmet.h
     renderables/map.h
     renderables/bullet.h
     client_protocol.h

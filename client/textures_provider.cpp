@@ -10,6 +10,7 @@ void TexturesProvider::loadTextures(SDL2pp::Renderer& renderer) {
     textures["bullets"] = new SDL2pp::Texture(renderer, DATA_PATH "/sprites/bullets/bullets.png");
     textures["collectables"] = new SDL2pp::Texture(renderer, DATA_PATH "/sprites/collectables/collectables.png");
     textures["wings"] = new SDL2pp::Texture(renderer, DATA_PATH "/sprites/wings/wings.png");
+    textures["helmet"] = new SDL2pp::Texture(renderer, DATA_PATH "/sprites/equipment/helmet.png");
 }
 
 SDL2pp::Texture* TexturesProvider::getTexture(const std::string& texture_name) {

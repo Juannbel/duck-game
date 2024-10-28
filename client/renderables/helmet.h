@@ -1,18 +1,12 @@
-#ifndef RENDERABLE_WINGS_H
-#define RENDERABLE_WINGS_H
+#ifndef RENDERABLE_HELMET_H
+#define RENDERABLE_HELMET_H
 
-#include <string>
 #include <unordered_map>
+#include <SDL2pp/SDL2pp.hh>
+#include "client/renderables/animation.h"
 
-#include <SDL_render.h>
-#include <yaml-cpp/yaml.h>
-
-#include "common/snapshot.h"
-
-#include "animation.h"
-class RenderableWings {
+class RenderableHelmet {
 private:
-    uint8_t duck_id;
     Animation* curr_animation;
 
     std::unordered_map<std::string, Animation*> animations;
@@ -21,10 +15,8 @@ private:
 
     bool facing_right;
 
-    void load_animation(const std::string& name);
-
 public:
-    RenderableWings(uint8_t duck_id);
+    RenderableHelmet();
 
     void update(const Duck& duck);
 
@@ -32,7 +24,7 @@ public:
 
     void skip_frames(uint8_t frames);
 
-    ~RenderableWings();
+    ~RenderableHelmet();
 };
 
 #endif

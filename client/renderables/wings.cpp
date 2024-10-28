@@ -54,6 +54,10 @@ void RenderableWings::render(SDL2pp::Renderer& renderer, Camera& camera) {
     curr_animation->render(renderer, camera, position, facing_right);
 }
 
+void RenderableWings::skip_frames(uint8_t frames) {
+    curr_animation->skip_frames(frames);
+}
+
 RenderableWings::~RenderableWings() {
     for (auto& animation : animations) {
         delete animation.second;
