@@ -8,7 +8,7 @@ class GrenadeG : public GunEntity {
     GrenadeG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class BananaG : public GunEntity {
@@ -16,7 +16,7 @@ class BananaG : public GunEntity {
     BananaG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class PewPewLaserG : public GunEntity {
@@ -24,7 +24,7 @@ class PewPewLaserG : public GunEntity {
     PewPewLaserG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class LaserRifleG : public GunEntity {
@@ -32,7 +32,7 @@ class LaserRifleG : public GunEntity {
     LaserRifleG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class Ak47G : public GunEntity {
@@ -40,7 +40,7 @@ class Ak47G : public GunEntity {
     Ak47G(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class DuelingPistolG : public GunEntity {
@@ -48,7 +48,7 @@ class DuelingPistolG : public GunEntity {
     DuelingPistolG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class CowboyPistolG : public GunEntity {
@@ -56,7 +56,7 @@ class CowboyPistolG : public GunEntity {
     CowboyPistolG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class MagnumG : public GunEntity {
@@ -64,7 +64,7 @@ class MagnumG : public GunEntity {
     MagnumG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class ShootgunG : public GunEntity {
@@ -72,7 +72,7 @@ class ShootgunG : public GunEntity {
     ShootgunG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class SniperG : public GunEntity {
@@ -80,7 +80,7 @@ class SniperG : public GunEntity {
     SniperG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class HelmetG : public GunEntity {
@@ -88,7 +88,7 @@ class HelmetG : public GunEntity {
     HelmetG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 class ArmorG : public GunEntity {
@@ -96,7 +96,7 @@ class ArmorG : public GunEntity {
     ArmorG(Gun& gun, BulletManager* bullets);
     //void start_shooting() override;
     //void stop_shooting() override;
-    void update_bullets(const Duck& status) override;
+    void update_bullets(DuckPlayer& player) override;
 };
 
 #endif

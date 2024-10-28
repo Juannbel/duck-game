@@ -6,7 +6,7 @@
 #include "ticks.h"
 #include "gun_types.h"
 
-#define GUN_FALL_SPEED (120/TICKS)
+#define GUN_FALL_SPEED (120.0f/TICKS)
 const int16_t NEAR_CELLS = 3;
 
 CollectablesManager::CollectablesManager(CollisionChecks& collision) : collisions(collision), bullets(collision), collectable_id() {

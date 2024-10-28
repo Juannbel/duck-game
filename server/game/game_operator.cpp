@@ -1,6 +1,5 @@
 #include "game_operator.h"
 
-#include <iostream>
 #include <random>
 
 #include "common/shared_constants.h"
@@ -121,9 +120,6 @@ void GameOperator::get_snapshot(Snapshot &snapshot) {
         snapshot.ducks.push_back(duck.get_status());
     }
     collectables.add_guns_to_snapshot(snapshot);
-    // for(auto const&[id, bullet] : bullets){
-    //     snapshot.bullets.push_back(bullet);
-    // }
 }
 
 GameOperator::~GameOperator() {}

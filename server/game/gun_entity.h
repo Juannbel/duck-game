@@ -6,7 +6,7 @@
 #include "common/snapshot.h"
 #include "bullets_manager.h"
 
-#include <iostream>
+class DuckPlayer; // Forward declaration para evitar dependencia circular
 
 class GunEntity{
 protected:
@@ -34,7 +34,7 @@ public:
     virtual void stop_shooting() {
         trigger_pulled = false;
     }
-    virtual void update_bullets(const Duck& status) = 0;
+    virtual void update_bullets(DuckPlayer& player) = 0;
 
     void drop();
     void set_new_coords(float x, float y);
