@@ -12,9 +12,7 @@
 #include <SDL_events.h>
 #include <SDL_keycode.h>
 
-#include "SDL2pp/Chunk.hh"
 #include "SDL2pp/Font.hh"
-#include "SDL2pp/Music.hh"
 #include "SDL2pp/Optional.hh"
 #include "SDL2pp/Renderer.hh"
 #include "SDL2pp/SDLTTF.hh"

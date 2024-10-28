@@ -4,7 +4,6 @@
 #include <unordered_map>
 
 #include "SDL2pp/Renderer.hh"
-#include "client/renderables/animation.h"
 #include "client/renderables/bullet.h"
 #include "client/renderables/collectable.h"
 #include "client/renderables/map.h"
@@ -15,9 +14,6 @@
 #include "common/snapshot.h"
 #include "duck_controller.h"
 #include "renderables/duck.h"
-
-// procesa los eventos de teclado
-// crea el Renderer, y que guarde las texturas de los sprites, y vaya generando los renderables
 
 class ConstantLooper {
 private:
