@@ -15,6 +15,7 @@ void AnimationDataProvider::load_animations_data() {
     load_from_yaml("guns", DATA_PATH "/sprites/guns/guns.yaml");
     load_from_yaml("bullets", DATA_PATH "/sprites/bullets/bullets.yaml");
     load_from_yaml("helmet", DATA_PATH "/sprites/equipment/helmet.yaml");
+    load_from_yaml("armor", DATA_PATH "/sprites/equipment/armor.yaml");
 }
 
 const AnimationData& AnimationDataProvider::get_animation_data(const std::string& name) {

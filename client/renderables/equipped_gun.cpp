@@ -3,6 +3,7 @@
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
 #include "common/snapshot.h"
+#include "common/shared_constants.h"
 
 RenderableEquippedGun::RenderableEquippedGun() :
         position(0, 0), facing_right(true), facing_up(false) {
@@ -46,9 +47,12 @@ void RenderableEquippedGun::update(const Duck& duck) {
 
     curr_animation->update();
 
-    if (duck.is_laying) return;
     position.x = duck.x;
-    position.y = duck.y;
+    if (duck.is_laying) {
+        position.y = duck.y - DUCK_LAYED_HITBOX_HEIGHT;
+    } else {
+        position.y = duck.y;
+    }
 }
 
 void RenderableEquippedGun::render(SDL2pp::Renderer& renderer, Camera& camera) {

@@ -60,8 +60,9 @@ void RenderableDuck::update(const Duck& duck) {
 
     curr_animation->update();
 
-    gun.update(duck);
     helmet.update(duck);
+    armor.update(duck);
+    gun.update(duck);
     wings.update(duck);
 }
 
@@ -81,12 +82,14 @@ void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
 
     gun.render(renderer, camera);
     helmet.render(renderer, camera);
+    armor.render(renderer, camera);
     wings.render(renderer, camera);
 }
 
 void RenderableDuck::skip_frames(uint8_t frames) {
     curr_animation->skip_frames(frames);
     helmet.skip_frames(frames);
+    armor.skip_frames(frames);
     wings.skip_frames(frames);
 }
 
