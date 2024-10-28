@@ -48,6 +48,8 @@ public:
 
     SDL2pp::Rect get_bounding_box();
 
+    uint8_t get_id();
+
     ~RenderableDuck();
 };
 

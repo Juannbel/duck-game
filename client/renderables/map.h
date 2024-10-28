@@ -18,10 +18,11 @@ private:
     std::vector<RenderableBlock> map;
 
 public:
-    RenderableMap(const Map& map_dto, SDL2pp::Texture* blocks_texture,
-                  SDL2pp::Texture* background_texture);
+    RenderableMap(const Map& map_dto, uint8_t id);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
+
+    void update(const Map& new_map_dto, uint8_t theme);
 };
 
 #endif

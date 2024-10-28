@@ -26,6 +26,8 @@ Client::~Client() {
     protocol.shutdown();
     snapshot_q.close();
     command_q.close();
+    receiver.stop();
+    sender.stop();
     receiver.join();
     sender.join();
 }

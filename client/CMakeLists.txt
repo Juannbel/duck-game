@@ -9,6 +9,7 @@ target_sources(taller_client
     renderables/collectable.cpp
     renderables/wings.cpp
     renderables/map.cpp
+    renderables/bullet.cpp
     camera.cpp
     client_protocol.cpp
     client.cpp
@@ -27,6 +28,7 @@ target_sources(taller_client
     renderables/collectable.h
     renderables/wings.h
     renderables/map.h
+    renderables/bullet.h
     client_protocol.h
     client.h
     client_receiver.h

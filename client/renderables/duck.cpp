@@ -8,7 +8,7 @@
 #include "common/shared_constants.h"
 
 RenderableDuck::RenderableDuck(uint8_t duck_id):
-            duck_id(duck_id), wings(duck_id), position(0, 0), is_facing_right(true), is_alive(true) {
+            duck_id(duck_id), wings(duck_id), position(50, 50), is_facing_right(true), is_alive(true) {
         load_animations();
         curr_animation = animations["standing"];
     }
@@ -19,6 +19,8 @@ void RenderableDuck::load_animation(const std::string& animation_name) {
             *TexturesProvider::getTexture("duck"),
             AnimationDataProvider::get_animation_data("duck_" + std::to_string(duck_id) + "_" + animation_name));
 }
+
+uint8_t RenderableDuck::get_id() { return duck_id; }
 
 void RenderableDuck::load_animations() {
     load_animation("dead");
@@ -65,7 +67,7 @@ void RenderableDuck::update(const Duck& duck) {
 void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
     SDL2pp::Rect hitbox = SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
     if (curr_animation == animations["laying"]) {
-        hitbox.h = DUCK_HITBOX_HEIGHT / 2;
+        hitbox.h = DUCK_LAYED_HITBOX_HEIGHT;
     }
     camera.transform_rect(hitbox);
     renderer.DrawRect(hitbox);
