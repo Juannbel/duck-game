@@ -1,14 +1,13 @@
 #include "duck_player.h"
+#include <memory>
 #include "ticks.h"
-
-#include <iostream>
 
 const uint8_t JUMP_IT = TICKS * 1.5;
 const uint8_t INC_JUMP_IT = TICKS/20;
 const uint8_t DECREACENT_JUMP_SPEED = TICKS / 3;
 const uint8_t FLAPPING_TIME = TICKS / 3;
-const float DUCK_SPEED = 120/TICKS;
-const float FALL_SPEED = 120/TICKS;
+const float DUCK_SPEED = 120.0f/TICKS;
+const float FALL_SPEED = 120.0f/TICKS;
 
 DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks &collisions): 
         status(), 
@@ -18,7 +17,7 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks &colli
         hitbox(), 
         collisions(collisions), 
         collectables(collectables), 
-        equipped_gun(std::move(collectables.empty_gun())) 
+        equipped_gun(nullptr) 
         { status.is_dead = true; }
 
 void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
@@ -105,20 +104,25 @@ void DuckPlayer::stop_running() {
     status.is_running = false;
 }
 
-void DuckPlayer::shoot() {    
-    equipped_gun.start_shooting();
+void DuckPlayer::shoot() {  
+    if (!equipped_gun) return;   
+    equipped_gun->start_shooting();
     status.is_shooting = true;
 }
 
 void DuckPlayer::stop_shooting() {
-    equipped_gun.stop_shooting();
+    if (!equipped_gun) return;   
+    equipped_gun->stop_shooting();
     status.is_shooting = false;
 }
 
-void DuckPlayer::update_gun_status() { equipped_gun.update_bullets(status); }
+void DuckPlayer::update_gun_status() { 
+    if (!equipped_gun) return;   
+    equipped_gun->update_bullets(status); 
+}
 
 void DuckPlayer::lay_down() {
-    if (status.is_laying) { return; }
+    if (status.is_laying) return;
     status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
     status.is_running = status.is_laying ? false : status.is_running;
     if (status.is_laying) {
@@ -149,10 +153,14 @@ void DuckPlayer::jump() {
 void DuckPlayer::stop_jump() { ready_to_jump = true; }
 
 uint32_t DuckPlayer::drop_and_pickup(){
-    GunEntity new_gun(collectables.pickup(hitbox));
-    collectables.drop_gun(std::move(equipped_gun), hitbox);
-    equipped_gun = std::move(new_gun);
-    Gun gun_info = new_gun.get_gun_info();
+    std::shared_ptr<GunEntity> new_gun = collectables.pickup(hitbox);
+    collectables.drop_gun(equipped_gun, hitbox);
+    equipped_gun = new_gun;
+    Gun gun_info = {};
+    if(new_gun) {
+        gun_info = new_gun->get_gun_info();
+        status.gun = gun_info.type;
+    } 
     status.gun = gun_info.type;
     return gun_info.gun_id;
 }

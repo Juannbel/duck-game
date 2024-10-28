@@ -19,8 +19,8 @@ bullets:
     iter_per_frame: 2
     loops: false
     frames:
-      - { x: 0, y: 32, x_offset_right: 5, x_offset_left: 0, y_offset: 3 }
-      - { x: 16, y: 32, x_offset_right: 5, x_offset_left: 0, y_offset: 3 }
+      - { x: 0, y: 32, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
+      - { x: 16, y: 32, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
 
   laser_rifle:
     iter_per_frame: 2

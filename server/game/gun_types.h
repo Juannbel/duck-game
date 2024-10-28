@@ -5,97 +5,97 @@
 
 class GrenadeG : public GunEntity {
     public:
-    GrenadeG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    GrenadeG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class BananaG : public GunEntity {
     public:
-    BananaG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    BananaG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class PewPewLaserG : public GunEntity {
     public:
-    PewPewLaserG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    PewPewLaserG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class LaserRifleG : public GunEntity {
     public:
-    LaserRifleG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    LaserRifleG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class Ak47G : public GunEntity {
     public:
-    Ak47G(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    Ak47G(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class DuelingPistolG : public GunEntity {
     public:
-    DuelingPistolG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    DuelingPistolG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class CowboyPistolG : public GunEntity {
     public:
-    CowboyPistolG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    CowboyPistolG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class MagnumG : public GunEntity {
     public:
-    MagnumG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    MagnumG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class ShootgunG : public GunEntity {
     public:
-    ShootgunG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    ShootgunG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class SniperG : public GunEntity {
     public:
-    SniperG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    SniperG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class HelmetG : public GunEntity {
     public:
-    HelmetG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    HelmetG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 
 class ArmorG : public GunEntity {
     public:
-    ArmorG(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
-    void start_shooting() override;
-    void stop_shooting() override;
+    ArmorG(Gun& gun, BulletManager* bullets);
+    //void start_shooting() override;
+    //void stop_shooting() override;
     void update_bullets(const Duck& status) override;
 };
 

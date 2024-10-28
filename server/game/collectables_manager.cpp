@@ -1,13 +1,17 @@
 #include "collectables_manager.h"
 
 #include "common/shared_constants.h"
+#include "server/game/collisions.h"
+#include "server/game/gun_entity.h"
 #include "ticks.h"
 #include "gun_types.h"
 
 #define GUN_FALL_SPEED (120/TICKS)
 const int16_t NEAR_CELLS = 3;
 
-CollectablesManager::CollectablesManager(CollisionChecks& collision) : collisions(collision), bullets(collision), collectable_id() {}
+CollectablesManager::CollectablesManager(CollisionChecks& collision) : collisions(collision), bullets(collision), collectable_id() {
+
+}
 
 uint32_t CollectablesManager::get_and_inc_collectable_id() { return ++collectable_id; }
 
@@ -15,40 +19,41 @@ void CollectablesManager::new_gun(Gun& gun) {
     uint32_t id = gun.gun_id;
     switch (gun.type){
     case Grenade:
-        guns.emplace(id, GrenadeG(gun, collisions, &bullets));
+        
+        guns.emplace(id, new GrenadeG(gun, &bullets));
         break;
     case Banana:
-        guns.emplace(id, BananaG(gun, collisions, &bullets));
+        guns.emplace(id, new BananaG(gun, &bullets));
         break;
     case PewPewLaser:
-        guns.emplace(id, PewPewLaserG(gun, collisions, &bullets));
+        guns.emplace(id, new PewPewLaserG(gun, &bullets));
         break;
     case LaserRifle:
-        guns.emplace(id, LaserRifleG(gun, collisions, &bullets));
+        guns.emplace(id, new LaserRifleG(gun, &bullets));
         break;
     case Ak47:
-        guns.emplace(id, Ak47G(gun, collisions, &bullets));
+        guns.emplace(id, new Ak47G(gun, &bullets));
         break;
     case DuelingPistol:
-        guns.emplace(id, DuelingPistolG(gun, collisions, &bullets));
+        guns.emplace(id, new DuelingPistolG(gun, &bullets));
         break;
     case CowboyPistol:
-        guns.emplace(id, CowboyPistolG(gun, collisions, &bullets));
+        guns.emplace(id, new CowboyPistolG(gun, &bullets));
         break;
     case Magnum:
-        guns.emplace(id, MagnumG(gun, collisions, &bullets));
+        guns.emplace(id, new MagnumG(gun, &bullets));
         break;
     case Shootgun:
-        guns.emplace(id, ShootgunG(gun, collisions, &bullets));
+        guns.emplace(id, new ShootgunG(gun, &bullets));
         break;
     case Sniper:
-        guns.emplace(id, SniperG(gun, collisions, &bullets));
+        guns.emplace(id, new SniperG(gun, &bullets));
         break;
     case Helmet:
-        guns.emplace(id, HelmetG(gun, collisions, &bullets));
+        guns.emplace(id, new HelmetG(gun, &bullets));
         break;
     case Armor:
-        guns.emplace(id, ArmorG(gun, collisions, &bullets));
+        guns.emplace(id, new ArmorG(gun, &bullets));
         break;
     default:
         break;
@@ -60,52 +65,52 @@ void CollectablesManager::add_gun(Gun& gun) {
     new_gun(gun);
 }
 
-GunEntity CollectablesManager::empty_gun() { return GunEntity(collisions, &bullets); }
-
-
-GunEntity CollectablesManager::pickup(const Rectangle &duck) {
-    Rectangle gun_r = {0, 0, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
+std::shared_ptr<GunEntity> CollectablesManager::pickup(const Rectangle &duck) {
+    Coordenades coords = {0, 0};
+    Rectangle gun_r = {coords, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
     for (auto& [id, gun] : guns) {
-        Gun gun_info = gun.get_gun_info();
+        if (picked_up_guns.find(id) != picked_up_guns.end()) {
+            continue;
+        }
+        Gun gun_info = gun->get_gun_info();
         gun_r.coords.x = gun_info.x;
         gun_r.coords.y = gun_info.y;
         Collision collision = collisions.rectangles_collision(duck, gun_r);
         if(collision.horizontal_collision && collision.vertical_collision) {
-            GunEntity new_gun(std::move(gun));
-            guns.erase(id);
-            return GunEntity(std::move(new_gun));
+            picked_up_guns.insert(id);
+            return gun;
         }
     }
-    return GunEntity(std::move(empty_gun()));
+    return nullptr;
 }
 
-void CollectablesManager::drop_gun(GunEntity&& gun, const Rectangle& duck_hitbox){
-    Gun gun_info = gun.get_gun_info();
-    if (gun_info.type == None) {
-        return;
-    }
-    gun.set_new_coords(duck_hitbox.coords.x-(duck_hitbox.width/2), duck_hitbox.coords.y+duck_hitbox.height-COLLECTABLE_HITBOX_HEIGHT);
-    uint32_t id = gun_info.gun_id;
-    guns.emplace(id, GunEntity(std::move(gun)));
-    gun.drop();
+void CollectablesManager::drop_gun(std::shared_ptr<GunEntity> gun, const Rectangle& duck_hitbox){
+    if (!gun) return;
+    Gun gun_info = gun->get_gun_info();
+    gun->set_new_coords(duck_hitbox.coords.x-(duck_hitbox.width/2), duck_hitbox.coords.y+duck_hitbox.height-COLLECTABLE_HITBOX_HEIGHT);
+    picked_up_guns.erase(gun_info.gun_id);
 }
 
 void CollectablesManager::move_guns_falling() {
     bullets.update_bullets();
-    Rectangle gun_r = {0, 0, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
+    Coordenades coords = {0, 0};
+    Rectangle gun_r = {coords, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
     for (auto &[id, gun] : guns) {
-        Gun gun_info = gun.get_gun_info();
+        Gun gun_info = gun->get_gun_info();
         gun_r.coords.x = gun_info.x;
         gun_r.coords.y = gun_info.y;
         Coordenades coords = collisions.check_near_blocks_collision(gun_r, gun_info.x, gun_info.y+GUN_FALL_SPEED).last_valid_position;
-        gun.set_new_coords(coords.x, coords.y);
+        gun->set_new_coords(coords.x, coords.y);
     }
     
 }
 
 void CollectablesManager::add_guns_to_snapshot(Snapshot& snapshot) {
     for (auto &[id, gun] : guns) {
-        Gun snapshot_gun = gun.get_gun_info();
+        if (picked_up_guns.find(id) != picked_up_guns.end()) {
+            continue;
+        }
+        Gun snapshot_gun = gun->get_gun_info();
         snapshot.guns.push_back(snapshot_gun);
     }
     bullets.add_bullets_to_snapshot(snapshot);

@@ -2,7 +2,6 @@
 #define BULLET_MANAGER_H
 
 #include <map>
-#include <set>
 #include <cstdint>
 #include "common/snapshot.h"
 #include "collisions.h"
@@ -10,7 +9,7 @@
 struct BulletInfo {
     Bullet status;
     Rectangle hitbox;
-    uint8_t speed;
+    float speed;
 };
 
 

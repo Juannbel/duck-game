@@ -1,6 +1,7 @@
 #ifndef DUCK_PLAYER_H
 #define DUCK_PLAYER_H
 
+#include <memory>
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 
@@ -17,7 +18,7 @@ private:
     Rectangle hitbox;
     CollisionChecks& collisions;
     CollectablesManager& collectables;
-    GunEntity equipped_gun;
+    std::shared_ptr<GunEntity> equipped_gun;
 
     void status_after_move(struct Collision& collision);
 public:

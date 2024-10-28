@@ -4,11 +4,9 @@
 #include <cstdint>
 
 #include "common/snapshot.h"
-#include "collisions.h"
 #include "bullets_manager.h"
-#include "duck_player.h"
-#include <map>
-#include <set>
+
+#include <iostream>
 
 class GunEntity{
 protected:
@@ -24,17 +22,19 @@ protected:
     BulletManager* bullets;
 
 public:
-    GunEntity(CollisionChecks& collisions, BulletManager* bullets);
-    GunEntity(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
+    explicit GunEntity(BulletManager* bullets);
+    GunEntity(Gun& gun, BulletManager* bullets);
     explicit GunEntity(GunEntity&&);
     GunEntity& operator=(GunEntity&&);
 
-    virtual void start_shooting() {}
-    virtual void stop_shooting() {}
-    virtual void update_bullets(const Duck& status) { 
-        if(status.is_shooting)
-            trigger_pulled = true; 
+    virtual void start_shooting() { 
+        it_since_shoot = trigger_pulled ? it_since_shoot : 0;
+        trigger_pulled = true;
     }
+    virtual void stop_shooting() {
+        trigger_pulled = false;
+    }
+    virtual void update_bullets(const Duck& status) = 0;
 
     void drop();
     void set_new_coords(float x, float y);
