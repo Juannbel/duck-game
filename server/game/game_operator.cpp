@@ -18,7 +18,7 @@ GameOperator::GameOperator(Map& map_dto, uint8_t players_quantity) : collisions(
     for (uint8_t i = 0; i < players_quantity; ++i) {
         DuckPlayer player(collectables, collisions);
         player.set_coordenades_and_id(spawn_points[i].first, spawn_points[i].second, i);
-        players.push_back(player);
+        players.push_back(std::move(player));
     }
 
     Spawn spawn = {200, 200, 0, 50, true, 0};
@@ -82,9 +82,11 @@ void GameOperator::check_spawn_picked(uint32_t id) {
 void GameOperator::update_game_status() {
     for (auto& duck: players) {
         duck.move_duck();
+        duck.update_gun_status();
     }
     // Actualizar la posicion de las balas y vida de los patos si les pegan
     verify_spawn();
+    collectables.move_guns_falling();
     collectables.move_guns_falling();
 }
 

@@ -10,7 +10,16 @@ const uint8_t FLAPPING_TIME = TICKS / 3;
 const float DUCK_SPEED = 120/TICKS;
 const float FALL_SPEED = 120/TICKS;
 
-DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks &collisions): status(), it_jumping(), hitbox(), collisions(collisions), collectables(collectables) { status.is_dead = true; }
+DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks &collisions): 
+        status(), 
+        it_jumping(), 
+        it_flapping(), 
+        ready_to_jump(),
+        hitbox(), 
+        collisions(collisions), 
+        collectables(collectables), 
+        equipped_gun(std::move(collectables.empty_gun())) 
+        { status.is_dead = true; }
 
 void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     status.duck_hp = 100;
@@ -97,12 +106,16 @@ void DuckPlayer::stop_running() {
 }
 
 void DuckPlayer::shoot() {    
+    equipped_gun.start_shooting();
     status.is_shooting = true;
 }
 
 void DuckPlayer::stop_shooting() {
+    equipped_gun.stop_shooting();
     status.is_shooting = false;
 }
+
+void DuckPlayer::update_gun_status() { equipped_gun.update_bullets(status); }
 
 void DuckPlayer::lay_down() {
     if (status.is_laying) { return; }
@@ -136,7 +149,7 @@ void DuckPlayer::jump() {
 void DuckPlayer::stop_jump() { ready_to_jump = true; }
 
 uint32_t DuckPlayer::drop_and_pickup(){
-    GunEntity new_gun = collectables.pickup(hitbox);
+    GunEntity new_gun(collectables.pickup(hitbox));
     collectables.drop_gun(std::move(equipped_gun), hitbox);
     equipped_gun = std::move(new_gun);
     Gun gun_info = new_gun.get_gun_info();

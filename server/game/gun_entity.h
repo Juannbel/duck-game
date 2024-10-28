@@ -4,30 +4,40 @@
 #include <cstdint>
 
 #include "common/snapshot.h"
+#include "collisions.h"
+#include "bullets_manager.h"
+#include "duck_player.h"
 #include <map>
 #include <set>
 
 class GunEntity{
-private:
+protected:
     uint32_t id;
     GunType type;
 
-    int16_t x;
-    int16_t y;
-protected:   
+    float x;
+    float y;   
     uint8_t ammo;
     bool trigger_pulled;
-    //std::map<uint32_t, Bullet> *bullets;
-    std::set<uint32_t> my_bullets;
+    bool ready_to_shoot;
+    uint8_t it_since_shoot;
+    BulletManager* bullets;
+
 public:
-    GunEntity();
-    explicit GunEntity(Gun& gun);
+    GunEntity(CollisionChecks& collisions, BulletManager* bullets);
+    GunEntity(Gun& gun, CollisionChecks& collisions, BulletManager* bullets);
+    explicit GunEntity(GunEntity&&);
+    GunEntity& operator=(GunEntity&&);
 
     virtual void start_shooting() {}
     virtual void stop_shooting() {}
+    virtual void update_bullets(const Duck& status) { 
+        if(status.is_shooting)
+            trigger_pulled = true; 
+    }
 
     void drop();
-    void set_new_coords(int16_t x, int16_t y);
+    void set_new_coords(float x, float y);
     Gun get_gun_info();
 
     virtual ~GunEntity() {}

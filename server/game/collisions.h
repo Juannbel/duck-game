@@ -29,7 +29,7 @@ class CollisionChecks {
     std::map<uint16_t, std::vector<Rectangle>> blocks;
     void add_block(float x, float y);
     public:
-    CollisionChecks() {}
+    CollisionChecks() : blocks() {}
     void load_map(Map&);
 
     bool out_of_map(float x, float y);
