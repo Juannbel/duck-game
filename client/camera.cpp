@@ -63,7 +63,7 @@ void Camera::transform_rect(Rect& world_rect) {
 }
 
 bool Camera::is_rect_visible(const Rect& world_rect) {
-    // return current_rect.Intersects(world_rect);
+    // return current_rect.Intersects(world_rect); da problemas con lo de la escala
     return world_rect.x * SCALE + world_rect.w * SCALE > current_rect.x &&
            world_rect.x * SCALE < current_rect.x + current_rect.w &&
            world_rect.y * SCALE + world_rect.h * SCALE > current_rect.y &&
@@ -93,6 +93,10 @@ void Camera::adjust_aspect_ratio(Rect& target) {
 }
 
 void Camera::update_target(const Snapshot& snapshot) {
+    if (snapshot.ducks.empty()) {
+        return;
+    }
+
     int16_t left = std::numeric_limits<int16_t>::max();
     int16_t right = std::numeric_limits<int16_t>::min();
     int16_t top = std::numeric_limits<int16_t>::max();
@@ -117,5 +121,5 @@ void Camera::update_target(const Snapshot& snapshot) {
     Rect target(left, top, right - left, bottom - top);
     adjust_aspect_ratio(target);
 
-    target_rect = target;  // Asegúrate de que target_rect se configure correctamente
+    target_rect = target;
 }

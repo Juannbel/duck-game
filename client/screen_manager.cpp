@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include "client/animation_data_provider.h"
+#include "client/renderables/map.h"
 #include "client/textures_provider.h"
 #include "common/snapshot.h"
 #include "config.h"
@@ -69,9 +70,8 @@ bool ScreenManager::waiting_screen(Queue<Snapshot> &snapshot_q, Snapshot &last_s
     return true;
 }
 
-bool ScreenManager::between_rounds_screen(Queue<Snapshot> &snapshot_q, Snapshot &last_snapshot, uint8_t last_map_theme) {
+bool ScreenManager::between_rounds_screen(Queue<Snapshot> &snapshot_q, Snapshot &last_snapshot, RenderableMap& map, Camera& camera) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
-    std::shared_ptr<SDL2pp::Texture> background(TexturesProvider::get_texture("background_" + std::to_string(last_map_theme)));
     std::vector<AnimationData> animations(MAX_DUCKS);
 
     std::vector<Duck> ducks;
@@ -96,28 +96,7 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot> &snapshot_q, Snapshot 
 
         renderer.Clear();
 
-        SDL2pp::Rect background_rect;
-        float bg_aspect_ratio = static_cast<float>(background->GetWidth()) / background->GetHeight();
-        float window_aspect_ratio = static_cast<float>(renderer.GetOutputWidth()) / renderer.GetOutputHeight();
-
-        if (window_aspect_ratio > bg_aspect_ratio) {
-            background_rect.x = 0;
-            background_rect.y = (renderer.GetOutputHeight() - background_rect.h) / 2;
-            background_rect.w = renderer.GetOutputWidth();
-            background_rect.h = static_cast<int>(renderer.GetOutputWidth() / bg_aspect_ratio);
-        } else {
-            background_rect.x = (renderer.GetOutputWidth() - background_rect.w) / 2;
-            background_rect.y = 0;
-            background_rect.w = static_cast<int>(renderer.GetOutputHeight() * bg_aspect_ratio);
-            background_rect.h = renderer.GetOutputHeight();
-        }
-
-        renderer.Copy(*background, SDL2pp::NullOpt, background_rect);
-
-        renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-        renderer.SetDrawColor(0, 0, 0, 100);
-        renderer.FillRect(SDL2pp::Rect(0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()));
-        renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+        map.render(renderer, camera);
 
         int rect_width = renderer.GetOutputWidth() * 0.8;
         int rect_height = 80;
@@ -130,33 +109,9 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot> &snapshot_q, Snapshot 
                 start_y - 50),
             info.GetSize()));
 
-        // Renderizar cada pato en su rectángulo
         for (size_t i = 0; i < ducks.size(); ++i) {
-            Duck& duck = ducks[i];
-
             SDL2pp::Rect duck_rect(start_x, start_y + i * (rect_height + 10), rect_width, rect_height);
-            renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-            renderer.SetDrawColor(0, 0, 0, 160);
-            renderer.FillRect(duck_rect);
-            renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
-
-            SDL2pp::Rect dst_rect = animations[duck.duck_id].frames[0].rect;
-            dst_rect.w *= 2;
-            dst_rect.h *= 2;
-            dst_rect.x = duck_rect.x + 10;
-            dst_rect.y = duck_rect.y + (rect_height - dst_rect.h) / 2;
-
-            renderer.Copy(*duck_texture, animations[duck.duck_id].frames[0].rect, dst_rect);
-
-            SDL2pp::Texture name_texture(renderer, primary_font.RenderText_Solid("Duck " + std::to_string(duck.duck_id), SDL_Color{255, 255, 255, 255}));
-            renderer.Copy(name_texture, SDL2pp::NullOpt, SDL2pp::Rect(
-                SDL2pp::Point(dst_rect.x + dst_rect.w + 20, duck_rect.y + (rect_height - name_texture.GetSize().y) / 2),
-                name_texture.GetSize()));
-
-            SDL2pp::Texture hp_texture(renderer, primary_font.RenderText_Solid(std::to_string(duck.duck_hp), SDL_Color{255, 255, 255, 255}));
-            renderer.Copy(hp_texture, SDL2pp::NullOpt, SDL2pp::Rect(
-                SDL2pp::Point(duck_rect.x + rect_width - hp_texture.GetSize().x - 10, duck_rect.y + (rect_height - hp_texture.GetSize().y) / 2),
-                hp_texture.GetSize()));
+            render_duck_stat(ducks[i], duck_rect, duck_texture, animations[ducks[i].duck_id]);
         }
 
         renderer.Present();
@@ -164,4 +119,29 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot> &snapshot_q, Snapshot 
     }
 
     return true;
+}
+
+void ScreenManager::render_duck_stat(Duck& duck, SDL2pp::Rect rect, std::shared_ptr<SDL2pp::Texture> ducks_texture, AnimationData& animation_data) {
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(0, 0, 0, 160);
+    renderer.FillRect(rect);
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+
+    SDL2pp::Rect dst_rect = animation_data.frames[0].rect;
+    dst_rect.w *= 2;
+    dst_rect.h *= 2;
+    dst_rect.x = rect.x + 10;
+    dst_rect.y = rect.y + (rect.h - dst_rect.h) / 2;
+
+    renderer.Copy(*ducks_texture, animation_data.frames[0].rect, dst_rect);
+
+    SDL2pp::Texture name_texture(renderer, primary_font.RenderText_Solid("Duck " + std::to_string(duck.duck_id), SDL_Color{255, 255, 255, 255}));
+    renderer.Copy(name_texture, SDL2pp::NullOpt, SDL2pp::Rect(
+        SDL2pp::Point(dst_rect.x + dst_rect.w + 20, rect.y + (rect.h - name_texture.GetSize().y) / 2),
+        name_texture.GetSize()));
+
+    SDL2pp::Texture hp_texture(renderer, primary_font.RenderText_Solid(std::to_string(duck.duck_hp), SDL_Color{255, 255, 255, 255}));
+    renderer.Copy(hp_texture, SDL2pp::NullOpt, SDL2pp::Rect(
+        SDL2pp::Point(rect.x + rect.w - hp_texture.GetSize().x - 10, rect.y + (rect.h - hp_texture.GetSize().y) / 2),
+        hp_texture.GetSize()));
 }

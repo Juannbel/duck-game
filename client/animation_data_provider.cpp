@@ -6,6 +6,9 @@
 
 #include "client/renderables/animation.h"
 #include "common/snapshot.h"
+#include "config.h"
+
+#define FPS_BASE 60 // para cuantos fps fueron diseñadas las animaciones
 
 std::unordered_map<std::string, AnimationData> AnimationDataProvider::frames_data;
 
@@ -49,8 +52,13 @@ void AnimationDataProvider::load_from_yaml(const std::string& name, const std::s
             frames.push_back({rect, x_offset_right, x_offset_left, y_offset});
         }
 
-        uint8_t iter_per_frame = obj.second["iter_per_frame"].as<uint8_t>();
         bool loops = obj.second["loops"].as<bool>();
+        uint8_t iter_per_frame = obj.second["iter_per_frame"].as<uint8_t>();
+
+        if (iter_per_frame != 1) {
+            float fps_ratio = static_cast<float>(FPS) / FPS_BASE;
+            iter_per_frame = static_cast<uint8_t>(iter_per_frame * fps_ratio);
+        }
 
         frames_data[name + "_" + animation_name] = AnimationData{frames, iter_per_frame, loops};
     }

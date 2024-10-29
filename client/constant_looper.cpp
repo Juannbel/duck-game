@@ -1,12 +1,9 @@
 #include "constant_looper.h"
 
-#include <array>
 #include <cmath>
 #include <iostream>
 #include <memory>
-#include <string>
 #include <unordered_set>
-#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
@@ -15,7 +12,6 @@
 #include <SDL_render.h>
 #include <SDL_video.h>
 
-#include "SDL2pp/Surface.hh"
 #include "client/camera.h"
 #include "client/duck_controller.h"
 #include "client/renderables/bullet.h"
@@ -42,10 +38,8 @@ ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_
         screen_manager(renderer, duck_id),
         snapshot_q(snapshot_q),
         command_q(command_q),
-        p1_controller(duck_id, command_q, last_snapshot,
-                      {SDLK_d, SDLK_a, SDLK_w, SDLK_s, SDLK_c, SDLK_v, SDLK_e}),
+        p1_controller(duck_id, command_q, last_snapshot, P1_CONTROLS),
         map_dto(match_info.map) {}
-
 
 void ConstantLooper::run() try {
     TexturesProvider::load_textures(renderer);
@@ -62,18 +56,23 @@ void ConstantLooper::run() try {
     bool keep_running = true;
     uint32_t t1 = SDL_GetTicks();
 
+
     while (keep_running) {
         keep_running = process_events();
 
         while (snapshot_q.try_pop(last_snapshot)) {}
 
-        // if (last_snapshot.round_finished) {
-        //    keep_running = screen_manager.between_rounds_screen(snapshot_q, last_snapshot,
-        //    map_theme_id); if (!keep_running) break; clear_renderables(); process_snapshot();
-        //    map.update(snapshot.maps[0], map_theme_id);
-        //    camera.update(last_snapshot);
-        //    continue;
-        // }
+        /*
+        if (last_snapshot.round_finished) {
+           keep_running = screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
+           if (!keep_running) break;
+           clear_renderables();
+           process_snapshot();
+           map.update(map_dto, 0);
+           camera.update(last_snapshot);
+           continue;
+        }
+        */
 
         // Actualizar el estado de todo lo que se renderiza
         process_snapshot();
