@@ -7,6 +7,7 @@
 #include "client/renderables/animation.h"
 #include "common/snapshot.h"
 #include "config.h"
+#include "common/map_dto.h"
 
 #define FPS_BASE 60 // para cuantos fps fueron diseñadas las animaciones
 
@@ -20,6 +21,11 @@ void AnimationDataProvider::load_animations_data() {
                        DATA_PATH "/sprites/wings/wings_" + std::to_string(i) + ".yaml");
     }
 
+    for (uint8_t i = 0; i < MAP_THEMES; i++) {
+        load_from_yaml("blocks_" + std::to_string(i),
+                       DATA_PATH "/sprites/blocks/blocks_" + std::to_string(i) + ".yaml");
+    }
+
     load_from_yaml("collectables", DATA_PATH "/sprites/collectables/collectables.yaml");
     load_from_yaml("guns", DATA_PATH "/sprites/guns/guns.yaml");
     load_from_yaml("bullets", DATA_PATH "/sprites/bullets/bullets.yaml");
@@ -28,6 +34,9 @@ void AnimationDataProvider::load_animations_data() {
 }
 
 const AnimationData& AnimationDataProvider::get_animation_data(const std::string& name) {
+    if (frames_data.find(name) == frames_data.end()) {
+        throw std::runtime_error("Animation data not found: " + name);
+    }
     return frames_data[name];
 }
 

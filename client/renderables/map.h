@@ -2,6 +2,7 @@
 #define RENDERABLE_MAP_H
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include <SDL2pp/SDL2pp.hh>
@@ -17,6 +18,8 @@ private:
 
     // representación del mapa
     std::vector<RenderableBlock> map;
+
+    static std::unordered_map<BlockType, std::string> block_to_string;
 
 public:
     RenderableMap(const Map& map_dto, uint8_t id);

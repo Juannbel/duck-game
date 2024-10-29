@@ -1,0 +1,82 @@
+define: &y_row 48
+width: 16
+height: 16
+
+blocks_3:
+  empty:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 0, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  floor_1:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 0, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  floor_2:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 16, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  floor_3:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 32, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  base_1:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 48, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  base_2:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 64, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  base_3:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 80, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  platform_1:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 96, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  platform_2:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 112, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  platform_3:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 128, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  platform_4:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 144, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  wall:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 160, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  half_floor:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 176, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }

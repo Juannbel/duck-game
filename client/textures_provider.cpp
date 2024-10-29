@@ -5,8 +5,8 @@ std::unordered_map<std::string, std::shared_ptr<SDL2pp::Texture>> TexturesProvid
 void TexturesProvider::load_textures(SDL2pp::Renderer& renderer) {
     textures["background_0"] =
             std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/backgrounds/background_0.png");
-    textures["blocks_0"] =
-            std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/blocks/blocks_0.png");
+    textures["blocks"] =
+            std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/blocks/blocks.png");
     textures["duck"] =
             std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/duck/duck_sprite.png");
     textures["guns"] =
