@@ -10,13 +10,14 @@
 Acceptor::Acceptor(Socket& sk): sk(sk) {}
 
 void Acceptor::run() {
+    int id = 0;
     GamesMonitor games_monitor;
     while (true) {
         try {
             Socket peer = sk.accept();
 
-            ServerClient* th = new ServerClient(std::move(peer));
-            games_monitor.add_player(th);
+            ServerClient* th = new ServerClient(std::move(peer), games_monitor, id);
+            id++;
 
             th->start();
 

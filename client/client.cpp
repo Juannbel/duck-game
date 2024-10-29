@@ -4,6 +4,7 @@
 #include "constant_looper.h"
 
 #define JOIN 2
+#define CREATE 1
 
 Client::Client(const char* hostname, const char* servname):
         protocol(Socket(hostname, servname)),
@@ -13,11 +14,17 @@ Client::Client(const char* hostname, const char* servname):
 void Client::run() {
     const int option = displayMenuAndGetOption();
     protocol.send_option(option);
-    
+
     if (option == JOIN) {
         if (!joinLobby()) {
             run();
         }
+    } else if (option == CREATE) {
+        std::cout << "Enter 3 to start lobby" << std::endl;
+
+        int option;
+        std::cin >> option;
+        protocol.send_option(option);
     }
 
     MatchInfo match_info = protocol.recv_match_info();
@@ -42,6 +49,7 @@ int Client::displayMenuAndGetOption() {
     return option;
 }
 
+// Devuelve false si no hay lobbies disponibles para conectarse, true en caso contrario
 bool Client::joinLobby() {
     if (!displayLobbyList()) {
         return false;

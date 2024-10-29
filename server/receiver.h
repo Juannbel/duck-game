@@ -1,25 +1,31 @@
-#ifndef RECEIVER_H
-#define RECEIVER_H
+#ifndef SERVER_RECEIVER_H
+#define SERVER_RECEIVER_H
 
 #include "common/blocking_queue.h"
 #include "common/thread.h"
 
 #include "server_protocol.h"
+#include "games_monitor.h"
+#include "sender.h"
+
 
 class ServerReceiver: public Thread {
 private:
     ServerProtocol& protocol;
-    Queue<struct action>* gameloop_q;
+    Queue<action>* gameloop_q;
+    GamesMonitor& games_monitor;
     uint8_t duck_id;
+    Queue<Snapshot>& sender_q;
+    ServerSender sender;
 
 public:
-    ServerReceiver(ServerProtocol& protocol);
+    ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor, Queue<Snapshot>& sender_q, uint8_t playerId);
 
-    void set_duck_id(uint8_t duck_id) { this->duck_id = duck_id; }
-
-    void set_gameloop_queue(Queue<struct action>* queue);
+    void setup_game();
 
     void run() override;
+
+    ~ServerReceiver();
 };
 
 #endif
