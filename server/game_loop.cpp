@@ -53,13 +53,13 @@ void GameLoop::pop_and_process_all() {
 }
 
 void GameLoop::push_responce(Snapshot& actual_status) {
-    snaps_queue_list.send_to_every(actual_status); 
+    snaps_queue_list.send_to_every(actual_status);
 }
 
-void GameLoop::check_for_winner(Snapshot &actual_status) {
+void GameLoop::check_for_winner(Snapshot& actual_status) {
     uint8_t winner_id;
     uint8_t players_alive = 0;
-    for (auto &duck : actual_status.ducks) {
+    for (auto& duck: actual_status.ducks) {
         if (!duck.is_dead) {
             winner_id = duck.duck_id;
             ++players_alive;
@@ -67,18 +67,19 @@ void GameLoop::check_for_winner(Snapshot &actual_status) {
     }
     if (players_alive == 1) {
         uint8_t i = 0;
-        for (auto &[id, wins] : winners_id_count) { // VALIDACION PARA QUE NO SE SUME MAS DE UNA VEZ
-            i+=wins;                                // PROVOSORIO, SOLO COMO TEST
+        for (auto& [id, wins]: winners_id_count) {  // VALIDACION PARA QUE NO SE SUME MAS DE UNA VEZ
+            i += wins;                              // PROVOSORIO, SOLO COMO TEST
         }
         if (i == match_number) {
             return;
         }
-        
+
         if (winners_id_count.find(winner_id) == winners_id_count.end()) {
             winners_id_count[winner_id] = 0;
         }
         ++winners_id_count[winner_id];
-        std::cout << "Gano el jugador: " << +winner_id << " con un total de " << +winners_id_count[winner_id] << " partidas ganadas " << std::endl;
+        std::cout << "Gano el jugador: " << +winner_id << " con un total de "
+                  << +winners_id_count[winner_id] << " partidas ganadas " << std::endl;
         //
         // CARGAR SIGUIENTE MAPA EN LA SNAPSHOT
         // CARGAR EL NUEVO MAPA EN LAS ESTRUCTURAS

@@ -24,7 +24,7 @@ private:
     void load_animation(const std::string& name);
 
 public:
-    RenderableWings(uint8_t duck_id);
+    explicit RenderableWings(uint8_t duck_id);
 
     void update(const Duck& duck);
 

@@ -1,5 +1,9 @@
 #include "animation_data_provider.h"
+
+#include <vector>
+
 #include <yaml-cpp/yaml.h>
+
 #include "client/renderables/animation.h"
 #include "common/snapshot.h"
 
@@ -7,8 +11,10 @@ std::unordered_map<std::string, AnimationData> AnimationDataProvider::frames_dat
 
 void AnimationDataProvider::load_animations_data() {
     for (uint8_t i = 0; i < MAX_DUCKS; i++) {
-        load_from_yaml("duck_" + std::to_string(i), DATA_PATH "/sprites/duck/duck_" + std::to_string(i) + ".yaml");
-        load_from_yaml("wings_" + std::to_string(i), DATA_PATH "/sprites/wings/wings_" + std::to_string(i) + ".yaml");
+        load_from_yaml("duck_" + std::to_string(i),
+                       DATA_PATH "/sprites/duck/duck_" + std::to_string(i) + ".yaml");
+        load_from_yaml("wings_" + std::to_string(i),
+                       DATA_PATH "/sprites/wings/wings_" + std::to_string(i) + ".yaml");
     }
 
     load_from_yaml("collectables", DATA_PATH "/sprites/collectables/collectables.yaml");

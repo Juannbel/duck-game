@@ -1,24 +1,27 @@
 #include "duck_player.h"
+
 #include <memory>
+
 #include "ticks.h"
 
 const uint8_t JUMP_IT = TICKS * 1.5;
-const uint8_t INC_JUMP_IT = TICKS/20;
+const uint8_t INC_JUMP_IT = TICKS / 20;
 const uint8_t DECREACENT_JUMP_SPEED = TICKS / 3;
 const uint8_t FLAPPING_TIME = TICKS / 3;
-const float DUCK_SPEED = 120.0f/TICKS;
-const float FALL_SPEED = 120.0f/TICKS;
+const float DUCK_SPEED = 120.0f / TICKS;
+const float FALL_SPEED = 120.0f / TICKS;
 
-DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks &collisions): 
-        status(), 
-        it_jumping(), 
-        it_flapping(), 
+DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions):
+        status(),
+        it_jumping(),
+        it_flapping(),
         ready_to_jump(),
-        hitbox(), 
-        collisions(collisions), 
-        collectables(collectables), 
-        equipped_gun(nullptr) 
-        { status.is_dead = true; }
+        hitbox(),
+        collisions(collisions),
+        collectables(collectables),
+        equipped_gun(nullptr) {
+    status.is_dead = true;
+}
 
 void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     status.duck_hp = 100;
@@ -52,7 +55,7 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
     if (it_flapping > FLAPPING_TIME) {
         status.is_flapping = false;
         it_flapping = 0;
-    } 
+    }
     if (collisions.out_of_map(hitbox.coords.x, hitbox.coords.y)) {
         status.is_dead = true;
         status.duck_hp = 0;
@@ -62,7 +65,9 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
 }
 
 void DuckPlayer::move_duck() {
-    if (status.is_dead) { return; }
+    if (status.is_dead) {
+        return;
+    }
     float new_x = hitbox.coords.x;
     float new_y = hitbox.coords.y;
     if (status.is_running) {
@@ -73,7 +78,7 @@ void DuckPlayer::move_duck() {
             move_x = status.is_flapping ? DUCK_SPEED * 0.7 : DUCK_SPEED;
         } else if (!status.is_laying) {
             move_x = DUCK_SPEED;
-        }   
+        }
         new_x = (status.facing_right) ? new_x + move_x : new_x - move_x;
     }
     if (status.is_falling) {
@@ -85,7 +90,8 @@ void DuckPlayer::move_duck() {
         new_y += move_y;
     }
     if (status.is_jumping) {
-        float move_y = FALL_SPEED * (static_cast<float>(JUMP_IT - it_jumping) / DECREACENT_JUMP_SPEED);
+        float move_y =
+                FALL_SPEED * (static_cast<float>(JUMP_IT - it_jumping) / DECREACENT_JUMP_SPEED);
         it_jumping += INC_JUMP_IT;
         new_y -= move_y;
     }
@@ -96,34 +102,38 @@ void DuckPlayer::move_duck() {
 }
 
 void DuckPlayer::run(bool right) {
-    if (status.is_laying) { return; }
+    if (status.is_laying) {
+        return;
+    }
     status.facing_right = right;
     status.is_running = true;
 }
 
-void DuckPlayer::stop_running() {
-    status.is_running = false;
-}
+void DuckPlayer::stop_running() { status.is_running = false; }
 
-void DuckPlayer::shoot() {  
-    if (!equipped_gun) return;   
+void DuckPlayer::shoot() {
+    if (!equipped_gun)
+        return;
     equipped_gun->start_shooting();
     status.is_shooting = true;
 }
 
 void DuckPlayer::stop_shooting() {
-    if (!equipped_gun) return;   
+    if (!equipped_gun)
+        return;
     equipped_gun->stop_shooting();
     status.is_shooting = false;
 }
 
-void DuckPlayer::update_gun_status() { 
-    if (!equipped_gun) return;   
-    equipped_gun->update_bullets(*this); 
+void DuckPlayer::update_gun_status() {
+    if (!equipped_gun)
+        return;
+    equipped_gun->update_bullets(*this);
 }
 
 void DuckPlayer::lay_down() {
-    if (status.is_laying) return;
+    if (status.is_laying)
+        return;
     status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
     status.is_running = status.is_laying ? false : status.is_running;
     if (status.is_laying) {
@@ -133,14 +143,18 @@ void DuckPlayer::lay_down() {
 }
 
 void DuckPlayer::stand_up() {
-    if (!status.is_laying) { return; }
+    if (!status.is_laying) {
+        return;
+    }
     status.is_laying = false;
-    hitbox.coords.y -= (DUCK_LAYED_HITBOX_HEIGHT+1);
+    hitbox.coords.y -= (DUCK_LAYED_HITBOX_HEIGHT + 1);
     hitbox.height = DUCK_HITBOX_HEIGHT;
 }
 
 void DuckPlayer::jump() {
-    if (!ready_to_jump || status.is_jumping) { return; }
+    if (!ready_to_jump || status.is_jumping) {
+        return;
+    }
     ready_to_jump = false;
     if (status.is_falling) {
         it_flapping = 1;
@@ -153,15 +167,15 @@ void DuckPlayer::jump() {
 
 void DuckPlayer::stop_jump() { ready_to_jump = true; }
 
-uint32_t DuckPlayer::drop_and_pickup(){
+uint32_t DuckPlayer::drop_and_pickup() {
     std::shared_ptr<GunEntity> new_gun = collectables.pickup(hitbox);
     collectables.drop_gun(equipped_gun, hitbox);
     equipped_gun = new_gun;
     Gun gun_info = {};
-    if(new_gun) {
+    if (new_gun) {
         gun_info = new_gun->get_gun_info();
         status.gun = gun_info.type;
-    } 
+    }
     status.gun = gun_info.type;
     return gun_info.gun_id;
 }

@@ -2,7 +2,9 @@
 #define SOUND_MANAGER_H
 
 #include <unordered_map>
+
 #include <SDL2pp/SDL2pp.hh>
+
 #include "SDL2pp/Chunk.hh"
 #include "SDL2pp/Music.hh"
 #include "common/snapshot.h"
@@ -14,7 +16,7 @@ private:
     SDL2pp::Music background_music;
 
 public:
-    explicit SoundManager();
+    SoundManager();
 
     void shoot_sound(GunType gun);
 

@@ -1,8 +1,10 @@
 #include "yaml.h"
 
 BlockType parseBlockType(const std::string& typeStr) {
-    if (typeStr == "Floor") return BlockType::Floor;
-    if (typeStr == "Wall") return BlockType::Wall;
+    if (typeStr == "Floor")
+        return BlockType::Floor;
+    if (typeStr == "Wall")
+        return BlockType::Wall;
     throw std::invalid_argument("Unknown block type");
 }
 
@@ -24,7 +26,7 @@ Map YAMLLoader::loadMap(const std::string& path) {
         }
     }
 
-    for (const auto& block : config["blocks"]) {
+    for (const auto& block: config["blocks"]) {
         const BlockType type = parseBlockType(block["type"].as<std::string>());
 
         auto start = block["start"];
@@ -54,7 +56,6 @@ Map YAMLLoader::loadMap(const std::string& path) {
                 map_blocks_info.blocks[y + i][x] = type;
             }
         }
-
     }
 
     return map_blocks_info;

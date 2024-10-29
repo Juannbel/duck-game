@@ -1,0 +1,67 @@
+clang-format.............................................................[42mPassed[m
+cpplint..................................................................[42mPassed[m
+cppcheck.................................................................[41mFailed[m
+[2m- hook id: cppcheck[m
+[2m- exit code: 1[m
+
+server/game/game_operator.h:17:13: style: struct member 'Spawn::x' is never used. [unusedStructMember]
+    int16_t x;
+            ^
+server/game/game_operator.h:18:13: style: struct member 'Spawn::y' is never used. [unusedStructMember]
+    int16_t y;
+            ^
+server/game/game_operator.h:19:14: style: struct member 'Spawn::it_since_picked' is never used. [unusedStructMember]
+    uint16_t it_since_picked;
+             ^
+server/game/game_operator.h:20:14: style: struct member 'Spawn::it_to_spawn' is never used. [unusedStructMember]
+    uint16_t it_to_spawn;
+             ^
+server/game/game_operator.h:21:10: style: struct member 'Spawn::picked' is never used. [unusedStructMember]
+    bool picked;
+         ^
+server/game/game_operator.h:22:14: style: struct member 'Spawn::collectable_id' is never used. [unusedStructMember]
+    uint32_t collectable_id;
+             ^
+server/game/game_operator.cpp:32:43: style: Parameter 'action' can be declared with const [constParameter]
+void GameOperator::process_action(action& action) {
+                                          ^
+server/game/bullets_manager.h:14:11: style: struct member 'BulletInfo::speed' is never used. [unusedStructMember]
+    float speed;
+          ^
+server/game/gun_entity.cpp:39:23: warning: Member variable 'GunEntity::it_since_shoot' is not assigned a value in 'GunEntity::operator='. [operatorEqVarError]
+GunEntity& GunEntity::operator=(GunEntity&& old) {
+                      ^
+server/action.h:9:13: style: struct member 'action::duck_id' is never used. [unusedStructMember]
+    uint8_t duck_id;  // del 0 al 3
+            ^
+server/game/collisions.h:11:11: style: struct member 'Coordenades::x' is never used. [unusedStructMember]
+    float x;
+          ^
+server/game/collisions.h:12:11: style: struct member 'Coordenades::y' is never used. [unusedStructMember]
+    float y;
+          ^
+server/game/collisions.h:17:11: style: struct member 'Rectangle::width' is never used. [unusedStructMember]
+    float width;
+          ^
+server/game/collisions.h:18:11: style: struct member 'Rectangle::height' is never used. [unusedStructMember]
+    float height;
+          ^
+server/game/collisions.h:23:10: style: struct member 'Collision::vertical_collision' is never used. [unusedStructMember]
+    bool vertical_collision;
+         ^
+server/game/collisions.h:24:10: style: struct member 'Collision::horizontal_collision' is never used. [unusedStructMember]
+    bool horizontal_collision;
+         ^
+client/renderables/bullet.cpp:10:19: warning: Member variable 'RenderableBullet::angle' is not initialized in the constructor. [uninitMemberVar]
+RenderableBullet::RenderableBullet(uint32_t id, GunType type):
+                  ^
+server/game/collisions.cpp:13:37: style: Parameter 'map_dto' can be declared with const [constParameter]
+void CollisionChecks::load_map(Map& map_dto) {
+                                    ^
+server/game/collisions.cpp:28:81: style: Parameter 'entity' can be declared with const [constParameter]
+struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& entity, float new_x,
+                                                                                ^
+server/maps/yaml.cpp:17:24: style: Variable 'nombre' is assigned a value that is never used. [unreadVariable]
+    std::string nombre = config["name"].as<std::string>();
+                       ^
+

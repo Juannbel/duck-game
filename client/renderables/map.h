@@ -1,18 +1,19 @@
 #ifndef RENDERABLE_MAP_H
 #define RENDERABLE_MAP_H
 
+#include <memory>
 #include <vector>
 
 #include <SDL2pp/SDL2pp.hh>
 
-#include "common/map_dto.h"
 #include "client/camera.h"
+#include "common/map_dto.h"
 
 #include "block.h"
 
 class RenderableMap {
 private:
-    SDL2pp::Texture* background_texture;
+    std::shared_ptr<SDL2pp::Texture> background_texture;
 
     // representación del mapa
     std::vector<RenderableBlock> map;

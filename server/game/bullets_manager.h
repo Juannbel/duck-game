@@ -1,9 +1,11 @@
 #ifndef BULLET_MANAGER_H
 #define BULLET_MANAGER_H
 
-#include <map>
 #include <cstdint>
+#include <map>
+
 #include "common/snapshot.h"
+
 #include "collisions.h"
 
 struct BulletInfo {
@@ -20,7 +22,7 @@ private:
     CollisionChecks& collisions;
 
 public:
-    BulletManager(CollisionChecks&);
+    explicit BulletManager(CollisionChecks&);
 
     void add_bullet(BulletInfo&);
     void update_bullets();

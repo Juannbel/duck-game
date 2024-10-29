@@ -1,39 +1,49 @@
 #include "gun_entity.h"
+
 #include <cstdint>
 
 
-GunEntity::GunEntity(BulletManager* bullets) : 
-        id(), type(), x(), y(), ammo(), 
-        trigger_pulled(), ready_to_shoot(), 
+GunEntity::GunEntity(BulletManager* bullets):
+        id(),
+        type(),
+        x(),
+        y(),
+        ammo(),
+        trigger_pulled(),
+        ready_to_shoot(),
         it_since_shoot(),
         bullets(bullets) {}
 
-GunEntity::GunEntity(Gun& gun, BulletManager* bullets) : 
-        id(gun.gun_id), type(gun.type), 
-        x(gun.x), y(gun.y), ammo(), 
-        trigger_pulled(), ready_to_shoot(), 
-        it_since_shoot(), 
+GunEntity::GunEntity(Gun& gun, BulletManager* bullets):
+        id(gun.gun_id),
+        type(gun.type),
+        x(gun.x),
+        y(gun.y),
+        ammo(),
+        trigger_pulled(),
+        ready_to_shoot(),
+        it_since_shoot(),
         bullets(bullets) {}
 
-GunEntity::GunEntity(GunEntity&& old) :
-    id(old.id), 
-    type(old.type), 
-    x(old.x), 
-    y(old.y), 
-    ammo(old.ammo), 
-    trigger_pulled(old.trigger_pulled), 
-    ready_to_shoot(old.ready_to_shoot),
-    it_since_shoot(old.it_since_shoot),
-    bullets(old.bullets) {}
+GunEntity::GunEntity(GunEntity&& old):
+        id(old.id),
+        type(old.type),
+        x(old.x),
+        y(old.y),
+        ammo(old.ammo),
+        trigger_pulled(old.trigger_pulled),
+        ready_to_shoot(old.ready_to_shoot),
+        it_since_shoot(old.it_since_shoot),
+        bullets(old.bullets) {}
 
 GunEntity& GunEntity::operator=(GunEntity&& old) {
-    id = old.id; 
-    type = old.type; 
-    x = old.x; 
-    y = old.y; 
-    ammo = old.ammo; 
-    trigger_pulled = old.trigger_pulled; 
-    bullets = old.bullets; 
+    id = old.id;
+    type = old.type;
+    x = old.x;
+    y = old.y;
+    ammo = old.ammo;
+    trigger_pulled = old.trigger_pulled;
+    bullets = old.bullets;
     return *this;
 }
 

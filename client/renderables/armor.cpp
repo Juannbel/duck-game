@@ -1,24 +1,20 @@
 #include "armor.h"
+
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
 
-RenderableArmor::RenderableArmor() :
-        position(0, 0), facing_right(true) {
-            animations["standing"] = new Animation(
-                *TexturesProvider::getTexture("armor"),
-                AnimationDataProvider::get_animation_data("armor_standing")
-            );
+RenderableArmor::RenderableArmor(): curr_animation(nullptr), position(0, 0), facing_right(true) {
+    animations["standing"] =
+            new Animation(*TexturesProvider::get_texture("armor"),
+                          AnimationDataProvider::get_animation_data("armor_standing"));
 
-            animations["running"] = new Animation(
-                *TexturesProvider::getTexture("armor"),
-                AnimationDataProvider::get_animation_data("armor_running")
-            );
+    animations["running"] =
+            new Animation(*TexturesProvider::get_texture("armor"),
+                          AnimationDataProvider::get_animation_data("armor_running"));
 
-            animations["laying"] = new Animation(
-                *TexturesProvider::getTexture("armor"),
-                AnimationDataProvider::get_animation_data("armor_laying")
-            );
-        }
+    animations["laying"] = new Animation(*TexturesProvider::get_texture("armor"),
+                                         AnimationDataProvider::get_animation_data("armor_laying"));
+}
 
 void RenderableArmor::update(const Duck& duck) {
     Animation* prev_animation = curr_animation;
@@ -26,7 +22,8 @@ void RenderableArmor::update(const Duck& duck) {
     position.x = duck.x;
     position.y = duck.y;
 
-    if (duck.is_dead) return;
+    if (duck.is_dead)
+        return;
 
     if (!duck.armor_equiped) {
         curr_animation = nullptr;
@@ -51,17 +48,19 @@ void RenderableArmor::update(const Duck& duck) {
 }
 
 void RenderableArmor::render(SDL2pp::Renderer& renderer, Camera& camera) {
-    if (!curr_animation) return;
+    if (!curr_animation)
+        return;
     curr_animation->render(renderer, camera, position, facing_right, 0);
 }
 
 void RenderableArmor::skip_frames(uint8_t frames) {
-    if (!curr_animation) return;
+    if (!curr_animation)
+        return;
     curr_animation->skip_frames(frames);
 }
 
 RenderableArmor::~RenderableArmor() {
-    for (auto& pair : animations) {
+    for (auto& pair: animations) {
         delete pair.second;
     }
     animations.clear();

@@ -21,6 +21,7 @@ target_sources(taller_client
     animation_data_provider.cpp
     duck_controller.cpp
     sound_manager.cpp
+    screen_manager.cpp
     PUBLIC
     # .h files
     constant_looper.h
@@ -42,4 +43,5 @@ target_sources(taller_client
     animation_data_provider.h
     duck_controller.h
     sound_manager.h
+    screen_manager.cpp
     )

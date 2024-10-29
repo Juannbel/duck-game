@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+
 #include "client/renderables/animation.h"
 
 class AnimationDataProvider {

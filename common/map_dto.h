@@ -2,6 +2,7 @@
 #define MAP_DTO_H
 
 #include <cstdint>
+
 #include "shared_constants.h"
 
 enum BlockType { Empty, Floor, Wall, Core };

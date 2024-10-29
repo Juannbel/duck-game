@@ -1,8 +1,11 @@
 #ifndef YAML_H
 #define YAML_H
 
+#include <string>
+
 #include <common/map_dto.h>
 #include <yaml-cpp/yaml.h>
+
 #include "server/game/game_operator.h"
 
 class YAMLLoader {
@@ -11,4 +14,4 @@ public:
     Map loadMap(const std::string& path);
 };
 
-#endif //YAML_H
+#endif  // YAML_H

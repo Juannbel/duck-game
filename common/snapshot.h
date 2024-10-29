@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <vector>
+
 #include <sys/types.h>
 
 #define MAX_DUCKS 4

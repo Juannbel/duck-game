@@ -5,11 +5,12 @@
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
+
 #include "common/map_dto.h"
 
 ClientProtocol::ClientProtocol(Socket&& socket): socket(std::move(socket)) {}
 
-std::vector<Duck> ClientProtocol::recv_ducks_vector(bool &was_closed){
+std::vector<Duck> ClientProtocol::recv_ducks_vector(bool& was_closed) {
     uint8_t players_quantity;
     socket.recvall(&players_quantity, sizeof(players_quantity), &was_closed);
     std::vector<Duck> ducks(players_quantity);
@@ -17,7 +18,7 @@ std::vector<Duck> ClientProtocol::recv_ducks_vector(bool &was_closed){
     return ducks;
 }
 
-std::vector<Gun> ClientProtocol::recv_guns_vector(bool &was_closed){
+std::vector<Gun> ClientProtocol::recv_guns_vector(bool& was_closed) {
     uint8_t guns_quantity;
     socket.recvall(&guns_quantity, sizeof(guns_quantity), &was_closed);
     std::vector<Gun> guns(guns_quantity);
@@ -25,7 +26,7 @@ std::vector<Gun> ClientProtocol::recv_guns_vector(bool &was_closed){
     return guns;
 }
 
-std::vector<Bullet> ClientProtocol::recv_bullets_vector(bool &was_closed){
+std::vector<Bullet> ClientProtocol::recv_bullets_vector(bool& was_closed) {
     uint8_t bullets_quantity;
     socket.recvall(&bullets_quantity, sizeof(bullets_quantity), &was_closed);
     std::vector<Bullet> bullets(bullets_quantity);
@@ -38,7 +39,7 @@ Snapshot ClientProtocol::recv_snapshot() {
     Snapshot serializedSnapshot;
 
     serializedSnapshot.ducks = recv_ducks_vector(was_closed);
-    serializedSnapshot.guns =recv_guns_vector(was_closed);
+    serializedSnapshot.guns = recv_guns_vector(was_closed);
     serializedSnapshot.bullets = recv_bullets_vector(was_closed);
 
     Snapshot deserializedSnapshot = deserializeSnapshot(serializedSnapshot);

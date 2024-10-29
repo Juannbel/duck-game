@@ -1,19 +1,19 @@
 #ifndef GAME_LOOP_H
 #define GAME_LOOP_H
 
+#include <map>
+
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/map_dto.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 #include "common/thread.h"
-
-#include "action.h"
 #include "game/duck_player.h"
 #include "game/game_operator.h"
-#include "list_monitor.h"
 
-#include <map>
+#include "action.h"
+#include "list_monitor.h"
 
 class GameLoop: public Thread {
 private:

@@ -1,17 +1,26 @@
 #include "duck_controller.h"
 
-DuckController::DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot, ControlScheme controls)
-: duck_id(duck_id), command_q(command_q), snapshot(snapshot), controls(controls), move_command(false), moving_left(false), moving_right(false) {}
+DuckController::DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot,
+                               ControlScheme controls):
+        duck_id(duck_id),
+        command_q(command_q),
+        snapshot(snapshot),
+        controls(controls),
+        move_command(false),
+        moving_left(false),
+        moving_right(false) {}
 
 void DuckController::handle_key_down(const SDL_Event& event) {
     if (event.key.keysym.sym == controls.move_right) {
-        if (!moving_right && !(snapshot.ducks[duck_id].is_running && snapshot.ducks[duck_id].facing_right)) {
+        if (!moving_right &&
+            !(snapshot.ducks[duck_id].is_running && snapshot.ducks[duck_id].facing_right)) {
             moving_right = true;
             last_move_command = StartMovingRight;
             move_command = true;
         }
     } else if (event.key.keysym.sym == controls.move_left) {
-        if (!moving_left && !(snapshot.ducks[duck_id].is_running && !snapshot.ducks[duck_id].facing_right)) {
+        if (!moving_left &&
+            !(snapshot.ducks[duck_id].is_running && !snapshot.ducks[duck_id].facing_right)) {
             moving_left = true;
             last_move_command = StartMovingLeft;
             move_command = true;
@@ -62,7 +71,8 @@ void DuckController::handle_key_up(const SDL_Event& event) {
 }
 
 void DuckController::process_event(const SDL_Event& event) {
-    if (snapshot.ducks[duck_id].is_dead) return;
+    if (snapshot.ducks[duck_id].is_dead)
+        return;
 
     if (event.type == SDL_KEYDOWN) {
         handle_key_down(event);

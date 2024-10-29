@@ -1,11 +1,11 @@
 #ifndef COLLISIONS_H
 #define COLLISIONS_H
 
-#include "common/map_dto.h"
-
+#include <cstdint>
 #include <map>
 #include <vector>
-#include <cstdint>
+
+#include "common/map_dto.h"
 
 struct Coordenades {
     float x;
@@ -25,11 +25,12 @@ struct Collision {
 };
 
 class CollisionChecks {
-    private:
+private:
     std::map<uint16_t, std::vector<Rectangle>> blocks;
     void add_block(float x, float y);
-    public:
-    CollisionChecks() : blocks() {}
+
+public:
+    CollisionChecks(): blocks() {}
     void load_map(Map&);
 
     bool out_of_map(float x, float y);
@@ -37,7 +38,6 @@ class CollisionChecks {
     struct Collision check_near_blocks_collision(struct Rectangle& entity, float new_x,
                                                  float new_y);
     struct Collision rectangles_collision(const struct Rectangle& r1, const struct Rectangle& r2);
-
 };
 
 #endif

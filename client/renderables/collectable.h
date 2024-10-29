@@ -2,20 +2,22 @@
 #define RENDERABLE_COLLECTABLE_H
 
 #include <string>
+#include <unordered_map>
+
 #include "SDL2pp/Point.hh"
 #include "SDL2pp/Texture.hh"
 #include "client/renderables/animation.h"
 #include "common/snapshot.h"
 
 class RenderableCollectable {
-    private:
+private:
     uint32_t id;
     Animation animation;
 
     SDL2pp::Point position;
     static std::unordered_map<GunType, std::string> collectable_to_string;
 
-    public:
+public:
     RenderableCollectable(uint32_t id, GunType type);
 
     void update(const Gun& snapshot);

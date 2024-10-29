@@ -1,12 +1,12 @@
 #ifndef DUCK_CONTROLLER_H
 #define DUCK_CONTROLLER_H
 
+#include <SDL2/SDL.h>
+#include <SDL_events.h>
+
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/snapshot.h"
-
-#include <SDL2/SDL.h>
-#include <SDL_events.h>
 
 struct ControlScheme {
     SDL_Keycode move_right;
@@ -34,7 +34,8 @@ private:
     void handle_key_up(const SDL_Event& event);
 
 public:
-    DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot, ControlScheme controls);
+    DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot,
+                   ControlScheme controls);
 
     void process_event(const SDL_Event& event);
 

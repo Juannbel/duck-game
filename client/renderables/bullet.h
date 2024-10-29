@@ -2,10 +2,14 @@
 #define RENDERABLE_BULLET_H
 
 #include <cstdint>
+#include <string>
+#include <unordered_map>
+
+#include <SDL2pp/SDL2pp.hh>
+
 #include "client/camera.h"
 #include "client/renderables/animation.h"
 #include "common/snapshot.h"
-#include <SDL2pp/SDL2pp.hh>
 
 class RenderableBullet {
 private:
@@ -17,7 +21,7 @@ private:
 
     static std::unordered_map<GunType, std::string> gun_to_string;
 
-    public:
+public:
     RenderableBullet(uint32_t id, GunType type);
 
     void update(const Bullet& snapshot);

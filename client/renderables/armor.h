@@ -1,8 +1,11 @@
 #ifndef RENDERABLE_ARMOR_H
 #define RENDERABLE_ARMOR_H
 
+#include <string>
 #include <unordered_map>
+
 #include <SDL2pp/SDL2pp.hh>
+
 #include "client/renderables/animation.h"
 
 class RenderableArmor {
