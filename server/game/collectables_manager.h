@@ -1,17 +1,18 @@
 #ifndef COLLECTABLES_MANAGER_H
 #define COLLECTABLES_MANAGER_H
 
-#include "common/snapshot.h"
-#include "collisions.h"
-#include "gun_entity.h"
-#include "bullets_manager.h"
-
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <set>
-#include <cstdint>
 
-class CollectablesManager{
+#include "common/snapshot.h"
+
+#include "bullets_manager.h"
+#include "collisions.h"
+#include "gun_entity.h"
+
+class CollectablesManager {
 private:
     std::map<uint32_t, std::shared_ptr<GunEntity>> guns;
     std::set<uint32_t> picked_up_guns;
@@ -24,12 +25,12 @@ private:
 
 public:
     explicit CollectablesManager(CollisionChecks& collision);
-    
+
     uint32_t get_and_inc_collectable_id();
     void add_gun(Gun& gun);
     void drop_gun(std::shared_ptr<GunEntity> gun, const Rectangle& duck_hitbox);
     void move_guns_falling();
-    std::shared_ptr<GunEntity> pickup(const Rectangle &duck);
+    std::shared_ptr<GunEntity> pickup(const Rectangle& duck);
     void add_guns_to_snapshot(Snapshot& snapshot);
 };
 

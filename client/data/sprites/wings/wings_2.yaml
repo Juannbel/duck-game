@@ -10,8 +10,8 @@ wings_2:
       - { x: 0, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -5 }
 
   walking:
-    iter_per_frame: 5
-    loops: false
+    iter_per_frame: 6
+    loops: true
     frames:
       - { x: 0, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -3 }
       - { x: 0, y: *y_row, x_offset_right: 5, x_offset_left: -1, y_offset: -4 }

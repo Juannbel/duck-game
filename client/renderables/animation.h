@@ -24,7 +24,9 @@ struct FrameData {
 
 struct AnimationData {
     std::vector<FrameData> frames;
+    // cppcheck-suppress unusedStructMember
     uint8_t iter_per_frame;
+    // cppcheck-suppress unusedStructMember
     bool loops;
 };
 

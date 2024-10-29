@@ -9,8 +9,8 @@
 #include "common/socket.h"
 #include "common/thread.h"
 
-#include "server_client.h"
 #include "list_monitor.h"
+#include "server_client.h"
 
 class Acceptor: public Thread {
 private:
@@ -22,7 +22,8 @@ private:
     Map& map;
 
 public:
-    Acceptor(Socket& sk, Queue<struct action>& gameloop_q, QueueListMonitor& sv_msg_queues, Map& map);
+    Acceptor(Socket& sk, Queue<struct action>& gameloop_q, QueueListMonitor& sv_msg_queues,
+             Map& map);
     void run() override;
     void reap_dead();
     void kill_all();

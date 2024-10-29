@@ -9,7 +9,9 @@
 #include <SDL_stdinc.h>
 
 #include "SDL2pp/Point.hh"
+#include "client/renderables/armor.h"
 #include "client/renderables/equipped_gun.h"
+#include "client/renderables/helmet.h"
 #include "client/renderables/wings.h"
 #include "common/snapshot.h"
 
@@ -21,6 +23,8 @@ private:
 
     Animation* curr_animation;
     RenderableEquippedGun gun;
+    RenderableHelmet helmet;
+    RenderableArmor armor;
     RenderableWings wings;
 
     std::unordered_map<std::string, Animation*> animations;
@@ -36,7 +40,7 @@ private:
 
 
 public:
-    RenderableDuck(uint8_t duck_id);
+    explicit RenderableDuck(uint8_t duck_id);
 
     void update(const Duck& duck);
 

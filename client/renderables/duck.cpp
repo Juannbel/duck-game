@@ -1,23 +1,24 @@
 #include "duck.h"
 
-#include <yaml-cpp/yaml.h>
 #include <string>
+
+#include <yaml-cpp/yaml.h>
 
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
 #include "common/shared_constants.h"
 
 RenderableDuck::RenderableDuck(uint8_t duck_id):
-            duck_id(duck_id), wings(duck_id), position(50, 50), is_facing_right(true), is_alive(true) {
-        load_animations();
-        curr_animation = animations["standing"];
-    }
+        duck_id(duck_id), wings(duck_id), position(50, 50), is_facing_right(true), is_alive(true) {
+    load_animations();
+    curr_animation = animations["standing"];
+}
 
 void RenderableDuck::load_animation(const std::string& animation_name) {
     animations[animation_name] =
-        new Animation(
-            *TexturesProvider::getTexture("duck"),
-            AnimationDataProvider::get_animation_data("duck_" + std::to_string(duck_id) + "_" + animation_name));
+            new Animation(*TexturesProvider::get_texture("duck"),
+                          AnimationDataProvider::get_animation_data(
+                                  "duck_" + std::to_string(duck_id) + "_" + animation_name));
 }
 
 uint8_t RenderableDuck::get_id() { return duck_id; }
@@ -60,12 +61,15 @@ void RenderableDuck::update(const Duck& duck) {
 
     curr_animation->update();
 
+    helmet.update(duck);
+    armor.update(duck);
     gun.update(duck);
     wings.update(duck);
 }
 
 void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
-    SDL2pp::Rect hitbox = SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
+    SDL2pp::Rect hitbox =
+            SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
     if (curr_animation == animations["laying"]) {
         hitbox.h = DUCK_LAYED_HITBOX_HEIGHT;
     }
@@ -79,14 +83,23 @@ void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
     }
 
     gun.render(renderer, camera);
+    helmet.render(renderer, camera);
+    armor.render(renderer, camera);
     wings.render(renderer, camera);
 }
 
-void RenderableDuck::skip_frames(uint8_t frames) { curr_animation->skip_frames(frames); }
+void RenderableDuck::skip_frames(uint8_t frames) {
+    curr_animation->skip_frames(frames);
+    helmet.skip_frames(frames);
+    armor.skip_frames(frames);
+    wings.skip_frames(frames);
+}
 
 bool RenderableDuck::is_dead() { return !is_alive; }
 
-SDL2pp::Rect RenderableDuck::get_bounding_box() { return SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT); }
+SDL2pp::Rect RenderableDuck::get_bounding_box() {
+    return SDL2pp::Rect(position.x, position.y, DUCK_HITBOX_WIDTH, DUCK_HITBOX_HEIGHT);
+}
 
 RenderableDuck::~RenderableDuck() {
     for (auto& animation: animations) {

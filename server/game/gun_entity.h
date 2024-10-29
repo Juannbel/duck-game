@@ -4,17 +4,18 @@
 #include <cstdint>
 
 #include "common/snapshot.h"
+
 #include "bullets_manager.h"
 
-class DuckPlayer; // Forward declaration para evitar dependencia circular
+class DuckPlayer;  // Forward declaration para evitar dependencia circular
 
-class GunEntity{
+class GunEntity {
 protected:
     uint32_t id;
     GunType type;
 
     float x;
-    float y;   
+    float y;
     uint8_t ammo;
     bool trigger_pulled;
     bool ready_to_shoot;
@@ -27,13 +28,11 @@ public:
     explicit GunEntity(GunEntity&&);
     GunEntity& operator=(GunEntity&&);
 
-    virtual void start_shooting() { 
+    virtual void start_shooting() {
         it_since_shoot = trigger_pulled ? it_since_shoot : 0;
         trigger_pulled = true;
     }
-    virtual void stop_shooting() {
-        trigger_pulled = false;
-    }
+    virtual void stop_shooting() { trigger_pulled = false; }
     virtual void update_bullets(DuckPlayer& player) = 0;
 
     void drop();

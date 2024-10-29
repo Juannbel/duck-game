@@ -1,22 +1,42 @@
 #include "animation_data_provider.h"
+
+#include <vector>
+
 #include <yaml-cpp/yaml.h>
+
 #include "client/renderables/animation.h"
 #include "common/snapshot.h"
+#include "config.h"
+#include "common/map_dto.h"
+
+#define FPS_BASE 60 // para cuantos fps fueron diseñadas las animaciones
 
 std::unordered_map<std::string, AnimationData> AnimationDataProvider::frames_data;
 
 void AnimationDataProvider::load_animations_data() {
     for (uint8_t i = 0; i < MAX_DUCKS; i++) {
-        load_from_yaml("duck_" + std::to_string(i), DATA_PATH "/sprites/duck/duck_" + std::to_string(i) + ".yaml");
-        load_from_yaml("wings_" + std::to_string(i), DATA_PATH "/sprites/wings/wings_" + std::to_string(i) + ".yaml");
+        load_from_yaml("duck_" + std::to_string(i),
+                       DATA_PATH "/sprites/duck/duck_" + std::to_string(i) + ".yaml");
+        load_from_yaml("wings_" + std::to_string(i),
+                       DATA_PATH "/sprites/wings/wings_" + std::to_string(i) + ".yaml");
+    }
+
+    for (uint8_t i = 0; i < MAP_THEMES; i++) {
+        load_from_yaml("blocks_" + std::to_string(i),
+                       DATA_PATH "/sprites/blocks/blocks_" + std::to_string(i) + ".yaml");
     }
 
     load_from_yaml("collectables", DATA_PATH "/sprites/collectables/collectables.yaml");
     load_from_yaml("guns", DATA_PATH "/sprites/guns/guns.yaml");
     load_from_yaml("bullets", DATA_PATH "/sprites/bullets/bullets.yaml");
+    load_from_yaml("helmet", DATA_PATH "/sprites/equipment/helmet.yaml");
+    load_from_yaml("armor", DATA_PATH "/sprites/equipment/armor.yaml");
 }
 
 const AnimationData& AnimationDataProvider::get_animation_data(const std::string& name) {
+    if (frames_data.find(name) == frames_data.end()) {
+        throw std::runtime_error("Animation data not found: " + name);
+    }
     return frames_data[name];
 }
 
@@ -41,8 +61,13 @@ void AnimationDataProvider::load_from_yaml(const std::string& name, const std::s
             frames.push_back({rect, x_offset_right, x_offset_left, y_offset});
         }
 
-        uint8_t iter_per_frame = obj.second["iter_per_frame"].as<uint8_t>();
         bool loops = obj.second["loops"].as<bool>();
+        uint8_t iter_per_frame = obj.second["iter_per_frame"].as<uint8_t>();
+
+        if (iter_per_frame != 1) {
+            float fps_ratio = static_cast<float>(FPS) / FPS_BASE;
+            iter_per_frame = static_cast<uint8_t>(iter_per_frame * fps_ratio);
+        }
 
         frames_data[name + "_" + animation_name] = AnimationData{frames, iter_per_frame, loops};
     }

@@ -4,8 +4,8 @@
 #include <cassert>
 #include <limits>
 
-#include "common/snapshot.h"
 #include "common/shared_constants.h"
+#include "common/snapshot.h"
 
 #define CAMERA_LERP_FACTOR 0.1f  // que tan rápido se mueve la cámara (entre 0.0 y 1.0)
 #define CAMERA_DEAD_ZONE 20.0f   // distancia mínima para mover la cámara
@@ -20,8 +20,9 @@ using SDL2pp::Renderer;
 
 Camera::Camera(Renderer& renderer):
         renderer(renderer),
-        current_rect(-MARGIN_W * SCALE, -MARGIN_H*SCALE,
-            (MAP_WIDTH_PIXELS + 2 * MARGIN_W) * SCALE, (MAP_HEIGHT_PIXELS + 2 * MARGIN_H) * SCALE),
+        current_rect(-MARGIN_W * SCALE, -MARGIN_H * SCALE,
+                     (MAP_WIDTH_PIXELS + 2 * MARGIN_W) * SCALE,
+                     (MAP_HEIGHT_PIXELS + 2 * MARGIN_H) * SCALE),
         target_rect(current_rect),
         zoom_x((float)renderer.GetOutputWidth() / current_rect.w),
         zoom_y((float)renderer.GetOutputHeight() / current_rect.h),
@@ -62,8 +63,8 @@ void Camera::transform_rect(Rect& world_rect) {
 }
 
 bool Camera::is_rect_visible(const Rect& world_rect) {
-    // return current_rect.Intersects(world_rect);
-    return world_rect.x * SCALE + world_rect.w * SCALE  > current_rect.x &&
+    // return current_rect.Intersects(world_rect); da problemas con lo de la escala
+    return world_rect.x * SCALE + world_rect.w * SCALE > current_rect.x &&
            world_rect.x * SCALE < current_rect.x + current_rect.w &&
            world_rect.y * SCALE + world_rect.h * SCALE > current_rect.y &&
            world_rect.y * SCALE < current_rect.y + current_rect.h;
@@ -92,6 +93,10 @@ void Camera::adjust_aspect_ratio(Rect& target) {
 }
 
 void Camera::update_target(const Snapshot& snapshot) {
+    if (snapshot.ducks.empty()) {
+        return;
+    }
+
     int16_t left = std::numeric_limits<int16_t>::max();
     int16_t right = std::numeric_limits<int16_t>::min();
     int16_t top = std::numeric_limits<int16_t>::max();
@@ -116,5 +121,5 @@ void Camera::update_target(const Snapshot& snapshot) {
     Rect target(left, top, right - left, bottom - top);
     adjust_aspect_ratio(target);
 
-    target_rect = target; // Asegúrate de que target_rect se configure correctamente
+    target_rect = target;
 }

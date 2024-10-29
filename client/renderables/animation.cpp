@@ -9,11 +9,8 @@
 #include "SDL2pp/Point.hh"
 #include "SDL2pp/Rect.hh"
 
-Animation::Animation(SDL2pp::Texture& texture, const AnimationData& data) :
-        texture(texture),
-        current_frame(0),
-        iterations_since_change(0),
-        data(data) {}
+Animation::Animation(SDL2pp::Texture& texture, const AnimationData& data):
+        texture(texture), current_frame(0), iterations_since_change(0), data(data) {}
 
 void Animation::update() {
     if (iterations_since_change == data.iter_per_frame) {
