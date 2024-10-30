@@ -13,7 +13,7 @@ const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 
 
 GameOperator::GameOperator(Map& map_dto, uint8_t players_quantity):
-        collisions(), collectables(collisions) {
+        collisions(), collectables(collisions, players) {
     collisions.load_map(map_dto);
     std::vector<std::pair<int16_t, int16_t>> spawn_points = {
             {50, 50}, {MAP_WIDTH_PIXELS - 50, 50}, {50, 200}, {MAP_WIDTH_PIXELS - 50, 200}};
@@ -26,6 +26,10 @@ GameOperator::GameOperator(Map& map_dto, uint8_t players_quantity):
     Spawn spawn = {200, 200, 0, 50, true, 0};
     spawns.push_back(spawn);
     spawn = {250, 200, 1, 0, true, 0};
+    spawns.push_back(spawn);
+    spawn = {300, 200, 1, 0, true, 0};
+    spawns.push_back(spawn);
+    spawn = {350, 200, 1, 0, true, 0};
     spawns.push_back(spawn);
 }
 

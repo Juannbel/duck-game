@@ -24,7 +24,7 @@ private:
     void new_gun(Gun& gun);
 
 public:
-    explicit CollectablesManager(CollisionChecks& collision);
+    explicit CollectablesManager(CollisionChecks& collision, std::vector<DuckPlayer>& ducks);
 
     uint32_t get_and_inc_collectable_id();
     void add_gun(Gun& gun);
