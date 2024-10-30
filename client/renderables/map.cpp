@@ -9,16 +9,41 @@
 #include "common/map_dto.h"
 #include "common/shared_constants.h"
 
+#define PARALLAX_FACTOR 0.05f
+#define MARGIN 100
+
 RenderableMap::RenderableMap(const Map& map_dto, uint8_t theme) { update(map_dto, theme); }
 
 void RenderableMap::render(SDL2pp::Renderer& renderer, Camera& camera) {
-    SDL2pp::Rect background_rect(-MAP_WIDTH_PIXELS / 2, -MAP_HEIGHT_PIXELS / 2,
-                                 MAP_WIDTH_PIXELS * 2, MAP_HEIGHT_PIXELS * 2);
-    camera.transform_rect(background_rect);
+    const SDL2pp::Rect& camera_rect = camera.get_current_rect();
+    SDL2pp::Rect background_rect;
+
+    float camera_center_x = camera_rect.x + camera_rect.w / 2.0f;
+    float camera_center_y = camera_rect.y + camera_rect.h / 2.0f;
+
+    int texture_width = background_texture->GetWidth();
+    int texture_height = background_texture->GetHeight();
+    float texture_aspect_ratio = (float)texture_width / texture_height;
+
+    int window_width = renderer.GetOutputWidth();
+    int window_height = renderer.GetOutputHeight();
+    float window_aspect_ratio = (float)window_width / window_height;
+
+    if (window_aspect_ratio > texture_aspect_ratio) {
+        background_rect.w = window_width + 2*MARGIN;
+        background_rect.h = static_cast<int>(background_rect.w / texture_aspect_ratio);
+    } else {
+        background_rect.h = window_height + 2*MARGIN;
+        background_rect.w = static_cast<int>(background_rect.h * texture_aspect_ratio);
+    }
+
+    background_rect.x = -MARGIN - static_cast<int>(camera_center_x * PARALLAX_FACTOR);
+    background_rect.y = -MARGIN - static_cast<int>(camera_center_y * PARALLAX_FACTOR);
+
     renderer.Copy(*background_texture, SDL2pp::NullOpt, background_rect);
 
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-    renderer.SetDrawColor(0, 0, 0, 50);
+    renderer.SetDrawColor(0, 0, 0, 80);
     renderer.FillRect(background_rect);
     renderer.SetDrawBlendMode();
 

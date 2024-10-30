@@ -20,6 +20,9 @@ public:
 
     void send_player_command(const Command& snapshot);
 
+    void send_option(int option);
+    int recv_lobby();
+
     void shutdown();
 
 private:

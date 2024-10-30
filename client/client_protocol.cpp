@@ -93,3 +93,17 @@ void ClientProtocol::shutdown() {
     socket.shutdown(SHUT_RDWR);
     socket.close();
 }
+
+void ClientProtocol::send_option(int option) {
+    bool was_closed = false;
+    socket.sendall(&option, sizeof(option), &was_closed);
+}
+
+int ClientProtocol::recv_lobby() {
+    bool was_closed = false;
+    int id;
+    // TODO: Modificar protocolo
+    // (protocolo->envio -1 al final desde server) por ahora solo id's que son int
+    socket.recvall(&id, sizeof(id), &was_closed);
+    return id;
+}

@@ -1,8 +1,10 @@
 #include "constant_looper.h"
 
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <unordered_set>
 
 #include <SDL2/SDL.h>
@@ -51,6 +53,7 @@ void ConstantLooper::run() try {
     process_snapshot();
 
     Camera camera(renderer);
+
     RenderableMap map(map_dto, 0);
 
     bool keep_running = true;

@@ -68,13 +68,13 @@ collectables:
     frames:
       - { x: 288, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
-  helmet:
+  armor:
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 320, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: -10 }
 
-  armor:
+  helmet:
     iter_per_frame: 1
     loops: false
     frames:

@@ -17,6 +17,8 @@ private:
 public:
     ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, uint8_t duck_id);
 
+    void send_match_info(const MatchInfo &match_info);
+
     void run() override;
 };
 
