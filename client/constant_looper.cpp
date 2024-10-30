@@ -202,6 +202,10 @@ bool ConstantLooper::process_events() {
             return true;
         }
 
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_2) {
+            window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+        }
+
         p1_controller.process_event(event);
         // para cuando haya un segundo jugador
         // p2_controller.process_event(event);
