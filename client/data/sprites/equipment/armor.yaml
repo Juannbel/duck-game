@@ -1,0 +1,25 @@
+width: 32
+height: 32
+
+armor:
+  standing:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 0, y: 0, x_offset_right: 9, x_offset_left: 11, y_offset: 3 }
+
+  running:
+    iter_per_frame: 6
+    loops: true
+    frames:
+      - { x: 0, y: 0, x_offset_right: 9, x_offset_left: 11, y_offset: 5 }
+      - { x: 0, y: 0, x_offset_right: 9, x_offset_left: 11, y_offset: 4 }
+      - { x: 0, y: 0, x_offset_right: 9, x_offset_left: 11, y_offset: 3 }
+      - { x: 0, y: 0, x_offset_right: 9, x_offset_left: 11, y_offset: 5 }
+      - { x: 0, y: 0, x_offset_right: 9, x_offset_left: 11, y_offset: 4 }
+
+  laying:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 32, y: 0, x_offset_right: 7, x_offset_left: 13, y_offset: 14 }

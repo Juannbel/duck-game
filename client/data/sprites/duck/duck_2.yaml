@@ -1,8 +1,8 @@
-define: &y_row 32
+define: &y_row 64
 width: 32
 height: 32
 
-duck_1:
+duck_2:
   standing:
     iter_per_frame: 1
     loops: false
@@ -71,7 +71,7 @@ duck_1:
           y: *y_row,
           x_offset_right: 10,
           x_offset_left: 10,
-          y_offset: 9,
+          y_offset: 20,
         }
 
   dead:

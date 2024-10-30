@@ -1,5 +1,5 @@
 #include "client_receiver.h"
-#include <iostream>
+
 #include "common/liberror.h"
 #include "common/snapshot.h"
 
@@ -14,14 +14,14 @@ void ClientReceiver::run() {
             snapshot = protocol.recv_snapshot();
         } catch (const LibError& le) {
             // Catchear la excepcion de que el skt estaba cerrado
-            std::cout << "Receiver liberror " << le.what() << std::endl;
+            // std::cout << "liberror en receiver, todo bien, es para salir" << std::endl;
             break;
         }
 
         try {
             snapshot_q.push(snapshot);  // bloqueante, espera a que haya algo
         } catch (const ClosedQueue&) {
-            std::cout << "Receiver closed queue " << std::endl;
+            // std::cout << "closed queue en receiver, todo bien, es para salir" << std::endl;
             break;
         }
     }

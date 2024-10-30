@@ -5,8 +5,8 @@
 #include "common/liberror.h"
 #include "common/snapshot.h"
 
-ServerSender::ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q):
-        protocol(protocol), sender_q(sender_q) {}
+ServerSender::ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, uint8_t duck_id):
+        protocol(protocol), sender_q(sender_q), duck_id(duck_id) {}
 
 void ServerSender::run() {
     while (_keep_running) {
@@ -26,4 +26,8 @@ void ServerSender::run() {
             std::cout << "LibError en sender id: " << (int)duck_id << " " << le.what() << std::endl;
         }
     }
+}
+
+void ServerSender::send_match_info(const MatchInfo &match_info) {
+    protocol.send_match_info(match_info);
 }

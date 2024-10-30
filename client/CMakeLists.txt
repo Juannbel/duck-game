@@ -7,8 +7,11 @@ target_sources(taller_client
     renderables/duck.cpp
     renderables/equipped_gun.cpp
     renderables/collectable.cpp
-    renderables/helmet.h
+    renderables/wings.cpp
+    renderables/helmet.cpp
+    renderables/armor.cpp
     renderables/map.cpp
+    renderables/bullet.cpp
     camera.cpp
     client_protocol.cpp
     client.cpp
@@ -17,6 +20,8 @@ target_sources(taller_client
     textures_provider.cpp
     animation_data_provider.cpp
     duck_controller.cpp
+    sound_manager.cpp
+    screen_manager.cpp
     PUBLIC
     # .h files
     constant_looper.h
@@ -25,8 +30,11 @@ target_sources(taller_client
     renderables/duck.h
     renderables/equipped_gun.h
     renderables/collectable.h
-    renderables/helmet.cpp
+    renderables/wings.h
+    renderables/helmet.h
+    renderables/armor.h
     renderables/map.h
+    renderables/bullet.h
     client_protocol.h
     client.h
     client_receiver.h
@@ -34,4 +42,6 @@ target_sources(taller_client
     textures_provider.h
     animation_data_provider.h
     duck_controller.h
+    sound_manager.h
+    screen_manager.cpp
     )

@@ -6,16 +6,20 @@ helmet:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 0, y: 0, x_offset_right: 13, x_offset_left: 7, y_offset: 17 }
-  
+      - { x: 0, y: 0, x_offset_right: 13, x_offset_left: 7, y_offset: 16 }
+
   running:
-    iter_per_frame: 1
-    loops: false
+    iter_per_frame: 6
+    loops: true
     frames:
+      - { x: 0, y: 0, x_offset_right: 13, x_offset_left: 7, y_offset: 18 }
+      - { x: 0, y: 0, x_offset_right: 13, x_offset_left: 7, y_offset: 17 }
+      - { x: 0, y: 0, x_offset_right: 13, x_offset_left: 7, y_offset: 16 }
+      - { x: 0, y: 0, x_offset_right: 13, x_offset_left: 7, y_offset: 18 }
       - { x: 0, y: 0, x_offset_right: 13, x_offset_left: 7, y_offset: 17 }
 
   laying:
     iter_per_frame: 1
     loops: false
     frames:
-      - { x: 32, y: 0, x_offset_right: 19, x_offset_left: 3, y_offset: 0 }
+      - { x: 32, y: 0, x_offset_right: 18, x_offset_left: 2, y_offset: 10 }

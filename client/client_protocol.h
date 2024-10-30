@@ -1,12 +1,12 @@
 #ifndef CLIENT_PROTOCOL_H
 #define CLIENT_PROTOCOL_H
 
+#include <vector>
+
 #include "common/commands.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
-
-#include <vector>
 
 class ClientProtocol {
 private:
@@ -20,7 +20,6 @@ public:
 
     void send_player_command(const Command& snapshot);
 
-
     void send_option(int option);
     int recv_lobby();
 
@@ -29,9 +28,9 @@ public:
 private:
     Snapshot deserializeSnapshot(const Snapshot& snapshot);
 
-    std::vector<Duck> recv_ducks_vector(bool &was_closed);
-    std::vector<Gun> recv_guns_vector(bool &was_closed);
-    std::vector<Bullet> recv_bullets_vector(bool &was_closed);
+    std::vector<Duck> recv_ducks_vector(bool& was_closed);
+    std::vector<Gun> recv_guns_vector(bool& was_closed);
+    std::vector<Bullet> recv_bullets_vector(bool& was_closed);
 
     ClientProtocol(const ClientProtocol&) = delete;
     ClientProtocol& operator=(const ClientProtocol&) = delete;

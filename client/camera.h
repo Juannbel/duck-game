@@ -13,7 +13,7 @@ private:
     SDL2pp::Rect current_rect;
     SDL2pp::Rect target_rect;
 
-    float scale_x, scale_y, scale;
+    float zoom_x, zoom_y, zoom;
 
     // Ajusta el aspect ratio del target para que se vea bien en la ventana
     void adjust_aspect_ratio(SDL2pp::Rect& target);
@@ -24,6 +24,8 @@ private:
 
 public:
     explicit Camera(SDL2pp::Renderer& renderer);
+
+    const SDL2pp::Rect& get_current_rect();
 
     void update(const Snapshot& snapshot);
 

@@ -4,23 +4,30 @@
 #include <cassert>
 #include <limits>
 
-#include "common/snapshot.h"
+#include "SDL2pp/Rect.hh"
 #include "common/shared_constants.h"
+#include "common/snapshot.h"
 
 #define CAMERA_LERP_FACTOR 0.1f  // que tan rápido se mueve la cámara (entre 0.0 y 1.0)
 #define CAMERA_DEAD_ZONE 20.0f   // distancia mínima para mover la cámara
-#define PADDING 40
+#define PADDING 200
+#define SCALE 4
+
+#define MARGIN_W (MAP_WIDTH_PIXELS / 2)
+#define MARGIN_H (MAP_HEIGHT_PIXELS / 2)
 
 using SDL2pp::Rect;
 using SDL2pp::Renderer;
 
 Camera::Camera(Renderer& renderer):
         renderer(renderer),
-        current_rect(-MAP_WIDTH_PIXELS/2, -MAP_HEIGHT_PIXELS/2, MAP_WIDTH_PIXELS * 2, MAP_HEIGHT_PIXELS*2),
-        target_rect(-MAP_WIDTH_PIXELS/2, -MAP_HEIGHT_PIXELS/2, MAP_WIDTH_PIXELS * 2, MAP_HEIGHT_PIXELS*2),
-        scale_x((float)renderer.GetOutputWidth() / current_rect.w),
-        scale_y((float)renderer.GetOutputHeight() / current_rect.h),
-        scale(std::min(scale_x, scale_y)) {
+        current_rect(-MARGIN_W * SCALE, -MARGIN_H * SCALE,
+                     (MAP_WIDTH_PIXELS + 2 * MARGIN_W) * SCALE,
+                     (MAP_HEIGHT_PIXELS + 2 * MARGIN_H) * SCALE),
+        target_rect(current_rect),
+        zoom_x((float)renderer.GetOutputWidth() / current_rect.w),
+        zoom_y((float)renderer.GetOutputHeight() / current_rect.h),
+        zoom(std::min(zoom_x, zoom_y)) {
     assert(CAMERA_LERP_FACTOR >= 0.0f && CAMERA_LERP_FACTOR <= 1.0f);
 }
 
@@ -43,38 +50,59 @@ void Camera::update(const Snapshot& snapshot) {
     current_rect.w += dw * CAMERA_LERP_FACTOR;
     current_rect.h += dh * CAMERA_LERP_FACTOR;
 
-    scale_x = (float)renderer.GetOutputWidth() / current_rect.w;
-    scale_y = (float)renderer.GetOutputHeight() / current_rect.h;
-    scale = std::min(scale_x, scale_y);
+    zoom_x = (float)renderer.GetOutputWidth() / current_rect.w;
+    zoom_y = (float)renderer.GetOutputHeight() / current_rect.h;
+    zoom = std::min(zoom_x, zoom_y);
+}
+
+
+const SDL2pp::Rect& Camera::get_current_rect() {
+    return current_rect;
 }
 
 void Camera::transform_rect(Rect& world_rect) {
-    world_rect.x = (world_rect.x - current_rect.x) * scale;
-    world_rect.y = (world_rect.y - current_rect.y) * scale;
-    world_rect.w = world_rect.w * scale;
-    world_rect.h = world_rect.h * scale;
+    // Transformamos las coordenadas del mundo a las coordenadas de la cámara
+    world_rect.x = (world_rect.x * SCALE - current_rect.x) * zoom;
+    world_rect.y = (world_rect.y * SCALE - current_rect.y) * zoom;
+    world_rect.w = world_rect.w * zoom * SCALE;
+    world_rect.h = world_rect.h * zoom * SCALE;
 }
 
-bool Camera::is_rect_visible(const Rect& world_rect) { return current_rect.Intersects(world_rect); }
+bool Camera::is_rect_visible(const Rect& world_rect) {
+    // return current_rect.Intersects(world_rect); da problemas con lo de la escala
+    return world_rect.x * SCALE + world_rect.w * SCALE > current_rect.x &&
+           world_rect.x * SCALE < current_rect.x + current_rect.w &&
+           world_rect.y * SCALE + world_rect.h * SCALE > current_rect.y &&
+           world_rect.y * SCALE < current_rect.y + current_rect.h;
+}
 
 void Camera::adjust_aspect_ratio(Rect& target) {
-    int center_x = target.x + (target.w / 2);
-    int center_y = target.y + (target.h / 2);
-
     float window_aspect_ratio = (float)renderer.GetOutputWidth() / renderer.GetOutputHeight();
     float target_aspect_ratio = (float)target.w / target.h;
 
+    int width = target.w;
+    int height = target.h;
+
     if (target_aspect_ratio > window_aspect_ratio) {
-        target.h = target.w / window_aspect_ratio;
+        height = width / window_aspect_ratio;
     } else {
-        target.w = target.h * window_aspect_ratio;
+        width = height * window_aspect_ratio;
     }
 
-    target.x = center_x - (target.w / 2);
-    target.y = center_y - (target.h / 2);
+    int center_x = target.x + target.w / 2;
+    int centerY = target.y + target.h / 2;
+
+    target.x = center_x - width / 2;
+    target.y = centerY - height / 2;
+    target.w = width;
+    target.h = height;
 }
 
 void Camera::update_target(const Snapshot& snapshot) {
+    if (snapshot.ducks.empty()) {
+        return;
+    }
+
     int16_t left = std::numeric_limits<int16_t>::max();
     int16_t right = std::numeric_limits<int16_t>::min();
     int16_t top = std::numeric_limits<int16_t>::max();
@@ -85,16 +113,19 @@ void Camera::update_target(const Snapshot& snapshot) {
             continue;
         }
 
-        left = std::min(left, duck.x);
-        right = std::max(right, (int16_t)(duck.x + DUCK_HITBOX_WIDTH));
-        top = std::min(top, duck.y);
-        bottom = std::max(bottom, (int16_t)(duck.y + DUCK_HITBOX_HEIGHT));
+        left = std::min(left, (int16_t)(duck.x * SCALE));
+        right = std::max(right, (int16_t)(duck.x * SCALE + DUCK_HITBOX_WIDTH * SCALE));
+        top = std::min(top, (int16_t)(duck.y * SCALE));
+        bottom = std::max(bottom, (int16_t)(duck.y * SCALE + DUCK_HITBOX_HEIGHT * SCALE));
     }
 
-    target_rect.x = left - PADDING;
-    target_rect.y = top - PADDING;
-    target_rect.w = right - left + 2 * PADDING;
-    target_rect.h = bottom - top + 2 * PADDING;
+    left -= PADDING;
+    top -= PADDING;
+    right += PADDING;
+    bottom += PADDING;
 
-    adjust_aspect_ratio(target_rect);
+    Rect target(left, top, right - left, bottom - top);
+    adjust_aspect_ratio(target);
+
+    target_rect = target;
 }

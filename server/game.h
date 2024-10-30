@@ -3,7 +3,7 @@
 
 #include "../common/blocking_queue.h"
 #include "server/maps/yaml.h"
-#include "server/server_client.h"
+#include "common/map_dto.h"
 #include "game_loop.h"
 
 class Game {
@@ -11,7 +11,8 @@ private:
     YAMLLoader map_loader;
     Map map;
     QueueListMonitor sv_msg_queues;
-    Queue<struct action> gameloop_q;
+    Queue<action> gameloop_q;
+
     GameLoop gameloop;
     int cant_players = 0;
     bool open = true;
@@ -19,9 +20,13 @@ private:
 public:
     Game(int id);
 
-    Queue<struct action>& get_gameloop_queue();
+    Queue<action>& get_gameloop_queue();
 
-    void add_player(ServerClient* player);
+    MatchInfo get_match_info();
+
+    void start();
+
+    void add_player(int player_id, Queue<Snapshot>& player_sender_queue);
 
     bool is_open() { return open; }
     
