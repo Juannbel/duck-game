@@ -7,44 +7,76 @@
 ServerProtocol::ServerProtocol(Socket& socket): socket(socket) {}
 
 template <typename T>
-void ServerProtocol::send_snapshot_vector(const std::vector<T>& vector, bool& wasClosed) {
-    uint8_t vectorSize = vector.size();  // MAX_DUCK is 4. Not problem with hexadecimal conversion.
-    socket.sendall(&vectorSize, sizeof(vectorSize), &wasClosed);
-    socket.sendall(vector.data(), vectorSize * sizeof(T), &wasClosed);
+void ServerProtocol::send_snapshot_vector(const std::vector<T>& vector, bool& was_closed) {
+    uint8_t vectorSize = vector.size();
+    socket.sendall(&vectorSize, sizeof(vectorSize), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    socket.sendall(vector.data(), vectorSize * sizeof(T), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
 }
 
-void ServerProtocol::send_ducks_vector(const std::vector<Duck>& ducks, bool& wasClosed) {
-    uint8_t players_quantity =
-            ducks.size();  // MAX_DUCK is 4. Not problem with hexadecimal conversion.
-    socket.sendall(&players_quantity, sizeof(players_quantity), &wasClosed);
-    socket.sendall(ducks.data(), players_quantity * sizeof(Duck), &wasClosed);
+void ServerProtocol::send_ducks_vector(const std::vector<Duck>& ducks, bool& was_closed) {
+    uint8_t players_quantity = ducks.size();
+    socket.sendall(&players_quantity, sizeof(players_quantity), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    socket.sendall(ducks.data(), players_quantity * sizeof(Duck), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
 }
 
-void ServerProtocol::send_guns_vector(const std::vector<Gun>& guns, bool& wasClosed) {
-    uint8_t guns_quantity = guns.size();  // MAX_DUCK is 4. Not problem with hexadecimal conversion.
-    socket.sendall(&guns_quantity, sizeof(guns_quantity), &wasClosed);
-    socket.sendall(guns.data(), guns_quantity * sizeof(Gun), &wasClosed);
+void ServerProtocol::send_guns_vector(const std::vector<Gun>& guns, bool& was_closed) {
+    uint8_t guns_quantity = guns.size();
+    socket.sendall(&guns_quantity, sizeof(guns_quantity), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    socket.sendall(guns.data(), guns_quantity * sizeof(Gun), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
 }
 
-void ServerProtocol::send_bullets_vector(const std::vector<Bullet>& bullets, bool& wasClosed) {
-    uint8_t bullets_quantity =
-            bullets.size();  // MAX_DUCK is 4. Not problem with hexadecimal conversion.
-    socket.sendall(&bullets_quantity, sizeof(bullets_quantity), &wasClosed);
-    socket.sendall(bullets.data(), bullets_quantity * sizeof(Bullet), &wasClosed);
+void ServerProtocol::send_bullets_vector(const std::vector<Bullet>& bullets, bool& was_closed) {
+    uint8_t bullets_quantity = bullets.size();
+    socket.sendall(&bullets_quantity, sizeof(bullets_quantity), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    socket.sendall(bullets.data(), bullets_quantity * sizeof(Bullet), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+}
+
+void ServerProtocol::send_match_finished(const bool& match_finished, bool& was_closed) {
+    socket.sendall(&match_finished, sizeof(match_finished), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+}
+
+void ServerProtocol::send_maps_vector(const std::vector<Map>& maps, bool& was_closed) {
+    socket.sendall(&maps, sizeof(Map), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
 }
 
 void ServerProtocol::send_snapshot(const Snapshot& snapshot) {
-    bool wasClosed = false;
+    bool was_closed = false;
     Snapshot serializedSS = serializeSnapshot(snapshot);
 
-    send_ducks_vector(serializedSS.ducks, wasClosed);
-    send_guns_vector(serializedSS.guns, wasClosed);
-    send_bullets_vector(serializedSS.bullets, wasClosed);
+    send_ducks_vector(serializedSS.ducks, was_closed);
+    send_guns_vector(serializedSS.guns, was_closed);
+    send_bullets_vector(serializedSS.bullets, was_closed);
+    send_match_finished(serializedSS.match_finished, was_closed);
+    if (serializedSS.match_finished) {
+        send_maps_vector(serializedSS.maps, was_closed);
+    }
 }
 
-void ServerProtocol::send_match_info(const MatchInfo& matchInfo) {
-    bool wasClosed = false;
-    socket.sendall(&matchInfo, sizeof(matchInfo), &wasClosed);
+void ServerProtocol::send_duck_id(const uint8_t& duck_id) {
+    bool was_closed = false;
+    socket.sendall(&duck_id, sizeof(duck_id), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
 }
 
 Snapshot ServerProtocol::serializeSnapshot(const Snapshot& snapshot) {
@@ -76,9 +108,16 @@ Snapshot ServerProtocol::serializeSnapshot(const Snapshot& snapshot) {
 }
 
 Command ServerProtocol::recv_player_command() {
-    bool wasClosed = false;
+    bool was_closed = false;
     Command command;
-    socket.recvall(&command, sizeof(command), &wasClosed);
-    // excepción.
+    socket.recvall(&command, sizeof(command), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
     return command;
+}
+
+
+void ServerProtocol::shutdown() {
+    socket.shutdown(SHUT_RDWR);
+    socket.close();
 }

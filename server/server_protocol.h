@@ -15,23 +15,29 @@ private:
 public:
     explicit ServerProtocol(Socket& socket);
 
-    void send_match_info(const MatchInfo& match_info);
+    void send_duck_id(const uint8_t& duck_id);
 
     void send_snapshot(const Snapshot& snapshot);
 
     Command recv_player_command();
 
+    void shutdown();
+
 private:
     Snapshot serializeSnapshot(const Snapshot& snapshot);
+
+    void send_match_finished(const bool& match_finished, bool& was_closed);
 
     template <typename T>
     void send_snapshot_vector(const std::vector<T>& vector, bool& wasClosed);
 
-    void send_ducks_vector(const std::vector<Duck>& vector, bool& wasClosed);
+    void send_maps_vector(const std::vector<Map>& maps, bool& wasClosed);
 
-    void send_guns_vector(const std::vector<Gun>& vector, bool& wasClosed);
+    void send_ducks_vector(const std::vector<Duck>& ducks, bool& wasClosed);
 
-    void send_bullets_vector(const std::vector<Bullet>& vector, bool& wasClosed);
+    void send_guns_vector(const std::vector<Gun>& guns, bool& wasClosed);
+
+    void send_bullets_vector(const std::vector<Bullet>& bullets, bool& wasClosed);
 
     ServerProtocol(const ServerProtocol&) = delete;
     ServerProtocol& operator=(const ServerProtocol&) = delete;
