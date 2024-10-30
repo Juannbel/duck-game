@@ -4,6 +4,7 @@
 #include <cassert>
 #include <limits>
 
+#include "SDL2pp/Rect.hh"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 
@@ -52,6 +53,11 @@ void Camera::update(const Snapshot& snapshot) {
     zoom_x = (float)renderer.GetOutputWidth() / current_rect.w;
     zoom_y = (float)renderer.GetOutputHeight() / current_rect.h;
     zoom = std::min(zoom_x, zoom_y);
+}
+
+
+const SDL2pp::Rect& Camera::get_current_rect() {
+    return current_rect;
 }
 
 void Camera::transform_rect(Rect& world_rect) {

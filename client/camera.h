@@ -25,6 +25,8 @@ private:
 public:
     explicit Camera(SDL2pp::Renderer& renderer);
 
+    const SDL2pp::Rect& get_current_rect();
+
     void update(const Snapshot& snapshot);
 
     // Transorma un rectángulo con las coordenadas y la escala del mundo
