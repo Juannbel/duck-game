@@ -50,10 +50,12 @@ void ServerReceiver::run() {
 // Protocolo de inicio de juego
 void ServerReceiver::setup_game() {
     int gameId;
+    MatchInfo match_info;
     int cmd = protocol.receive_cmd();
     if (cmd == CREATE) {
         gameId = games_monitor.player_create_game(duck_id, sender_q);
         //Espero un input para iniciar el juego
+        match_info = games_monitor.get_match_info(gameId);
         protocol.receive_cmd();
         games_monitor.start_game(gameId);
     } else if (cmd == JOIN) {
@@ -67,10 +69,9 @@ void ServerReceiver::setup_game() {
         }
         gameId = protocol.receive_cmd();
         games_monitor.player_join_game(duck_id, gameId, sender_q);
+        match_info = games_monitor.get_match_info(gameId);
     }
     gameloop_q = games_monitor.get_gameloop_q(gameId);
-    MatchInfo match_info = games_monitor.get_match_info(gameId);
-    printf("envio match info con id: %d\n", match_info.duck_id);
     // TODO: Ver si modificando el protocolo evito hacer el match info
     sender.send_match_info(match_info);
 }
