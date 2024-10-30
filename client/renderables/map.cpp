@@ -18,7 +18,7 @@ void RenderableMap::render(SDL2pp::Renderer& renderer, Camera& camera) {
     renderer.Copy(*background_texture, SDL2pp::NullOpt, background_rect);
 
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-    renderer.SetDrawColor(0, 0, 0, 50);
+    renderer.SetDrawColor(0, 0, 0, 100);
     renderer.FillRect(background_rect);
     renderer.SetDrawBlendMode();
 

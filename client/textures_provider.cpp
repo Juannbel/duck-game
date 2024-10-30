@@ -1,10 +1,15 @@
 #include "textures_provider.h"
+#include <cstdint>
+#include "common/map_dto.h"
 
 std::unordered_map<std::string, std::shared_ptr<SDL2pp::Texture>> TexturesProvider::textures;
 
 void TexturesProvider::load_textures(SDL2pp::Renderer& renderer) {
-    textures["background_0"] =
-            std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/backgrounds/background_0.png");
+    for (uint8_t i = 0; i < MAP_THEMES; i++) {
+        textures["background_" + std::to_string(i)] =
+                std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/backgrounds/background_" +
+                                                                 std::to_string(i) + ".png");
+    }
     textures["blocks"] =
             std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/blocks/blocks.png");
     textures["duck"] =
