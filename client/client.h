@@ -18,6 +18,14 @@ public:
 
     void run();
 
+    int displayMenuAndGetOption();
+
+    bool joinLobby();
+
+    bool displayLobbyList();
+
+    int getLobbyIdFromUser();
+
     ~Client();
 };
 

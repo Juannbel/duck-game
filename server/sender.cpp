@@ -27,3 +27,7 @@ void ServerSender::run() {
         }
     }
 }
+
+void ServerSender::send_match_info(const MatchInfo &match_info) {
+    protocol.send_match_info(match_info);
+}

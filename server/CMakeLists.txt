@@ -18,6 +18,8 @@ target_sources(taller_server
     game/collectables_manager.cpp
     game/bullets_manager.cpp
     maps/yaml.cpp
+    game.cpp
+    games_monitor.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -37,4 +39,6 @@ target_sources(taller_server
     game/bullets_manager.h
     game/ticks.h
     maps/yaml.h
+    game.h
+    games_monitor.h
     )
