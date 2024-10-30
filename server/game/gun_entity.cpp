@@ -79,7 +79,7 @@ void GunEntity::add_bullet(DuckPlayer& player) {
         hitbox.height = BULLET_HITBOX_HEIGHT;
         hitbox.width = BULLET_HITBOX_WIDTH;
         Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
+        BulletInfo bullet = {bullet_status, hitbox, 3, 50};
         bullets->add_bullet(bullet);
         it_since_shoot = 0;
         ++shooted_bullets;

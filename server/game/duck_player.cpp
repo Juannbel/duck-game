@@ -1,7 +1,9 @@
 #include "duck_player.h"
 
+#include <cstdint>
 #include <memory>
 #include "common/snapshot.h"
+#include "server/game/collisions.h"
 
 #include "ticks.h"
 
@@ -9,6 +11,7 @@ const uint8_t JUMP_IT = TICKS * 1.5;
 const uint8_t INC_JUMP_IT = TICKS / 20;
 const uint8_t DECREACENT_JUMP_SPEED = TICKS / 3;
 const uint8_t FLAPPING_TIME = TICKS / 3;
+const uint8_t IT_TO_GET_HIT_AGAIN = TICKS / 3;
 const float DUCK_SPEED = 120.0f / TICKS;
 const float FALL_SPEED = 120.0f / TICKS;
 
@@ -16,6 +19,7 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& colli
         status(),
         it_jumping(),
         it_flapping(),
+        it_since_hit(IT_TO_GET_HIT_AGAIN),
         ready_to_jump(),
         hitbox(),
         collisions(collisions),
@@ -60,6 +64,9 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
     if (collisions.out_of_map(hitbox.coords.x, hitbox.coords.y)) {
         status.is_dead = true;
         status.duck_hp = 0;
+    }
+    if (it_since_hit < IT_TO_GET_HIT_AGAIN) {
+        ++it_since_hit;
     }
     status.x = static_cast<int16_t>(collision.last_valid_position.x);
     status.y = static_cast<int16_t>(collision.last_valid_position.y);
@@ -177,6 +184,25 @@ void DuckPlayer::jump() {
 }
 
 void DuckPlayer::stop_jump() { ready_to_jump = true; }
+
+void DuckPlayer::get_hit(Rectangle& bullet, uint8_t damage) {
+    if (it_since_hit < IT_TO_GET_HIT_AGAIN) return;
+    if(collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
+        uint8_t taken_dmg = damage;
+        if(status.helmet_equiped && status.armor_equiped) {
+            taken_dmg/=3;
+        }else if(status.helmet_equiped || status.armor_equiped){
+            taken_dmg/=2;
+        }
+        if (status.duck_hp < taken_dmg) {
+            status.is_dead = true;
+            status.duck_hp = 0;
+        } else {
+            status.duck_hp-=taken_dmg;
+        }
+        it_since_hit = 0;
+    }
+}
 
 uint32_t DuckPlayer::drop_and_pickup() {
     std::shared_ptr<GunEntity> new_gun = collectables.pickup(hitbox);

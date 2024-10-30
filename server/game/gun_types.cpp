@@ -160,7 +160,7 @@ void MagnumG::update_bullets(DuckPlayer& player) {
 }
 
 ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
-    ammo = 2; 
+    ammo = 2*6; 
     inaccuracy = 30;
     bullets_to_shoot = 12;
     it_to_reload = TICKS; 

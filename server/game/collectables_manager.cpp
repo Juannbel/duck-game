@@ -1,18 +1,20 @@
 #include "collectables_manager.h"
+#include <vector>
 
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
+#include "server/game/duck_player.h"
 #include "server/game/gun_entity.h"
 
 #include "gun_types.h"
 #include "ticks.h"
 
-#define GUN_FALL_SPEED (120.0f / TICKS)
+const float GUN_FALL_SPEED = 120.0f / TICKS;
 const int16_t NEAR_CELLS = 3;
 
-CollectablesManager::CollectablesManager(CollisionChecks& collision):
-        collisions(collision), bullets(collision), collectable_id() {}
+CollectablesManager::CollectablesManager(CollisionChecks& collision, std::vector<DuckPlayer>& ducks):
+        collisions(collision), bullets(collision, ducks), collectable_id() {}
 
 uint32_t CollectablesManager::get_and_inc_collectable_id() { return ++collectable_id; }
 

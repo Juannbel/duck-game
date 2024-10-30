@@ -2,7 +2,6 @@
 #define GAME_MANAGER_H
 
 #include <cstdint>
-#include <map>
 #include <vector>
 
 #include "../action.h"

@@ -3,15 +3,19 @@
 
 #include <cstdint>
 #include <map>
+#include <vector>
+#include <sys/types.h>
 
 #include "common/snapshot.h"
 
 #include "collisions.h"
+class DuckPlayer;
 
 struct BulletInfo {
     Bullet status;
     Rectangle hitbox;
     float speed;
+    uint8_t damage;
 };
 
 
@@ -20,9 +24,12 @@ private:
     uint32_t bullet_id;
     std::map<uint32_t, BulletInfo> bullets;
     CollisionChecks& collisions;
+    std::vector<DuckPlayer>& ducks;
+
+    void check_collision_with_ducks(Rectangle& bullet, uint8_t damage);
 
 public:
-    explicit BulletManager(CollisionChecks&);
+    explicit BulletManager(CollisionChecks&, std::vector<DuckPlayer>& ducks);
 
     void add_bullet(BulletInfo&);
     void update_bullets();

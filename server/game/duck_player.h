@@ -1,6 +1,7 @@
 #ifndef DUCK_PLAYER_H
 #define DUCK_PLAYER_H
 
+#include <cstdint>
 #include <memory>
 
 #include "common/shared_constants.h"
@@ -15,6 +16,7 @@ private:
     Duck status;
     uint8_t it_jumping;
     uint8_t it_flapping;
+    uint8_t it_since_hit;
     bool ready_to_jump;
     Rectangle hitbox;
     CollisionChecks& collisions;
@@ -40,7 +42,10 @@ public:
     void stop_jump();
     uint32_t drop_and_pickup();
     void drop_collectable();
+    void get_hit(Rectangle& bullet, uint8_t damage);
+    void knockback();
     Duck get_status();
+    Rectangle& get_hitbox();
 };
 
 #endif
