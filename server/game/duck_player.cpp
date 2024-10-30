@@ -1,6 +1,7 @@
 #include "duck_player.h"
 
 #include <memory>
+#include "common/snapshot.h"
 
 #include "ticks.h"
 
@@ -131,6 +132,16 @@ void DuckPlayer::update_gun_status() {
     equipped_gun->update_bullets(*this);
 }
 
+void DuckPlayer::equip_armor() {
+    status.armor_equiped = true;
+    collectables.drop_gun(equipped_gun, hitbox);
+}
+
+void DuckPlayer::equip_helmet() {
+    status.helmet_equiped = true;
+    collectables.drop_gun(equipped_gun, hitbox);
+}
+
 void DuckPlayer::lay_down() {
     if (status.is_laying)
         return;
@@ -178,6 +189,11 @@ uint32_t DuckPlayer::drop_and_pickup() {
     }
     status.gun = gun_info.type;
     return gun_info.gun_id;
+}
+void DuckPlayer::drop_collectable() {
+    collectables.drop_gun(equipped_gun, hitbox);
+    status.gun = None;
+    equipped_gun = nullptr;
 }
 
 Duck DuckPlayer::get_status() { return status; }

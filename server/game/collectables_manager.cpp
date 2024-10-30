@@ -1,6 +1,7 @@
 #include "collectables_manager.h"
 
 #include "common/shared_constants.h"
+#include "common/snapshot.h"
 #include "server/game/collisions.h"
 #include "server/game/gun_entity.h"
 
@@ -93,6 +94,9 @@ void CollectablesManager::drop_gun(std::shared_ptr<GunEntity> gun, const Rectang
     gun->set_new_coords(duck_hitbox.coords.x - (duck_hitbox.width / 2),
                         duck_hitbox.coords.y + duck_hitbox.height - COLLECTABLE_HITBOX_HEIGHT);
     picked_up_guns.erase(gun_info.gun_id);
+    if (gun_info.type == None) {
+        guns.erase(gun_info.gun_id);
+    }
 }
 
 void CollectablesManager::move_guns_falling() {
@@ -117,6 +121,9 @@ void CollectablesManager::add_guns_to_snapshot(Snapshot& snapshot) {
             continue;
         }
         Gun snapshot_gun = gun->get_gun_info();
+        if (snapshot_gun.type == None) {
+            continue;
+        }
         snapshot.guns.push_back(snapshot_gun);
     }
     bullets.add_bullets_to_snapshot(snapshot);

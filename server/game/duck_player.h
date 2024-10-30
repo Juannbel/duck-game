@@ -32,11 +32,14 @@ public:
     void shoot();
     void stop_shooting();
     void update_gun_status();
+    void equip_armor();
+    void equip_helmet();
     void lay_down();
     void stand_up();
     void jump();
     void stop_jump();
     uint32_t drop_and_pickup();
+    void drop_collectable();
     Duck get_status();
 };
 
