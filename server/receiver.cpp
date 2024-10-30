@@ -1,4 +1,5 @@
 #include "receiver.h"
+#include <cstdio>
 #include <iostream>
 #include "common/blocking_queue.h"
 #include "common/commands.h"
@@ -69,8 +70,8 @@ void ServerReceiver::setup_game() {
     }
     gameloop_q = games_monitor.get_gameloop_q(gameId);
     MatchInfo match_info = games_monitor.get_match_info(gameId);
+    printf("envio match info con id: %d\n", match_info.duck_id);
     // TODO: Ver si modificando el protocolo evito hacer el match info
-    match_info.duck_id = duck_id;
     sender.send_match_info(match_info);
 }
 

@@ -51,7 +51,8 @@ private:
     DuckPlayer ducks_info[MAX_DUCKS];
     Map map_blocks_info;
     std::vector<struct Spawn> spawns;
-
+    std::map <int, int> player_to_duck_id;
+    std::vector<std::pair<int16_t, int16_t>> spawn_points;
     EntityManager entity_manager;
 
     void load_map();
@@ -75,13 +76,15 @@ private:
 
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list,
-             Map &map_dto, uint8_t players_quantity);
+             Map &map_dto);
     /*   This class is the game loop.
      *   Start a loop that pop an action of the game queue, process it and
      *   push the responce to all the queues in the queue_list.
      *   To stop it, close the game_queue and call function stop().
      */
     virtual void run() override;
+
+    int add_player(int player_id);
 
     ~GameLoop();
 

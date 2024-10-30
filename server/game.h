@@ -12,8 +12,8 @@ private:
     Map map;
     QueueListMonitor sv_msg_queues;
     Queue<action> gameloop_q;
-
     GameLoop gameloop;
+    MatchInfo match_info;
     int cant_players = 0;
     bool open = true;
     int id;
