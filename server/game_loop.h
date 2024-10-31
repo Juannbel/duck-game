@@ -3,13 +3,14 @@
 
 #include <cstdint>
 #include <map>
+#include <vector>
 
 #include "common/blocking_queue.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 #include "common/thread.h"
 #include "game/game_operator.h"
-#include "server/maps/yaml.h"
+#include "game/yaml.h"
 
 #include "action.h"
 #include "list_monitor.h"
@@ -22,11 +23,11 @@ private:
     uint8_t match_number;
     std::map<uint8_t, uint8_t> winners_id_count;
     uint8_t players_quantity;
-    //std::vector<std::pair<int16_t, int16_t>> spawn_points;
     YAMLLoader map_loader;
+    std::vector<std::string> paths_to_maps;
     Map curr_map_dto;
     
-    void initialice_new_round(std::string path);
+    void initialice_new_round();
     
     void initial_snapshot();
 

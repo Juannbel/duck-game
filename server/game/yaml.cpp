@@ -1,5 +1,8 @@
 #include "yaml.h"
 #include <cstdint>
+#include <string>
+#include <vector>
+#include <filesystem>
 #include <sys/types.h>
 
 std::unordered_map<std::string, BlockType> YAMLLoader::string_to_block {
@@ -25,6 +28,14 @@ std::unordered_map<std::string, BlockType> YAMLLoader::string_to_block {
 //         return BlockType::Wall;
 //     throw std::invalid_argument("Unknown block type");
 // }
+
+std::vector<std::string> YAMLLoader::list_maps(const std::string& path_to_dir) {
+    std::vector<std::string> maps;
+    for(auto& map_name : std::filesystem::directory_iterator(path_to_dir)) {
+        maps.push_back(map_name.path());
+    }
+    return maps;
+}
 
 // int YAMLLoader::loadMap(Map* map_blocks_info, EntityManager* entity_manager) {
 Map YAMLLoader::loadMap(const std::string& path) {

@@ -17,7 +17,7 @@ target_sources(taller_server
     game/collisions.cpp
     game/collectables_manager.cpp
     game/bullets_manager.cpp
-    maps/yaml.cpp
+    game/yaml.cpp
     game.cpp
     games_monitor.cpp
     PUBLIC
@@ -38,7 +38,7 @@ target_sources(taller_server
     game/collectables_manager.h
     game/bullets_manager.h
     game/ticks.h
-    maps/yaml.h
+    game/yaml.h
     game.h
     games_monitor.h
     )

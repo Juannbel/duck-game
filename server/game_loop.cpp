@@ -4,7 +4,10 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
+#include <random>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "common/snapshot.h"
 #include "game/ticks.h"
@@ -19,15 +22,25 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         snaps_queue_list(queue_list),
         game_operator(),
         match_number(10),
-        players_quantity() {}
+        players_quantity(),
+        map_loader(),
+        paths_to_maps(map_loader.list_maps(SERVER_DATA_PATH)) {}
 
-void GameLoop::initialice_new_round(std::string path) {
-    curr_map_dto = map_loader.loadMap(path);
+std::string get_rand_string(std::vector<std::string>& v_strings) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0,  v_strings.size()-1);  // 0 es None
+    return v_strings[static_cast<int>(dis(gen))];
+}
+
+void GameLoop::initialice_new_round() {
+    curr_map_dto = map_loader.loadMap(get_rand_string(paths_to_maps));
     game_operator.initialize_game(curr_map_dto, players_quantity);
 }
 
 void GameLoop::run() {
-    initialice_new_round(SERVER_DATA_PATH "/map1.yaml");
+
+    initialice_new_round();
     auto t1 = high_resolution_clock::now();
     // uint it = 0;
     initial_snapshot();
@@ -74,7 +87,7 @@ void GameLoop::create_and_push_snapshot(auto& t1) {
     push_responce(actual_status);
     if (round_finished) {
         std::this_thread::sleep_for(milliseconds(3000));
-        initialice_new_round(SERVER_DATA_PATH "/map2.yaml");
+        initialice_new_round();
         initial_snapshot();
         t1 = high_resolution_clock::now();
         struct action action;
