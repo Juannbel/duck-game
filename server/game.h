@@ -12,9 +12,10 @@ private:
     Map map;
     QueueListMonitor sv_msg_queues;
     Queue<action> gameloop_q;
-
     GameLoop gameloop;
+    MatchInfo match_info;
     int cant_players = 0;
+    std::map <int, uint8_t> player_to_duck_id;
     bool open = true;
     int id;
 public:

@@ -1,6 +1,8 @@
 #ifndef SERVER_RECEIVER_H
 #define SERVER_RECEIVER_H
 
+#include <cstdint>
+#include <sys/types.h>
 #include "common/blocking_queue.h"
 #include "common/thread.h"
 
@@ -14,12 +16,13 @@ private:
     ServerProtocol& protocol;
     Queue<action>* gameloop_q;
     GamesMonitor& games_monitor;
+    int playerId;
     uint8_t duck_id;
     Queue<Snapshot>& sender_q;
     ServerSender sender;
 
 public:
-    ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor, Queue<Snapshot>& sender_q, uint8_t playerId);
+    ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor, Queue<Snapshot>& sender_q, int playerId);
 
     void setup_game();
 

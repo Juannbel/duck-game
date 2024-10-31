@@ -5,18 +5,22 @@
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/liberror.h"
+#include "common/snapshot.h"
 
 #include "action.h"
 
 #define CREATE 1
 #define JOIN 2
 
-ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor, Queue<Snapshot>& sender_q, uint8_t duck_id):
+ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor, Queue<Snapshot>& sender_q, int playerId):
         protocol(protocol),
         games_monitor(games_monitor),
-        duck_id(duck_id),
+        playerId(playerId),
+        duck_id(-1),
         sender_q(sender_q),
-        sender(protocol, sender_q, duck_id) {}
+        sender(protocol, sender_q, playerId) {}
+
+
 
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
 void ServerReceiver::run() {
@@ -33,7 +37,7 @@ void ServerReceiver::run() {
         try {
             cmd = protocol.recv_player_command();
         } catch (const LibError& le) {  // Catchear excepcion de socket cerrado
-            std::cout << "LibError en receiver id: " << (int)duck_id << " " << le.what()
+            std::cout << "LibError en receiver player id: " << playerId << " " << le.what()
                       << std::endl;
         }
 
@@ -44,7 +48,7 @@ void ServerReceiver::run() {
         try {
             gameloop_q->push(action);
         } catch (const ClosedQueue& e) {
-            std::cout << "ClosedQueue en receiver id: " << (int)duck_id << " " << e.what()
+            std::cout << "ClosedQueue en receiver player id: " << playerId << " " << e.what()
                       << std::endl;
         }
     }
@@ -53,13 +57,17 @@ void ServerReceiver::run() {
 // Protocolo de inicio de juego
 void ServerReceiver::setup_game() {
     int gameId;
+    MatchInfo match_info;
     int cmd = protocol.receive_cmd();
     if (cmd == CREATE) {
-        gameId = games_monitor.player_create_game(duck_id, sender_q);
+        gameId = games_monitor.player_create_game(playerId, sender_q);
         //Espero un input para iniciar el juego
+        match_info = games_monitor.get_match_info(gameId);
+        duck_id = match_info.duck_id;
         protocol.receive_cmd();
         games_monitor.start_game(gameId);
-    } else if (cmd == JOIN) {
+    //} else if (cmd == JOIN) {
+    } else { // Para evitar el warning
         std::vector<int> lobbies = games_monitor.list_lobbies();
         for (int lobby : lobbies) {
             protocol.send_lobby_info(lobby);
@@ -67,14 +75,15 @@ void ServerReceiver::setup_game() {
         if (lobbies.size() == 1) {
             // volver a ejecutar todo (asi me manejo desde cliente), llamado recursivo
             setup_game();
+            return; // Cuando un jugador listaba partidas y no habia, rompia porque se desapilaban las llamadas y seguian
         }
         gameId = protocol.receive_cmd();
-        games_monitor.player_join_game(duck_id, gameId, sender_q);
+        games_monitor.player_join_game(playerId, gameId, sender_q);
+        match_info = games_monitor.get_match_info(gameId);
+        duck_id = match_info.duck_id;
     }
     gameloop_q = games_monitor.get_gameloop_q(gameId);
-    MatchInfo match_info = games_monitor.get_match_info(gameId);
     // TODO: Ver si modificando el protocolo evito hacer el match info
-    match_info.duck_id = duck_id;
     sender.send_match_info(match_info);
 }
 
