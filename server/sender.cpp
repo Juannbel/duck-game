@@ -24,6 +24,7 @@ void ServerSender::run() {
             protocol.send_snapshot(msg);
         } catch (const LibError& le) {  // Catchear excepcion de socket cerrado
             std::cout << "LibError en sender player id: " << playerId << " " << le.what() << std::endl;
+            break;
         }
     }
 }

@@ -1,6 +1,7 @@
 #include "receiver.h"
 
 #include <iostream>
+#include <stdexcept>
 
 #include "common/blocking_queue.h"
 #include "common/commands.h"
@@ -20,8 +21,6 @@ ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_mon
         sender_q(sender_q),
         sender(protocol, sender_q, playerId) {}
 
-
-
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
 void ServerReceiver::run() {
     // bool was_closed = false; // comento hasta que se use por cppcheck
@@ -39,6 +38,12 @@ void ServerReceiver::run() {
         } catch (const LibError& le) {  // Catchear excepcion de socket cerrado
             std::cout << "LibError en receiver player id: " << playerId << " " << le.what()
                       << std::endl;
+            break;
+        } catch (const std::runtime_error& e) {
+            // was_closed = true; hago que protocolo largue runtime error,  queda hasta definir otra exc especifico
+            // sino, queda loopeando ad infinitum porque manda el comando sin inicializar
+            // el jugador se desconecto
+            break;
         }
 
         struct action action;
@@ -50,6 +55,7 @@ void ServerReceiver::run() {
         } catch (const ClosedQueue& e) {
             std::cout << "ClosedQueue en receiver player id: " << playerId << " " << e.what()
                       << std::endl;
+            break;
         }
     }
 }
@@ -90,5 +96,3 @@ void ServerReceiver::setup_game() {
 ServerReceiver::~ServerReceiver() {
     sender.join();
 }
-
-

@@ -1,4 +1,5 @@
 #include "server_protocol.h"
+#include <stdexcept>
 
 #include <arpa/inet.h>
 
@@ -79,6 +80,9 @@ Command ServerProtocol::recv_player_command() {
     bool wasClosed = false;
     Command command;
     socket.recvall(&command, sizeof(command), &wasClosed);
+    if (wasClosed) {
+        throw std::runtime_error("Client disconnected");
+    }
     // excepción.
     return command;
 }
@@ -94,4 +98,3 @@ void ServerProtocol::send_lobby_info(int lobby) {
     bool wasClosed = false;
     socket.sendall(&lobby, sizeof(lobby), &wasClosed);
 }
-
