@@ -1,15 +1,14 @@
 #ifndef GAME_LOOP_H
 #define GAME_LOOP_H
 
+#include <cstdint>
 #include <map>
 
 #include "common/blocking_queue.h"
-#include "common/commands.h"
 #include "common/map_dto.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 #include "common/thread.h"
-#include "game/duck_player.h"
 #include "game/game_operator.h"
 
 #include "action.h"
@@ -22,6 +21,11 @@ private:
     GameOperator game_operator;
     uint8_t match_number;
     std::map<uint8_t, uint8_t> winners_id_count;
+    // std::map <int, int> player_to_duck_id;
+    uint8_t players_quantity;
+    std::vector<std::pair<int16_t, int16_t>> spawn_points;
+
+    void load_map();
 
     void pop_and_process_all();
 
@@ -30,14 +34,15 @@ private:
     void check_for_winner(Snapshot&);
 
 public:
-    GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, Map& map_dto,
-             uint8_t players_quantity);
+    GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, Map& map_dto);
     /*   This class is the game loop.
      *   Start a loop that pop an action of the game queue, process it and
      *   push the responce to all the queues in the queue_list.
      *   To stop it, close the game_queue and call function stop().
      */
     virtual void run() override;
+
+    uint8_t add_player();
 
     ~GameLoop();
 

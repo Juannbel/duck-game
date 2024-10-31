@@ -17,10 +17,21 @@ protected:
     float x;
     float y;
     uint8_t ammo;
+    uint8_t range;
+    uint8_t bullets_to_shoot;
+    uint8_t shooted_bullets;
+    int16_t initial_angle;
+    int16_t inaccuracy;
     bool trigger_pulled;
     bool ready_to_shoot;
     uint8_t it_since_shoot;
+    uint8_t it_to_shoot;
+    uint8_t it_to_reload;
+    uint8_t it_reloading;
     BulletManager* bullets;
+
+    int16_t get_rand_angle();
+    void add_bullet(DuckPlayer& player);
 
 public:
     explicit GunEntity(BulletManager* bullets);
@@ -29,13 +40,18 @@ public:
     GunEntity& operator=(GunEntity&&);
 
     virtual void start_shooting() {
-        it_since_shoot = trigger_pulled ? it_since_shoot : 0;
+        it_since_shoot = trigger_pulled ? it_since_shoot : 1;
         trigger_pulled = true;
     }
-    virtual void stop_shooting() { trigger_pulled = false; }
+
     virtual void update_bullets(DuckPlayer& player) = 0;
 
-    void drop();
+    virtual void stop_shooting() { 
+        trigger_pulled = false; 
+        shooted_bullets = 0;
+    }
+
+    void destroy();
     void set_new_coords(float x, float y);
     Gun get_gun_info();
 

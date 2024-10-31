@@ -2,7 +2,6 @@
 #define GAME_MANAGER_H
 
 #include <cstdint>
-#include <map>
 #include <vector>
 
 #include "../action.h"
@@ -34,7 +33,8 @@ private:
     GunType get_random_guntype();
 
 public:
-    GameOperator(Map& map_dto, uint8_t players_quantity);
+    explicit GameOperator(Map& map_dto);
+    void initialize_players(uint8_t players_quantity);
     void process_action(action& action);
     void update_game_status();
 

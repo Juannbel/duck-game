@@ -12,22 +12,31 @@ const int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
 const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 
 
-GameOperator::GameOperator(Map& map_dto, uint8_t players_quantity):
-        collisions(), collectables(collisions) {
+GameOperator::GameOperator(Map& map_dto):
+        collisions(), collectables(collisions, players) {
     collisions.load_map(map_dto);
-    std::vector<std::pair<int16_t, int16_t>> spawn_points = {
-            {50, 50}, {MAP_WIDTH_PIXELS - 50, 50}, {50, 200}, {MAP_WIDTH_PIXELS - 50, 200}};
-    for (uint8_t i = 0; i < players_quantity; ++i) {
-        DuckPlayer player(collectables, collisions);
-        player.set_coordenades_and_id(spawn_points[i].first, spawn_points[i].second, i);
-        players.push_back(std::move(player));
-    }
 
     Spawn spawn = {200, 200, 0, 50, true, 0};
     spawns.push_back(spawn);
     spawn = {250, 200, 1, 0, true, 0};
     spawns.push_back(spawn);
+    spawn = {300, 200, 1, 0, true, 0};
+    spawns.push_back(spawn);
+    spawn = {350, 200, 1, 0, true, 0};
+    spawns.push_back(spawn);
 }
+
+void GameOperator::initialize_players(uint8_t players_quantity) {
+    std::vector<std::pair<int16_t, int16_t>> spawn_points = {
+            {50, 25}, {MAP_WIDTH_PIXELS - 50, 50}, {50, 25}, {MAP_WIDTH_PIXELS - 50, 200}};
+    
+    for (uint8_t i = 0; i < players_quantity; ++i) {
+        DuckPlayer player(collectables, collisions);
+        player.set_coordenades_and_id(spawn_points[i].first, spawn_points[i].second, i);
+        players.push_back(std::move(player));
+    }
+}
+
 
 void GameOperator::process_action(action& action) {
     DuckPlayer& player = players[action.duck_id];
