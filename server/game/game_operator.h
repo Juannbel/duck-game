@@ -33,7 +33,8 @@ private:
     GunType get_random_guntype();
 
 public:
-    explicit GameOperator(Map& map_dto);
+    GameOperator();
+    void load_map(Map& map_dto);
     void initialize_players(uint8_t players_quantity);
     void process_action(action& action);
     void update_game_status();

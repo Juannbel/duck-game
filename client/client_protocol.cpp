@@ -1,47 +1,76 @@
 #include "client_protocol.h"
 
-#include <stdexcept>
 #include <utility>
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
-
-#include "common/map_dto.h"
 
 ClientProtocol::ClientProtocol(Socket&& socket): socket(std::move(socket)) {}
 
 std::vector<Duck> ClientProtocol::recv_ducks_vector(bool& was_closed) {
     uint8_t players_quantity;
     socket.recvall(&players_quantity, sizeof(players_quantity), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
     std::vector<Duck> ducks(players_quantity);
     socket.recvall(ducks.data(), players_quantity * sizeof(Duck), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
     return ducks;
 }
 
 std::vector<Gun> ClientProtocol::recv_guns_vector(bool& was_closed) {
     uint8_t guns_quantity;
     socket.recvall(&guns_quantity, sizeof(guns_quantity), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
     std::vector<Gun> guns(guns_quantity);
     socket.recvall(guns.data(), guns_quantity * sizeof(Gun), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
     return guns;
 }
 
 std::vector<Bullet> ClientProtocol::recv_bullets_vector(bool& was_closed) {
     uint8_t bullets_quantity;
     socket.recvall(&bullets_quantity, sizeof(bullets_quantity), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
     std::vector<Bullet> bullets(bullets_quantity);
     socket.recvall(bullets.data(), bullets_quantity * sizeof(Bullet), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
     return bullets;
 }
 
+bool ClientProtocol::recv_match_finished(bool& was_closed) {
+    bool match_finished;
+    socket.recvall(&match_finished, sizeof(match_finished), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    return match_finished;
+}
+std::vector<Map> ClientProtocol::recv_maps_vector(bool& was_closed) {
+    uint8_t maps_quantity;
+    socket.recvall(&maps_quantity, sizeof(maps_quantity), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    std::vector<Map> maps(maps_quantity);
+    socket.recvall(maps.data(), maps_quantity * sizeof(Map), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    return maps;
+}
+
 Snapshot ClientProtocol::recv_snapshot() {
-    bool was_closed;
+    bool was_closed = false;
     Snapshot serializedSnapshot;
 
+    serializedSnapshot.match_finished = recv_match_finished(was_closed);
     serializedSnapshot.ducks = recv_ducks_vector(was_closed);
     serializedSnapshot.guns = recv_guns_vector(was_closed);
     serializedSnapshot.bullets = recv_bullets_vector(was_closed);
-
+    serializedSnapshot.maps = recv_maps_vector(was_closed);
     Snapshot deserializedSnapshot = deserializeSnapshot(serializedSnapshot);
 
     return deserializedSnapshot;
@@ -76,17 +105,19 @@ Snapshot ClientProtocol::deserializeSnapshot(const Snapshot& snapshot) {
 }
 
 void ClientProtocol::send_player_command(const Command& command) {
-    bool wasClosed = false;
-    socket.sendall(&command, sizeof(command), &wasClosed);
-    // excepción.
+    bool was_closed = false;
+    socket.sendall(&command, sizeof(command), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
 }
 
-MatchInfo ClientProtocol::recv_match_info() {
-    bool was_closed;
-    MatchInfo match_info;
-    socket.recvall(&match_info, sizeof(match_info), &was_closed);
-
-    return match_info;
+uint8_t ClientProtocol::recv_duck_id() {
+    uint8_t duck_id;
+    bool was_closed = false;
+    socket.recvall(&duck_id, sizeof(duck_id), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    return duck_id;
 }
 
 void ClientProtocol::shutdown() {

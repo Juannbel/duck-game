@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "shared_constants.h"
+#include "editor_constants.h"
 
 #define MAP_THEMES 4
 
@@ -32,4 +32,9 @@ struct Map {
     Block blocks[MAP_HEIGHT_BLOCKS][MAP_WIDTH_BLOCKS];
 } __attribute__((packed));
 
-#endif
+struct MatchInfo {
+    uint8_t duck_id;
+    Map map;
+} __attribute__((packed));
+
+#endif // MAP_DTO_H

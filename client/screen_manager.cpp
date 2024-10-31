@@ -66,7 +66,6 @@ bool ScreenManager::waiting_screen(Queue<Snapshot> &snapshot_q, Snapshot &last_s
 
         SDL_Delay(RATE);
     }
-
     return true;
 }
 

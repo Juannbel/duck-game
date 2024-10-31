@@ -1,6 +1,6 @@
 #include "client.h"
+#include <cstdint>
 
-#include "common/map_dto.h"
 
 #include "constant_looper.h"
 
@@ -28,14 +28,14 @@ void Client::run() {
         protocol.send_option(option);
     }
 
-    MatchInfo match_info = protocol.recv_match_info();
+    uint8_t duck_id = protocol.recv_duck_id();
     std::cout << "Match info received" << std::endl;
-    std::cout << "Duck id: " << static_cast<int>(match_info.duck_id) << std::endl;
+    std::cout << "Duck id: " << static_cast<int>(duck_id) << std::endl;
 
     receiver.start();
     sender.start();
 
-    ConstantLooper looper(match_info, snapshot_q, command_q);
+    ConstantLooper looper(duck_id, snapshot_q, command_q);
     looper.run();
 
     std::cout << "Game ended" << std::endl;

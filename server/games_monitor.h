@@ -1,6 +1,7 @@
 #ifndef GAMES_MONITOR_H
 #define GAMES_MONITOR_H
 
+#include <cstdint>
 #include <map>
 #include <mutex>
 #include <vector>
@@ -14,9 +15,10 @@ private:
     std::map<int, Game*> map_games;
     int id = 0;
 public:
-    int player_create_game(uint8_t id_player, Queue<Snapshot>& player_sender_queue);
+    // Devuelve el game id y asigna el duck_id a la variable pasada por referencia
+    int player_create_game(const int id_player, Queue<Snapshot>& player_sender_queue, uint8_t& duck_id);
 
-    int player_join_game(uint8_t id_player, int id_game, Queue<Snapshot>& player_sender_queue);
+    uint8_t player_join_game(const int id_player, int id_game, Queue<Snapshot>& player_sender_queue);
 
     void start_game(int id);
 
@@ -27,8 +29,6 @@ public:
     std::vector<int> list_lobbies() ;
 
     Queue<action>* get_gameloop_q(int id_game);
-
-    MatchInfo get_match_info(int id_game);
 
     ~GamesMonitor();
 };
