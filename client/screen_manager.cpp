@@ -80,7 +80,7 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot> &snapshot_q, Snapshot 
     }
 
     std::sort(ducks.begin(), ducks.end(), [](const Duck& a, const Duck& b) {
-        return a.duck_hp > b.duck_hp;
+        return a.rounds_won > b.rounds_won;
     });
 
     SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Round finished", SDL_Color{255, 255, 255, 255}));
