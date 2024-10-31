@@ -1,37 +1,35 @@
 #include "game.h"
 #include <cstdint>
 #include <cstdio>
-#include "common/map_dto.h"
 
-Game::Game(const int id): map(map_loader.loadMap(SERVER_DATA_PATH "/map1.yaml")), gameloop(gameloop_q, sv_msg_queues, map), id(id) {
+Game::Game(const int id): gameloop(gameloop_q, sv_msg_queues), id(id) {
     open = true;
     cant_players = 0;
-    match_info.map = map;
 }
 
 Queue<action>& Game::get_gameloop_queue() {
     return gameloop_q;
 }
 
-MatchInfo Game::get_match_info() {
-    return match_info;
-}
+//uint8_t Game::get_duck_id() {
+//    return cant_players;
+//}
 
-void Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue) {
+uint8_t Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue) {
     if (!open || cant_players == MAX_DUCKS) {
         std::cout << "No entran mas jugadores" << std::endl;
-        return;
+        return -1;
     }
 
     sv_msg_queues.add_element(&player_sender_queue);
 
     uint8_t game_duck_id = gameloop.add_player();
     player_to_duck_id[player_id] = game_duck_id;
-    match_info.duck_id = game_duck_id;
     cant_players++;
     if (cant_players == MAX_DUCKS) {
         open = false;
     }
+    return game_duck_id; 
 }
 
 void Game::start() {

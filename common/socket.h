@@ -1,6 +1,12 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
+#include <stdexcept>
+
+struct SocketWasClosed: public std::runtime_error {
+    SocketWasClosed(): std::runtime_error("Socket is closed") {}
+};
+
 /*
  * TDA Socket.
  * Por simplificación este TDA se enfocará solamente

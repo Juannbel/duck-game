@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <sys/types.h>
+#include "map_dto.h"
 
 #define MAX_DUCKS 4
 #define MAX_PLAYER_NAME 32
@@ -35,6 +36,7 @@ struct Duck {
     uint8_t duck_id;  // del 0 al 3
     int8_t duck_hp;   // 100
     GunType gun;
+    uint8_t rounds_won = 0;
 
     bool is_shooting;
     bool is_running;
@@ -75,9 +77,11 @@ struct Bullet {
 } __attribute__((packed));
 
 struct Snapshot {
+    bool match_finished = true;  // each match has five rounds.
     std::vector<Duck> ducks;
     std::vector<Gun> guns;
     std::vector<Bullet> bullets;
+    std::vector<Map> maps;
 };
 
 

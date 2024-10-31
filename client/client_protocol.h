@@ -16,7 +16,7 @@ public:
     explicit ClientProtocol(Socket&& socket);
 
     Snapshot recv_snapshot();
-    MatchInfo recv_match_info();
+    uint8_t recv_duck_id();
 
     void send_player_command(const Command& snapshot);
 
@@ -28,6 +28,8 @@ public:
 private:
     Snapshot deserializeSnapshot(const Snapshot& snapshot);
 
+    bool recv_match_finished(bool& was_closed);
+    std::vector<Map> recv_maps_vector(bool& wasClosed);
     std::vector<Duck> recv_ducks_vector(bool& was_closed);
     std::vector<Gun> recv_guns_vector(bool& was_closed);
     std::vector<Bullet> recv_bullets_vector(bool& was_closed);

@@ -78,13 +78,9 @@ void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
 
     curr_animation->render(renderer, camera, position, is_facing_right);
 
-    if (!is_alive) {
-        return;
-    }
-
-    gun.render(renderer, camera);
     helmet.render(renderer, camera);
     armor.render(renderer, camera);
+    gun.render(renderer, camera);
     wings.render(renderer, camera);
 }
 

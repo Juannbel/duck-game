@@ -1,5 +1,6 @@
 #include "sender.h"
 
+#include <cstdint>
 #include <iostream>
 
 #include "common/liberror.h"
@@ -24,10 +25,11 @@ void ServerSender::run() {
             protocol.send_snapshot(msg);
         } catch (const LibError& le) {  // Catchear excepcion de socket cerrado
             std::cout << "LibError en sender player id: " << playerId << " " << le.what() << std::endl;
+            break;
         }
     }
 }
 
-void ServerSender::send_match_info(const MatchInfo &match_info) {
-    protocol.send_match_info(match_info);
+void ServerSender::send_duck_id(const uint8_t &duck_id) {
+    protocol.send_duck_id(duck_id);
 }

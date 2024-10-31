@@ -1,6 +1,7 @@
 #ifndef CONSTANT_LOOPER_H
 #define CONSTANT_LOOPER_H
 
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 
@@ -51,7 +52,7 @@ private:
     void clear_renderables();
 
 public:
-    ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_q, Queue<Command>& command_q);
+    ConstantLooper(uint8_t duck_id, Queue<Snapshot>& snapshot_q, Queue<Command>& command_q);
 
     void run();
 

@@ -5,11 +5,11 @@
 #include <map>
 
 #include "common/blocking_queue.h"
-#include "common/map_dto.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 #include "common/thread.h"
 #include "game/game_operator.h"
+#include "server/maps/yaml.h"
 
 #include "action.h"
 #include "list_monitor.h"
@@ -21,11 +21,14 @@ private:
     GameOperator game_operator;
     uint8_t match_number;
     std::map<uint8_t, uint8_t> winners_id_count;
-    // std::map <int, int> player_to_duck_id;
     uint8_t players_quantity;
-    std::vector<std::pair<int16_t, int16_t>> spawn_points;
+    //std::vector<std::pair<int16_t, int16_t>> spawn_points;
+    YAMLLoader map_loader;
+    Map curr_map_dto;
 
     void load_map();
+
+    void initial_snapshot();
 
     void pop_and_process_all();
 
@@ -34,7 +37,7 @@ private:
     void check_for_winner(Snapshot&);
 
 public:
-    GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, Map& map_dto);
+    GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list);
     /*   This class is the game loop.
      *   Start a loop that pop an action of the game queue, process it and
      *   push the responce to all the queues in the queue_list.
