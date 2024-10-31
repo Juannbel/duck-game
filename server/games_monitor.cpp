@@ -15,19 +15,19 @@ int GamesMonitor::player_create_game(const int id_player, Queue<Snapshot>& playe
 }
 
 uint8_t GamesMonitor::player_join_game(const int id_player, const int id_game, Queue<Snapshot>& player_sender_queue) {
-    //std::lock_guard<std::mutex> lck(m);
+    std::lock_guard<std::mutex> lck(m);
     Game* game = map_games[id_game];
     return game->add_player(id_player, player_sender_queue);
 }
 
 void GamesMonitor::start_game(int id_game) {
-    //std::lock_guard<std::mutex> lck(m);
+    std::lock_guard<std::mutex> lck(m);
     Game* game = map_games[id_game];
     game->start();
 }
 
 std::vector<int> GamesMonitor::list_lobbies() {
-    //std::lock_guard<std::mutex> lck(m);
+    std::lock_guard<std::mutex> lck(m);
     std::vector<int> lobbies;
     for (auto& game : map_games) {
         if (game.second->is_open()) {
@@ -39,21 +39,21 @@ std::vector<int> GamesMonitor::list_lobbies() {
 }
 
 Game* GamesMonitor::create_game() {
-    //std::lock_guard<std::mutex> lck(m);
     Game* game = new Game(id);
+    std::lock_guard<std::mutex> lck(m);
     map_games.emplace(id, game);
     id++;
     return game;
 }
 
 Queue<action>* GamesMonitor::get_gameloop_q(const int id_game) {
-    //std::lock_guard<std::mutex> lck(m);
+    std::lock_guard<std::mutex> lck(m);
     Game* game = map_games[id_game];
     return &game->get_gameloop_queue();
 }
 
 GamesMonitor::~GamesMonitor() {
-    //std::lock_guard<std::mutex> lck(m);
+    std::lock_guard<std::mutex> lck(m);
     for (auto& game: map_games) {
         delete game.second;
     }
