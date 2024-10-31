@@ -49,7 +49,7 @@ void ConstantLooper::run() try {
 
     if (!screen_manager.waiting_screen(snapshot_q, last_snapshot))
         return;
-    
+
     process_snapshot();
 
     Camera camera(renderer);
@@ -57,15 +57,15 @@ void ConstantLooper::run() try {
     RenderableMap map(map_dto);
 
     bool keep_running = true;
-    uint32_t t1 = SDL_GetTicks();
-
 
     while (keep_running) {
+        uint32_t t1 = SDL_GetTicks();
+
         keep_running = process_events();
 
         while (snapshot_q.try_pop(last_snapshot)) {}
 
-        
+
         if (last_snapshot.match_finished) {
            keep_running = screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
            if (!keep_running) break;
@@ -75,7 +75,7 @@ void ConstantLooper::run() try {
            camera.update(last_snapshot);
            continue;
         }
-        
+
 
         // Actualizar el estado de todo lo que se renderiza
         process_snapshot();
