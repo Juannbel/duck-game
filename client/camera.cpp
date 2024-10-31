@@ -119,6 +119,9 @@ void Camera::update_target(const Snapshot& snapshot) {
         bottom = std::max(bottom, (int16_t)(duck.y * SCALE + DUCK_HITBOX_HEIGHT * SCALE));
     }
 
+    // No hay ningun pato vivo, no movemos la camara
+    if (left == std::numeric_limits<int16_t>::max()) return;
+
     left -= PADDING;
     top -= PADDING;
     right += PADDING;
