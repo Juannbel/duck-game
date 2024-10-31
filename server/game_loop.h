@@ -25,16 +25,18 @@ private:
     //std::vector<std::pair<int16_t, int16_t>> spawn_points;
     YAMLLoader map_loader;
     Map curr_map_dto;
-
-    void load_map();
-
+    
+    void initialice_new_round(std::string path);
+    
     void initial_snapshot();
 
     void pop_and_process_all();
 
+    void create_and_push_snapshot(auto& t1);
+
     void push_responce(Snapshot& actual_status);
 
-    void check_for_winner(Snapshot&);
+    bool check_for_winner(Snapshot&);
 
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list);

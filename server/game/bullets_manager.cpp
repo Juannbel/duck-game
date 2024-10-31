@@ -12,6 +12,11 @@ const uint8_t bullet_updates_per_it = 3;
 
 BulletManager::BulletManager(CollisionChecks& collisions, std::vector<DuckPlayer>& ducks): bullet_id(), collisions(collisions), ducks(ducks) {}
 
+void BulletManager::clear_bullets() {
+    bullet_id = 0;
+    bullets.clear();
+}
+
 void BulletManager::add_bullet(BulletInfo& bullet) {
     ++bullet_id;
     bullet.status.bullet_id = bullet_id;

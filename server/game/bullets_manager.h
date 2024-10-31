@@ -30,7 +30,7 @@ private:
 
 public:
     explicit BulletManager(CollisionChecks&, std::vector<DuckPlayer>& ducks);
-
+    void clear_bullets();
     void add_bullet(BulletInfo&);
     void update_bullets();
     void add_bullets_to_snapshot(Snapshot&);

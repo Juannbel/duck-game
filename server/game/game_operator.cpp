@@ -1,5 +1,6 @@
 #include "game_operator.h"
 
+#include <cstdint>
 #include <random>
 #include <utility>
 
@@ -17,6 +18,7 @@ GameOperator::GameOperator():
 
 void GameOperator::load_map(Map& map_dto) {
     collisions.load_map(map_dto);
+    spawns.clear();
     Spawn spawn = {200, 200, 0, 50, true, 0};
     spawns.push_back(spawn);
     spawn = {250, 200, 1, 0, true, 0};
@@ -36,6 +38,12 @@ void GameOperator::initialize_players(uint8_t players_quantity) {
         player.set_coordenades_and_id(spawn_points[i].first, spawn_points[i].second, i);
         players.push_back(std::move(player));
     }
+}
+
+void GameOperator::initialize_game(Map& map_dto, uint8_t players_quantity) {
+    load_map(map_dto);
+    initialize_players(players_quantity);
+    collectables.reset_collectables();
 }
 
 
