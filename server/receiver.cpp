@@ -7,6 +7,7 @@
 #include "common/commands.h"
 #include "common/liberror.h"
 #include "common/snapshot.h"
+#include "common/socket.h"
 
 #include "action.h"
 
@@ -39,10 +40,8 @@ void ServerReceiver::run() {
             std::cout << "LibError en receiver player id: " << playerId << " " << le.what()
                       << std::endl;
             break;
-        } catch (const std::runtime_error& e) {
-            // was_closed = true; hago que protocolo largue runtime error,  queda hasta definir otra exc especifico
-            // sino, queda loopeando ad infinitum porque manda el comando sin inicializar
-            // el jugador se desconecto
+        } catch (const SocketWasClosed& e) {
+            std::cout << "Client dissconected" << std::endl;
             break;
         }
 
@@ -63,13 +62,10 @@ void ServerReceiver::run() {
 // Protocolo de inicio de juego
 void ServerReceiver::setup_game() {
     int gameId;
-    MatchInfo match_info;
     int cmd = protocol.receive_cmd();
     if (cmd == CREATE) {
-        gameId = games_monitor.player_create_game(playerId, sender_q);
+        gameId = games_monitor.player_create_game(playerId, sender_q, std::ref(duck_id));
         //Espero un input para iniciar el juego
-        match_info = games_monitor.get_match_info(gameId);
-        duck_id = match_info.duck_id;
         protocol.receive_cmd();
         games_monitor.start_game(gameId);
     //} else if (cmd == JOIN) {
@@ -84,13 +80,11 @@ void ServerReceiver::setup_game() {
             return; // Cuando un jugador listaba partidas y no habia, rompia porque se desapilaban las llamadas y seguian
         }
         gameId = protocol.receive_cmd();
-        games_monitor.player_join_game(playerId, gameId, sender_q);
-        match_info = games_monitor.get_match_info(gameId);
-        duck_id = match_info.duck_id;
+        duck_id = games_monitor.player_join_game(playerId, gameId, sender_q);;
     }
     gameloop_q = games_monitor.get_gameloop_q(gameId);
     // TODO: Ver si modificando el protocolo evito hacer el match info
-    sender.send_match_info(match_info);
+    sender.send_duck_id(duck_id);
 }
 
 ServerReceiver::~ServerReceiver() {

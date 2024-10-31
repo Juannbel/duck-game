@@ -1,5 +1,6 @@
 #include "server_protocol.h"
-#include <stdexcept>
+#include <cstdint>
+#include <iostream>
 
 #include <arpa/inet.h>
 
@@ -55,7 +56,11 @@ void ServerProtocol::send_match_finished(const bool& match_finished, bool& was_c
 }
 
 void ServerProtocol::send_maps_vector(const std::vector<Map>& maps, bool& was_closed) {
-    socket.sendall(&maps, sizeof(Map), &was_closed);
+    uint8_t map_quantity = maps.size();
+    socket.sendall(&map_quantity, sizeof(map_quantity), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    socket.sendall(maps.data(), map_quantity * sizeof(Map), &was_closed);
     if (was_closed)
         throw SocketWasClosed();
 }
@@ -64,13 +69,11 @@ void ServerProtocol::send_snapshot(const Snapshot& snapshot) {
     bool was_closed = false;
     Snapshot serializedSS = serializeSnapshot(snapshot);
 
+    send_match_finished(serializedSS.match_finished, was_closed);
     send_ducks_vector(serializedSS.ducks, was_closed);
     send_guns_vector(serializedSS.guns, was_closed);
     send_bullets_vector(serializedSS.bullets, was_closed);
-    send_match_finished(serializedSS.match_finished, was_closed);
-    if (serializedSS.match_finished) {
-        send_maps_vector(serializedSS.maps, was_closed);
-    }
+    send_maps_vector(serializedSS.maps, was_closed);
 }
 
 void ServerProtocol::send_duck_id(const uint8_t& duck_id) {
@@ -117,6 +120,7 @@ Command ServerProtocol::recv_player_command() {
     return command;
 }
 
+// Cambiar endianness y tamaño definido (int32_t) (con command)
 int ServerProtocol::receive_cmd() {
     bool wasClosed = false;
     int command;
@@ -124,6 +128,7 @@ int ServerProtocol::receive_cmd() {
     return command;
 }
 
+// Cambiar endianness y tamaño definido (int32_t)
 void ServerProtocol::send_lobby_info(int lobby) {
     bool wasClosed = false;
     socket.sendall(&lobby, sizeof(lobby), &wasClosed);

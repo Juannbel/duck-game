@@ -12,10 +12,11 @@ const int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
 const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 
 
-GameOperator::GameOperator(Map& map_dto):
-        collisions(), collectables(collisions, players) {
-    collisions.load_map(map_dto);
+GameOperator::GameOperator():
+        collisions(), collectables(collisions, players) {}
 
+void GameOperator::load_map(Map& map_dto) {
+    collisions.load_map(map_dto);
     Spawn spawn = {200, 200, 0, 50, true, 0};
     spawns.push_back(spawn);
     spawn = {250, 200, 1, 0, true, 0};
@@ -29,7 +30,7 @@ GameOperator::GameOperator(Map& map_dto):
 void GameOperator::initialize_players(uint8_t players_quantity) {
     std::vector<std::pair<int16_t, int16_t>> spawn_points = {
             {50, 25}, {MAP_WIDTH_PIXELS - 50, 50}, {50, 25}, {MAP_WIDTH_PIXELS - 50, 200}};
-    
+    players.clear();
     for (uint8_t i = 0; i < players_quantity; ++i) {
         DuckPlayer player(collectables, collisions);
         player.set_coordenades_and_id(spawn_points[i].first, spawn_points[i].second, i);

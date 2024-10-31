@@ -1,5 +1,5 @@
 #include "games_monitor.h"
-#include <mutex>
+#include <cstdint>
 #include <utility>
 
 #define CREATE 1
@@ -7,18 +7,17 @@
 
 // TODO: ver bien tema de mutex y accesos entre threads
 
-int GamesMonitor::player_create_game(const uint8_t id_player, Queue<Snapshot>& player_sender_queue) {
+int GamesMonitor::player_create_game(const int id_player, Queue<Snapshot>& player_sender_queue, uint8_t& duck_id) {
     //std::lock_guard<std::mutex> lck(m);
     Game* game = create_game();
-    game->add_player(id_player, player_sender_queue);
+    duck_id = game->add_player(id_player, player_sender_queue);
     return game->get_id();
 }
 
-int GamesMonitor::player_join_game(const uint8_t id_player, const int id_game, Queue<Snapshot>& player_sender_queue) {
+uint8_t GamesMonitor::player_join_game(const int id_player, const int id_game, Queue<Snapshot>& player_sender_queue) {
     //std::lock_guard<std::mutex> lck(m);
     Game* game = map_games[id_game];
-    game->add_player(id_player, player_sender_queue);
-    return game->get_id();
+    return game->add_player(id_player, player_sender_queue);
 }
 
 void GamesMonitor::start_game(int id_game) {
@@ -51,12 +50,6 @@ Queue<action>* GamesMonitor::get_gameloop_q(const int id_game) {
     //std::lock_guard<std::mutex> lck(m);
     Game* game = map_games[id_game];
     return &game->get_gameloop_queue();
-}
-
-MatchInfo GamesMonitor::get_match_info(const int id_game) {
-    //std::lock_guard<std::mutex> lck(m);
-    Game* game = map_games[id_game];
-    return game->get_match_info();
 }
 
 GamesMonitor::~GamesMonitor() {

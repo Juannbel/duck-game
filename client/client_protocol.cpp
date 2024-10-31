@@ -1,6 +1,5 @@
 #include "client_protocol.h"
 
-#include <stdexcept>
 #include <utility>
 
 #include <arpa/inet.h>
@@ -51,13 +50,16 @@ bool ClientProtocol::recv_match_finished(bool& was_closed) {
         throw SocketWasClosed();
     return match_finished;
 }
-std::vector<Map> ClientProtocol::recv_maps_vector(const bool& match_finished, bool& wasClosed) {
-    if (!match_finished)
-        return std::vector<Map>();
-    std::vector<Map> maps;
-    socket.recvall(&maps, sizeof(Map), &wasClosed);
-    if (wasClosed)
+std::vector<Map> ClientProtocol::recv_maps_vector(bool& was_closed) {
+    uint8_t maps_quantity;
+    socket.recvall(&maps_quantity, sizeof(maps_quantity), &was_closed);
+    if (was_closed)
         throw SocketWasClosed();
+    std::vector<Map> maps(maps_quantity);
+    socket.recvall(maps.data(), maps_quantity * sizeof(Map), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    return maps;
 }
 
 Snapshot ClientProtocol::recv_snapshot() {
@@ -68,7 +70,7 @@ Snapshot ClientProtocol::recv_snapshot() {
     serializedSnapshot.ducks = recv_ducks_vector(was_closed);
     serializedSnapshot.guns = recv_guns_vector(was_closed);
     serializedSnapshot.bullets = recv_bullets_vector(was_closed);
-    serializedSnapshot.maps = recv_maps_vector(serializedSnapshot.match_finished, was_closed);
+    serializedSnapshot.maps = recv_maps_vector(was_closed);
     Snapshot deserializedSnapshot = deserializeSnapshot(serializedSnapshot);
 
     return deserializedSnapshot;

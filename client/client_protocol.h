@@ -29,7 +29,7 @@ private:
     Snapshot deserializeSnapshot(const Snapshot& snapshot);
 
     bool recv_match_finished(bool& was_closed);
-    std::vector<Map> recv_maps_vector(const bool& match_finished, bool& wasClosed);
+    std::vector<Map> recv_maps_vector(bool& wasClosed);
     std::vector<Duck> recv_ducks_vector(bool& was_closed);
     std::vector<Gun> recv_guns_vector(bool& was_closed);
     std::vector<Bullet> recv_bullets_vector(bool& was_closed);

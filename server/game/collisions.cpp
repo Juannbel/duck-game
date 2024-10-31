@@ -1,4 +1,5 @@
 #include "collisions.h"
+#include <iostream>
 
 #include "common/map_dto.h"
 #include "common/shared_constants.h"
@@ -16,9 +17,6 @@ void CollisionChecks::load_map(Map& map_dto) {
     blocks.clear();
     for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
         for (int16_t j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
-            // ahora tambien esta block.solid (bool que indica si se puede atravesar por abajo)
-            // y el blockType HalfFloor que debería ser de la mitad de alto que el otro
-            // cualquier tipo de bloque puede o no ser solid
             if (map_dto.blocks[i][j].type != BlockType::Empty) {
                 bool half = map_dto.blocks[i][j].type == HalfFloor;
                 bool solid = map_dto.blocks[i][j].solid;

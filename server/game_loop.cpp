@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <cstdio>
 #include <stdexcept>
 
 #include "common/snapshot.h"
@@ -13,17 +14,20 @@ using std::chrono::milliseconds;
 
 const milliseconds RATE(1000 / TICKS);
 
-GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list, Map& map_dto):
+GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
         snaps_queue_list(queue_list),
-        game_operator(map_dto),
+        game_operator(),
         match_number(1),
         players_quantity() {}
 
 void GameLoop::run() {
     game_operator.initialize_players(players_quantity);
+    curr_map_dto = map_loader.loadMap(SERVER_DATA_PATH "/map1.yaml");
+    game_operator.load_map(curr_map_dto);
     auto t1 = high_resolution_clock::now();
     // uint it = 0;
+    initial_snapshot();
     while (_keep_running) {
         pop_and_process_all();
         auto t2 = high_resolution_clock::now();
@@ -42,6 +46,15 @@ void GameLoop::run() {
     }
 }
 
+void GameLoop::initial_snapshot() {
+    Snapshot actual_status = {};
+    game_operator.get_snapshot(actual_status);
+    actual_status.maps.push_back(curr_map_dto);
+    std::cout << actual_status.maps.size() << std::endl;
+    actual_status.match_finished = false;
+    push_responce(actual_status);
+}
+
 void GameLoop::pop_and_process_all() {
     struct action action;
     while (actions_queue.try_pop(action)) {
@@ -50,6 +63,7 @@ void GameLoop::pop_and_process_all() {
     game_operator.update_game_status();
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
+    actual_status.match_finished = false;
     check_for_winner(actual_status);
     push_responce(actual_status);
 }
@@ -83,9 +97,17 @@ void GameLoop::check_for_winner(Snapshot& actual_status) {
         ++winners_id_count[winner_id];
         std::cout << "Gano el jugador: " << +winner_id << " con un total de "
                   << +winners_id_count[winner_id] << " partidas ganadas " << std::endl;
-        //
-        // CARGAR SIGUIENTE MAPA EN LA SNAPSHOT
-        // CARGAR EL NUEVO MAPA EN LAS ESTRUCTURAS
+        
+        Snapshot snapshot{};
+        game_operator.get_snapshot(actual_status);
+        actual_status.match_finished = true;
+        push_responce(snapshot);
+        std::this_thread::sleep_for(milliseconds(3000));
+
+        game_operator.initialize_players(players_quantity);
+        curr_map_dto = map_loader.loadMap(SERVER_DATA_PATH "/map1.yaml");
+        game_operator.load_map(curr_map_dto);
+        initial_snapshot();
     }
 }
 

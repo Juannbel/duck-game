@@ -1,10 +1,10 @@
 #include "constant_looper.h"
 
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <memory>
-#include <random>
 #include <unordered_set>
 
 #include <SDL2/SDL.h>
@@ -30,9 +30,9 @@
 
 #define USE_CAMERA true
 
-ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_q,
+ConstantLooper::ConstantLooper(uint8_t duck_id, Queue<Snapshot>& snapshot_q,
                                Queue<Command>& command_q):
-        duck_id(match_info.duck_id),
+        duck_id(duck_id),
         sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
         window(WIN_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_WIDTH, WIN_HEIGHT,
                SDL_WINDOW_RESIZABLE),
@@ -41,7 +41,7 @@ ConstantLooper::ConstantLooper(MatchInfo& match_info, Queue<Snapshot>& snapshot_
         snapshot_q(snapshot_q),
         command_q(command_q),
         p1_controller(duck_id, command_q, last_snapshot, P1_CONTROLS),
-        map_dto(match_info.map) {}
+        map_dto() {}
 
 void ConstantLooper::run() try {
     TexturesProvider::load_textures(renderer);
@@ -49,7 +49,7 @@ void ConstantLooper::run() try {
 
     if (!screen_manager.waiting_screen(snapshot_q, last_snapshot))
         return;
-
+    
     process_snapshot();
 
     Camera camera(renderer);
@@ -65,8 +65,8 @@ void ConstantLooper::run() try {
 
         while (snapshot_q.try_pop(last_snapshot)) {}
 
-        /*
-        if (last_snapshot.round_finished) {
+        
+        if (last_snapshot.match_finished) {
            keep_running = screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
            if (!keep_running) break;
            clear_renderables();
@@ -75,7 +75,7 @@ void ConstantLooper::run() try {
            camera.update(last_snapshot);
            continue;
         }
-        */
+        
 
         // Actualizar el estado de todo lo que se renderiza
         process_snapshot();
@@ -90,9 +90,9 @@ void ConstantLooper::run() try {
     }
 
 } catch (std::exception& e) {
-    std::cerr << "Excepction on constant looper" << e.what() << std::endl;
+    std::cerr << "Excepction on constant looper " << e.what() << std::endl;
 } catch (...) {
-    std::cerr << "Unknown exception on constant looper" << std::endl;
+    std::cerr << "Unknown exception on constant looper " << std::endl;
 }
 
 void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
@@ -119,6 +119,9 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 }
 
 void ConstantLooper::process_snapshot() {
+    for (auto& map : last_snapshot.maps) {
+        map_dto = map;
+    }
     for (auto& duck: last_snapshot.ducks) {
         if (ducks_renderables.find(duck.duck_id) == ducks_renderables.end()) {
             ducks_renderables[duck.duck_id] = std::make_unique<RenderableDuck>(duck.duck_id);
