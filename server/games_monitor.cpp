@@ -5,10 +5,7 @@
 #define CREATE 1
 #define JOIN 2
 
-// TODO: ver bien tema de mutex y accesos entre threads
-
 int GamesMonitor::player_create_game(const int id_player, Queue<Snapshot>& player_sender_queue, uint8_t& duck_id) {
-    //std::lock_guard<std::mutex> lck(m);
     Game* game = create_game();
     duck_id = game->add_player(id_player, player_sender_queue);
     return game->get_id();
