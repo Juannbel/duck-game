@@ -31,6 +31,12 @@ wings_0:
     frames:
       - { x: 16, y: *y_row, x_offset_right: -1, x_offset_left: 6, y_offset: 5 }
 
+  dead:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 16, y: *y_row, x_offset_right: -1, x_offset_left: 6, y_offset: 5 }
+
   flapping:
     iter_per_frame: 4
     loops: true
