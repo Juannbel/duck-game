@@ -105,7 +105,7 @@ void GameLoop::check_for_winner(Snapshot& actual_status) {
         std::this_thread::sleep_for(milliseconds(3000));
 
         game_operator.initialize_players(players_quantity);
-        curr_map_dto = map_loader.loadMap(SERVER_DATA_PATH "/map1.yaml");
+        curr_map_dto = map_loader.loadMap(SERVER_DATA_PATH "/map2.yaml");
         game_operator.load_map(curr_map_dto);
         initial_snapshot();
     }

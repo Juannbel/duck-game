@@ -1,4 +1,6 @@
 #include "yaml.h"
+#include <cstdint>
+#include <sys/types.h>
 
 std::unordered_map<std::string, BlockType> YAMLLoader::string_to_block {
     {"empty", Empty},
@@ -35,7 +37,7 @@ Map YAMLLoader::loadMap(const std::string& path) {
     // TODO: Crear la pantalla con estos valores
     const int height = config["height"].as<int>();
     const int width = config["width"].as<int>();
-
+    map_blocks_info.theme = config["theme"].as<uint8_t>();
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             map_blocks_info.blocks[i][j].type = BlockType::Empty;

@@ -54,7 +54,7 @@ void ConstantLooper::run() try {
 
     Camera camera(renderer);
 
-    RenderableMap map(map_dto, 0);
+    RenderableMap map(map_dto);
 
     bool keep_running = true;
     uint32_t t1 = SDL_GetTicks();
@@ -71,7 +71,7 @@ void ConstantLooper::run() try {
            if (!keep_running) break;
            clear_renderables();
            process_snapshot();
-           map.update(map_dto, 0);
+           map.update(map_dto);
            camera.update(last_snapshot);
            continue;
         }

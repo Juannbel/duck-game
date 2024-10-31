@@ -29,6 +29,7 @@ struct Block {
 } __attribute__((packed));
 
 struct Map {
+    uint8_t theme;
     Block blocks[MAP_HEIGHT_BLOCKS][MAP_WIDTH_BLOCKS];
 } __attribute__((packed));
 
