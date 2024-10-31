@@ -32,10 +32,11 @@ private:
     void check_spawn_picked(uint32_t id);
     GunType get_random_guntype();
 
-public:
-    GameOperator();
     void load_map(Map& map_dto);
     void initialize_players(uint8_t players_quantity);
+public:
+    GameOperator();
+    void initialize_game(Map& map_dto, uint8_t players_quantity);
     void process_action(action& action);
     void update_game_status();
 
