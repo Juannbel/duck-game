@@ -4,31 +4,25 @@
 #include <exception>
 #include <utility>
 
-#include "common/blocking_queue.h"
-#include "common/map_dto.h"
-
 #include "server_client.h"
+#include "games_monitor.h"
 
-Acceptor::Acceptor(Socket& sk, Queue<struct action>& gameloop_q, QueueListMonitor& sv_msg_queues,
-                   Map& map):
-        sk(sk), gameloop_q(gameloop_q), sv_msg_queues(sv_msg_queues), map(map) {}
+Acceptor::Acceptor(Socket& sk): sk(sk) {}
 
 void Acceptor::run() {
-    int id = 0;  // Estaria bueno usar un uuid
+    int id = 0;
+    GamesMonitor games_monitor;
     while (true) {
         try {
             Socket peer = sk.accept();
 
-            // por ahora mandamos el id del cliente como id del jugador
-            ServerClient* th =
-                    new ServerClient(std::move(peer), gameloop_q, id, MatchInfo(id % 4, map));
-            sv_msg_queues.add_element(&(th->get_sender_queue()));
+            ServerClient* th = new ServerClient(std::move(peer), games_monitor, id);
+            id++;
 
             th->start();
 
             reap_dead();
-            clients.push_back(th);
-            id++;
+            players.push_back(th);
         } catch (const std::exception& e) {
             // sk.accept falla (se cerro el socket) por lo que corto el while
             break;
@@ -38,11 +32,8 @@ void Acceptor::run() {
 }
 
 void Acceptor::reap_dead() {
-    clients.remove_if([this](ServerClient* c) {
+    players.remove_if([](ServerClient* c) {
         if (c->is_dead()) {
-            // Sacar la sender_q de la protected list
-            sv_msg_queues.remove_element(&(c->get_sender_queue()));  // Para usarla asi tengo q usar
-                                                                     // mi implementacion de monitor
             c->join();
             return true;
         }
@@ -51,12 +42,14 @@ void Acceptor::reap_dead() {
 }
 
 void Acceptor::kill_all() {
-    for (auto& c: clients) {
+    for (auto& c: players) {
         c->kill();
         c->join();
         delete c;
     }
-    clients.clear();
+    players.clear();
 }
 
-int Acceptor::get_clients_count() { return clients.size(); }
+int Acceptor::get_clients_count() {
+    return players.size();
+}

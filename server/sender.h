@@ -12,10 +12,12 @@ class ServerSender: public Thread {
 private:
     ServerProtocol& protocol;
     Queue<Snapshot>& sender_q;
-    uint8_t duck_id;
+    int playerId;
 
 public:
-    ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, uint8_t duck_id);
+    ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, int playerId);
+
+    void send_match_info(const MatchInfo &match_info);
 
     void run() override;
 };

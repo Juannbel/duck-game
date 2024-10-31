@@ -7,116 +7,78 @@
 
 const uint8_t AK_CD = TICKS / 6;
 
-GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 2; }
+GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
+    ammo = 2; 
+    it_to_shoot = 0;
+}
 
 // void GrenadeG::start_shooting() {}
 // void GrenadeG::stop_shooting() {}
 void GrenadeG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        int16_t angle = status.facing_right ? 0 : 180;
-        int16_t max = 20;
-        int16_t min = -20;
-        int16_t randNum = rand() % (max - min + 1) + min;
-        angle += randNum;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
-    }
-    ++it_since_shoot;
+    add_bullet(player);
 }
 
-BananaG::BananaG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 2; }
+BananaG::BananaG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
+    ammo = 2; 
+    it_to_shoot = 0;
+}
 
 // void BananaG::start_shooting() {}
 // void BananaG::stop_shooting() {}
 void BananaG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        uint16_t angle = status.facing_right ? 0 : 180;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, angle, type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
-    }
-    ++it_since_shoot;
+    add_bullet(player);
 }
 
 PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
     ammo = 12 * 3;
+    it_to_shoot = 0;
+    initial_angle = 0;
+    inaccuracy = 10;
+    it_to_reload = TICKS/2;
+    it_reloading = it_to_reload;
 }
 
 // void PewPewLaserG::start_shooting() { trigger_pulled = true; }
 // void PewPewLaserG::stop_shooting() { trigger_pulled = false; }
 void PewPewLaserG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        int16_t angle = status.facing_right ? 0 : 180;
-        int16_t max = 20;
-        int16_t min = -20;
-        int16_t randNum = rand() % (max - min + 1) + min;
-        angle += randNum;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
+    if(ammo == 0) { 
+        destroy(); 
+        player.drop_collectable();
+        return;
     }
-    ++it_since_shoot;
+    add_bullet(player);
 }
 
 
-LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 10; }
+LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
+    ammo = 10; 
+    it_to_shoot = 15;
+    initial_angle = 0;
+    inaccuracy = 10;
+    it_to_reload = TICKS/2;
+    it_reloading = it_to_reload;
+}
 
 // void LaserRifleG::start_shooting() {}
-// void LaserRifleG::stop_shooting() {}
 void LaserRifleG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        int16_t angle = status.facing_right ? 0 : 180;
-        int16_t max = 20;
-        int16_t min = -20;
-        int16_t randNum = rand() % (max - min + 1) + min;
-        angle += randNum;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
+    if(ammo == 0) { 
+        destroy(); 
+        player.drop_collectable();
+        return;
     }
-    ++it_since_shoot;
+    add_bullet(player);
 }
+// void LaserRifleG::stop_shooting() {}
 
 
-Ak47G::Ak47G(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 30; }
+Ak47G::Ak47G(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
+    ammo = 30; 
+    it_to_shoot = 15;
+    initial_angle = 0;
+    inaccuracy = 15;
+    it_to_reload = TICKS/2;
+    it_reloading = it_to_reload;
+}
 
 // void Ak47G::start_shooting() {
 //     it_since_shoot = trigger_pulled ? it_since_shoot : 0;
@@ -127,215 +89,141 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo =
 // }
 
 void Ak47G::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        int16_t angle = status.facing_right ? 0 : 180;
-        int16_t max = 20;
-        int16_t min = -20;
-        int16_t randNum = rand() % (max - min + 1) + min;
-        angle += randNum;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
+    if(ammo == 0) { 
+        destroy(); 
+        player.drop_collectable();
+        return;
     }
-    ++it_since_shoot;
+    add_bullet(player);
 }
 
 
 DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
     ammo = 1;
+    it_to_shoot = 0;
+    initial_angle = 0;
+    inaccuracy = 20;
+    it_to_reload = TICKS/2;
+    it_reloading = it_to_reload;
 }
 
 // void DuelingPistolG::start_shooting() {}
 // void DuelingPistolG::stop_shooting() {}
 void DuelingPistolG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        int16_t angle = status.facing_right ? 0 : 180;
-        int16_t max = 20;
-        int16_t min = -20;
-        int16_t randNum = rand() % (max - min + 1) + min;
-        angle += randNum;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
+    if (ammo == 0) { 
+        destroy(); 
+        player.drop_collectable();
+        return;
     }
-    ++it_since_shoot;
+    add_bullet(player);
 }
 
 
 CowboyPistolG::CowboyPistolG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
     ammo = 6;
+    it_to_shoot = 0;
+    initial_angle = 0;
+    inaccuracy = 0;
+    it_to_reload = 0;
+    it_reloading = it_to_reload;
 }
 
 // void CowboyPistolG::start_shooting() {}
 // void CowboyPistolG::stop_shooting() {}
 void CowboyPistolG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        uint16_t angle = status.facing_right ? 0 : 180;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, angle, type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
+    if (ammo == 0) { 
+        destroy(); 
+        player.drop_collectable();
+        return;
     }
-    ++it_since_shoot;
+    add_bullet(player);
 }
 
-MagnumG::MagnumG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 6; }
+MagnumG::MagnumG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
+    ammo = 6; 
+    it_to_shoot = 0;
+    initial_angle = 0;
+    inaccuracy = 10;
+    it_to_reload = 0;
+    it_reloading = it_to_reload;
+}
 
 // void MagnumG::start_shooting() {}
 // void MagnumG::stop_shooting() {}
 void MagnumG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        int16_t angle = status.facing_right ? 0 : 180;
-        int16_t max = 20;
-        int16_t min = -20;
-        int16_t randNum = rand() % (max - min + 1) + min;
-        angle += randNum;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
+    if (ammo == 0) { 
+        destroy(); 
+        player.drop_collectable();
+        return;
     }
-    ++it_since_shoot;
+    add_bullet(player);
 }
 
-ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 2; }
+ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
+    ammo = 2*6; 
+    inaccuracy = 30;
+    bullets_to_shoot = 12;
+    it_to_reload = TICKS; 
+    it_reloading = it_to_reload; 
+}
 
 // void ShootgunG::start_shooting() {}
 // void ShootgunG::stop_shooting() {}
 void ShootgunG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        int16_t angle = status.facing_right ? 0 : 180;
-        int16_t max = 20;
-        int16_t min = -20;
-        int16_t randNum = rand() % (max - min + 1) + min;
-        angle += randNum;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
+    if (ammo == 0) { 
+        destroy(); 
+        player.drop_collectable();
+        return;
     }
-    ++it_since_shoot;
+    for (int i = 0; i < 6; ++i) {
+        add_bullet(player);
+    }
 }
 
-SniperG::SniperG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 3; }
+SniperG::SniperG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
+    ammo = 3; 
+    inaccuracy = 0;
+    it_to_reload =  TICKS/2;
+    it_reloading = it_to_reload;
+}
 
 // void SniperG::start_shooting() {}
 // void SniperG::stop_shooting() {}
 void SniperG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        int16_t angle = status.facing_right ? 0 : 180;
-        int16_t max = 20;
-        int16_t min = -20;
-        int16_t randNum = rand() % (max - min + 1) + min;
-        angle += randNum;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
+    if (ammo == 0) { 
+        destroy(); 
+        player.drop_collectable();
+        return;
     }
-    ++it_since_shoot;
+    add_bullet(player);
 }
 
-HelmetG::HelmetG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 1; }
+HelmetG::HelmetG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
+    ammo = 1; 
+}
 
 // void HelmetG::start_shooting() {}
 // void HelmetG::stop_shooting() {}
 void HelmetG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        int16_t angle = status.facing_right ? 0 : 180;
-        int16_t max = 20;
-        int16_t min = -20;
-        int16_t randNum = rand() % (max - min + 1) + min;
-        angle += randNum;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
+    if (trigger_pulled && ammo == 1) {
+        player.equip_helmet();
+        destroy();
+        player.drop_collectable();
+        --ammo;
     }
-    ++it_since_shoot;
 }
 
-ArmorG::ArmorG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 1; }
+ArmorG::ArmorG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
+    ammo = 1; 
+}
 
 // void ArmorG::start_shooting() {}
 // void ArmorG::stop_shooting() {}
 void ArmorG::update_bullets(DuckPlayer& player) {
-    if (trigger_pulled) {
-        Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x;
-        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
-        int16_t angle = status.facing_right ? 0 : 180;
-        int16_t max = 20;
-        int16_t min = -20;
-        int16_t randNum = rand() % (max - min + 1) + min;
-        angle += randNum;
-        Rectangle hitbox;
-        hitbox.coords.x = x;
-        hitbox.coords.y = y;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
-        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3};
-        bullets->add_bullet(bullet);
-        it_since_shoot = 0;
+    if (trigger_pulled && ammo == 1) {
+        player.equip_armor();
+        destroy();
+        player.drop_collectable();
+        --ammo;
     }
-    ++it_since_shoot;
 }

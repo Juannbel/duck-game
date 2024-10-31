@@ -18,6 +18,11 @@ struct Rectangle {
     float height;
 };
 
+struct BlockInfo {
+    Rectangle hitbox;
+    bool solid;
+};
+
 struct Collision {
     Coordenades last_valid_position;
     bool vertical_collision;
@@ -26,8 +31,10 @@ struct Collision {
 
 class CollisionChecks {
 private:
-    std::map<uint16_t, std::vector<Rectangle>> blocks;
-    void add_block(float x, float y);
+    std::map<uint16_t, std::vector<BlockInfo>> blocks;
+    void add_block(float x, float y, bool half, bool solid);
+    Collision check_collisions_in_row(std::vector<BlockInfo>& block_columns, Rectangle& final_rec, Rectangle& entity, float new_y);
+
 
 public:
     CollisionChecks(): blocks() {}

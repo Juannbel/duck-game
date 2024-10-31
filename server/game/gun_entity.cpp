@@ -1,7 +1,11 @@
 #include "gun_entity.h"
 
 #include <cstdint>
+#include <cstdlib>
+#include <random>
 
+#include "duck_player.h"
+#include "common/shared_constants.h"
 
 GunEntity::GunEntity(BulletManager* bullets):
         id(),
@@ -9,9 +13,12 @@ GunEntity::GunEntity(BulletManager* bullets):
         x(),
         y(),
         ammo(),
+        range(),
+        inaccuracy(),
         trigger_pulled(),
         ready_to_shoot(),
         it_since_shoot(),
+        it_to_shoot(),
         bullets(bullets) {}
 
 GunEntity::GunEntity(Gun& gun, BulletManager* bullets):
@@ -47,9 +54,46 @@ GunEntity& GunEntity::operator=(GunEntity&& old) {
     return *this;
 }
 
+int16_t GunEntity::get_rand_angle() {
+    if (inaccuracy == 0) 
+        return 0;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(-inaccuracy,  inaccuracy);  // 0 es None
+    return static_cast<int16_t>(dis(gen));
 
-void GunEntity::drop() {
-    id = 0;
+}
+
+void GunEntity::add_bullet(DuckPlayer& player) {
+    if ((trigger_pulled && it_since_shoot > it_to_shoot) || bullets_to_shoot > shooted_bullets) {
+        Duck status = player.get_status();
+        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x-BULLET_HITBOX_WIDTH;
+        int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
+        int16_t angle = status.facing_right ? 0 : 180;
+        angle = status.facing_up ? 90 : angle;
+
+        angle += get_rand_angle();
+        Rectangle hitbox;
+        hitbox.coords.x = x;
+        hitbox.coords.y = y;
+        hitbox.height = BULLET_HITBOX_HEIGHT;
+        hitbox.width = BULLET_HITBOX_WIDTH;
+        Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
+        BulletInfo bullet = {bullet_status, hitbox, 3, 50};
+        bullets->add_bullet(bullet);
+        it_since_shoot = 0;
+        ++shooted_bullets;
+        --ammo;
+    }
+    if (it_to_shoot > 0) {
+        ++it_since_shoot;
+    }
+    if (it_reloading < it_to_reload) {
+        ++it_reloading;
+    }
+}
+
+void GunEntity::destroy() {
     type = None;
     x = 0;
     y = 0;

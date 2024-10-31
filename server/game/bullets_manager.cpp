@@ -1,16 +1,27 @@
 #include "bullets_manager.h"
+#include "duck_player.h"
+
 
 #include <cmath>
+#include <cstdint>
 #include <vector>
+#include "common/snapshot.h"
+#include "server/game/collisions.h"
 
 const uint8_t bullet_updates_per_it = 3;
 
-BulletManager::BulletManager(CollisionChecks& collisions): bullet_id(), collisions(collisions) {}
+BulletManager::BulletManager(CollisionChecks& collisions, std::vector<DuckPlayer>& ducks): bullet_id(), collisions(collisions), ducks(ducks) {}
 
 void BulletManager::add_bullet(BulletInfo& bullet) {
     ++bullet_id;
     bullet.status.bullet_id = bullet_id;
     bullets[bullet_id] = bullet;
+}
+
+void BulletManager::check_collision_with_ducks(Rectangle& bullet, uint8_t damage) {
+    for(auto &duck : ducks) {
+        duck.get_hit(bullet, damage);
+    }
 }
 
 void BulletManager::update_bullets() {
@@ -31,6 +42,7 @@ void BulletManager::update_bullets() {
             }
             hitbox.coords.x = new_x;
             hitbox.coords.y = new_y;
+            check_collision_with_ducks(hitbox, bullet.damage);
         }
         bullet.status.x = static_cast<int16_t>(hitbox.coords.x);
         bullet.status.y = static_cast<int16_t>(hitbox.coords.y);

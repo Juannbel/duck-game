@@ -1,4 +1,5 @@
 #include "server_protocol.h"
+#include <stdexcept>
 
 #include <arpa/inet.h>
 
@@ -114,6 +115,18 @@ Command ServerProtocol::recv_player_command() {
     if (was_closed)
         throw SocketWasClosed();
     return command;
+}
+
+int ServerProtocol::receive_cmd() {
+    bool wasClosed = false;
+    int command;
+    socket.recvall(&command, sizeof(command), &wasClosed);
+    return command;
+}
+
+void ServerProtocol::send_lobby_info(int lobby) {
+    bool wasClosed = false;
+    socket.sendall(&lobby, sizeof(lobby), &wasClosed);
 }
 
 

@@ -1,13 +1,15 @@
 #include "collisions.h"
 
+#include "common/map_dto.h"
 #include "common/shared_constants.h"
 
 const int16_t NEAR_CELLS = 3;
 const float MAP_EDGE = 50;
 
-void CollisionChecks::add_block(float x, float y) {
-    Rectangle rectangle = {{x, y}, BLOCK_SIZE, BLOCK_SIZE};
-    blocks[y / BLOCK_SIZE].push_back(rectangle);
+void CollisionChecks::add_block(float x, float y, bool half, bool solid) {
+    float heigh = half ? static_cast<float>(BLOCK_SIZE)/2 : BLOCK_SIZE;
+    Rectangle rectangle = {{x, y}, BLOCK_SIZE, heigh};
+    blocks[y / BLOCK_SIZE].push_back({rectangle, solid});
 }
 
 void CollisionChecks::load_map(Map& map_dto) {
@@ -18,7 +20,9 @@ void CollisionChecks::load_map(Map& map_dto) {
             // y el blockType HalfFloor que debería ser de la mitad de alto que el otro
             // cualquier tipo de bloque puede o no ser solid
             if (map_dto.blocks[i][j].type != BlockType::Empty) {
-                add_block(j * BLOCK_SIZE, i * BLOCK_SIZE);
+                bool half = map_dto.blocks[i][j].type == HalfFloor;
+                bool solid = map_dto.blocks[i][j].solid;
+                add_block(j * BLOCK_SIZE, i * BLOCK_SIZE, half, solid);
             }
         }
     }
@@ -26,6 +30,48 @@ void CollisionChecks::load_map(Map& map_dto) {
 
 bool CollisionChecks::out_of_map(float x, float y) {
     return x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE;
+}
+
+bool check_collision_with_no_solid(bool vertical_collision, float new_y, Rectangle &entity, Rectangle& block_hb) {
+    if (new_y < entity.coords.y && vertical_collision) {
+        return true;
+    } else if (new_y >= entity.coords.y && vertical_collision 
+            && entity.coords.y+entity.height > block_hb.coords.y) {
+        return true;
+    }
+    return false;
+}
+
+Collision CollisionChecks::check_collisions_in_row(std::vector<BlockInfo>& block_columns, Rectangle& final_rec, Rectangle& entity,float new_y) {
+    struct Collision collision = {final_rec.coords, false, false};
+    for (auto& block: block_columns) {
+        Rectangle& block_hb = block.hitbox;
+        Collision aux_collision = rectangles_collision(final_rec, block_hb);
+        if (!block.solid) {
+            if (check_collision_with_no_solid(aux_collision.vertical_collision, new_y, entity, block_hb))
+                continue;
+        }
+        if (aux_collision.horizontal_collision) {
+            final_rec.coords.x = entity.coords.x;
+            collision.horizontal_collision = true;
+            bool vertical_collision = rectangles_collision(final_rec, block_hb).vertical_collision;
+            if (vertical_collision) {
+                Coordenades& entity_c = entity.coords;
+                Coordenades& block_c = block_hb.coords;
+                if (new_y > entity_c.y && new_y + entity.height > block_c.y &&
+                    entity_c.y < block_c.y) {
+                    final_rec.coords.y = block_c.y - entity.height;
+                } else if (new_y < block_c.y + block_hb.height && entity_c.y > block_c.y) {
+                    final_rec.coords.y = block_c.y + block_hb.height;
+                }
+                collision.vertical_collision = true;
+            }
+        } else if (aux_collision.vertical_collision) {
+            collision.vertical_collision = true;
+        }
+    }
+    collision.last_valid_position = final_rec.coords;
+    return collision;
 }
 
 struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& entity, float new_x,
@@ -43,32 +89,10 @@ struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& 
         if (blocks.find(i) == blocks.end()) {
             continue;
         }
-        std::vector<Rectangle>& block_columns = blocks[i];
-        for (auto& block: block_columns) {
-            struct Collision aux_collision = rectangles_collision(final_rec, block);
-            // if (/* con un tipo de bloque y esta subiendo*/ new_y < entity.coords.y &&
-            //     aux_collision.vertical_collision) {
-            //     continue;
-            // }
-            if (aux_collision.horizontal_collision) {
-                final_rec.coords.x = entity.coords.x;
-                collision.horizontal_collision = true;
-                bool vertical_collision = rectangles_collision(final_rec, block).vertical_collision;
-                if (vertical_collision) {
-                    Coordenades& entity_c = entity.coords;
-                    Coordenades& block_c = block.coords;
-                    if (new_y > entity_c.y && new_y + entity.height > block_c.y &&
-                        entity_c.y < block_c.y) {
-                        final_rec.coords.y = block_c.y - entity.height;
-                    } else if (new_y < block_c.y + block.height && entity_c.y > block_c.y) {
-                        final_rec.coords.y = block_c.y + block.height;
-                    }
-                    collision.vertical_collision = true;
-                }
-            } else if (aux_collision.vertical_collision) {
-                collision.vertical_collision = true;
-            }
-        }
+        std::vector<BlockInfo>& block_columns = blocks[i];
+        Collision collision_in_row  = check_collisions_in_row(block_columns, final_rec, entity, new_y);
+        collision.horizontal_collision = collision_in_row.horizontal_collision ? collision_in_row.horizontal_collision : collision.horizontal_collision;
+        collision.vertical_collision = collision_in_row.vertical_collision ? collision_in_row.vertical_collision : collision.vertical_collision;
     }
     collision.last_valid_position = final_rec.coords;
     return collision;
