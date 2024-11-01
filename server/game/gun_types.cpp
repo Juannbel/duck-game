@@ -102,8 +102,8 @@ DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets): GunEntity(gun,
     ammo = 1;
     it_to_shoot = 0;
     initial_angle = 0;
-    inaccuracy = 20;
-    it_to_reload = TICKS/2;
+    inaccuracy = 8;
+    it_to_reload = 0;
     it_reloading = it_to_reload;
 }
 

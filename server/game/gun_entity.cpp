@@ -87,7 +87,7 @@ void GunEntity::add_bullet(DuckPlayer& player) {
         it_since_shoot = 0;
         it_reloading = 0;
         ++shooted_bullets;
-        --ammo;
+        if (ammo > 0) { --ammo; }
     }
     if (bullets_to_shoot == shooted_bullets) {
         shooted_bullets = 0;

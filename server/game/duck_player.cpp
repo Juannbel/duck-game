@@ -45,6 +45,7 @@ void DuckPlayer::die() {
     status.is_dead = true;
     status.duck_hp = 0;
     status.is_laying = true;
+    drop_collectable();
 }
 
 void DuckPlayer::status_after_move(struct Collision& collision) {
@@ -225,7 +226,9 @@ uint32_t DuckPlayer::drop_and_pickup() {
 }
 
 void DuckPlayer::drop_collectable() {
-    equipped_gun->destroy();
+    if (!equipped_gun) return;
+    if (!status.is_dead)
+        equipped_gun->destroy();
     collectables->drop_gun(equipped_gun, hitbox);
     status.gun = None;
     equipped_gun = nullptr;
