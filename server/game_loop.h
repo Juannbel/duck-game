@@ -11,7 +11,7 @@
 #include "common/snapshot.h"
 #include "common/thread.h"
 #include "game/game_operator.h"
-#include "game/yaml.h"
+#include "game/map_loader.h"
 
 #include "action.h"
 #include "list_monitor.h"
@@ -23,7 +23,7 @@ private:
     GameOperator game_operator;
     uint8_t match_number;
     std::map<uint8_t, uint8_t> winners_id_count;
-    YAMLLoader map_loader;
+    MapLoader map_loader;
     std::vector<std::string> paths_to_maps;
     Map curr_map_dto;
     std::vector<uint8_t> duck_ids;

@@ -9,7 +9,7 @@
 #include <yaml-cpp/yaml.h>
 
 
-class YAMLLoader {
+class MapLoader {
 private:
     static std::unordered_map<std::string, BlockType> string_to_block;
 
