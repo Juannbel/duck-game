@@ -22,8 +22,8 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& colli
         it_since_hit(IT_TO_GET_HIT_AGAIN),
         ready_to_jump(),
         hitbox(),
-        collisions(collisions),
-        collectables(collectables),
+        collisions(&collisions),
+        collectables(&collectables),
         equipped_gun(nullptr) {
     status.is_dead = true;
 }
@@ -61,7 +61,7 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
         status.is_flapping = false;
         it_flapping = 0;
     }
-    if (collisions.out_of_map(hitbox.coords.x, hitbox.coords.y)) {
+    if (collisions->out_of_map(hitbox.coords.x, hitbox.coords.y)) {
         status.is_dead = true;
         status.duck_hp = 0;
     }
@@ -103,7 +103,7 @@ void DuckPlayer::move_duck() {
         it_jumping += INC_JUMP_IT;
         new_y -= move_y;
     }
-    struct Collision collision = collisions.check_near_blocks_collision(hitbox, new_x, new_y);
+    struct Collision collision = collisions->check_near_blocks_collision(hitbox, new_x, new_y);
     hitbox.coords.x = collision.last_valid_position.x;
     hitbox.coords.y = collision.last_valid_position.y;
     status_after_move(collision);
@@ -141,12 +141,12 @@ void DuckPlayer::update_gun_status() {
 
 void DuckPlayer::equip_armor() {
     status.armor_equiped = true;
-    collectables.drop_gun(equipped_gun, hitbox);
+    collectables->drop_gun(equipped_gun, hitbox);
 }
 
 void DuckPlayer::equip_helmet() {
     status.helmet_equiped = true;
-    collectables.drop_gun(equipped_gun, hitbox);
+    collectables->drop_gun(equipped_gun, hitbox);
 }
 
 void DuckPlayer::lay_down() {
@@ -187,7 +187,7 @@ void DuckPlayer::stop_jump() { ready_to_jump = true; }
 
 void DuckPlayer::get_hit(Rectangle& bullet, uint8_t damage) {
     if (it_since_hit < IT_TO_GET_HIT_AGAIN) return;
-    if(collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
+    if(collisions->rectangles_collision(hitbox, bullet).vertical_collision) {
         uint8_t taken_dmg = damage;
         if(status.helmet_equiped && status.armor_equiped) {
             taken_dmg/=3;
@@ -205,8 +205,8 @@ void DuckPlayer::get_hit(Rectangle& bullet, uint8_t damage) {
 }
 
 uint32_t DuckPlayer::drop_and_pickup() {
-    std::shared_ptr<GunEntity> new_gun = collectables.pickup(hitbox);
-    collectables.drop_gun(equipped_gun, hitbox);
+    std::shared_ptr<GunEntity> new_gun = collectables->pickup(hitbox);
+    collectables->drop_gun(equipped_gun, hitbox);
     equipped_gun = new_gun;
     Gun gun_info = {};
     if (new_gun) {
@@ -217,7 +217,7 @@ uint32_t DuckPlayer::drop_and_pickup() {
     return gun_info.gun_id;
 }
 void DuckPlayer::drop_collectable() {
-    collectables.drop_gun(equipped_gun, hitbox);
+    collectables->drop_gun(equipped_gun, hitbox);
     status.gun = None;
     equipped_gun = nullptr;
 }

@@ -14,6 +14,7 @@ private:
 
 public:
     // int loadMap(Map* map_blocks_info, EntityManager* entity_manager);
+    std::vector<std::string> list_maps(const std::string& path_to_dir);
     Map loadMap(const std::string& path);
 };
 

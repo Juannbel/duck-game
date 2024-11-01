@@ -80,7 +80,7 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot> &snapshot_q, Snapshot 
     }
 
     std::sort(ducks.begin(), ducks.end(), [](const Duck& a, const Duck& b) {
-        return a.duck_hp > b.duck_hp;
+        return a.rounds_won > b.rounds_won;
     });
 
     SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Round finished", SDL_Color{255, 255, 255, 255}));
@@ -139,8 +139,8 @@ void ScreenManager::render_duck_stat(Duck& duck, SDL2pp::Rect rect, std::shared_
         SDL2pp::Point(dst_rect.x + dst_rect.w + 20, rect.y + (rect.h - name_texture.GetSize().y) / 2),
         name_texture.GetSize()));
 
-    SDL2pp::Texture hp_texture(renderer, primary_font.RenderText_Solid(std::to_string(duck.duck_hp), SDL_Color{255, 255, 255, 255}));
-    renderer.Copy(hp_texture, SDL2pp::NullOpt, SDL2pp::Rect(
-        SDL2pp::Point(rect.x + rect.w - hp_texture.GetSize().x - 10, rect.y + (rect.h - hp_texture.GetSize().y) / 2),
-        hp_texture.GetSize()));
+    SDL2pp::Texture rounds_won_texture(renderer, primary_font.RenderText_Solid(std::to_string(duck.rounds_won), SDL_Color{255, 255, 255, 255}));
+    renderer.Copy(rounds_won_texture, SDL2pp::NullOpt, SDL2pp::Rect(
+        SDL2pp::Point(rect.x + rect.w - rounds_won_texture.GetSize().x - 10, rect.y + (rect.h - rounds_won_texture.GetSize().y) / 2),
+        rounds_won_texture.GetSize()));
 }

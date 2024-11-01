@@ -19,8 +19,8 @@ private:
     uint8_t it_since_hit;
     bool ready_to_jump;
     Rectangle hitbox;
-    CollisionChecks& collisions;
-    CollectablesManager& collectables;
+    CollisionChecks* collisions;
+    CollectablesManager* collectables;
     std::shared_ptr<GunEntity> equipped_gun;
 
     void status_after_move(struct Collision& collision);

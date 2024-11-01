@@ -24,13 +24,13 @@ private:
     uint32_t bullet_id;
     std::map<uint32_t, BulletInfo> bullets;
     CollisionChecks& collisions;
-    std::vector<DuckPlayer>& ducks;
+    std::vector<std::pair<DuckPlayer, int>>& ducks;
 
     void check_collision_with_ducks(Rectangle& bullet, uint8_t damage);
 
 public:
-    explicit BulletManager(CollisionChecks&, std::vector<DuckPlayer>& ducks);
-
+    explicit BulletManager(CollisionChecks&, std::vector<std::pair<DuckPlayer, int>>& ducks);
+    void clear_bullets();
     void add_bullet(BulletInfo&);
     void update_bullets();
     void add_bullets_to_snapshot(Snapshot&);
