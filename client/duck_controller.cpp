@@ -12,17 +12,17 @@ DuckController::DuckController(int duck_id, Queue<Command>& command_q, const Sna
         moving_left(false),
         moving_right(false) {}
 
-void DuckController::handle_key_down(const SDL_Event& event) {
+void DuckController::handle_key_down(const SDL_Event& event, const Duck& duck) {
     if (event.key.keysym.sym == controls.move_right) {
         if (!moving_right &&
-            !(snapshot.ducks[duck_id].is_running && snapshot.ducks[duck_id].facing_right)) {
+            !(duck.is_running && duck.facing_right)) {
             moving_right = true;
             last_move_command = StartMovingRight;
             move_command = true;
         }
     } else if (event.key.keysym.sym == controls.move_left) {
         if (!moving_left &&
-            !(snapshot.ducks[duck_id].is_running && !snapshot.ducks[duck_id].facing_right)) {
+            !(duck.is_running && !duck.facing_right)) {
             moving_left = true;
             last_move_command = StartMovingLeft;
             move_command = true;
@@ -30,14 +30,15 @@ void DuckController::handle_key_down(const SDL_Event& event) {
     } else if (event.key.keysym.sym == controls.jump) {
         command_q.push(Jump);
     } else if (event.key.keysym.sym == controls.lay_down) {
-        if (!snapshot.ducks[duck_id].is_laying)
+        if (!duck.is_laying)
             command_q.push(LayDown);
     } else if (event.key.keysym.sym == controls.shoot) {
-        command_q.push(StartShooting);
+        if (!duck.is_shooting)
+            command_q.push(StartShooting);
     } else if (event.key.keysym.sym == controls.pick_up) {
         command_q.push(PickUp);
     } else if (event.key.keysym.sym == controls.look_up) {
-        if (!snapshot.ducks[duck_id].facing_up)
+        if (!duck.facing_up)
             command_q.push(StartLookup);
     }
 }
@@ -78,8 +79,10 @@ void DuckController::process_event(const SDL_Event& event) {
     if (it == snapshot.ducks.end() || it->is_dead)
         return;
 
+    const Duck& duck = *it;
+
     if (event.type == SDL_KEYDOWN) {
-        handle_key_down(event);
+        handle_key_down(event, duck);
     } else if (event.type == SDL_KEYUP) {
         handle_key_up(event);
     }
