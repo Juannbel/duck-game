@@ -49,6 +49,12 @@ Queue<action>* GamesMonitor::get_gameloop_q(const int id_game) {
     return &game->get_gameloop_queue();
 }
 
+void GamesMonitor::remove_player(const int id_game, const int id_player) {
+    std::lock_guard<std::mutex> lck(m);
+    Game* game = map_games[id_game];
+    game->delete_player(id_player);
+}
+
 GamesMonitor::~GamesMonitor() {
     std::lock_guard<std::mutex> lck(m);
     for (auto& game: map_games) {

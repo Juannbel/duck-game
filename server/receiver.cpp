@@ -41,6 +41,8 @@ void ServerReceiver::run() {
                       << std::endl;
             break;
         } catch (const SocketWasClosed& e) {
+            // TODO: Ver donde va ubicado esto (remove_player)
+            games_monitor.remove_player(gameId, playerId);
             std::cout << "Client dissconected" << std::endl;
             break;
         }
@@ -61,7 +63,6 @@ void ServerReceiver::run() {
 
 // Protocolo de inicio de juego
 void ServerReceiver::setup_game() {
-    int gameId;
     int cmd = protocol.receive_cmd();
     if (cmd == CREATE) {
         gameId = games_monitor.player_create_game(playerId, sender_q, std::ref(duck_id));
@@ -83,7 +84,6 @@ void ServerReceiver::setup_game() {
         duck_id = games_monitor.player_join_game(playerId, gameId, sender_q);;
     }
     gameloop_q = games_monitor.get_gameloop_q(gameId);
-    // TODO: Ver si modificando el protocolo evito hacer el match info
     sender.send_duck_id(duck_id);
 }
 

@@ -23,7 +23,7 @@ private:
     void new_gun(Gun& gun);
 
 public:
-    explicit CollectablesManager(CollisionChecks& collision, std::vector<DuckPlayer>& ducks);
+    explicit CollectablesManager(CollisionChecks& collision, std::vector<std::pair<DuckPlayer, int>>& ducks);
     void reset_collectables();
     uint32_t get_and_inc_collectable_id();
     void add_gun(Gun& gun);

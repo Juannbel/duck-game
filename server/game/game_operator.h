@@ -23,7 +23,8 @@ struct Spawn {
 
 class GameOperator {
 private:
-    std::vector<DuckPlayer> players;
+    std::vector<std::pair<DuckPlayer, int>> players; // players = vector<pares<DuckPlayer,duck_id>>
+    std::map<int, size_t> duck_id_to_index; // Mapa de duck_id a índice en el vector players
     CollisionChecks collisions;
     CollectablesManager collectables;
     std::vector<Spawn> spawns;
@@ -33,15 +34,15 @@ private:
     GunType get_random_guntype();
 
     void load_map(Map& map_dto);
-    void initialize_players(uint8_t players_quantity);
+    void initialize_players(const std::vector<uint8_t>& duck_ids);
 public:
     GameOperator();
-    void initialize_game(Map& map_dto, uint8_t players_quantity);
+    void initialize_game(Map& map_dto, const std::vector<uint8_t>& duck_ids);
     void process_action(action& action);
     void update_game_status();
 
     void get_snapshot(Snapshot& snapshot);
-
+    void delete_duck_player(int id_duck);
     ~GameOperator();
 };
 

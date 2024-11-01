@@ -3,7 +3,6 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
-#include <cstdio>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -20,10 +19,7 @@ const milliseconds RATE(1000 / TICKS);
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
         snaps_queue_list(queue_list),
-        game_operator(),
         match_number(10),
-        players_quantity(),
-        map_loader(),
         paths_to_maps(map_loader.list_maps(SERVER_DATA_PATH)) {}
 
 std::string get_rand_string(std::vector<std::string>& v_strings) {
@@ -35,7 +31,7 @@ std::string get_rand_string(std::vector<std::string>& v_strings) {
 
 void GameLoop::initialice_new_round() {
     curr_map_dto = map_loader.loadMap(get_rand_string(paths_to_maps));
-    game_operator.initialize_game(curr_map_dto, players_quantity);
+    game_operator.initialize_game(curr_map_dto, duck_ids);
 }
 
 void GameLoop::run() {
@@ -99,7 +95,6 @@ void GameLoop::push_responce(Snapshot& actual_status) {
     snaps_queue_list.send_to_every(actual_status);
 }
 
-
 bool GameLoop::check_for_winner(Snapshot& actual_status) {
     uint8_t winner_id;
     uint8_t players_alive = 0;
@@ -131,10 +126,21 @@ bool GameLoop::check_for_winner(Snapshot& actual_status) {
 }
 
 uint8_t GameLoop::add_player() {
-    if (players_quantity >= MAX_DUCKS) {
+    if (duck_ids.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
     }
-    return players_quantity++;
+    uint8_t duck_id = duck_ids.size();
+    duck_ids.emplace_back(duck_id);
+    return duck_id;
 }
+
+void GameLoop::delete_duck(const int duck_id) {
+    game_operator.delete_duck_player(duck_id);
+    duck_ids.erase(duck_ids.begin() + duck_id);
+    if (duck_ids.size() <= 1) {
+        // TODO: ver como borrar el game
+    }
+}
+
 
 GameLoop::~GameLoop() {}
