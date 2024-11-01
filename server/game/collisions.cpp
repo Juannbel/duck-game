@@ -7,7 +7,7 @@ const int16_t NEAR_CELLS = 3;
 const float MAP_EDGE = 50;
 
 void CollisionChecks::add_block(float x, float y, bool half, bool solid) {
-    float heigh = half ? static_cast<float>(BLOCK_SIZE)/2 : BLOCK_SIZE;
+    float heigh = half ? static_cast<float>(BLOCK_SIZE) / 2 : BLOCK_SIZE;
     Rectangle rectangle = {{x, y}, BLOCK_SIZE, heigh};
     blocks[y / BLOCK_SIZE].push_back({rectangle, solid});
 }
@@ -29,23 +29,27 @@ bool CollisionChecks::out_of_map(float x, float y) {
     return x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE;
 }
 
-bool check_collision_with_no_solid(bool vertical_collision, float new_y, Rectangle &entity, Rectangle& block_hb) {
+bool check_collision_with_no_solid(bool vertical_collision, float new_y, Rectangle& entity,
+                                   Rectangle& block_hb) {
     if (new_y < entity.coords.y && vertical_collision) {
         return true;
-    } else if (new_y >= entity.coords.y && vertical_collision
-            && entity.coords.y+entity.height > block_hb.coords.y) {
+    } else if (new_y >= entity.coords.y && vertical_collision &&
+               entity.coords.y + entity.height > block_hb.coords.y) {
         return true;
     }
     return false;
 }
 
-Collision CollisionChecks::check_collisions_in_row(std::vector<BlockInfo>& block_columns, Rectangle& final_rec, Rectangle& entity,float new_y) {
+Collision CollisionChecks::check_collisions_in_row(std::vector<BlockInfo>& block_columns,
+                                                   Rectangle& final_rec, Rectangle& entity,
+                                                   float new_y) {
     struct Collision collision = {final_rec.coords, false, false};
     for (auto& block: block_columns) {
         Rectangle& block_hb = block.hitbox;
         Collision aux_collision = rectangles_collision(final_rec, block_hb);
         if (!block.solid) {
-            if (check_collision_with_no_solid(aux_collision.vertical_collision, new_y, entity, block_hb))
+            if (check_collision_with_no_solid(aux_collision.vertical_collision, new_y, entity,
+                                              block_hb))
                 continue;
         }
         if (aux_collision.horizontal_collision) {
@@ -87,9 +91,14 @@ struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& 
             continue;
         }
         std::vector<BlockInfo>& block_columns = blocks[i];
-        Collision collision_in_row  = check_collisions_in_row(block_columns, final_rec, entity, new_y);
-        collision.horizontal_collision = collision_in_row.horizontal_collision ? collision_in_row.horizontal_collision : collision.horizontal_collision;
-        collision.vertical_collision = collision_in_row.vertical_collision ? collision_in_row.vertical_collision : collision.vertical_collision;
+        Collision collision_in_row =
+                check_collisions_in_row(block_columns, final_rec, entity, new_y);
+        collision.horizontal_collision = collision_in_row.horizontal_collision ?
+                                                 collision_in_row.horizontal_collision :
+                                                 collision.horizontal_collision;
+        collision.vertical_collision = collision_in_row.vertical_collision ?
+                                               collision_in_row.vertical_collision :
+                                               collision.vertical_collision;
     }
     collision.last_valid_position = final_rec.coords;
     return collision;

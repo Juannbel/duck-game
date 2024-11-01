@@ -33,7 +33,8 @@ class CollisionChecks {
 private:
     std::map<uint16_t, std::vector<BlockInfo>> blocks;
     void add_block(float x, float y, bool half, bool solid);
-    Collision check_collisions_in_row(std::vector<BlockInfo>& block_columns, Rectangle& final_rec, Rectangle& entity, float new_y);
+    Collision check_collisions_in_row(std::vector<BlockInfo>& block_columns, Rectangle& final_rec,
+                                      Rectangle& entity, float new_y);
 
 
 public:

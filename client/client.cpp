@@ -1,6 +1,6 @@
 #include "client.h"
-#include <cstdint>
 
+#include <cstdint>
 
 #include "constant_looper.h"
 

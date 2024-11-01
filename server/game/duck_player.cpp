@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <memory>
+
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
 
@@ -194,18 +195,19 @@ void DuckPlayer::jump() {
 void DuckPlayer::stop_jump() { ready_to_jump = true; }
 
 void DuckPlayer::get_hit(Rectangle& bullet, uint8_t damage) {
-    if (it_since_hit < IT_TO_GET_HIT_AGAIN) return;
-    if(collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
+    if (it_since_hit < IT_TO_GET_HIT_AGAIN)
+        return;
+    if (collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
         uint8_t taken_dmg = damage;
-        if(status.helmet_equiped && status.armor_equiped) {
-            taken_dmg/=3;
-        }else if(status.helmet_equiped || status.armor_equiped){
-            taken_dmg/=2;
+        if (status.helmet_equiped && status.armor_equiped) {
+            taken_dmg /= 3;
+        } else if (status.helmet_equiped || status.armor_equiped) {
+            taken_dmg /= 2;
         }
         if (status.duck_hp < taken_dmg) {
             die();
         } else {
-            status.duck_hp-=taken_dmg;
+            status.duck_hp -= taken_dmg;
         }
         it_since_hit = 0;
     }
@@ -226,7 +228,8 @@ uint32_t DuckPlayer::drop_and_pickup() {
 }
 
 void DuckPlayer::drop_collectable() {
-    if (!equipped_gun) return;
+    if (!equipped_gun)
+        return;
     if (!status.is_dead)
         equipped_gun->destroy();
     collectables.drop_gun(equipped_gun, hitbox);

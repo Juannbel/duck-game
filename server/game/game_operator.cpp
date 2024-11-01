@@ -14,8 +14,7 @@ const int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
 const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 
 
-GameOperator::GameOperator():
-        collisions(), collectables(collisions, players) {}
+GameOperator::GameOperator(): collisions(), collectables(collisions, players) {}
 
 void GameOperator::load_map(Map& map_dto) {
     collisions.load_map(map_dto);
@@ -32,7 +31,7 @@ void GameOperator::load_map(Map& map_dto) {
 
 void GameOperator::initialize_players(const std::vector<uint8_t>& duck_ids) {
     std::vector<std::pair<int16_t, int16_t>> spawn_points = {
-        {50, 25}, {MAP_WIDTH_PIXELS - 50, 50}, {50, 25}, {MAP_WIDTH_PIXELS - 50, 200}};
+            {50, 25}, {MAP_WIDTH_PIXELS - 50, 50}, {50, 25}, {MAP_WIDTH_PIXELS - 50, 200}};
     players.clear();
 
     for (uint8_t i = 0; i < duck_ids.size(); ++i) {
@@ -42,9 +41,7 @@ void GameOperator::initialize_players(const std::vector<uint8_t>& duck_ids) {
     }
 }
 
-void GameOperator::delete_duck_player(uint8_t id_duck) {
-    players.erase(id_duck);
-}
+void GameOperator::delete_duck_player(uint8_t id_duck) { players.erase(id_duck); }
 
 void GameOperator::initialize_game(Map& map_dto, const std::vector<uint8_t>& duck_ids) {
     load_map(map_dto);
@@ -56,35 +53,35 @@ void GameOperator::process_action(action& action) {
     DuckPlayer& player = players.at(action.duck_id);
     switch (action.command) {
         case StartMovingRight:
-        player.run(true);
-        break;
+            player.run(true);
+            break;
         case StartMovingLeft:
-        player.run(false);
-        break;
+            player.run(false);
+            break;
         case StopMoving:
-        player.stop_running();
-        break;
+            player.stop_running();
+            break;
         case StartShooting:
             player.shoot();
-        break;
+            break;
         case StopShooting:
             player.stop_shooting();
-        break;
+            break;
         case LayDown:
             player.lay_down();
-        break;
+            break;
         case StandUp:
             player.stand_up();
-        break;
+            break;
         case Jump:
             player.jump();
-        break;
+            break;
         case StopJump:
             player.stop_jump();
-        break;
+            break;
         case PickUp:
             check_spawn_picked(player.drop_and_pickup());
-        break;
+            break;
         default:
             break;
     }

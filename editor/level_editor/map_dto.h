@@ -37,4 +37,4 @@ struct MatchInfo {
     Map map;
 } __attribute__((packed));
 
-#endif // MAP_DTO_H
+#endif  // MAP_DTO_H

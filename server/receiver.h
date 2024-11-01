@@ -2,13 +2,15 @@
 #define SERVER_RECEIVER_H
 
 #include <cstdint>
+
 #include <sys/types.h>
+
 #include "common/blocking_queue.h"
 #include "common/thread.h"
 
-#include "server_protocol.h"
 #include "games_monitor.h"
 #include "sender.h"
+#include "server_protocol.h"
 
 
 class ServerReceiver: public Thread {
@@ -23,7 +25,8 @@ private:
     ServerSender sender;
 
 public:
-    ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor, Queue<Snapshot>& sender_q, int playerId);
+    ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor, Queue<Snapshot>& sender_q,
+                   int playerId);
 
     void setup_game();
 

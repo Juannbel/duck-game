@@ -1,4 +1,5 @@
 #include "duck_controller.h"
+
 #include <algorithm>
 
 DuckController::DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot,

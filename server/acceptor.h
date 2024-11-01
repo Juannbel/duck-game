@@ -14,7 +14,7 @@ private:
     std::list<ServerClient*> players;
 
 public:
-    Acceptor(Socket& sk);
+    explicit Acceptor(Socket& sk);
     void run() override;
     void reap_dead();
     void kill_all();

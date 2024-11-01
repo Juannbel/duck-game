@@ -1,12 +1,13 @@
 #ifndef SERVER_CLIENT_H
 #define SERVER_CLIENT_H
 
-#include "receiver.h"
 #include "common/blocking_queue.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
-#include "server_protocol.h"
+
 #include "games_monitor.h"
+#include "receiver.h"
+#include "server_protocol.h"
 
 class ServerClient {
 private:

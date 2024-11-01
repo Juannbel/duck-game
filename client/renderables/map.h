@@ -2,6 +2,7 @@
 #define RENDERABLE_MAP_H
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -22,7 +23,7 @@ private:
     static std::unordered_map<BlockType, std::string> block_to_string;
 
 public:
-    RenderableMap(const Map& map_dto);
+    explicit RenderableMap(const Map& map_dto);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 

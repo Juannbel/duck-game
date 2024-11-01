@@ -7,27 +7,23 @@
 
 const uint8_t AK_CD = TICKS / 6;
 
-GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
-    ammo = 2; 
+GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
+    ammo = 2;
     it_to_shoot = 0;
 }
 
 // void GrenadeG::start_shooting() {}
 // void GrenadeG::stop_shooting() {}
-void GrenadeG::update_bullets(DuckPlayer& player) {
-    add_bullet(player);
-}
+void GrenadeG::update_bullets(DuckPlayer& player) { add_bullet(player); }
 
-BananaG::BananaG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
-    ammo = 2; 
+BananaG::BananaG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
+    ammo = 2;
     it_to_shoot = 0;
 }
 
 // void BananaG::start_shooting() {}
 // void BananaG::stop_shooting() {}
-void BananaG::update_bullets(DuckPlayer& player) {
-    add_bullet(player);
-}
+void BananaG::update_bullets(DuckPlayer& player) { add_bullet(player); }
 
 PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
     ammo = 12 * 3;
@@ -35,14 +31,14 @@ PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets): GunEntity(gun, bul
     initial_angle = 0;
     inaccuracy = 10;
     bullets_to_shoot = 3;
-    it_to_reload = TICKS/2;
+    it_to_reload = TICKS / 2;
     it_reloading = it_to_reload;
 }
 
 // void PewPewLaserG::start_shooting() { trigger_pulled = true; }
 // void PewPewLaserG::stop_shooting() { trigger_pulled = false; }
 void PewPewLaserG::update_bullets(DuckPlayer& player) {
-    if(ammo == 0) { 
+    if (ammo == 0) {
         player.drop_collectable();
         return;
     }
@@ -50,19 +46,19 @@ void PewPewLaserG::update_bullets(DuckPlayer& player) {
 }
 
 
-LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
-    ammo = 10; 
+LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
+    ammo = 10;
     it_to_shoot = 10;
     it_since_shoot = it_to_shoot;
     initial_angle = 0;
     inaccuracy = 10;
-    it_to_reload = TICKS/2;
+    it_to_reload = TICKS / 2;
     it_reloading = it_to_reload;
 }
 
 // void LaserRifleG::start_shooting() {}
 void LaserRifleG::update_bullets(DuckPlayer& player) {
-    if(ammo == 0) { 
+    if (ammo == 0) {
         player.drop_collectable();
         return;
     }
@@ -71,13 +67,13 @@ void LaserRifleG::update_bullets(DuckPlayer& player) {
 // void LaserRifleG::stop_shooting() {}
 
 
-Ak47G::Ak47G(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
-    ammo = 30; 
+Ak47G::Ak47G(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
+    ammo = 30;
     it_to_shoot = 8;
     it_since_shoot = it_to_shoot;
     initial_angle = 0;
     inaccuracy = 15;
-    it_to_reload = TICKS/2;
+    it_to_reload = TICKS / 2;
     it_reloading = it_to_reload;
 }
 
@@ -90,7 +86,7 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
 // }
 
 void Ak47G::update_bullets(DuckPlayer& player) {
-    if(ammo == 0) { 
+    if (ammo == 0) {
         player.drop_collectable();
         return;
     }
@@ -110,7 +106,7 @@ DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets): GunEntity(gun,
 // void DuelingPistolG::start_shooting() {}
 // void DuelingPistolG::stop_shooting() {}
 void DuelingPistolG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) { 
+    if (ammo == 0) {
         player.drop_collectable();
         return;
     }
@@ -130,15 +126,15 @@ CowboyPistolG::CowboyPistolG(Gun& gun, BulletManager* bullets): GunEntity(gun, b
 // void CowboyPistolG::start_shooting() {}
 // void CowboyPistolG::stop_shooting() {}
 void CowboyPistolG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) { 
+    if (ammo == 0) {
         player.drop_collectable();
         return;
     }
     add_bullet(player);
 }
 
-MagnumG::MagnumG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
-    ammo = 6; 
+MagnumG::MagnumG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
+    ammo = 6;
     it_to_shoot = 0;
     initial_angle = 0;
     inaccuracy = 10;
@@ -149,27 +145,27 @@ MagnumG::MagnumG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
 // void MagnumG::start_shooting() {}
 // void MagnumG::stop_shooting() {}
 void MagnumG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) { 
+    if (ammo == 0) {
         player.drop_collectable();
         return;
     }
     add_bullet(player);
 }
 
-ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
-    ammo = 2*6; 
+ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
+    ammo = 2 * 6;
     it_to_shoot = 0;
     initial_angle = 0;
     inaccuracy = 30;
     bullets_to_shoot = 6;
-    it_to_reload = TICKS/2; 
-    it_reloading = it_to_reload; 
+    it_to_reload = TICKS / 2;
+    it_reloading = it_to_reload;
 }
 
 // void ShootgunG::start_shooting() {}
 // void ShootgunG::stop_shooting() {}
 void ShootgunG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) { 
+    if (ammo == 0) {
         player.drop_collectable();
         return;
     }
@@ -178,26 +174,24 @@ void ShootgunG::update_bullets(DuckPlayer& player) {
     }
 }
 
-SniperG::SniperG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
-    ammo = 3; 
+SniperG::SniperG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
+    ammo = 3;
     inaccuracy = 0;
-    it_to_reload =  TICKS/2;
+    it_to_reload = TICKS / 2;
     it_reloading = it_to_reload;
 }
 
 // void SniperG::start_shooting() {}
 // void SniperG::stop_shooting() {}
 void SniperG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) { 
+    if (ammo == 0) {
         player.drop_collectable();
         return;
     }
     add_bullet(player);
 }
 
-HelmetG::HelmetG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
-    ammo = 1; 
-}
+HelmetG::HelmetG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 1; }
 
 // void HelmetG::start_shooting() {}
 // void HelmetG::stop_shooting() {}
@@ -207,9 +201,7 @@ void HelmetG::update_bullets(DuckPlayer& player) {
     }
 }
 
-ArmorG::ArmorG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
-    ammo = 1; 
-}
+ArmorG::ArmorG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { ammo = 1; }
 
 // void ArmorG::start_shooting() {}
 // void ArmorG::stop_shooting() {}

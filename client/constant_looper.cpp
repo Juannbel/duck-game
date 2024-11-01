@@ -67,13 +67,15 @@ void ConstantLooper::run() try {
 
 
         if (last_snapshot.match_finished) {
-           keep_running = screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
-           if (!keep_running) break;
-           clear_renderables();
-           process_snapshot();
-           map.update(map_dto);
-           camera.update(last_snapshot);
-           continue;
+            keep_running =
+                    screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
+            if (!keep_running)
+                break;
+            clear_renderables();
+            process_snapshot();
+            map.update(map_dto);
+            camera.update(last_snapshot);
+            continue;
         }
 
 
@@ -119,7 +121,7 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 }
 
 void ConstantLooper::process_snapshot() {
-    for (auto& map : last_snapshot.maps) {
+    for (auto& map: last_snapshot.maps) {
         map_dto = map;
     }
     std::unordered_set<uint8_t> ducks_in_snapshot;

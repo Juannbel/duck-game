@@ -1,7 +1,7 @@
 #include "receiver.h"
 
 #include <iostream>
-#include <stdexcept>
+#include <vector>
 
 #include "common/blocking_queue.h"
 #include "common/commands.h"
@@ -14,7 +14,8 @@
 #define CREATE 1
 #define JOIN 2
 
-ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor, Queue<Snapshot>& sender_q, int playerId):
+ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor,
+                               Queue<Snapshot>& sender_q, int playerId):
         protocol(protocol),
         games_monitor(games_monitor),
         playerId(playerId),
@@ -66,27 +67,26 @@ void ServerReceiver::setup_game() {
     int cmd = protocol.receive_cmd();
     if (cmd == CREATE) {
         gameId = games_monitor.player_create_game(playerId, sender_q, std::ref(duck_id));
-        //Espero un input para iniciar el juego
+        // Espero un input para iniciar el juego
         protocol.receive_cmd();
         games_monitor.start_game(gameId);
-    //} else if (cmd == JOIN) {
-    } else { // Para evitar el warning
+        //} else if (cmd == JOIN) {
+    } else {  // Para evitar el warning
         std::vector<int> lobbies = games_monitor.list_lobbies();
-        for (int lobby : lobbies) {
+        for (int lobby: lobbies) {
             protocol.send_lobby_info(lobby);
         }
         if (lobbies.size() == 1) {
             // volver a ejecutar todo (asi me manejo desde cliente), llamado recursivo
             setup_game();
-            return; // Cuando un jugador listaba partidas y no habia, rompia porque se desapilaban las llamadas y seguian
+            return;  // Cuando un jugador listaba partidas y no habia, rompia porque se desapilaban
+                     // las llamadas y seguian
         }
         gameId = protocol.receive_cmd();
-        duck_id = games_monitor.player_join_game(playerId, gameId, sender_q);;
+        duck_id = games_monitor.player_join_game(playerId, gameId, sender_q);
     }
     gameloop_q = games_monitor.get_gameloop_q(gameId);
     sender.send_duck_id(duck_id);
 }
 
-ServerReceiver::~ServerReceiver() {
-    sender.join();
-}
+ServerReceiver::~ServerReceiver() { sender.join(); }

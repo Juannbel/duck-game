@@ -1,4 +1,5 @@
 #include "game.h"
+
 #include <cstdint>
 #include <cstdio>
 
@@ -7,9 +8,7 @@ Game::Game(const int id): gameloop(gameloop_q, sv_msg_queues), id(id) {
     cant_players = 0;
 }
 
-Queue<action>& Game::get_gameloop_queue() {
-    return gameloop_q;
-}
+Queue<action>& Game::get_gameloop_queue() { return gameloop_q; }
 
 uint8_t Game::add_player(int id_player, Queue<Snapshot>& player_sender_queue) {
     if (!open || cant_players == MAX_DUCKS) {
@@ -25,7 +24,7 @@ uint8_t Game::add_player(int id_player, Queue<Snapshot>& player_sender_queue) {
     if (cant_players == MAX_DUCKS) {
         open = false;
     }
-    return game_duck_id; 
+    return game_duck_id;
 }
 
 void Game::start() {
@@ -40,5 +39,5 @@ void Game::delete_player(const int id_player) {
 
 Game::~Game() {
     gameloop.stop();
-    gameloop.join();    
+    gameloop.join();
 }

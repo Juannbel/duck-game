@@ -56,9 +56,7 @@ void Camera::update(const Snapshot& snapshot) {
 }
 
 
-const SDL2pp::Rect& Camera::get_current_rect() {
-    return current_rect;
-}
+const SDL2pp::Rect& Camera::get_current_rect() { return current_rect; }
 
 void Camera::transform_rect(Rect& world_rect) {
     // Transformamos las coordenadas del mundo a las coordenadas de la cámara
@@ -120,7 +118,8 @@ void Camera::update_target(const Snapshot& snapshot) {
     }
 
     // No hay ningun pato vivo, no movemos la camara
-    if (left == std::numeric_limits<int16_t>::max()) return;
+    if (left == std::numeric_limits<int16_t>::max())
+        return;
 
     left -= PADDING;
     top -= PADDING;
