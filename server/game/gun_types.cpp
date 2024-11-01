@@ -34,6 +34,7 @@ PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets): GunEntity(gun, bul
     it_to_shoot = 0;
     initial_angle = 0;
     inaccuracy = 10;
+    bullets_to_shoot = 3;
     it_to_reload = TICKS/2;
     it_reloading = it_to_reload;
 }
@@ -42,7 +43,6 @@ PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets): GunEntity(gun, bul
 // void PewPewLaserG::stop_shooting() { trigger_pulled = false; }
 void PewPewLaserG::update_bullets(DuckPlayer& player) {
     if(ammo == 0) { 
-        destroy(); 
         player.drop_collectable();
         return;
     }
@@ -52,7 +52,8 @@ void PewPewLaserG::update_bullets(DuckPlayer& player) {
 
 LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
     ammo = 10; 
-    it_to_shoot = 15;
+    it_to_shoot = 10;
+    it_since_shoot = it_to_shoot;
     initial_angle = 0;
     inaccuracy = 10;
     it_to_reload = TICKS/2;
@@ -62,7 +63,6 @@ LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets): GunEntity(gun, bulle
 // void LaserRifleG::start_shooting() {}
 void LaserRifleG::update_bullets(DuckPlayer& player) {
     if(ammo == 0) { 
-        destroy(); 
         player.drop_collectable();
         return;
     }
@@ -73,7 +73,8 @@ void LaserRifleG::update_bullets(DuckPlayer& player) {
 
 Ak47G::Ak47G(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
     ammo = 30; 
-    it_to_shoot = 15;
+    it_to_shoot = 8;
+    it_since_shoot = it_to_shoot;
     initial_angle = 0;
     inaccuracy = 15;
     it_to_reload = TICKS/2;
@@ -90,7 +91,6 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
 
 void Ak47G::update_bullets(DuckPlayer& player) {
     if(ammo == 0) { 
-        destroy(); 
         player.drop_collectable();
         return;
     }
@@ -111,7 +111,6 @@ DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets): GunEntity(gun,
 // void DuelingPistolG::stop_shooting() {}
 void DuelingPistolG::update_bullets(DuckPlayer& player) {
     if (ammo == 0) { 
-        destroy(); 
         player.drop_collectable();
         return;
     }
@@ -132,7 +131,6 @@ CowboyPistolG::CowboyPistolG(Gun& gun, BulletManager* bullets): GunEntity(gun, b
 // void CowboyPistolG::stop_shooting() {}
 void CowboyPistolG::update_bullets(DuckPlayer& player) {
     if (ammo == 0) { 
-        destroy(); 
         player.drop_collectable();
         return;
     }
@@ -152,7 +150,6 @@ MagnumG::MagnumG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
 // void MagnumG::stop_shooting() {}
 void MagnumG::update_bullets(DuckPlayer& player) {
     if (ammo == 0) { 
-        destroy(); 
         player.drop_collectable();
         return;
     }
@@ -161,9 +158,11 @@ void MagnumG::update_bullets(DuckPlayer& player) {
 
 ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) { 
     ammo = 2*6; 
+    it_to_shoot = 0;
+    initial_angle = 0;
     inaccuracy = 30;
-    bullets_to_shoot = 12;
-    it_to_reload = TICKS; 
+    bullets_to_shoot = 6;
+    it_to_reload = TICKS/2; 
     it_reloading = it_to_reload; 
 }
 
@@ -171,7 +170,6 @@ ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) 
 // void ShootgunG::stop_shooting() {}
 void ShootgunG::update_bullets(DuckPlayer& player) {
     if (ammo == 0) { 
-        destroy(); 
         player.drop_collectable();
         return;
     }
@@ -191,7 +189,6 @@ SniperG::SniperG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
 // void SniperG::stop_shooting() {}
 void SniperG::update_bullets(DuckPlayer& player) {
     if (ammo == 0) { 
-        destroy(); 
         player.drop_collectable();
         return;
     }
@@ -207,9 +204,6 @@ HelmetG::HelmetG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
 void HelmetG::update_bullets(DuckPlayer& player) {
     if (trigger_pulled && ammo == 1) {
         player.equip_helmet();
-        destroy();
-        player.drop_collectable();
-        --ammo;
     }
 }
 
@@ -222,8 +216,5 @@ ArmorG::ArmorG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
 void ArmorG::update_bullets(DuckPlayer& player) {
     if (trigger_pulled && ammo == 1) {
         player.equip_armor();
-        destroy();
-        player.drop_collectable();
-        --ammo;
     }
 }

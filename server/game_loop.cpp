@@ -64,6 +64,7 @@ void GameLoop::initial_snapshot() {
     game_operator.get_snapshot(actual_status);
     actual_status.maps.push_back(curr_map_dto);
     actual_status.match_finished = false;
+    add_rounds_won(actual_status);
     push_responce(actual_status);
 }
 
@@ -80,6 +81,7 @@ void GameLoop::create_and_push_snapshot(auto& t1) {
     game_operator.get_snapshot(actual_status);
     bool round_finished = check_for_winner(actual_status);
     actual_status.match_finished = round_finished;
+    add_rounds_won(actual_status);
     push_responce(actual_status);
     if (round_finished) {
         std::this_thread::sleep_for(milliseconds(3000));
@@ -88,6 +90,12 @@ void GameLoop::create_and_push_snapshot(auto& t1) {
         t1 = high_resolution_clock::now();
         struct action action;
         while (actions_queue.try_pop(action)) {}
+    }
+}
+
+void GameLoop::add_rounds_won(Snapshot& snapshot) {
+    for (auto& duck : snapshot.ducks) {
+        duck.rounds_won = winners_id_count[duck.duck_id];
     }
 }
 
@@ -117,9 +125,6 @@ bool GameLoop::check_for_winner(Snapshot& actual_status) {
             winners_id_count[winner_id] = 0;
         }
         ++winners_id_count[winner_id];
-        std::cout << "Gano el jugador: " << +winner_id << " con un total de "
-                  << +winners_id_count[winner_id] << " partidas ganadas " << std::endl;
-        
         return true;
     }
     return false;

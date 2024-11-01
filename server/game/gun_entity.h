@@ -48,7 +48,7 @@ public:
 
     virtual void stop_shooting() { 
         trigger_pulled = false; 
-        shooted_bullets = 0;
+        it_since_shoot = it_to_shoot;
     }
 
     void destroy();

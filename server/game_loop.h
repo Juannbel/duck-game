@@ -35,6 +35,8 @@ private:
 
     void create_and_push_snapshot(auto& t1);
 
+    void add_rounds_won(Snapshot& snapshot);
+
     void push_responce(Snapshot& actual_status);
 
     bool check_for_winner(Snapshot&);
