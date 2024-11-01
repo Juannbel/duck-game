@@ -22,11 +22,11 @@ private:
     GameOperator game_operator;
     uint8_t match_number;
     std::map<uint8_t, uint8_t> winners_id_count;
-    uint8_t players_quantity;
     YAMLLoader map_loader;
     std::vector<std::string> paths_to_maps;
     Map curr_map_dto;
-    
+    std::vector<uint8_t> duck_ids;
+
     void initialice_new_round();
     
     void initial_snapshot();
@@ -34,6 +34,8 @@ private:
     void pop_and_process_all();
 
     void create_and_push_snapshot(auto& t1);
+
+    void add_rounds_won(Snapshot& snapshot);
 
     void push_responce(Snapshot& actual_status);
 
@@ -49,6 +51,7 @@ public:
     virtual void run() override;
 
     uint8_t add_player();
+    void delete_duck(int duck_id);
 
     ~GameLoop();
 

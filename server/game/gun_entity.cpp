@@ -27,9 +27,12 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets):
         x(gun.x),
         y(gun.y),
         ammo(),
+        range(),
+        inaccuracy(),
         trigger_pulled(),
         ready_to_shoot(),
         it_since_shoot(),
+        it_to_shoot(),
         bullets(bullets) {}
 
 GunEntity::GunEntity(GunEntity&& old):
@@ -65,7 +68,7 @@ int16_t GunEntity::get_rand_angle() {
 }
 
 void GunEntity::add_bullet(DuckPlayer& player) {
-    if ((trigger_pulled && it_since_shoot > it_to_shoot) || bullets_to_shoot > shooted_bullets) {
+    if ((trigger_pulled && it_since_shoot > it_to_shoot) || (bullets_to_shoot > shooted_bullets && shooted_bullets > 0)) {
         Duck status = player.get_status();
         int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x-BULLET_HITBOX_WIDTH;
         int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
@@ -82,8 +85,12 @@ void GunEntity::add_bullet(DuckPlayer& player) {
         BulletInfo bullet = {bullet_status, hitbox, 3, 50};
         bullets->add_bullet(bullet);
         it_since_shoot = 0;
+        it_reloading = 0;
         ++shooted_bullets;
         --ammo;
+    }
+    if (bullets_to_shoot == shooted_bullets) {
+        shooted_bullets = 0;
     }
     if (it_to_shoot > 0) {
         ++it_since_shoot;

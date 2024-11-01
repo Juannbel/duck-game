@@ -13,7 +13,7 @@
 const float GUN_FALL_SPEED = 120.0f / TICKS;
 const int16_t NEAR_CELLS = 3;
 
-CollectablesManager::CollectablesManager(CollisionChecks& collision, std::vector<DuckPlayer>& ducks):
+CollectablesManager::CollectablesManager(CollisionChecks& collision, std::vector<std::pair<DuckPlayer, int>>& ducks):
         collisions(collision), bullets(collision, ducks), collectable_id() {}
 
 void CollectablesManager::reset_collectables() {

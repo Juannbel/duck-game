@@ -17,6 +17,7 @@ private:
     Queue<action>* gameloop_q;
     GamesMonitor& games_monitor;
     int playerId;
+    int gameId;
     uint8_t duck_id;
     Queue<Snapshot>& sender_q;
     ServerSender sender;
