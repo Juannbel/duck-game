@@ -28,7 +28,7 @@ private:
     std::vector<uint8_t> duck_ids;
 
     void initialice_new_round();
-    
+
     void initial_snapshot();
 
     void pop_and_process_all();
@@ -51,7 +51,7 @@ public:
     virtual void run() override;
 
     uint8_t add_player();
-    void delete_duck(int duck_id);
+    void delete_duck(uint8_t duck_id);
 
     ~GameLoop();
 

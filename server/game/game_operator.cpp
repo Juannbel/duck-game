@@ -1,6 +1,7 @@
 #include "game_operator.h"
 
 #include <cstdint>
+#include <iostream>
 #include <random>
 #include <utility>
 
@@ -33,26 +34,16 @@ void GameOperator::initialize_players(const std::vector<uint8_t>& duck_ids) {
     std::vector<std::pair<int16_t, int16_t>> spawn_points = {
         {50, 25}, {MAP_WIDTH_PIXELS - 50, 50}, {50, 25}, {MAP_WIDTH_PIXELS - 50, 200}};
     players.clear();
-    duck_id_to_index.clear();
+
     for (uint8_t i = 0; i < duck_ids.size(); ++i) {
         DuckPlayer player(collectables, collisions);
         player.set_coordenades_and_id(spawn_points[i].first, spawn_points[i].second, duck_ids[i]);
-        players.emplace_back(std::move(player), duck_ids[i]);
-        duck_id_to_index[duck_ids[i]] = i;
+        players.emplace(duck_ids[i], std::move(player));
     }
 }
 
-void GameOperator::delete_duck_player(int id_duck) {
-    auto it = duck_id_to_index.find(id_duck);
-    if (it != duck_id_to_index.end()) {
-        size_t index = it->second;
-        players.erase(players.begin() + index);
-        duck_id_to_index.erase(it);
-        // Actualizar el mapa para los índices restantes
-        for (size_t i = index; i < players.size(); ++i) {
-            duck_id_to_index[players[i].second] = i;
-        }
-    }
+void GameOperator::delete_duck_player(uint8_t id_duck) {
+    players.erase(id_duck);
 }
 
 void GameOperator::initialize_game(Map& map_dto, const std::vector<uint8_t>& duck_ids) {
@@ -62,43 +53,40 @@ void GameOperator::initialize_game(Map& map_dto, const std::vector<uint8_t>& duc
 }
 
 void GameOperator::process_action(action& action) {
-    auto it = duck_id_to_index.find(action.duck_id);
-    if (it != duck_id_to_index.end()) {
-        DuckPlayer& player = players[it->second].first;
-        switch (action.command) {
-            case StartMovingRight:
-            player.run(true);
+    DuckPlayer& player = players.at(action.duck_id);
+    switch (action.command) {
+        case StartMovingRight:
+        player.run(true);
+        break;
+        case StartMovingLeft:
+        player.run(false);
+        break;
+        case StopMoving:
+        player.stop_running();
+        break;
+        case StartShooting:
+            player.shoot();
+        break;
+        case StopShooting:
+            player.stop_shooting();
+        break;
+        case LayDown:
+            player.lay_down();
+        break;
+        case StandUp:
+            player.stand_up();
+        break;
+        case Jump:
+            player.jump();
+        break;
+        case StopJump:
+            player.stop_jump();
+        break;
+        case PickUp:
+            check_spawn_picked(player.drop_and_pickup());
+        break;
+        default:
             break;
-            case StartMovingLeft:
-            player.run(false);
-            break;
-            case StopMoving:
-            player.stop_running();
-            break;
-            case StartShooting:
-                player.shoot();
-            break;
-            case StopShooting:
-                player.stop_shooting();
-            break;
-            case LayDown:
-                player.lay_down();
-            break;
-            case StandUp:
-                player.stand_up();
-            break;
-            case Jump:
-                player.jump();
-            break;
-            case StopJump:
-                player.stop_jump();
-            break;
-            case PickUp:
-                check_spawn_picked(player.drop_and_pickup());
-            break;
-            default:
-                break;
-        }
     }
 }
 
@@ -116,9 +104,9 @@ void GameOperator::check_spawn_picked(uint32_t id) {
 }
 
 void GameOperator::update_game_status() {
-    for (auto& duck: players) {
-        duck.first.move_duck();
-        duck.first.update_gun_status();
+    for (auto& [id, duck]: players) {
+        duck.move_duck();
+        duck.update_gun_status();
     }
     // Actualizar la posicion de las balas y vida de los patos si les pegan
     verify_spawn();
@@ -153,8 +141,8 @@ void GameOperator::verify_spawn() {
 }
 
 void GameOperator::get_snapshot(Snapshot& snapshot) {
-    for (auto& duck: players) {
-        snapshot.ducks.push_back(duck.first.get_status());
+    for (auto& [id, duck]: players) {
+        snapshot.ducks.push_back(duck.get_status());
     }
     collectables.add_guns_to_snapshot(snapshot);
 }

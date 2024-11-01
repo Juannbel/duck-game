@@ -139,9 +139,14 @@ uint8_t GameLoop::add_player() {
     return duck_id;
 }
 
-void GameLoop::delete_duck(const int duck_id) {
+void GameLoop::delete_duck(const uint8_t duck_id) {
     game_operator.delete_duck_player(duck_id);
     duck_ids.erase(duck_ids.begin() + duck_id);
+    // auto it = std::find(duck_ids.begin(), duck_ids.end(), duck_id);
+    // if (it != duck_ids.end()) {
+    //     duck_ids.erase(it);
+    // }
+
     if (duck_ids.size() <= 1) {
         // TODO: ver como borrar el game
     }

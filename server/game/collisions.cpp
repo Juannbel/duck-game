@@ -1,5 +1,4 @@
 #include "collisions.h"
-#include <iostream>
 
 #include "common/map_dto.h"
 #include "common/shared_constants.h"
@@ -33,7 +32,7 @@ bool CollisionChecks::out_of_map(float x, float y) {
 bool check_collision_with_no_solid(bool vertical_collision, float new_y, Rectangle &entity, Rectangle& block_hb) {
     if (new_y < entity.coords.y && vertical_collision) {
         return true;
-    } else if (new_y >= entity.coords.y && vertical_collision 
+    } else if (new_y >= entity.coords.y && vertical_collision
             && entity.coords.y+entity.height > block_hb.coords.y) {
         return true;
     }

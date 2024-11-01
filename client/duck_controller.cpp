@@ -1,4 +1,5 @@
 #include "duck_controller.h"
+#include <algorithm>
 
 DuckController::DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot,
                                ControlScheme controls):
@@ -71,7 +72,9 @@ void DuckController::handle_key_up(const SDL_Event& event) {
 }
 
 void DuckController::process_event(const SDL_Event& event) {
-    if (snapshot.ducks[duck_id].is_dead)
+    auto it = std::find_if(snapshot.ducks.begin(), snapshot.ducks.end(),
+                           [this](const Duck& duck) { return duck.duck_id == duck_id; });
+    if (it == snapshot.ducks.end() || it->is_dead)
         return;
 
     if (event.type == SDL_KEYDOWN) {

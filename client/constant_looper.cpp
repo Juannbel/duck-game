@@ -122,11 +122,21 @@ void ConstantLooper::process_snapshot() {
     for (auto& map : last_snapshot.maps) {
         map_dto = map;
     }
+    std::unordered_set<uint8_t> ducks_in_snapshot;
     for (auto& duck: last_snapshot.ducks) {
+        ducks_in_snapshot.insert(duck.duck_id);
         if (ducks_renderables.find(duck.duck_id) == ducks_renderables.end()) {
             ducks_renderables[duck.duck_id] = std::make_unique<RenderableDuck>(duck.duck_id);
         }
         ducks_renderables[duck.duck_id]->update(duck);
+    }
+
+    for (auto it = ducks_renderables.begin(); it != ducks_renderables.end();) {
+        if (ducks_in_snapshot.find(it->first) == ducks_in_snapshot.end()) {
+            it = ducks_renderables.erase(it);
+        } else {
+            ++it;
+        }
     }
 
     std::unordered_set<uint32_t> collectables_in_snapshot;

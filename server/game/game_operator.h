@@ -2,6 +2,7 @@
 #define GAME_MANAGER_H
 
 #include <cstdint>
+#include <unordered_map>
 #include <vector>
 
 #include "../action.h"
@@ -23,8 +24,7 @@ struct Spawn {
 
 class GameOperator {
 private:
-    std::vector<std::pair<DuckPlayer, int>> players; // players = vector<pares<DuckPlayer,duck_id>>
-    std::map<int, size_t> duck_id_to_index; // Mapa de duck_id a índice en el vector players
+    std::unordered_map<uint8_t, DuckPlayer> players;
     CollisionChecks collisions;
     CollectablesManager collectables;
     std::vector<Spawn> spawns;
@@ -42,7 +42,7 @@ public:
     void update_game_status();
 
     void get_snapshot(Snapshot& snapshot);
-    void delete_duck_player(int id_duck);
+    void delete_duck_player(uint8_t id_duck);
     ~GameOperator();
 };
 

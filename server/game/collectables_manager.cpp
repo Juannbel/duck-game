@@ -1,4 +1,5 @@
 #include "collectables_manager.h"
+#include <unordered_map>
 #include <vector>
 
 #include "common/shared_constants.h"
@@ -13,7 +14,7 @@
 const float GUN_FALL_SPEED = 120.0f / TICKS;
 const int16_t NEAR_CELLS = 3;
 
-CollectablesManager::CollectablesManager(CollisionChecks& collision, std::vector<std::pair<DuckPlayer, int>>& ducks):
+CollectablesManager::CollectablesManager(CollisionChecks& collision, std::unordered_map<uint8_t, DuckPlayer>& ducks):
         collisions(collision), bullets(collision, ducks), collectable_id() {}
 
 void CollectablesManager::reset_collectables() {
