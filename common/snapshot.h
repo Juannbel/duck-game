@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <sys/types.h>
+
 #include "map_dto.h"
 
 #define MAX_DUCKS 4
@@ -77,6 +78,7 @@ struct Bullet {
 } __attribute__((packed));
 
 struct Snapshot {
+    // cppcheck-suppress unusedStructMember
     bool match_finished = true;  // each match has five rounds.
     std::vector<Duck> ducks;
     std::vector<Gun> guns;

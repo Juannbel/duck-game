@@ -46,9 +46,9 @@ public:
 
     virtual void update_bullets(DuckPlayer& player) = 0;
 
-    virtual void stop_shooting() { 
-        trigger_pulled = false; 
-        shooted_bullets = 0;
+    virtual void stop_shooting() {
+        trigger_pulled = false;
+        it_since_shoot = it_to_shoot;
     }
 
     void destroy();

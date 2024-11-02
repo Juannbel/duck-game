@@ -4,8 +4,8 @@
 #include <exception>
 #include <utility>
 
-#include "server_client.h"
 #include "games_monitor.h"
+#include "server_client.h"
 
 Acceptor::Acceptor(Socket& sk): sk(sk) {}
 
@@ -50,6 +50,4 @@ void Acceptor::kill_all() {
     players.clear();
 }
 
-int Acceptor::get_clients_count() {
-    return players.size();
-}
+int Acceptor::get_clients_count() { return players.size(); }

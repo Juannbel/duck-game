@@ -3,13 +3,15 @@
 
 #include <cstdint>
 #include <map>
+#include <string>
+#include <vector>
 
 #include "common/blocking_queue.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 #include "common/thread.h"
 #include "game/game_operator.h"
-#include "server/maps/yaml.h"
+#include "game/map_loader.h"
 
 #include "action.h"
 #include "list_monitor.h"
@@ -21,20 +23,24 @@ private:
     GameOperator game_operator;
     uint8_t match_number;
     std::map<uint8_t, uint8_t> winners_id_count;
-    uint8_t players_quantity;
-    //std::vector<std::pair<int16_t, int16_t>> spawn_points;
-    YAMLLoader map_loader;
+    MapLoader map_loader;
+    std::vector<std::string> paths_to_maps;
     Map curr_map_dto;
+    std::vector<uint8_t> duck_ids;
 
-    void load_map();
+    void initialice_new_round();
 
     void initial_snapshot();
 
     void pop_and_process_all();
 
+    void create_and_push_snapshot(auto& t1);
+
+    void add_rounds_won(Snapshot& snapshot);
+
     void push_responce(Snapshot& actual_status);
 
-    void check_for_winner(Snapshot&);
+    bool check_for_winner(Snapshot&);
 
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list);
@@ -46,6 +52,7 @@ public:
     virtual void run() override;
 
     uint8_t add_player();
+    void delete_duck(uint8_t duck_id);
 
     ~GameLoop();
 

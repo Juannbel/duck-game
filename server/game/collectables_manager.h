@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <unordered_map>
 
 #include "common/snapshot.h"
 
@@ -19,13 +20,13 @@ private:
     CollisionChecks& collisions;
     BulletManager bullets;
     uint32_t collectable_id;
-    uint32_t bullet_id;
 
     void new_gun(Gun& gun);
 
 public:
-    explicit CollectablesManager(CollisionChecks& collision, std::vector<DuckPlayer>& ducks);
-
+    explicit CollectablesManager(CollisionChecks& collision,
+                                 std::unordered_map<uint8_t, DuckPlayer>& ducks);
+    void reset_collectables();
     uint32_t get_and_inc_collectable_id();
     void add_gun(Gun& gun);
     void drop_gun(std::shared_ptr<GunEntity> gun, const Rectangle& duck_hitbox);

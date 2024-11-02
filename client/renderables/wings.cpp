@@ -12,6 +12,7 @@ RenderableWings::RenderableWings(uint8_t duck_id):
     load_animation("armed");
     load_animation("laying");
     load_animation("flapping");
+    load_animation("dead");
 
     curr_animation = animations["standing"];
 }
@@ -32,6 +33,8 @@ void RenderableWings::update(const Duck& duck) {
 
     if (duck.is_laying) {
         curr_animation = animations["laying"];
+    } else if (duck.is_dead) {
+        curr_animation = animations["dead"];
     } else if (duck.gun != GunType::None) {
         curr_animation = animations["armed"];
     } else if (duck.is_flapping) {

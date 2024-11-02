@@ -30,7 +30,7 @@ private:
     bool moving_left;
     bool moving_right;
 
-    void handle_key_down(const SDL_Event& event);
+    void handle_key_down(const SDL_Event& event, const Duck& duck);
     void handle_key_up(const SDL_Event& event);
 
 public:

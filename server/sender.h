@@ -1,7 +1,6 @@
 #ifndef SENDER_H
 #define SENDER_H
 
-// TODO: Todos los includes necesarios
 #include "common/blocking_queue.h"
 #include "common/snapshot.h"
 #include "common/thread.h"
@@ -17,7 +16,7 @@ private:
 public:
     ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, int playerId);
 
-    void send_duck_id(const uint8_t &duck_id);
+    void send_duck_id(const uint8_t& duck_id);
 
     void run() override;
 };

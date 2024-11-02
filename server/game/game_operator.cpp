@@ -1,5 +1,7 @@
 #include "game_operator.h"
 
+#include <cstdint>
+#include <iostream>
 #include <random>
 #include <utility>
 
@@ -12,11 +14,11 @@ const int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
 const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 
 
-GameOperator::GameOperator():
-        collisions(), collectables(collisions, players) {}
+GameOperator::GameOperator(): collisions(), collectables(collisions, players) {}
 
 void GameOperator::load_map(Map& map_dto) {
     collisions.load_map(map_dto);
+    spawns.clear();
     Spawn spawn = {200, 200, 0, 50, true, 0};
     spawns.push_back(spawn);
     spawn = {250, 200, 1, 0, true, 0};
@@ -27,20 +29,28 @@ void GameOperator::load_map(Map& map_dto) {
     spawns.push_back(spawn);
 }
 
-void GameOperator::initialize_players(uint8_t players_quantity) {
+void GameOperator::initialize_players(const std::vector<uint8_t>& duck_ids) {
     std::vector<std::pair<int16_t, int16_t>> spawn_points = {
             {50, 25}, {MAP_WIDTH_PIXELS - 50, 50}, {50, 25}, {MAP_WIDTH_PIXELS - 50, 200}};
     players.clear();
-    for (uint8_t i = 0; i < players_quantity; ++i) {
+
+    for (uint8_t i = 0; i < duck_ids.size(); ++i) {
         DuckPlayer player(collectables, collisions);
-        player.set_coordenades_and_id(spawn_points[i].first, spawn_points[i].second, i);
-        players.push_back(std::move(player));
+        player.set_coordenades_and_id(spawn_points[i].first, spawn_points[i].second, duck_ids[i]);
+        players.emplace(duck_ids[i], std::move(player));
     }
 }
 
+void GameOperator::delete_duck_player(uint8_t id_duck) { players.erase(id_duck); }
+
+void GameOperator::initialize_game(Map& map_dto, const std::vector<uint8_t>& duck_ids) {
+    load_map(map_dto);
+    initialize_players(duck_ids);
+    collectables.reset_collectables();
+}
 
 void GameOperator::process_action(action& action) {
-    DuckPlayer& player = players[action.duck_id];
+    DuckPlayer& player = players.at(action.duck_id);
     switch (action.command) {
         case StartMovingRight:
             player.run(true);
@@ -90,9 +100,8 @@ void GameOperator::check_spawn_picked(uint32_t id) {
     }
 }
 
-
 void GameOperator::update_game_status() {
-    for (auto& duck: players) {
+    for (auto& [id, duck]: players) {
         duck.move_duck();
         duck.update_gun_status();
     }
@@ -129,7 +138,7 @@ void GameOperator::verify_spawn() {
 }
 
 void GameOperator::get_snapshot(Snapshot& snapshot) {
-    for (auto& duck: players) {
+    for (auto& [id, duck]: players) {
         snapshot.ducks.push_back(duck.get_status());
     }
     collectables.add_guns_to_snapshot(snapshot);

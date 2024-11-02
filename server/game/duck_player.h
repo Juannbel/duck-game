@@ -24,6 +24,7 @@ private:
     std::shared_ptr<GunEntity> equipped_gun;
 
     void status_after_move(struct Collision& collision);
+    void die();
 
 public:
     DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions);

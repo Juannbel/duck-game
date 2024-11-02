@@ -5,11 +5,12 @@
 #include <yaml-cpp/yaml.h>
 
 #include "client/renderables/animation.h"
-#include "common/snapshot.h"
-#include "config.h"
 #include "common/map_dto.h"
+#include "common/snapshot.h"
 
-#define FPS_BASE 60 // para cuantos fps fueron diseñadas las animaciones
+#include "config.h"
+
+#define FPS_BASE 60  // para cuantos fps fueron diseñadas las animaciones
 
 std::unordered_map<std::string, AnimationData> AnimationDataProvider::frames_data;
 

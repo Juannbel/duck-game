@@ -1,6 +1,7 @@
 #include "server_client.h"
 
 #include <utility>
+
 #include "common/blocking_queue.h"
 
 #define SIZE_QUEUE 0

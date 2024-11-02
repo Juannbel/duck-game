@@ -2,7 +2,10 @@
 #define GAME_H
 
 #include <cstdint>
+#include <map>
+
 #include "../common/blocking_queue.h"
+
 #include "game_loop.h"
 
 class Game {
@@ -11,22 +14,23 @@ private:
     Queue<action> gameloop_q;
     GameLoop gameloop;
     int cant_players = 0;
-    std::map <int, uint8_t> player_to_duck_id;
+    std::map<int, uint8_t> player_to_duck_id;
     bool open = true;
     int id;
+
 public:
-    Game(int id);
+    explicit Game(int id);
 
     Queue<action>& get_gameloop_queue();
-
-    //uint8_t get_duck_id();
 
     void start();
 
     uint8_t add_player(int player_id, Queue<Snapshot>& player_sender_queue);
 
+    void delete_player(const int id_player);
+
     bool is_open() { return open; }
-    
+
     int get_id() { return id; }
 
     ~Game();

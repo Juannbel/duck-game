@@ -1,4 +1,6 @@
 #include "collectables_manager.h"
+
+#include <unordered_map>
 #include <vector>
 
 #include "common/shared_constants.h"
@@ -13,8 +15,20 @@
 const float GUN_FALL_SPEED = 120.0f / TICKS;
 const int16_t NEAR_CELLS = 3;
 
-CollectablesManager::CollectablesManager(CollisionChecks& collision, std::vector<DuckPlayer>& ducks):
+CollectablesManager::CollectablesManager(CollisionChecks& collision,
+                                         std::unordered_map<uint8_t, DuckPlayer>& ducks):
         collisions(collision), bullets(collision, ducks), collectable_id() {}
+
+void CollectablesManager::reset_collectables() {
+    collectable_id = 0;
+    picked_up_guns.clear();
+    for (auto& [id, gun]: guns) {
+        gun.reset();
+    }
+    guns.clear();
+    bullets.clear_bullets();
+}
+
 
 uint32_t CollectablesManager::get_and_inc_collectable_id() { return ++collectable_id; }
 
@@ -22,7 +36,6 @@ void CollectablesManager::new_gun(Gun& gun) {
     uint32_t id = gun.gun_id;
     switch (gun.type) {
         case Grenade:
-
             guns.emplace(id, new GrenadeG(gun, &bullets));
             break;
         case Banana:

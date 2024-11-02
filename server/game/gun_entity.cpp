@@ -4,8 +4,9 @@
 #include <cstdlib>
 #include <random>
 
-#include "duck_player.h"
 #include "common/shared_constants.h"
+
+#include "duck_player.h"
 
 GunEntity::GunEntity(BulletManager* bullets):
         id(),
@@ -27,9 +28,12 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets):
         x(gun.x),
         y(gun.y),
         ammo(),
+        range(),
+        inaccuracy(),
         trigger_pulled(),
         ready_to_shoot(),
         it_since_shoot(),
+        it_to_shoot(),
         bullets(bullets) {}
 
 GunEntity::GunEntity(GunEntity&& old):
@@ -55,19 +59,20 @@ GunEntity& GunEntity::operator=(GunEntity&& old) {
 }
 
 int16_t GunEntity::get_rand_angle() {
-    if (inaccuracy == 0) 
+    if (inaccuracy == 0)
         return 0;
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(-inaccuracy,  inaccuracy);  // 0 es None
+    std::uniform_int_distribution<> dis(-inaccuracy, inaccuracy);  // 0 es None
     return static_cast<int16_t>(dis(gen));
-
 }
 
 void GunEntity::add_bullet(DuckPlayer& player) {
-    if ((trigger_pulled && it_since_shoot > it_to_shoot) || bullets_to_shoot > shooted_bullets) {
+    if ((trigger_pulled && it_since_shoot > it_to_shoot) ||
+        (bullets_to_shoot > shooted_bullets && shooted_bullets > 0)) {
         Duck status = player.get_status();
-        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x-BULLET_HITBOX_WIDTH;
+        int16_t x =
+                status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x - BULLET_HITBOX_WIDTH;
         int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
         int16_t angle = status.facing_right ? 0 : 180;
         angle = status.facing_up ? 90 : angle;
@@ -82,8 +87,14 @@ void GunEntity::add_bullet(DuckPlayer& player) {
         BulletInfo bullet = {bullet_status, hitbox, 3, 50};
         bullets->add_bullet(bullet);
         it_since_shoot = 0;
+        it_reloading = 0;
         ++shooted_bullets;
-        --ammo;
+        if (ammo > 0) {
+            --ammo;
+        }
+    }
+    if (bullets_to_shoot == shooted_bullets) {
+        shooted_bullets = 0;
     }
     if (it_to_shoot > 0) {
         ++it_since_shoot;
