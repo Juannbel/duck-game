@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <map>
 #include <unordered_map>
-#include <vector>
 
 #include <sys/types.h>
 
@@ -18,6 +17,7 @@ struct BulletInfo {
     Rectangle hitbox;
     float speed;
     uint8_t damage;
+    bool is_alive;
 };
 
 
@@ -28,7 +28,7 @@ private:
     CollisionChecks& collisions;
     std::unordered_map<uint8_t, DuckPlayer>& ducks;
 
-    void check_collision_with_ducks(Rectangle& bullet, uint8_t damage);
+    bool check_collision_with_ducks(Rectangle& bullet, uint8_t damage);
 
 public:
     explicit BulletManager(CollisionChecks&, std::unordered_map<uint8_t, DuckPlayer>& ducks);

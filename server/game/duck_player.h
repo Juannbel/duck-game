@@ -43,7 +43,7 @@ public:
     void stop_jump();
     uint32_t drop_and_pickup();
     void drop_collectable();
-    void get_hit(Rectangle& bullet, uint8_t damage);
+    bool get_hit(Rectangle& bullet, uint8_t damage);
     void knockback();
     Duck get_status();
     Rectangle& get_hitbox();

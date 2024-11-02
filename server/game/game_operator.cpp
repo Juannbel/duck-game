@@ -1,7 +1,6 @@
 #include "game_operator.h"
 
 #include <cstdint>
-#include <iostream>
 #include <random>
 #include <utility>
 
