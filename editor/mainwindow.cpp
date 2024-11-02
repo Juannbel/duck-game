@@ -7,8 +7,13 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , scene(new QGraphicsScene(this))
-    , grid(MAP_WIDTH_BLOCKS, QVector<Block>(MAP_HEIGHT_BLOCKS, {Empty, false}))
 {
+    map_dto.theme = 0;
+    for(int i = 0; i< MAP_HEIGHT_BLOCKS;i++){
+        for(int j = 0; j< MAP_WIDTH_BLOCKS;j++){
+            map_dto.blocks[i][j] = {Empty,false};
+        }
+    }
     ui->setupUi(this);
     ui->graphicsView->setScene(scene);
 
@@ -16,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     loadTiles();
     renderGrid();
-    updateThemeSelector(selectedThemeIndex);
+    updateThemeSelector(map_dto.theme);
 
     connect(ui->tileSelector, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::onTileSelected);
 
@@ -73,7 +78,7 @@ void MainWindow::updateThemeSelector(int themeIndex) {
         ui->tileSelector->addItem(tiles[2], "Floor2");
         ui->tileSelector->addItem(tiles[3], "Floor3");
         ui->tileSelector->addItem(tiles[4], "Base1");
-        selectedThemeIndex = themeIndex;
+        map_dto.theme = themeIndex;
     }
     renderGrid();
 }
@@ -89,29 +94,21 @@ void MainWindow::renderGrid() {
         scene->addLine(0, y * TILE_SIZE, MAP_WIDTH_BLOCKS * TILE_SIZE, y * TILE_SIZE, QPen(Qt::black, 1)); // Línea horizontal
     }
 
-    for (int x = 0; x < MAP_WIDTH_BLOCKS; ++x) {
-        for (int y = 0; y < MAP_HEIGHT_BLOCKS; ++y) {
-            Block block = grid[x][y];
+    for (int x = 0; x <MAP_HEIGHT_BLOCKS ; ++x) {
+        for (int y = 0; y < MAP_WIDTH_BLOCKS; ++y) {
+            Block block = map_dto.blocks[x][y];
             if (block.type == Empty) {
                 continue;
             }
 
             int tileIndex = static_cast<int>(block.type);
-            int offset = ((MAP_THEMES + 1) * selectedThemeIndex);
+            int offset = ((MAP_THEMES + 1) * map_dto.theme);
 
             QGraphicsPixmapItem *item = scene->addPixmap(grassTextures[tileIndex + offset]);
             item->setPos(x * TILE_SIZE, y * TILE_SIZE);
 
             if (!block.solid) {
                 item->setOpacity(0.5);
-                // QGraphicsRectItem* border = scene->addRect(
-                //     x * TILE_SIZE,
-                //     y * TILE_SIZE,
-                //     TILE_SIZE,
-                //     TILE_SIZE,
-                //     QPen(Qt::red, 2)
-                // );
-                // border->setZValue(1);
             }
         }
     }
@@ -140,34 +137,30 @@ void MainWindow::onGridClicked(QPoint pos) {
     int gridY = pos.y() / TILE_SIZE;
 
     if (gridX >= 0 && gridX < MAP_WIDTH_BLOCKS && gridY >= 0 && gridY < MAP_HEIGHT_BLOCKS) {
-        Block &block = grid[gridX][gridY];
+        Block &block = map_dto.blocks[gridX][gridY];
 
         if (block.type == Empty) {
             placeTile(gridX, gridY, selectedTileIndex, true);
-            qDebug() << "Nuevo bloque colocado en (" << gridX << "," << gridY << ") solid:" << grid[gridX][gridY].solid;
+            qDebug() << "Nuevo bloque colocado en (" << gridX << "," << gridY << ") solid:" << map_dto.blocks[gridX][gridY].solid;
         } else if (block.type == selectedTileIndex) {
             block.solid = !block.solid;
             qDebug() << "Cambiando solidez en (" << gridX << "," << gridY << ") a:" << block.solid;
         } else {
             placeTile(gridX, gridY, selectedTileIndex, true);
-            qDebug() << "Reemplazando bloque en (" << gridX << "," << gridY << ") solid:" << grid[gridX][gridY].solid;
+            qDebug() << "Reemplazando bloque en (" << gridX << "," << gridY << ") solid:" << map_dto.blocks[gridX][gridY].solid;
         }
 
         renderGrid();
 
         qDebug() << "Estado final del bloque en (" << gridX << "," << gridY << "):"
-                 << " tipo:" << static_cast<int>(grid[gridX][gridY].type)
-                 << " solid:" << grid[gridX][gridY].solid;
+                 << " tipo:" << static_cast<int>(map_dto.blocks[gridX][gridY].type)
+                 << " solid:" << map_dto.blocks[gridX][gridY].solid;
     }
 }
 
 void MainWindow::placeTile(int x, int y, BlockType block_type, bool solid) {
     qDebug() << "Colocando bloque "<<static_cast<int>(block_type);
-    // grid[x][y] = {block_type, solid};
-    //
-    Block& block = grid[x][y];
-    block.type = block_type;
-    block.solid = solid;
+    map_dto.blocks[x][y] = {block_type, solid};
 }
 
 void MainWindow::on_saveMapButton_clicked()
@@ -191,13 +184,13 @@ void MainWindow::saveToYaml() {
     YAML::Node root;
     root["width"] = 35;
     root["height"] = 20;
-    root["theme"] = selectedThemeIndex;
+    root["theme"] = map_dto.theme;
 
     YAML::Node blocksNode = root["blocks"];
 
-    for (int i = 0; i < grid.size(); ++i) {
-        for (int j = 0; j < grid[i].size(); ++j) {
-            Block &block = grid[i][j];
+    for (int i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
+        for (int j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
+            Block &block = map_dto.blocks[i][j];
             if (block.type != Empty) {
                 YAML::Node blockNode;
                 blockNode["x"] = i;

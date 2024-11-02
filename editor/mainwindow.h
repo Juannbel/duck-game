@@ -15,7 +15,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <yaml-cpp/yaml.h>
-#include "common/map_dto.h"
+#include "../common/map_dto.h"
 #include <QFileDialog>
 
 const int TILE_SIZE = 16;
@@ -40,10 +40,9 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     QVector<QPixmap> grassTextures;
-    QVector<QVector<Block>> grid;
-    int selectedThemeIndex = 0;
     BlockType selectedTileIndex = Empty;
     QMap<int, QVector<QIcon>> themeTiles;
+    Map map_dto;
 
     void saveToYaml();
     std::string blockTypeToString(BlockType type);
