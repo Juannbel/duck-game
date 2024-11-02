@@ -40,7 +40,7 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     QVector<QPixmap> grassTextures;
-    QVector<QVector<BlockType>> grid;
+    QVector<QVector<Block>> grid;
     int selectedThemeIndex = 0;
     BlockType selectedTileIndex = Empty;
     QMap<int, QVector<QIcon>> themeTiles;
@@ -52,7 +52,7 @@ private:
     void loadThemeTiles(uint8_t theme);
     void loadTiles();
     void renderGrid();
-    void placeTile(int x, int y, BlockType block_type);
+    void placeTile(int x, int y, BlockType block_type, bool solid);
     void updateTileTexture(int x, int y);
     bool eventFilter(QObject *watched, QEvent *event) override;
 };

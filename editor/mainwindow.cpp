@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , scene(new QGraphicsScene(this))
-    , grid(MAP_WIDTH_BLOCKS, QVector<BlockType>(MAP_HEIGHT_BLOCKS, Empty))
+    , grid(MAP_WIDTH_BLOCKS, QVector<Block>(MAP_HEIGHT_BLOCKS, {Empty, false}))
 {
     ui->setupUi(this);
     ui->graphicsView->setScene(scene);
@@ -91,14 +91,27 @@ void MainWindow::renderGrid() {
 
     for (int x = 0; x < MAP_WIDTH_BLOCKS; ++x) {
         for (int y = 0; y < MAP_HEIGHT_BLOCKS; ++y) {
-            if(grid[x][y] == Empty)
+            Block block = grid[x][y];
+            if (block.type == Empty) {
                 continue;
-            int tileIndex = static_cast<int>(grid[x][y]);
-            if (tileIndex >= 0) {
-                int offset = ((MAP_THEMES + 1) * selectedThemeIndex);
-                QGraphicsPixmapItem *item = scene->addPixmap(grassTextures[tileIndex+offset]);
-                item->setScale(1);
-                item->setPos(x * TILE_SIZE, y * TILE_SIZE);
+            }
+
+            int tileIndex = static_cast<int>(block.type);
+            int offset = ((MAP_THEMES + 1) * selectedThemeIndex);
+
+            QGraphicsPixmapItem *item = scene->addPixmap(grassTextures[tileIndex + offset]);
+            item->setPos(x * TILE_SIZE, y * TILE_SIZE);
+
+            if (!block.solid) {
+                item->setOpacity(0.5);
+                // QGraphicsRectItem* border = scene->addRect(
+                //     x * TILE_SIZE,
+                //     y * TILE_SIZE,
+                //     TILE_SIZE,
+                //     TILE_SIZE,
+                //     QPen(Qt::red, 2)
+                // );
+                // border->setZValue(1);
             }
         }
     }
@@ -123,21 +136,38 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
 }
 
 void MainWindow::onGridClicked(QPoint pos) {
-    int gridX = pos.x() / (TILE_SIZE);
-    int gridY = pos.y() / (TILE_SIZE);
+    int gridX = pos.x() / TILE_SIZE;
+    int gridY = pos.y() / TILE_SIZE;
 
     if (gridX >= 0 && gridX < MAP_WIDTH_BLOCKS && gridY >= 0 && gridY < MAP_HEIGHT_BLOCKS) {
-        placeTile(gridX, gridY, selectedTileIndex);
+        Block &block = grid[gridX][gridY];
+
+        if (block.type == Empty) {
+            placeTile(gridX, gridY, selectedTileIndex, true);
+            qDebug() << "Nuevo bloque colocado en (" << gridX << "," << gridY << ") solid:" << grid[gridX][gridY].solid;
+        } else if (block.type == selectedTileIndex) {
+            block.solid = !block.solid;
+            qDebug() << "Cambiando solidez en (" << gridX << "," << gridY << ") a:" << block.solid;
+        } else {
+            placeTile(gridX, gridY, selectedTileIndex, true);
+            qDebug() << "Reemplazando bloque en (" << gridX << "," << gridY << ") solid:" << grid[gridX][gridY].solid;
+        }
+
         renderGrid();
-        qDebug() << "Tile colocado en (" << gridX << ", " << gridY << ")";
-    } else {
-        qDebug() << "Clic fuera de los límites de la cuadrícula.";
+
+        qDebug() << "Estado final del bloque en (" << gridX << "," << gridY << "):"
+                 << " tipo:" << static_cast<int>(grid[gridX][gridY].type)
+                 << " solid:" << grid[gridX][gridY].solid;
     }
 }
 
-void MainWindow::placeTile(int x, int y, BlockType block_type) {
+void MainWindow::placeTile(int x, int y, BlockType block_type, bool solid) {
     qDebug() << "Colocando bloque "<<static_cast<int>(block_type);
-    grid[x][y] = block_type;
+    // grid[x][y] = {block_type, solid};
+    //
+    Block& block = grid[x][y];
+    block.type = block_type;
+    block.solid = solid;
 }
 
 void MainWindow::on_saveMapButton_clicked()
@@ -167,13 +197,13 @@ void MainWindow::saveToYaml() {
 
     for (int i = 0; i < grid.size(); ++i) {
         for (int j = 0; j < grid[i].size(); ++j) {
-            BlockType block = grid[i][j];
-            if (block != Empty) {
+            Block &block = grid[i][j];
+            if (block.type != Empty) {
                 YAML::Node blockNode;
                 blockNode["x"] = i;
                 blockNode["y"] = j;
-                blockNode["type"] = blockTypeToString(block);
-                blockNode["solid"] = true;
+                blockNode["type"] = blockTypeToString(block.type);
+                blockNode["solid"] = block.solid;
 
                 blocksNode.push_back(blockNode);
             }

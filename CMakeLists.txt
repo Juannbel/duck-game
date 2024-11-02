@@ -108,7 +108,26 @@ if(TALLER_SERVER)
 endif()
 
 if(TALLER_EDITOR)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    set(CMAKE_AUTOUIC ON)
+
+    add_executable(taller_editor)
+    add_dependencies(taller_editor taller_common)
     add_subdirectory(editor)
+
+    find_package(Qt5 COMPONENTS Widgets REQUIRED)
+    set_project_warnings(taller_editor ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
+
+    find_package(yaml-cpp REQUIRED)
+
+    target_link_libraries(taller_editor
+        PRIVATE
+        Qt5::Widgets
+        yaml-cpp
+        taller_common
+    )
+
 endif()
 
 
