@@ -67,13 +67,15 @@ void ConstantLooper::run() try {
 
 
         if (last_snapshot.match_finished) {
-           keep_running = screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
-           if (!keep_running) break;
-           clear_renderables();
-           process_snapshot();
-           map.update(map_dto);
-           camera.update(last_snapshot);
-           continue;
+            keep_running =
+                    screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
+            if (!keep_running)
+                break;
+            clear_renderables();
+            process_snapshot();
+            map.update(map_dto);
+            camera.update(last_snapshot);
+            continue;
         }
 
 
@@ -119,23 +121,30 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 }
 
 void ConstantLooper::process_snapshot() {
-    for (auto& map : last_snapshot.maps) {
-        map_dto = map;
+    if (!last_snapshot.maps.empty()) {
+        map_dto = last_snapshot.maps[0];
     }
+
+    std::unordered_set<uint8_t> ducks_in_snapshot;
     for (auto& duck: last_snapshot.ducks) {
-        if (ducks_renderables.find(duck.duck_id) == ducks_renderables.end()) {
-            ducks_renderables[duck.duck_id] = std::make_unique<RenderableDuck>(duck.duck_id);
-        }
+        ducks_in_snapshot.insert(duck.duck_id);
+        ducks_renderables.try_emplace(duck.duck_id, std::make_unique<RenderableDuck>(duck.duck_id));
         ducks_renderables[duck.duck_id]->update(duck);
+    }
+
+    for (auto it = ducks_renderables.begin(); it != ducks_renderables.end();) {
+        if (ducks_in_snapshot.find(it->first) == ducks_in_snapshot.end()) {
+            it = ducks_renderables.erase(it);
+        } else {
+            ++it;
+        }
     }
 
     std::unordered_set<uint32_t> collectables_in_snapshot;
     for (const Gun& gun: last_snapshot.guns) {
         collectables_in_snapshot.insert(gun.gun_id);
-        if (collectables_renderables.find(gun.gun_id) == collectables_renderables.end()) {
-            collectables_renderables[gun.gun_id] =
-                    std::make_unique<RenderableCollectable>(gun.gun_id, gun.type);
-        }
+        collectables_renderables.try_emplace(
+                gun.gun_id, std::make_unique<RenderableCollectable>(gun.gun_id, gun.type));
         collectables_renderables[gun.gun_id]->update(gun);
     }
 
@@ -149,14 +158,11 @@ void ConstantLooper::process_snapshot() {
 
     std::unordered_set<uint32_t> bullets_in_snapshot;
     for (const Bullet& bullet: last_snapshot.bullets) {
+        if (bullet.type == Helmet || bullet.type == Armor)
+            continue;
         bullets_in_snapshot.insert(bullet.bullet_id);
-        if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end()) {
-            if (bullet.type == Helmet || bullet.type == Armor)
-                continue;
-            sound_manager.shoot_sound(bullet.type);
-            bullets_renderables[bullet.bullet_id] =
-                    std::make_unique<RenderableBullet>(bullet.bullet_id, bullet.type);
-        }
+        bullets_renderables.try_emplace(bullet.bullet_id, std::make_unique<RenderableBullet>(
+                                                                  bullet.bullet_id, bullet.type));
         bullets_renderables[bullet.bullet_id]->update(bullet);
     }
 

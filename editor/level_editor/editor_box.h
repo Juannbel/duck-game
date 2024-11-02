@@ -2,10 +2,10 @@
 #define EDITOR_BOX_H
 
 #include <QPointF>
+
 #include "map_dto.h"
 
-class EditorBox
-{
+class EditorBox {
 public:
     EditorBox();
     void set_position(int pos);
@@ -16,4 +16,4 @@ private:
     int position;
 };
 
-#endif // EDITOR_BOX_H
+#endif  // EDITOR_BOX_H

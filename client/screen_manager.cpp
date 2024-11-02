@@ -1,27 +1,41 @@
 #include "screen_manager.h"
+
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
+
 #include "client/animation_data_provider.h"
 #include "client/renderables/map.h"
 #include "client/textures_provider.h"
 #include "common/snapshot.h"
+
 #include "config.h"
 
-ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, uint8_t duck_id) :
-    duck_id(duck_id),
-    renderer(renderer),
-    primary_font(DATA_PATH "/fonts/primary.ttf", 30) {};
+ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, uint8_t duck_id):
+        duck_id(duck_id), renderer(renderer), primary_font(DATA_PATH "/fonts/primary.ttf", 30) {}
 
-bool ScreenManager::waiting_screen(Queue<Snapshot> &snapshot_q, Snapshot &last_snapshot) {
+bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
-    AnimationData duck_data(AnimationDataProvider::get_animation_data("duck_" + std::to_string(duck_id) + "_standing"));
+    AnimationData duck_data(AnimationDataProvider::get_animation_data(
+            "duck_" + std::to_string(duck_id) + "_standing"));
 
-    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Your duck id is " + std::to_string(duck_id), SDL_Color{255, 255, 255, 255}));
-    SDL2pp::Texture waiting_0(renderer, primary_font.RenderText_Solid("Waiting for players   ", SDL_Color{255, 255, 255, 255}));
-    SDL2pp::Texture waiting_1(renderer, primary_font.RenderText_Solid("Waiting for players.  ", SDL_Color{255, 255, 255, 255}));
-    SDL2pp::Texture waiting_2(renderer, primary_font.RenderText_Solid("Waiting for players.. ", SDL_Color{255, 255, 255, 255}));
-    SDL2pp::Texture waiting_3(renderer, primary_font.RenderText_Solid("Waiting for players...", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture info(renderer,
+                         primary_font.RenderText_Solid("Your duck id is " + std::to_string(duck_id),
+                                                       SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture waiting_0(
+            renderer,
+            primary_font.RenderText_Solid("Waiting for players   ", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture waiting_1(
+            renderer,
+            primary_font.RenderText_Solid("Waiting for players.  ", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture waiting_2(
+            renderer,
+            primary_font.RenderText_Solid("Waiting for players.. ", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture waiting_3(
+            renderer,
+            primary_font.RenderText_Solid("Waiting for players...", SDL_Color{255, 255, 255, 255}));
 
     std::array<SDL2pp::Texture*, 4> texts = {&waiting_0, &waiting_1, &waiting_2, &waiting_3};
 
@@ -45,17 +59,18 @@ bool ScreenManager::waiting_screen(Queue<Snapshot> &snapshot_q, Snapshot &last_s
         renderer.Clear();
 
         renderer.Copy(*duck_texture, duck_data.frames[0].rect, dst);
-        renderer.Copy(info, SDL2pp::NullOpt, SDL2pp::Rect(
-            SDL2pp::Point(
-                renderer.GetOutputWidth() / 2 - info.GetSize().x / 2,
-                renderer.GetOutputHeight() / 4 - info.GetSize().y / 2),
-            info.GetSize()));
+        renderer.Copy(
+                info, SDL2pp::NullOpt,
+                SDL2pp::Rect(SDL2pp::Point(renderer.GetOutputWidth() / 2 - info.GetSize().x / 2,
+                                           renderer.GetOutputHeight() / 4 - info.GetSize().y / 2),
+                             info.GetSize()));
 
-        renderer.Copy(*texts[it], SDL2pp::NullOpt, SDL2pp::Rect(
-            SDL2pp::Point(
-                renderer.GetOutputWidth() / 2 - texts[it]->GetSize().x / 2,
-                renderer.GetOutputHeight() / 2 - texts[it]->GetSize().y / 2),
-            texts[it]->GetSize()));
+        renderer.Copy(
+                *texts[it], SDL2pp::NullOpt,
+                SDL2pp::Rect(
+                        SDL2pp::Point(renderer.GetOutputWidth() / 2 - texts[it]->GetSize().x / 2,
+                                      renderer.GetOutputHeight() / 2 - texts[it]->GetSize().y / 2),
+                        texts[it]->GetSize()));
         renderer.Present();
 
         it_since_change++;
@@ -69,21 +84,23 @@ bool ScreenManager::waiting_screen(Queue<Snapshot> &snapshot_q, Snapshot &last_s
     return true;
 }
 
-bool ScreenManager::between_rounds_screen(Queue<Snapshot> &snapshot_q, Snapshot &last_snapshot, RenderableMap& map, Camera& camera) {
+bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
+                                          RenderableMap& map, Camera& camera) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
 
     std::vector<Duck> ducks;
-    for (auto& duck : last_snapshot.ducks) {
-        animations[duck.duck_id] = AnimationDataProvider::get_animation_data("duck_" + std::to_string(duck.duck_id) + "_standing");
+    for (auto& duck: last_snapshot.ducks) {
+        animations[duck.duck_id] = AnimationDataProvider::get_animation_data(
+                "duck_" + std::to_string(duck.duck_id) + "_standing");
         ducks.push_back(duck);
     }
 
-    std::sort(ducks.begin(), ducks.end(), [](const Duck& a, const Duck& b) {
-        return a.rounds_won > b.rounds_won;
-    });
+    std::sort(ducks.begin(), ducks.end(),
+              [](const Duck& a, const Duck& b) { return a.rounds_won > b.rounds_won; });
 
-    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Round finished", SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Round finished",
+                                                                 SDL_Color{255, 255, 255, 255}));
 
     while (!snapshot_q.try_pop(last_snapshot)) {
         SDL_Event event;
@@ -102,14 +119,15 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot> &snapshot_q, Snapshot 
         int start_x = (renderer.GetOutputWidth() - rect_width) / 2;
         int start_y = renderer.GetOutputHeight() / 4;
 
-        renderer.Copy(info, SDL2pp::NullOpt, SDL2pp::Rect(
-            SDL2pp::Point(
-                renderer.GetOutputWidth() / 2 - info.GetSize().x / 2,
-                start_y - 50),
-            info.GetSize()));
+        renderer.Copy(
+                info, SDL2pp::NullOpt,
+                SDL2pp::Rect(SDL2pp::Point(renderer.GetOutputWidth() / 2 - info.GetSize().x / 2,
+                                           start_y - 50),
+                             info.GetSize()));
 
         for (size_t i = 0; i < ducks.size(); ++i) {
-            SDL2pp::Rect duck_rect(start_x, start_y + i * (rect_height + 10), rect_width, rect_height);
+            SDL2pp::Rect duck_rect(start_x, start_y + i * (rect_height + 10), rect_width,
+                                   rect_height);
             render_duck_stat(ducks[i], duck_rect, duck_texture, animations[ducks[i].duck_id]);
         }
 
@@ -120,7 +138,9 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot> &snapshot_q, Snapshot 
     return true;
 }
 
-void ScreenManager::render_duck_stat(Duck& duck, SDL2pp::Rect rect, std::shared_ptr<SDL2pp::Texture> ducks_texture, AnimationData& animation_data) {
+void ScreenManager::render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
+                                     std::shared_ptr<SDL2pp::Texture> ducks_texture,
+                                     AnimationData& animation_data) {
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     renderer.SetDrawColor(0, 0, 0, 160);
     renderer.FillRect(rect);
@@ -134,13 +154,20 @@ void ScreenManager::render_duck_stat(Duck& duck, SDL2pp::Rect rect, std::shared_
 
     renderer.Copy(*ducks_texture, animation_data.frames[0].rect, dst_rect);
 
-    SDL2pp::Texture name_texture(renderer, primary_font.RenderText_Solid("Duck " + std::to_string(duck.duck_id), SDL_Color{255, 255, 255, 255}));
-    renderer.Copy(name_texture, SDL2pp::NullOpt, SDL2pp::Rect(
-        SDL2pp::Point(dst_rect.x + dst_rect.w + 20, rect.y + (rect.h - name_texture.GetSize().y) / 2),
-        name_texture.GetSize()));
+    SDL2pp::Texture name_texture(
+            renderer, primary_font.RenderText_Solid("Duck " + std::to_string(duck.duck_id),
+                                                    SDL_Color{255, 255, 255, 255}));
+    renderer.Copy(name_texture, SDL2pp::NullOpt,
+                  SDL2pp::Rect(SDL2pp::Point(dst_rect.x + dst_rect.w + 20,
+                                             rect.y + (rect.h - name_texture.GetSize().y) / 2),
+                               name_texture.GetSize()));
 
-    SDL2pp::Texture rounds_won_texture(renderer, primary_font.RenderText_Solid(std::to_string(duck.rounds_won), SDL_Color{255, 255, 255, 255}));
-    renderer.Copy(rounds_won_texture, SDL2pp::NullOpt, SDL2pp::Rect(
-        SDL2pp::Point(rect.x + rect.w - rounds_won_texture.GetSize().x - 10, rect.y + (rect.h - rounds_won_texture.GetSize().y) / 2),
-        rounds_won_texture.GetSize()));
+    SDL2pp::Texture rounds_won_texture(
+            renderer, primary_font.RenderText_Solid(std::to_string(duck.rounds_won),
+                                                    SDL_Color{255, 255, 255, 255}));
+    renderer.Copy(
+            rounds_won_texture, SDL2pp::NullOpt,
+            SDL2pp::Rect(SDL2pp::Point(rect.x + rect.w - rounds_won_texture.GetSize().x - 10,
+                                       rect.y + (rect.h - rounds_won_texture.GetSize().y) / 2),
+                         rounds_won_texture.GetSize()));
 }

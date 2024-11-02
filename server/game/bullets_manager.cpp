@@ -1,16 +1,19 @@
 #include "bullets_manager.h"
-#include "duck_player.h"
-
 
 #include <cmath>
 #include <cstdint>
 #include <vector>
+
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
 
+#include "duck_player.h"
+
 const uint8_t bullet_updates_per_it = 3;
 
-BulletManager::BulletManager(CollisionChecks& collisions, std::vector<std::pair<DuckPlayer, int>>& ducks): bullet_id(), collisions(collisions), ducks(ducks) {}
+BulletManager::BulletManager(CollisionChecks& collisions,
+                             std::unordered_map<uint8_t, DuckPlayer>& ducks):
+        bullet_id(), collisions(collisions), ducks(ducks) {}
 
 void BulletManager::clear_bullets() {
     bullet_id = 0;
@@ -24,8 +27,8 @@ void BulletManager::add_bullet(BulletInfo& bullet) {
 }
 
 void BulletManager::check_collision_with_ducks(Rectangle& bullet, uint8_t damage) {
-    for(auto &duck : ducks) {
-        duck.first.get_hit(bullet, damage);
+    for (auto& [id, duck]: ducks) {
+        duck.get_hit(bullet, damage);
     }
 }
 

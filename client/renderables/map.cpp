@@ -1,4 +1,5 @@
 #include "map.h"
+
 #include <string>
 
 #include <SDL2pp/SDL2pp.hh>
@@ -30,10 +31,10 @@ void RenderableMap::render(SDL2pp::Renderer& renderer, Camera& camera) {
     float window_aspect_ratio = (float)window_width / window_height;
 
     if (window_aspect_ratio > texture_aspect_ratio) {
-        background_rect.w = window_width + 2*MARGIN;
+        background_rect.w = window_width + 2 * MARGIN;
         background_rect.h = static_cast<int>(background_rect.w / texture_aspect_ratio);
     } else {
-        background_rect.h = window_height + 2*MARGIN;
+        background_rect.h = window_height + 2 * MARGIN;
         background_rect.w = static_cast<int>(background_rect.h * texture_aspect_ratio);
     }
 
@@ -53,35 +54,29 @@ void RenderableMap::render(SDL2pp::Renderer& renderer, Camera& camera) {
 }
 
 std::unordered_map<BlockType, std::string> RenderableMap::block_to_string = {
-    {Empty, "empty"},
-    {Floor1, "floor_1"},
-    {Floor2, "floor_2"},
-    {Floor3, "floor_3"},
-    {Base1, "base_1"},
-    {Base2, "base_2"},
-    {Base3, "base_3"},
-    {Platform1, "platform_1"},
-    {Platform2, "platform_2"},
-    {Platform3, "platform_3"},
-    {Platform4, "platform_4"},
-    {Wall, "wall"},
-    {HalfFloor, "half_floor"}
-};
+        {Empty, "empty"},          {Floor1, "floor_1"},       {Floor2, "floor_2"},
+        {Floor3, "floor_3"},       {Base1, "base_1"},         {Base2, "base_2"},
+        {Base3, "base_3"},         {Platform1, "platform_1"}, {Platform2, "platform_2"},
+        {Platform3, "platform_3"}, {Platform4, "platform_4"}, {Wall, "wall"},
+        {HalfFloor, "half_floor"}};
 
 void RenderableMap::update(const Map& new_map_dto) {
     map.clear();
-    background_texture = TexturesProvider::get_texture("background_" + std::to_string(new_map_dto.theme));
+    background_texture =
+            TexturesProvider::get_texture("background_" + std::to_string(new_map_dto.theme));
 
-    std::shared_ptr<SDL2pp::Texture> blocks_texture(
-            TexturesProvider::get_texture("blocks"));
+    std::shared_ptr<SDL2pp::Texture> blocks_texture(TexturesProvider::get_texture("blocks"));
     for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
         for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
             auto& block = new_map_dto.blocks[i][j];
-            if (block.type == Empty) continue;
+            if (block.type == Empty)
+                continue;
 
-            AnimationData animation_data(AnimationDataProvider::get_animation_data("blocks_" + std::to_string(new_map_dto.theme) + "_" + block_to_string[block.type]));
+            AnimationData animation_data(AnimationDataProvider::get_animation_data(
+                    "blocks_" + std::to_string(new_map_dto.theme) + "_" +
+                    block_to_string[block.type]));
             // BLOCK_SIZE + 1 para que no haya espacio entre bloques por redondeo
-            SDL2pp::Rect dst_rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE+1, BLOCK_SIZE);
+            SDL2pp::Rect dst_rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE + 1, BLOCK_SIZE);
 
             map.push_back(RenderableBlock(animation_data.frames[0].rect, dst_rect, blocks_texture));
         }

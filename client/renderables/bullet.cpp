@@ -11,7 +11,8 @@ RenderableBullet::RenderableBullet(uint32_t id, GunType type):
         id(id),
         animation(*TexturesProvider::get_texture("bullets"),
                   AnimationDataProvider::get_animation_data("bullets_" + gun_to_string[type])),
-        position(0, 0) {}
+        position(0, 0),
+        angle() {}
 
 uint32_t RenderableBullet::get_id() { return id; }
 

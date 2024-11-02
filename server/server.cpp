@@ -4,9 +4,7 @@
 
 #define EXIT 'q'
 
-Server::Server(const char* port):
-        sk(Socket(port)),
-        thAcceptor(sk) {}
+Server::Server(const char* port): sk(Socket(port)), thAcceptor(sk) {}
 
 void Server::start() {
     thAcceptor.start();

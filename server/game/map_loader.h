@@ -3,12 +3,13 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <common/map_dto.h>
 #include <yaml-cpp/yaml.h>
 
 
-class YAMLLoader {
+class MapLoader {
 private:
     static std::unordered_map<std::string, BlockType> string_to_block;
 

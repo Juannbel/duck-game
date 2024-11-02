@@ -1,6 +1,7 @@
 #include "server_client.h"
 
 #include <utility>
+
 #include "common/blocking_queue.h"
 
 #define SIZE_QUEUE 0
@@ -9,7 +10,8 @@ ServerClient::ServerClient(Socket&& sk, GamesMonitor& games_monitor, int id):
         sk(std::move(sk)),
         sender_q(Queue<Snapshot>(SIZE_QUEUE)),
         protocolo(ServerProtocol(this->sk)),
-        receiver(protocolo, games_monitor, sender_q, id) {}
+        receiver(protocolo, games_monitor, sender_q, id, is_alive),
+        is_alive(true) {}
 
 /* Inicializo los threads sender y receiver, para establecer comunicacion con el cliente */
 void ServerClient::start() {
@@ -24,6 +26,8 @@ void ServerClient::join() {
 }
 
 bool ServerClient::is_dead() { return not is_alive; }
+
+Queue<Snapshot>* ServerClient::get_sender_queue() { return &sender_q; }
 
 void ServerClient::kill() {
     sender_q.close();

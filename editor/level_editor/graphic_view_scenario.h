@@ -1,24 +1,24 @@
 #ifndef GRAPHIC_VIEW_SCENARIO_H
 #define GRAPHIC_VIEW_SCENARIO_H
 #include <QGraphicsScene>
-#include <QSpinBox>
 #include <QGraphicsSceneMouseEvent>
-
+#include <QSpinBox>
 #include <QVector>
-#include "editor_constants.h"
-#include "editor_box.h"
 
-class GraphicViewScenario : public QGraphicsScene
-{
+#include "editor_box.h"
+#include "editor_constants.h"
+
+class GraphicViewScenario: public QGraphicsScene {
 private:
-    QSpinBox *spinBoxX;
-    QSpinBox *spinBoxY;
+    QSpinBox* spinBoxX;
+    QSpinBox* spinBoxY;
     QVector<EditorBox> boxes;
+
 public:
     GraphicViewScenario();
-    void setSpinBox(QSpinBox *spinBoxX, QSpinBox *spinBoxY);
+    void setSpinBox(QSpinBox* spinBoxX, QSpinBox* spinBoxY);
 
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 };
 
-#endif // GRAPHIC_VIEW_SCENARIO_H
+#endif  // GRAPHIC_VIEW_SCENARIO_H

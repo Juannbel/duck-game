@@ -1,13 +1,14 @@
 #include "main_window.h"
-#include "./ui_mainwindow.h"
-#include "./editor_constants.h"
-#include "graphic_view_scenario.h"
+
 #include <QSize>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow),
-    scenario(new GraphicViewScenario())
-{
+#include "./editor_constants.h"
+#include "./ui_mainwindow.h"
+
+#include "graphic_view_scenario.h"
+
+MainWindow::MainWindow(QWidget* parent):
+        QMainWindow(parent), ui(new Ui::MainWindow), scenario(new GraphicViewScenario()) {
     this->ui->setupUi(this);
     this->ui->graphicsView->setScene(this->scenario);
 
@@ -20,10 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->scenario->setSpinBox(this->ui->spinBoxX, this->ui->spinBoxY);
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete scenario;
     delete ui;
 }
-
-
