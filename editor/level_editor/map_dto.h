@@ -3,8 +3,6 @@
 
 #include <cstdint>
 
-#include "editor_constants.h"
-
 #define MAP_THEMES 4
 
 enum BlockType {
@@ -28,13 +26,11 @@ struct Block {
     bool solid;
 } __attribute__((packed));
 
+#define MAP_HEIGHT_BLOCKS 20
+#define MAP_WIDTH_BLOCKS 35
+
 struct Map {
     Block blocks[MAP_HEIGHT_BLOCKS][MAP_WIDTH_BLOCKS];
 } __attribute__((packed));
 
-struct MatchInfo {
-    uint8_t duck_id;
-    Map map;
-} __attribute__((packed));
-
-#endif // MAP_DTO_H
+#endif
