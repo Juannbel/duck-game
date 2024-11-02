@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-DuckController::DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot,
+DuckController::DuckController(int duck_id, Queue<Command>& command_q, Snapshot& snapshot,
                                ControlScheme controls):
         duck_id(duck_id),
         command_q(command_q),
