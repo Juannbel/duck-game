@@ -23,6 +23,7 @@ public:
     void start();
     void join();
     bool is_dead();
+    Queue<Snapshot>* get_sender_queue();
     void kill();
 };
 
