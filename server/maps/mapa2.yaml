@@ -1,0 +1,336 @@
+width: 35
+height: 20
+theme: 0
+blocks:
+  - x: 2
+    y: 12
+    type: floor_2
+    solid: true
+  - x: 3
+    y: 12
+    type: floor_2
+    solid: true
+  - x: 4
+    y: 12
+    type: floor_2
+    solid: true
+  - x: 4
+    y: 13
+    type: base_1
+    solid: true
+  - x: 4
+    y: 14
+    type: base_1
+    solid: true
+  - x: 4
+    y: 15
+    type: base_1
+    solid: true
+  - x: 4
+    y: 16
+    type: floor_1
+    solid: true
+  - x: 5
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 5
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 6
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 6
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 7
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 7
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 7
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 8
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 8
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 8
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 9
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 9
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 9
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 10
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 10
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 10
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 11
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 11
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 11
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 12
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 12
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 12
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 13
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 13
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 13
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 14
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 14
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 14
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 15
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 15
+    y: 12
+    type: floor_2
+    solid: true
+  - x: 15
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 16
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 16
+    y: 12
+    type: floor_2
+    solid: true
+  - x: 16
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 17
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 17
+    y: 12
+    type: floor_2
+    solid: true
+  - x: 17
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 18
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 18
+    y: 12
+    type: floor_2
+    solid: true
+  - x: 18
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 19
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 19
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 19
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 20
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 20
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 20
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 21
+    y: 4
+    type: floor_2
+    solid: true
+  - x: 21
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 21
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 22
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 22
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 23
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 23
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 23
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 24
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 24
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 24
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 25
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 25
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 25
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 26
+    y: 8
+    type: floor_2
+    solid: false
+  - x: 26
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 26
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 27
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 27
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 28
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 28
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 29
+    y: 12
+    type: floor_2
+    solid: false
+  - x: 29
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 30
+    y: 12
+    type: floor_2
+    solid: true
+  - x: 30
+    y: 13
+    type: base_1
+    solid: true
+  - x: 30
+    y: 14
+    type: base_1
+    solid: true
+  - x: 30
+    y: 15
+    type: base_1
+    solid: true
+  - x: 30
+    y: 16
+    type: floor_2
+    solid: true
+  - x: 31
+    y: 12
+    type: floor_2
+    solid: true
+  - x: 32
+    y: 12
+    type: floor_2
+    solid: true
