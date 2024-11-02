@@ -15,10 +15,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <yaml-cpp/yaml.h>
-#include "map_dto.h"
+#include "common/map_dto.h"
 #include <QFileDialog>
-#include <iostream>
-#include <fstream>
 
 const int TILE_SIZE = 16;
 
