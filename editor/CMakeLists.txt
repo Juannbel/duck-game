@@ -25,6 +25,7 @@ target_sources(taller_editor
 # include_directories(${CMAKE_SOURCE_DIR}/../common)
 # find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets yaml-cpp)
 # find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+# add_definitions(-DSERVER_DATA_PATH="${PROJECT_SOURCE_DIR}/../server/maps")
 
 # set(PROJECT_SOURCES
 #         main.cpp

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <QInputDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -184,7 +185,7 @@ void MainWindow::saveToYaml() {
     YAML::Node root;
     root["width"] = 35;
     root["height"] = 20;
-    root["theme"] = map_dto.theme;
+    root["theme"] = static_cast<int>(map_dto.theme);
 
     YAML::Node blocksNode = root["blocks"];
 
@@ -202,21 +203,29 @@ void MainWindow::saveToYaml() {
             }
         }
     }
+    bool ok;
+    QString fileName = QInputDialog::getText(nullptr, "Guardar Mapa",
+                                             "Ingrese el nombre del archivo (sin extensión):",
+                                             QLineEdit::Normal, "", &ok);
 
-    QString filePath = QFileDialog::getSaveFileName(nullptr, "Guardar Mapa", "", "Archivos YAML (*.yaml)");
-    if (filePath.isEmpty()) {
-        std::cerr << "No se seleccionó ningún archivo." << std::endl;
+    if (!ok || fileName.isEmpty()) {
+        std::cerr << "No se ingresó ningún nombre de archivo." << std::endl;
         return;
     }
 
-    if (!filePath.endsWith(".yaml", Qt::CaseInsensitive)) {
-        filePath += ".yaml";
+    if (!fileName.endsWith(".yaml", Qt::CaseInsensitive)) {
+        fileName += ".yaml";
     }
 
+    QString filePath = SERVER_DATA_PATH + static_cast<QString>("/") + fileName;
     std::ofstream outFile(filePath.toStdString());
+    if (!outFile) {
+        std::cerr << "Error al abrir el archivo para escritura." << std::endl;
+        return;
+    }
+
     outFile << root;
     outFile.close();
 
     std::cout << "Archivo guardado con éxito en: " << filePath.toStdString() << std::endl;
-
 }
