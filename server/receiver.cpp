@@ -15,13 +15,14 @@
 #define JOIN 2
 
 ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor,
-                               Queue<Snapshot>& sender_q, int playerId):
+                               Queue<Snapshot>& sender_q, int playerId, std::atomic<bool>& is_alive):
         protocol(protocol),
         games_monitor(games_monitor),
         playerId(playerId),
         duck_id(-1),
         sender_q(sender_q),
-        sender(protocol, sender_q, playerId) {}
+        is_alive(is_alive),
+        sender(protocol, sender_q, playerId, is_alive) {}
 
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
 void ServerReceiver::run() {
@@ -48,7 +49,7 @@ void ServerReceiver::run() {
             break;
         }
 
-        struct action action;
+        action action;
         action.duck_id = duck_id;  // Agregar el n de pato
         action.command = cmd;
 
@@ -60,6 +61,7 @@ void ServerReceiver::run() {
             break;
         }
     }
+    is_alive = false;
 }
 
 // Protocolo de inicio de juego
@@ -89,4 +91,7 @@ void ServerReceiver::setup_game() {
     sender.send_duck_id(duck_id);
 }
 
-ServerReceiver::~ServerReceiver() { sender.join(); }
+ServerReceiver::~ServerReceiver() {
+    is_alive = false;
+    sender.join();
+}

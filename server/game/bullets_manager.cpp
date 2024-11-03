@@ -26,10 +26,13 @@ void BulletManager::add_bullet(BulletInfo& bullet) {
     bullets[bullet_id] = bullet;
 }
 
-void BulletManager::check_collision_with_ducks(Rectangle& bullet, uint8_t damage) {
+bool BulletManager::check_collision_with_ducks(Rectangle& bullet, uint8_t damage) {
     for (auto& [id, duck]: ducks) {
-        duck.get_hit(bullet, damage);
+        if (duck.get_hit(bullet, damage)) {
+            return true; 
+        }
     }
+    return false;
 }
 
 void BulletManager::update_bullets() {
@@ -45,12 +48,15 @@ void BulletManager::update_bullets() {
             Collision collision = collisions.check_near_blocks_collision(hitbox, new_x, new_y);
             if (collision.vertical_collision || collision.horizontal_collision ||
                 collisions.out_of_map(new_x, new_y)) {
-                id_to_eliminate.push_back(id);
-                break;
+                bullet.is_alive = false;
             }
             hitbox.coords.x = new_x;
             hitbox.coords.y = new_y;
-            check_collision_with_ducks(hitbox, bullet.damage);
+            bool hit = check_collision_with_ducks(hitbox, bullet.damage);
+            if (hit || !bullet.is_alive) {
+                id_to_eliminate.push_back(id);
+                break;
+            }
         }
         bullet.status.x = static_cast<int16_t>(hitbox.coords.x);
         bullet.status.y = static_cast<int16_t>(hitbox.coords.y);

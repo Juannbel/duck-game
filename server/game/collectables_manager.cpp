@@ -110,6 +110,7 @@ void CollectablesManager::drop_gun(std::shared_ptr<GunEntity> gun, const Rectang
                         duck_hitbox.coords.y + duck_hitbox.height - COLLECTABLE_HITBOX_HEIGHT);
     picked_up_guns.erase(gun_info.gun_id);
     if (gun_info.type == None) {
+        guns[gun_info.gun_id].reset();
         guns.erase(gun_info.gun_id);
     }
 }

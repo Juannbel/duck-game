@@ -22,11 +22,12 @@ private:
     int gameId;
     uint8_t duck_id;
     Queue<Snapshot>& sender_q;
+    std::atomic<bool>& is_alive;
     ServerSender sender;
 
 public:
     ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor, Queue<Snapshot>& sender_q,
-                   int playerId);
+                   int playerId, std::atomic<bool>& is_alive);
 
     void setup_game();
 

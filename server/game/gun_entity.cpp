@@ -15,11 +15,15 @@ GunEntity::GunEntity(BulletManager* bullets):
         y(),
         ammo(),
         range(),
+        bullets_to_shoot(),
+        shooted_bullets(),
         inaccuracy(),
         trigger_pulled(),
         ready_to_shoot(),
         it_since_shoot(),
         it_to_shoot(),
+        it_to_reload(),
+        it_reloading(),
         bullets(bullets) {}
 
 GunEntity::GunEntity(Gun& gun, BulletManager* bullets):
@@ -29,11 +33,15 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets):
         y(gun.y),
         ammo(),
         range(),
+        bullets_to_shoot(),
+        shooted_bullets(),
         inaccuracy(),
         trigger_pulled(),
         ready_to_shoot(),
         it_since_shoot(),
         it_to_shoot(),
+        it_to_reload(),
+        it_reloading(),
         bullets(bullets) {}
 
 GunEntity::GunEntity(GunEntity&& old):
@@ -72,7 +80,7 @@ void GunEntity::add_bullet(DuckPlayer& player) {
         (bullets_to_shoot > shooted_bullets && shooted_bullets > 0)) {
         Duck status = player.get_status();
         int16_t x =
-                status.facing_right ? status.x + DUCK_HITBOX_WIDTH : status.x - BULLET_HITBOX_WIDTH;
+                status.facing_right ? status.x + DUCK_HITBOX_WIDTH + 1 : status.x - BULLET_HITBOX_WIDTH - 1;
         int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
         int16_t angle = status.facing_right ? 0 : 180;
         angle = status.facing_up ? 90 : angle;
@@ -84,7 +92,7 @@ void GunEntity::add_bullet(DuckPlayer& player) {
         hitbox.height = BULLET_HITBOX_HEIGHT;
         hitbox.width = BULLET_HITBOX_WIDTH;
         Bullet bullet_status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
-        BulletInfo bullet = {bullet_status, hitbox, 3, 50};
+        BulletInfo bullet = {bullet_status, hitbox, 3, 50, true};
         bullets->add_bullet(bullet);
         it_since_shoot = 0;
         it_reloading = 0;

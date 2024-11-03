@@ -33,6 +33,9 @@ void Game::start() {
 }
 
 void Game::delete_player(const int id_player) {
+    // ver como acceder a la queue del player para sacarla de la lista (tiene que ser con playerId)
+    // Queue<Snapshot>* queue = player.get_sender_queue();
+    // sv_msg_queues.remove_element(queue);
     const int duck_id = player_to_duck_id[id_player];
     gameloop.delete_duck(duck_id);
 }
