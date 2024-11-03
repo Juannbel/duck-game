@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 #include "common/lobby.h"
+#include "lobby/lobby.h"
 
 #include "constant_looper.h"
 
@@ -12,33 +13,39 @@ Client::Client(const char* hostname, const char* servname):
         sender(protocol, command_q) {}
 
 void Client::run() {
+    int argc = 0;  // Asegúrate de que estas variables se inicialicen correctamente
+    char** argv = nullptr;
+
     uint8_t duck_id;
-    while (true) {
-        int32_t option = display_menu_and_get_option();
-        protocol.send_option(option);
+    Lobby lobby(argc, argv, protocol, duck_id);
+    lobby.run();
 
-        if (option == CREATE_GAME) {
-            GameInfo game_info = protocol.recv_game_info();
-            duck_id = game_info.duck_id;
+    // while (true) {
+    //     int32_t option = display_menu_and_get_option();
+    //     protocol.send_option(option);
 
-            std::cout << "Game created with id: " << game_info.game_id << std::endl;
-            std::cout << "Press any key to start..." << std::endl;
+    //     if (option == CREATE_GAME) {
+    //         GameInfo game_info = protocol.recv_game_info();
+    //         duck_id = game_info.duck_id;
 
-            std::cin.ignore();
-            std::cin.get();
+    //         std::cout << "Game created with id: " << game_info.game_id << std::endl;
+    //         std::cout << "Press any key to start..." << std::endl;
 
-            protocol.send_option(0);
-            break;
-        } else if (option == LIST_GAMES) {
-            display_lobbies();
-            continue;
-        } else if (option == JOIN_GAME) {
-            if (!joinLobby(duck_id)) {
-                continue;
-            }
-            break;
-        }
-    }
+    //         std::cin.ignore();
+    //         std::cin.get();
+
+    //         protocol.send_option(0);
+    //         break;
+    //     } else if (option == LIST_GAMES) {
+    //         display_lobbies();
+    //         continue;
+    //     } else if (option == JOIN_GAME) {
+    //         if (!joinLobby(duck_id)) {
+    //             continue;
+    //         }
+    //         break;
+    //     }
+    // }
 
     receiver.start();
     sender.start();
