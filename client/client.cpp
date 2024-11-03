@@ -13,39 +13,12 @@ Client::Client(const char* hostname, const char* servname):
         sender(protocol, command_q) {}
 
 void Client::run() {
-    int argc = 0;  // Asegúrate de que estas variables se inicialicen correctamente
+    int argc = 0;
     char** argv = nullptr;
 
     uint8_t duck_id;
     Lobby lobby(argc, argv, protocol, duck_id);
     lobby.run();
-
-    // while (true) {
-    //     int32_t option = display_menu_and_get_option();
-    //     protocol.send_option(option);
-
-    //     if (option == CREATE_GAME) {
-    //         GameInfo game_info = protocol.recv_game_info();
-    //         duck_id = game_info.duck_id;
-
-    //         std::cout << "Game created with id: " << game_info.game_id << std::endl;
-    //         std::cout << "Press any key to start..." << std::endl;
-
-    //         std::cin.ignore();
-    //         std::cin.get();
-
-    //         protocol.send_option(0);
-    //         break;
-    //     } else if (option == LIST_GAMES) {
-    //         display_lobbies();
-    //         continue;
-    //     } else if (option == JOIN_GAME) {
-    //         if (!joinLobby(duck_id)) {
-    //             continue;
-    //         }
-    //         break;
-    //     }
-    // }
 
     receiver.start();
     sender.start();

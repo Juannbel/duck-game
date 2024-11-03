@@ -25,7 +25,7 @@ void MainWindow::onCreateGameClicked() {
     duck_id = gameInfo.duck_id;
 
     ui->gameIdLabel->setText(QString("Game ID: %1").arg(gameInfo.game_id));
-    ui->stackedWidget->setCurrentIndex(2);  // Cambia a la página de espera (página 3)
+    ui->stackedWidget->setCurrentIndex(2);
 }
 
 void MainWindow::onJoinGameClicked() {
