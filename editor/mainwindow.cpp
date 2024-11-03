@@ -106,7 +106,7 @@ void MainWindow::renderGrid() {
             int offset = ((MAP_THEMES + 1) * map_dto.theme);
 
             QGraphicsPixmapItem *item = scene->addPixmap(grassTextures[tileIndex + offset]);
-            item->setPos(x * TILE_SIZE, y * TILE_SIZE);
+            item->setPos(y * TILE_SIZE, x * TILE_SIZE);
 
             if (!block.solid) {
                 item->setOpacity(0.5);
@@ -161,7 +161,7 @@ void MainWindow::onGridClicked(QPoint pos) {
 
 void MainWindow::placeTile(int x, int y, BlockType block_type, bool solid) {
     qDebug() << "Colocando bloque "<<static_cast<int>(block_type);
-    map_dto.blocks[x][y] = {block_type, solid};
+    map_dto.blocks[y][x] = {block_type, solid};
 }
 
 void MainWindow::on_saveMapButton_clicked()
@@ -194,8 +194,8 @@ void MainWindow::saveToYaml() {
             Block &block = map_dto.blocks[i][j];
             if (block.type != Empty) {
                 YAML::Node blockNode;
-                blockNode["x"] = i;
-                blockNode["y"] = j;
+                blockNode["x"] = j;
+                blockNode["y"] = i;
                 blockNode["type"] = blockTypeToString(block.type);
                 blockNode["solid"] = block.solid;
 
@@ -204,8 +204,8 @@ void MainWindow::saveToYaml() {
         }
     }
     bool ok;
-    QString fileName = QInputDialog::getText(nullptr, "Guardar Mapa",
-                                             "Ingrese el nombre del archivo (sin extensión):",
+    QString fileName = QInputDialog::getText(nullptr, "Save Map",
+                                             "Insert filename (without extension):",
                                              QLineEdit::Normal, "", &ok);
 
     if (!ok || fileName.isEmpty()) {
@@ -229,3 +229,28 @@ void MainWindow::saveToYaml() {
 
     std::cout << "Archivo guardado con éxito en: " << filePath.toStdString() << std::endl;
 }
+
+void MainWindow::on_loadMapButton_clicked()
+{
+    bool ok;
+    QString fileName = QInputDialog::getText(nullptr, "Load Map",
+                                             "Insert filename (without extension):",
+                                             QLineEdit::Normal, "", &ok);
+    if (!ok || fileName.isEmpty()) {
+        std::cerr << "No se ingresó ningún nombre de archivo." << std::endl;
+        return;
+    }
+    if (!fileName.endsWith(".yaml", Qt::CaseInsensitive)) {
+        fileName += ".yaml";
+    }
+    fileName = SERVER_DATA_PATH + static_cast<QString>("/") + fileName;
+    /*
+    Modularizar esto para no repetir codigo con save_map.
+    */
+
+    MapLoader loader;
+    Map loaded_map = loader.loadMap(fileName.toStdString());
+    map_dto = loaded_map;
+    renderGrid();
+}
+

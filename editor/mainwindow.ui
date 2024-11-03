@@ -24,13 +24,13 @@
      </rect>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>40</x>
       <y>210</y>
       <width>131</width>
-      <height>92</height>
+      <height>124</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -44,6 +44,13 @@
       <widget class="QPushButton" name="saveMapButton">
        <property name="text">
         <string>save map</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="loadMapButton">
+       <property name="text">
+        <string>load map</string>
        </property>
       </widget>
      </item>

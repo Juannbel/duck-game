@@ -16,6 +16,7 @@
 #include <QTextStream>
 #include <yaml-cpp/yaml.h>
 #include "../common/map_dto.h"
+#include "../server/game/map_loader.h"
 #include <QFileDialog>
 
 const int TILE_SIZE = 16;
@@ -35,6 +36,8 @@ private slots:
     void onTileSelected(int index);
     void onGridClicked(QPoint pos);
     void on_saveMapButton_clicked();
+
+    void on_loadMapButton_clicked();
 
 private:
     Ui::MainWindow *ui;

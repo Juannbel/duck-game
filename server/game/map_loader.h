@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <common/map_dto.h>
+#include "../../common/map_dto.h"
 #include <yaml-cpp/yaml.h>
 
 
