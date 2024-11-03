@@ -197,6 +197,7 @@ void DuckPlayer::stop_jump() { ready_to_jump = true; }
 bool DuckPlayer::get_hit(Rectangle& bullet, uint8_t damage) {
     if (collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
         uint8_t taken_dmg = damage;
+        status.is_damaged = true;
         if (status.helmet_equiped && status.armor_equiped) {
             taken_dmg /= 3;
         } else if (status.helmet_equiped || status.armor_equiped) {
@@ -236,4 +237,8 @@ void DuckPlayer::drop_collectable() {
     equipped_gun = nullptr;
 }
 
-Duck DuckPlayer::get_status() { return status; }
+Duck DuckPlayer::get_status() {
+    Duck status_copy = this->status;
+    status.is_damaged = false;
+    return status_copy;
+}

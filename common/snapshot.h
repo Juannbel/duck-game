@@ -48,6 +48,7 @@ struct Duck {
     bool facing_up;
     bool is_laying;  // se esta haciendo el muerto
     bool is_dead;
+    bool is_damaged; // recibio un disparo
 
     bool helmet_equiped;
     bool armor_equiped;

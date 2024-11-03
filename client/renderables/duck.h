@@ -11,6 +11,7 @@
 #include "SDL2pp/Point.hh"
 #include "client/renderables/armor.h"
 #include "client/renderables/equipped_gun.h"
+#include "client/renderables/feathers.h"
 #include "client/renderables/helmet.h"
 #include "client/renderables/wings.h"
 #include "common/snapshot.h"
@@ -26,6 +27,7 @@ private:
     RenderableHelmet helmet;
     RenderableArmor armor;
     RenderableWings wings;
+    RenderableFeathers feathers;
 
     std::unordered_map<std::string, Animation*> animations;
 

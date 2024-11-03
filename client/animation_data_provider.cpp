@@ -20,7 +20,10 @@ void AnimationDataProvider::load_animations_data() {
                        DATA_PATH "/sprites/duck/duck_" + std::to_string(i) + ".yaml");
         load_from_yaml("wings_" + std::to_string(i),
                        DATA_PATH "/sprites/wings/wings_" + std::to_string(i) + ".yaml");
+        load_from_yaml("feathers_" + std::to_string(i),
+                       DATA_PATH "/sprites/feathers/feathers_" + std::to_string(i) + ".yaml");
     }
+
 
     for (uint8_t i = 0; i < MAP_THEMES; i++) {
         load_from_yaml("blocks_" + std::to_string(i),

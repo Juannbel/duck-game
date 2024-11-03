@@ -31,10 +31,10 @@ void RenderableWings::update(const Duck& duck) {
 
     facing_right = duck.facing_right;
 
-    if (duck.is_laying) {
-        curr_animation = animations["laying"];
-    } else if (duck.is_dead) {
+    if (duck.is_dead) {
         curr_animation = animations["dead"];
+    } else if (duck.is_laying) {
+        curr_animation = animations["laying"];
     } else if (duck.gun != GunType::None) {
         curr_animation = animations["armed"];
     } else if (duck.is_flapping) {
