@@ -6,6 +6,7 @@
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/liberror.h"
+#include "common/lobby.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
 
@@ -66,29 +67,33 @@ void ServerReceiver::run() {
 
 // Protocolo de inicio de juego
 void ServerReceiver::setup_game() {
-    int cmd = protocol.receive_cmd();
-    if (cmd == CREATE) {
-        gameId = games_monitor.player_create_game(playerId, sender_q, std::ref(duck_id));
-        // Espero un input para iniciar el juego
-        protocol.receive_cmd();
-        games_monitor.start_game(gameId);
-        //} else if (cmd == JOIN) {
-    } else {  // Para evitar el warning
-        std::vector<int> lobbies = games_monitor.list_lobbies();
-        for (int lobby: lobbies) {
-            protocol.send_lobby_info(lobby);
+    while (true) {
+        int32_t cmd = protocol.receive_cmd();
+        if (cmd == CREATE_GAME) {
+            gameId = games_monitor.player_create_game(playerId, sender_q, std::ref(duck_id));
+            sender.send_game_info(gameId, duck_id);
+            // esperamos comando para iniciar juego
+            protocol.receive_cmd();
+            games_monitor.start_game(gameId);
+            break;
+        } else if (cmd == LIST_GAMES) {
+            std::vector<int32_t> lobbies = games_monitor.list_lobbies();
+            protocol.send_lobbies_info(lobbies);
+            continue;
+        } else if (cmd == JOIN_GAME) {
+            gameId = protocol.receive_cmd();
+            duck_id = games_monitor.player_join_game(playerId, gameId, sender_q);
+            if (duck_id == INVALID_DUCK_ID) {
+                sender.send_game_info(INVALID_GAME_ID, duck_id);
+                continue;
+            }
+
+            sender.send_game_info(gameId, duck_id);
+            break;
         }
-        if (lobbies.size() == 1) {
-            // volver a ejecutar todo (asi me manejo desde cliente), llamado recursivo
-            setup_game();
-            return;  // Cuando un jugador listaba partidas y no habia, rompia porque se desapilaban
-                     // las llamadas y seguian
-        }
-        gameId = protocol.receive_cmd();
-        duck_id = games_monitor.player_join_game(playerId, gameId, sender_q);
     }
+
     gameloop_q = games_monitor.get_gameloop_q(gameId);
-    sender.send_duck_id(duck_id);
 }
 
 ServerReceiver::~ServerReceiver() {

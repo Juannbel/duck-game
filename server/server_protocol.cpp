@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 
 #include "common/commands.h"
+#include "common/lobby.h"
 
 ServerProtocol::ServerProtocol(Socket& socket): socket(socket) {}
 
@@ -122,17 +123,38 @@ Command ServerProtocol::recv_player_command() {
 }
 
 // Cambiar endianness y tamaño definido (int32_t) (con command)
-int ServerProtocol::receive_cmd() {
+int32_t ServerProtocol::receive_cmd() {
     bool wasClosed = false;
-    int command;
+    int32_t command;
     socket.recvall(&command, sizeof(command), &wasClosed);
-    return command;
+    if (wasClosed)
+        throw SocketWasClosed();
+    return ntohl(command);
 }
 
-// Cambiar endianness y tamaño definido (int32_t)
-void ServerProtocol::send_lobby_info(int lobby) {
+void ServerProtocol::send_lobbies_info(std::vector<int32_t> &lobbies) {
+    uint8_t lobbies_quantity = lobbies.size();
+
+    for (int i = 0; i < lobbies_quantity; i++) {
+        lobbies[i] = htonl(lobbies[i]);
+    }
+
     bool wasClosed = false;
-    socket.sendall(&lobby, sizeof(lobby), &wasClosed);
+    socket.sendall(&lobbies_quantity, sizeof(lobbies_quantity), &wasClosed);
+    socket.sendall(lobbies.data(), lobbies_quantity * sizeof(int32_t), &wasClosed);
+
+    if (wasClosed)
+        throw SocketWasClosed();
+
+}
+
+void ServerProtocol::send_game_info(GameInfo game_info) {
+    game_info.game_id = htonl(game_info.game_id);
+
+    bool wasClosed = false;
+    socket.sendall(&game_info, sizeof(game_info), &wasClosed);
+    if (wasClosed)
+        throw SocketWasClosed();
 }
 
 

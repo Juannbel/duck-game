@@ -17,7 +17,8 @@ private:
 public:
     ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, int playerId, std::atomic<bool>& is_alive);
 
-    void send_duck_id(const uint8_t& duck_id);
+    // void send_duck_id(const uint8_t& duck_id);
+    void send_game_info(int32_t game_id, uint8_t duck_id);
 
     void run() override;
 

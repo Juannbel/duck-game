@@ -1,11 +1,10 @@
 #include "client.h"
 
 #include <cstdint>
+#include <vector>
+#include "common/lobby.h"
 
 #include "constant_looper.h"
-
-#define JOIN 2
-#define CREATE 1
 
 Client::Client(const char* hostname, const char* servname):
         protocol(Socket(hostname, servname)),
@@ -13,24 +12,33 @@ Client::Client(const char* hostname, const char* servname):
         sender(protocol, command_q) {}
 
 void Client::run() {
-    const int option = displayMenuAndGetOption();
-    protocol.send_option(option);
-
-    if (option == JOIN) {
-        if (!joinLobby()) {
-            run();
-        }
-    } else if (option == CREATE) {
-        std::cout << "Enter 3 to start lobby" << std::endl;
-
-        int option;
-        std::cin >> option;
+    uint8_t duck_id;
+    while (true) {
+        int32_t option = display_menu_and_get_option();
         protocol.send_option(option);
-    }
 
-    uint8_t duck_id = protocol.recv_duck_id();
-    std::cout << "Match info received" << std::endl;
-    std::cout << "Duck id: " << static_cast<int>(duck_id) << std::endl;
+        if (option == CREATE_GAME) {
+            GameInfo game_info = protocol.recv_game_info();
+            duck_id = game_info.duck_id;
+
+            std::cout << "Game created with id: " << game_info.game_id << std::endl;
+            std::cout << "Press any key to start..." << std::endl;
+
+            std::cin.ignore();
+            std::cin.get();
+
+            protocol.send_option(0);
+            break;
+        } else if (option == LIST_GAMES) {
+            display_lobbies();
+            continue;
+        } else if (option == JOIN_GAME) {
+            if (!joinLobby(duck_id)) {
+                continue;
+            }
+            break;
+        }
+    }
 
     receiver.start();
     sender.start();
@@ -41,44 +49,48 @@ void Client::run() {
     std::cout << "Game ended" << std::endl;
 }
 
-int Client::displayMenuAndGetOption() {
-    std::cout << "1 - Create Lobby" << std::endl;
-    std::cout << "2 - Join a Lobby" << std::endl;
-    int option;
-    std::cout << "Enter an option (1 or 2): ";
-    std::cin >> option;
+int Client::display_menu_and_get_option() {
+    std::cout << "1 - List games" << std::endl;
+    std::cout << "2 - Create Game" << std::endl;
+    std::cout << "3 - Join Game" << std::endl;
+
+    int32_t option;
+    do {
+        std::cout << "Enter an option (1, 2 or 3): ";
+        std::cin >> option;
+    } while (option != 1 && option != 2 && option != 3);
+
     return option;
 }
 
-// Devuelve false si no hay lobbies disponibles para conectarse, true en caso contrario
-bool Client::joinLobby() {
-    if (!displayLobbyList()) {
-        return false;
-    }
-    const int lobbyId = getLobbyIdFromUser();
+bool Client::joinLobby(uint8_t &duck_id) {
+    int32_t lobbyId = get_lobby_id();
     protocol.send_option(lobbyId);
-    return true;
-}
-
-// Devuelve false si no hay lobbies disponibles, true en caso contrario
-bool Client::displayLobbyList() {
-    int countLobbys = 0;
-    // TODO:? cambiar el protocolo y que lo primero que recibo sea la cantidad de lobbies?
-    int id = protocol.recv_lobby();
-    while (id != -1) {
-        std::cout << "Lobby: " << id << std::endl;
-        countLobbys++;
-        id = protocol.recv_lobby();
-    }
-    if (countLobbys == 0) {
-        std::cout << "No lobbies available" << std::endl;
+    GameInfo game_info = protocol.recv_game_info();
+    if (game_info.game_id == INVALID_GAME_ID) {
+        std::cout << "Failed to join" << std::endl;
         return false;
     }
+
+    duck_id = game_info.duck_id;
     return true;
 }
 
-int Client::getLobbyIdFromUser() {
-    int lobbyId;
+void Client::display_lobbies() {
+    std::vector<int32_t> lobbies = protocol.recv_lobbies_info();
+
+    if (lobbies.size() == 0) {
+        std::cout << "No lobbies available" << std::endl;
+        return;
+    }
+
+    for (int32_t lobby : lobbies) {
+        std::cout << "Lobby: " << lobby << std::endl;
+    }
+}
+
+int32_t Client::get_lobby_id() {
+    int32_t lobbyId;
     std::cout << "Enter an option (id of lobby): ";
     std::cin >> lobbyId;
     return lobbyId;

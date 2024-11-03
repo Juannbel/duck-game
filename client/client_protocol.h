@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "common/commands.h"
+#include "common/lobby.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
@@ -16,12 +17,14 @@ public:
     explicit ClientProtocol(Socket&& socket);
 
     Snapshot recv_snapshot();
-    uint8_t recv_duck_id();
 
     void send_player_command(const Command& snapshot);
 
-    void send_option(int option);
-    int recv_lobby();
+    void send_option(int32_t option);
+
+    GameInfo recv_game_info();
+
+    std::vector<int32_t> recv_lobbies_info();
 
     void shutdown();
 

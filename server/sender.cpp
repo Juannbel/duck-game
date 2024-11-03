@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "common/liberror.h"
+#include "common/lobby.h"
 #include "common/snapshot.h"
 
 ServerSender::ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, int playerId, std::atomic<bool>& is_alive):
@@ -32,7 +33,12 @@ void ServerSender::run() {
     is_alive = false;
 }
 
-void ServerSender::send_duck_id(const uint8_t& duck_id) { protocol.send_duck_id(duck_id); }
+void ServerSender::send_game_info(int32_t game_id, uint8_t duck_id) {
+    GameInfo info;
+    info.game_id = game_id;
+    info.duck_id = duck_id;
+    protocol.send_game_info(info);
+}
 
 ServerSender::~ServerSender() {
     is_alive = false;

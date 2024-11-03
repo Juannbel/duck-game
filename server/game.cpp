@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include "common/lobby.h"
 
 Game::Game(const int id): gameloop(gameloop_q, sv_msg_queues), id(id) {
     open = true;
@@ -13,7 +14,7 @@ Queue<action>& Game::get_gameloop_queue() { return gameloop_q; }
 uint8_t Game::add_player(int id_player, Queue<Snapshot>& player_sender_queue) {
     if (!open || cant_players == MAX_DUCKS) {
         std::cout << "No entran mas jugadores" << std::endl;
-        return -1;
+        return INVALID_DUCK_ID;
     }
 
     sv_msg_queues.add_element(&player_sender_queue);

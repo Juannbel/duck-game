@@ -5,6 +5,7 @@
 
 #include "../common/map_dto.h"
 #include "common/commands.h"
+#include "common/lobby.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
 
@@ -19,9 +20,11 @@ public:
 
     void send_snapshot(const Snapshot& snapshot);
 
-    int receive_cmd();
-    void send_lobby_info(int lobby);
+    int32_t receive_cmd();
 
+    void send_lobbies_info(std::vector<int32_t> &lobbies);
+
+    void send_game_info(GameInfo game_info);
 
     Command recv_player_command();
 

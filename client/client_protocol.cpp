@@ -1,6 +1,7 @@
 #include "client_protocol.h"
 
 #include <utility>
+#include <vector>
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -111,30 +112,41 @@ void ClientProtocol::send_player_command(const Command& command) {
         throw SocketWasClosed();
 }
 
-uint8_t ClientProtocol::recv_duck_id() {
-    uint8_t duck_id;
-    bool was_closed = false;
-    socket.recvall(&duck_id, sizeof(duck_id), &was_closed);
-    if (was_closed)
-        throw SocketWasClosed();
-    return duck_id;
-}
-
 void ClientProtocol::shutdown() {
     socket.shutdown(SHUT_RDWR);
     socket.close();
 }
 
-void ClientProtocol::send_option(int option) {
+void ClientProtocol::send_option(int32_t option) {
     bool was_closed = false;
+    option = htonl(option);
     socket.sendall(&option, sizeof(option), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
 }
 
-int ClientProtocol::recv_lobby() {
+GameInfo ClientProtocol::recv_game_info() {
     bool was_closed = false;
-    int id;
-    // TODO: Modificar protocolo
-    // (protocolo->envio -1 al final desde server) por ahora solo id's que son int
-    socket.recvall(&id, sizeof(id), &was_closed);
-    return id;
+    GameInfo game_info;
+    socket.recvall(&game_info, sizeof(game_info), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    game_info.game_id = ntohl(game_info.game_id);
+    return game_info;
+}
+
+std::vector<int32_t> ClientProtocol::recv_lobbies_info() {
+    bool was_closed = false;
+    uint8_t lobbies_quantity;
+    socket.recvall(&lobbies_quantity, sizeof(lobbies_quantity), &was_closed);
+
+    std::vector<int32_t> lobbies_info(lobbies_quantity);
+    socket.recvall(lobbies_info.data(), lobbies_quantity * sizeof(int32_t), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+
+    for (int i = 0; i < lobbies_quantity; i++) {
+        lobbies_info[i] = ntohl(lobbies_info[i]);
+    }
+    return lobbies_info;
 }

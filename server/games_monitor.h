@@ -28,7 +28,7 @@ public:
     // TODO: caso que se desconecte uno o termina la partida
     // void delete_game(int id);
 
-    std::vector<int> list_lobbies();
+    std::vector<int32_t> list_lobbies();
 
     Queue<action>* get_gameloop_q(int id_game);
 

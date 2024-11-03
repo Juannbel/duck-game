@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <utility>
+#include "common/lobby.h"
 
 #define CREATE 1
 #define JOIN 2
@@ -16,6 +17,9 @@ int GamesMonitor::player_create_game(const int id_player, Queue<Snapshot>& playe
 uint8_t GamesMonitor::player_join_game(const int id_player, const int id_game,
                                        Queue<Snapshot>& player_sender_queue) {
     std::lock_guard<std::mutex> lck(m);
+    if (map_games.find(id_game) == map_games.end()) {
+        return INVALID_DUCK_ID;
+    }
     Game* game = map_games[id_game];
     return game->add_player(id_player, player_sender_queue);
 }
@@ -34,7 +38,6 @@ std::vector<int> GamesMonitor::list_lobbies() {
             lobbies.push_back(game.first);
         }
     }
-    lobbies.push_back(-1);
     return lobbies;
 }
 
