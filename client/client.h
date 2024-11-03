@@ -18,14 +18,6 @@ public:
 
     void run();
 
-    int32_t display_menu_and_get_option();
-
-    bool joinLobby(uint8_t &duck_id);
-
-    void display_lobbies();
-
-    int32_t get_lobby_id();
-
     ~Client();
 };
 
