@@ -14,6 +14,7 @@
 #include <QString>
 #include <QFile>
 #include <QTextStream>
+#include <qpoint.h>
 #include <yaml-cpp/yaml.h>
 #include "../common/map_dto.h"
 #include "../server/game/map_loader.h"
@@ -48,6 +49,7 @@ private:
     BlockType selectedTileIndex = Empty;
     QMap<int, QVector<QIcon>> themeTiles;
     Map map_dto;
+    QPoint lastProcessedTile = QPoint(-1, -1);
 
     void saveToYaml();
     std::string blockTypeToString(BlockType type);

@@ -136,12 +136,25 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
                 return true;
             }
         }
-        if (event->type() == QEvent::MouseButtonPress) {
+        else if (event->type() == QEvent::MouseButtonPress || 
+                 event->type() == QEvent::MouseMove) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            QPoint pos = ui->graphicsView->mapFromGlobal(mouseEvent->globalPos());
-            QPointF scenePos = ui->graphicsView->mapToScene(pos).toPoint();
-            onGridClicked(scenePos.toPoint());
-            return true;
+            
+            if (mouseEvent->buttons() & Qt::LeftButton) {
+                QPoint pos = ui->graphicsView->mapFromGlobal(mouseEvent->globalPos());
+                QPointF scenePos = ui->graphicsView->mapToScene(pos).toPoint();
+                
+                QPoint currentTile(scenePos.x() / TILE_SIZE, scenePos.y() / TILE_SIZE);
+                
+                if (currentTile != lastProcessedTile) {
+                    lastProcessedTile = currentTile;
+                    onGridClicked(scenePos.toPoint());
+                }
+                return true;
+            }
+        }
+        else if (event->type() == QEvent::MouseButtonRelease) {
+            lastProcessedTile = QPoint(-1, -1);
         }
     }
     return QMainWindow::eventFilter(watched, event);
