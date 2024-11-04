@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->graphicsView->setScene(scene);
 
-    grassTextures.resize(MAP_THEMES * 5);
+    grassTextures.resize(MAP_THEMES * (static_cast<int>(HalfFloor)+1) );
 
     loadTiles();
     renderGrid();
@@ -52,19 +52,14 @@ void MainWindow::loadTiles() {
 
 void MainWindow::loadThemeTiles(uint8_t theme) {
     QPixmap tileSet(":/images/blocks.png");
-    int offset = ((MAP_THEMES + 1) * theme);
-    grassTextures[static_cast<int>(Floor1) + offset] = tileSet.copy(0, theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    grassTextures[static_cast<int>(Floor2) + offset] = tileSet.copy(TILE_SIZE, theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    grassTextures[static_cast<int>(Floor3) + offset] = tileSet.copy(TILE_SIZE * 2, theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    grassTextures[static_cast<int>(Base1) + offset] = tileSet.copy(TILE_SIZE * 3, theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    int offset = ((static_cast<int>(HalfFloor) + 1) * theme);
+    QVector<QIcon> iconsForTheme;
+    iconsForTheme.push_back(QIcon(grassTextures[static_cast<int>(Empty) + offset]));
+    for (int i = 1; i<=static_cast<int>(HalfFloor); i++ ){
+        grassTextures[i + offset] = tileSet.copy(TILE_SIZE * (i-1), theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        iconsForTheme.push_back(QIcon(grassTextures[i + offset]));
+    }
 
-    QVector<QIcon> iconsForTheme = {
-        QIcon(grassTextures[static_cast<int>(Empty) + offset]),
-        QIcon(grassTextures[static_cast<int>(Floor1) + offset]),
-        QIcon(grassTextures[static_cast<int>(Floor2) + offset]),
-        QIcon(grassTextures[static_cast<int>(Floor3) + offset]),
-        QIcon(grassTextures[static_cast<int>(Base1) + offset])
-    };
     themeTiles[theme] = iconsForTheme;
 
     qDebug() << "Tiles cargados para el tema " << theme << ": " << iconsForTheme.size();
@@ -74,13 +69,19 @@ void MainWindow::loadThemeTiles(uint8_t theme) {
 void MainWindow::updateThemeSelector(int themeIndex) {
     ui->tileSelector->clear();
 
+    //cambiar
+    std::unordered_map<BlockType, QString> block_to_string = {
+                                                                  {Empty, "empty"},          {Floor1, "floor_1"},       {Floor2, "floor_2"},
+                                                                  {Floor3, "floor_3"},       {Base1, "base_1"},         {Base2, "base_2"},
+                                                                  {Base3, "base_3"},         {Platform1, "platform_1"}, {Platform2, "platform_2"},
+                                                                  {Platform3, "platform_3"}, {Platform4, "platform_4"}, {Wall, "wall"},
+                                                                  {HalfFloor, "half_floor"}};
+
     if (themeTiles.contains(themeIndex)) {
-        auto tiles = themeTiles[themeIndex];
-        ui->tileSelector->addItem(tiles[0], "Empty");
-        ui->tileSelector->addItem(tiles[1], "Floor1");
-        ui->tileSelector->addItem(tiles[2], "Floor2");
-        ui->tileSelector->addItem(tiles[3], "Floor3");
-        ui->tileSelector->addItem(tiles[4], "Base1");
+        auto &tiles = themeTiles[themeIndex];
+        for (int i = 0; i<=static_cast<int>(HalfFloor); i++ ){
+            ui->tileSelector->addItem(tiles[i], block_to_string[static_cast<BlockType>(i)]);
+        }
         map_dto.theme = themeIndex;
     }
     renderGrid();
@@ -105,7 +106,7 @@ void MainWindow::renderGrid() {
             }
 
             int tileIndex = static_cast<int>(block.type);
-            int offset = ((MAP_THEMES + 1) * map_dto.theme);
+            int offset = (static_cast<int>(HalfFloor) + 1) * map_dto.theme;
 
             QGraphicsPixmapItem *item = scene->addPixmap(grassTextures[tileIndex + offset]);
             item->setPos(x * TILE_SIZE, y * TILE_SIZE);
@@ -195,7 +196,6 @@ void MainWindow::on_saveMapButton_clicked()
 {
     saveToYaml();
 }
-
 
 std::string MainWindow::blockTypeToString(BlockType type){
     switch (type) {
