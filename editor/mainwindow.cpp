@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->graphicsView->setMouseTracking(true);
     ui->graphicsView->viewport()->installEventFilter(this);
+    ui->graphicsView->setRenderHint(QPainter::Antialiasing, true);
+    ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 }
 
 MainWindow::~MainWindow() {
@@ -95,9 +97,9 @@ void MainWindow::renderGrid() {
         scene->addLine(0, y * TILE_SIZE, MAP_WIDTH_BLOCKS * TILE_SIZE, y * TILE_SIZE, QPen(Qt::black, 1)); // Línea horizontal
     }
 
-    for (int x = 0; x <MAP_HEIGHT_BLOCKS ; ++x) {
-        for (int y = 0; y < MAP_WIDTH_BLOCKS; ++y) {
-            Block block = map_dto.blocks[x][y];
+    for (int y = 0; y < MAP_HEIGHT_BLOCKS ; ++y) {
+        for (int x = 0; x < MAP_WIDTH_BLOCKS; ++x) {
+            Block block = map_dto.blocks[y][x];
             if (block.type == Empty) {
                 continue;
             }
@@ -106,7 +108,7 @@ void MainWindow::renderGrid() {
             int offset = ((MAP_THEMES + 1) * map_dto.theme);
 
             QGraphicsPixmapItem *item = scene->addPixmap(grassTextures[tileIndex + offset]);
-            item->setPos(y * TILE_SIZE, x * TILE_SIZE);
+            item->setPos(x * TILE_SIZE, y * TILE_SIZE);
 
             if (!block.solid) {
                 item->setOpacity(0.5);
@@ -121,9 +123,21 @@ void MainWindow::onTileSelected(int index) {
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (mouseEvent) {
+    if (watched == ui->graphicsView->viewport()) {
+        if (event->type() == QEvent::Wheel) {
+            QWheelEvent *wheelEvent = static_cast<QWheelEvent *>(event);
+            if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
+                const double scaleFactor = 1.15;
+                if (wheelEvent->angleDelta().y() > 0) {
+                    ui->graphicsView->scale(scaleFactor, scaleFactor);
+                } else {
+                    ui->graphicsView->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+                }
+                return true;
+            }
+        }
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
             QPoint pos = ui->graphicsView->mapFromGlobal(mouseEvent->globalPos());
             QPointF scenePos = ui->graphicsView->mapToScene(pos).toPoint();
             onGridClicked(scenePos.toPoint());
@@ -138,11 +152,11 @@ void MainWindow::onGridClicked(QPoint pos) {
     int gridY = pos.y() / TILE_SIZE;
 
     if (gridX >= 0 && gridX < MAP_WIDTH_BLOCKS && gridY >= 0 && gridY < MAP_HEIGHT_BLOCKS) {
-        Block &block = map_dto.blocks[gridX][gridY];
+        Block &block = map_dto.blocks[gridY][gridX];
 
         if (block.type == Empty) {
             placeTile(gridX, gridY, selectedTileIndex, true);
-            qDebug() << "Nuevo bloque colocado en (" << gridX << "," << gridY << ") solid:" << map_dto.blocks[gridX][gridY].solid;
+            qDebug() << "Nuevo bloque colocado en (" << gridX << "," << gridY << ") solid:" << map_dto.blocks[gridY][gridX].solid;
         } else if (block.type == selectedTileIndex) {
             block.solid = !block.solid;
             qDebug() << "Cambiando solidez en (" << gridX << "," << gridY << ") a:" << block.solid;
@@ -154,8 +168,8 @@ void MainWindow::onGridClicked(QPoint pos) {
         renderGrid();
 
         qDebug() << "Estado final del bloque en (" << gridX << "," << gridY << "):"
-                 << " tipo:" << static_cast<int>(map_dto.blocks[gridX][gridY].type)
-                 << " solid:" << map_dto.blocks[gridX][gridY].solid;
+                 << " tipo:" << static_cast<int>(map_dto.blocks[gridY][gridX].type)
+                 << " solid:" << map_dto.blocks[gridY][gridX].solid;
     }
 }
 
