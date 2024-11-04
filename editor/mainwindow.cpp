@@ -230,27 +230,45 @@ void MainWindow::saveToYaml() {
     std::cout << "Archivo guardado con éxito en: " << filePath.toStdString() << std::endl;
 }
 
+
 void MainWindow::on_loadMapButton_clicked()
 {
-    bool ok;
-    QString fileName = QInputDialog::getText(nullptr, "Load Map",
-                                             "Insert filename (without extension):",
-                                             QLineEdit::Normal, "", &ok);
-    if (!ok || fileName.isEmpty()) {
-        std::cerr << "No se ingresó ningún nombre de archivo." << std::endl;
-        return;
-    }
-    if (!fileName.endsWith(".yaml", Qt::CaseInsensitive)) {
-        fileName += ".yaml";
-    }
-    fileName = SERVER_DATA_PATH + static_cast<QString>("/") + fileName;
-    /*
-    Modularizar esto para no repetir codigo con save_map.
-    */
+    QDialog dialog(this);
+    dialog.setWindowTitle("Select map to load");
+
+    QVBoxLayout *layout = new QVBoxLayout(&dialog);
+    QComboBox *comboBox = new QComboBox(&dialog);
+    QPushButton *loadButton = new QPushButton("Load", &dialog);
+
+    layout->addWidget(comboBox);
+    layout->addWidget(loadButton);
 
     MapLoader loader;
-    Map loaded_map = loader.loadMap(fileName.toStdString());
-    map_dto = loaded_map;
-    renderGrid();
-}
+    std::vector<std::string> files = loader.list_maps(SERVER_DATA_PATH);
 
+    for (const auto &file : files) {
+        QString fullPath = QString::fromStdString(file);
+        QFileInfo fileInfo(fullPath);
+        comboBox->addItem(fileInfo.fileName());
+    }
+
+    connect(loadButton, &QPushButton::clicked, [&]() {
+        if (comboBox->currentIndex() == -1) {
+            QMessageBox::warning(this, "Error", "Por favor, selecciona un mapa.");
+            return;
+        }
+
+        QString selectedFile = comboBox->currentText();
+        if (!selectedFile.endsWith(".yaml", Qt::CaseInsensitive)) {
+            selectedFile += ".yaml";
+        }
+        selectedFile = SERVER_DATA_PATH + static_cast<QString>("/") + selectedFile;
+
+        Map loaded_map = loader.loadMap(selectedFile.toStdString());
+        map_dto = loaded_map;
+        renderGrid();
+        dialog.accept();
+    });
+
+    dialog.exec();
+}

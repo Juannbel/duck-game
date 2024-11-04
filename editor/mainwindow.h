@@ -18,6 +18,8 @@
 #include "../common/map_dto.h"
 #include "../server/game/map_loader.h"
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QFileInfo>
 
 const int TILE_SIZE = 16;
 
