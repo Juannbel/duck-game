@@ -7,7 +7,6 @@ target_sources(taller_editor
    mainwindow.h
    mainwindow.ui
    resources.qrc
-   ../server/game/map_loader.cpp
 )
 
 

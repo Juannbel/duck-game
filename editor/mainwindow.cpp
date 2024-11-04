@@ -1,8 +1,8 @@
 #include "mainwindow.h"
 
 #include <iostream>
-#include <fstream>
 #include <QInputDialog>
+#include "../common/map_loader.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -197,39 +197,7 @@ void MainWindow::on_saveMapButton_clicked()
     saveToYaml();
 }
 
-std::string MainWindow::blockTypeToString(BlockType type){
-    switch (type) {
-        case Empty: return "empty";
-        case Floor1: return "floor_1";
-        case Floor2: return "floor_2";
-        case Floor3: return "floor_3";
-        case Base1: return "base_1";
-        default: return "unknown";
-    }
-}
-
 void MainWindow::saveToYaml() {
-    YAML::Node root;
-    root["width"] = 35;
-    root["height"] = 20;
-    root["theme"] = static_cast<int>(map_dto.theme);
-
-    YAML::Node blocksNode = root["blocks"];
-
-    for (int i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
-        for (int j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
-            Block &block = map_dto.blocks[i][j];
-            if (block.type != Empty) {
-                YAML::Node blockNode;
-                blockNode["x"] = j;
-                blockNode["y"] = i;
-                blockNode["type"] = blockTypeToString(block.type);
-                blockNode["solid"] = block.solid;
-
-                blocksNode.push_back(blockNode);
-            }
-        }
-    }
     bool ok;
     QString fileName = QInputDialog::getText(nullptr, "Save Map",
                                              "Insert filename (without extension):",
@@ -245,15 +213,8 @@ void MainWindow::saveToYaml() {
     }
 
     QString filePath = SERVER_DATA_PATH + static_cast<QString>("/") + fileName;
-    std::ofstream outFile(filePath.toStdString());
-    if (!outFile) {
-        std::cerr << "Error al abrir el archivo para escritura." << std::endl;
-        return;
-    }
 
-    outFile << root;
-    outFile.close();
-
+    loader.saveMap(filePath.toStdString(), map_dto);
     std::cout << "Archivo guardado con éxito en: " << filePath.toStdString() << std::endl;
 }
 
@@ -270,7 +231,6 @@ void MainWindow::on_loadMapButton_clicked()
     layout->addWidget(comboBox);
     layout->addWidget(loadButton);
 
-    MapLoader loader;
     std::vector<std::string> files = loader.list_maps(SERVER_DATA_PATH);
 
     for (const auto &file : files) {

@@ -11,7 +11,7 @@
 #include "common/snapshot.h"
 #include "common/thread.h"
 #include "game/game_operator.h"
-#include "game/map_loader.h"
+#include "common/map_loader.h"
 
 #include "action.h"
 #include "list_monitor.h"

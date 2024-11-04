@@ -5,6 +5,7 @@ target_sources(taller_common
     resolver.cpp
     resolvererror.cpp
     liberror.cpp
+    map_loader.cpp
     PUBLIC
     # .h files
     commands.h
@@ -14,4 +15,5 @@ target_sources(taller_common
     resolvererror.h
     liberror.h
     map_dto.h
+    map_loader.h
     )

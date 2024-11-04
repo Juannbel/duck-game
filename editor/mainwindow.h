@@ -17,7 +17,7 @@
 #include <qpoint.h>
 #include <yaml-cpp/yaml.h>
 #include "../common/map_dto.h"
-#include "../server/game/map_loader.h"
+#include "common/map_loader.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QFileInfo>
@@ -50,9 +50,9 @@ private:
     QMap<int, QVector<QIcon>> themeTiles;
     Map map_dto;
     QPoint lastProcessedTile = QPoint(-1, -1);
+    MapLoader loader;
 
     void saveToYaml();
-    std::string blockTypeToString(BlockType type);
 
     void updateThemeSelector(int themeIndex);
     void loadThemeTiles(uint8_t theme);
