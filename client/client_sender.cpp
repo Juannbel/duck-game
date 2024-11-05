@@ -1,15 +1,13 @@
 #include "client_sender.h"
 
-#include <iostream>
-
+#include "common/blocking_queue.h"
 #include "common/liberror.h"
 
-
-ClientSender::ClientSender(ClientProtocol& protocol, Queue<Command>& sender_q):
-        protocol(protocol), sender_q(sender_q) {}
+ClientSender::ClientSender(ClientProtocol& protocol, Queue<Command>& sender_q, std::atomic<bool>& alive):
+        protocol(protocol), sender_q(sender_q), alive(alive) {}
 
 void ClientSender::run() {
-    while (_keep_running) {
+    while (alive) {
         // Espero que queue tenga algo y mando
         Command command;
         try {
@@ -25,6 +23,11 @@ void ClientSender::run() {
         } catch (const LibError& le) {
             // std::cout << "liberror en sender, todo bien, es para salir" << std::endl;
             break;
+        } catch (const SocketWasClosed& se) {
+            break;
         }
     }
+
+    try { sender_q.close(); } catch (...) {}
+    alive = false;
 }

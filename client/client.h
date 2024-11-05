@@ -1,12 +1,14 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include <atomic>
 #include "client_protocol.h"
 #include "client_receiver.h"
 #include "client_sender.h"
 
 class Client {
 private:
+    std::atomic<bool> alive;
     ClientProtocol protocol;
     Queue<Command> command_q;
     Queue<Snapshot> snapshot_q;
