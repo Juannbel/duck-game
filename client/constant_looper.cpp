@@ -22,6 +22,7 @@
 #include "client/renderables/map.h"
 #include "client/screen_manager.h"
 #include "client/textures_provider.h"
+#include "common/blocking_queue.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 
@@ -65,7 +66,6 @@ void ConstantLooper::run() try {
 
         while (snapshot_q.try_pop(last_snapshot)) {}
 
-
         if (last_snapshot.match_finished) {
             keep_running =
                     screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
@@ -90,11 +90,8 @@ void ConstantLooper::run() try {
 
         sleep_or_catch_up(t1);
     }
-
-} catch (std::exception& e) {
-    std::cerr << "Excepction on constant looper " << e.what() << std::endl;
-} catch (...) {
-    std::cerr << "Unknown exception on constant looper " << std::endl;
+} catch (const ClosedQueue& e) {
+    std::cout << "Server disconnected, leaving constant looper" << std::endl;
 }
 
 void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {

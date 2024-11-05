@@ -10,9 +10,10 @@ class ClientSender: public Thread {
 private:
     ClientProtocol& protocol;
     Queue<Command>& sender_q;
+    std::atomic<bool>& alive;
 
 public:
-    ClientSender(ClientProtocol& protocolo, Queue<Command>& sender_q);
+    ClientSender(ClientProtocol& protocolo, Queue<Command>& sender_q, std::atomic<bool>& alive);
 
     void run() override;
 };
