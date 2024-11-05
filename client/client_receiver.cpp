@@ -1,13 +1,15 @@
 #include "client_receiver.h"
+#include <atomic>
 
 #include "common/liberror.h"
 #include "common/snapshot.h"
+#include "common/socket.h"
 
-ClientReceiver::ClientReceiver(ClientProtocol& protocol, Queue<Snapshot>& q):
-        protocol(protocol), snapshot_q(q) {}
+ClientReceiver::ClientReceiver(ClientProtocol& protocol, Queue<Snapshot>& q, std::atomic<bool>& alive):
+        protocol(protocol), snapshot_q(q), alive(alive) {}
 
 void ClientReceiver::run() {
-    while (_keep_running) {
+    while (alive) {
         // Espero que queue tenga algo y mando
         Snapshot snapshot;
         try {
@@ -15,6 +17,8 @@ void ClientReceiver::run() {
         } catch (const LibError& le) {
             // Catchear la excepcion de que el skt estaba cerrado
             // std::cout << "liberror en receiver, todo bien, es para salir" << std::endl;
+            break;
+        } catch (const SocketWasClosed& se) {
             break;
         }
 
@@ -25,4 +29,7 @@ void ClientReceiver::run() {
             break;
         }
     }
+
+    try { snapshot_q.close(); } catch (...) {}
+    alive = false;
 }

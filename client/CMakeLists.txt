@@ -1,3 +1,5 @@
+add_subdirectory(lobby)
+
 target_sources(taller_client
     PRIVATE
     # .cpp files
