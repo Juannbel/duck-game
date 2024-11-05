@@ -19,7 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setScene(scene);
 
     grassTextures.resize(MAP_THEMES * (static_cast<int>(HalfFloor)+1) );
-
     loadTiles();
     renderGrid();
     updateThemeSelector(map_dto.theme);
@@ -84,12 +83,35 @@ void MainWindow::updateThemeSelector(int themeIndex) {
         }
         map_dto.theme = themeIndex;
     }
+
+    QPixmap backgroundPixmap;
+    backgroundPixmap.load(":/images/background_" + QString::number(themeIndex) + ".png");
+
+    if (!backgroundPixmap.isNull()) {
+        currentBackground = backgroundPixmap;
+    } else {
+        std::cerr << "No se pudo cargar el fondo para el tema " << themeIndex << std::endl;
+    }
     renderGrid();
 }
 
 
 void MainWindow::renderGrid() {
     scene->clear();
+
+    if (!currentBackground.isNull()) {
+        QGraphicsPixmapItem *backgroundItem = scene->addPixmap(currentBackground);
+        backgroundItem->setZValue(-1);
+        backgroundItem->setPos(0, 0);
+    }
+    if (!currentBackground.isNull()) {
+        QSize gridSize = QSize(MAP_WIDTH_BLOCKS * TILE_SIZE, MAP_HEIGHT_BLOCKS * TILE_SIZE);
+        QPixmap scaledBackground = currentBackground.scaled(gridSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+        QGraphicsPixmapItem *backgroundItem = scene->addPixmap(scaledBackground);
+        backgroundItem->setZValue(-1);
+        backgroundItem->setPos(0, 0);
+    }
 
     for (int x = 0; x <= MAP_WIDTH_BLOCKS; ++x) {
         scene->addLine(x * TILE_SIZE, 0, x * TILE_SIZE, MAP_HEIGHT_BLOCKS * TILE_SIZE, QPen(Qt::black, 1)); // Línea vertical
@@ -137,16 +159,16 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
                 return true;
             }
         }
-        else if (event->type() == QEvent::MouseButtonPress || 
+        else if (event->type() == QEvent::MouseButtonPress ||
                  event->type() == QEvent::MouseMove) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            
+
             if (mouseEvent->buttons() & Qt::LeftButton) {
                 QPoint pos = ui->graphicsView->mapFromGlobal(mouseEvent->globalPos());
                 QPointF scenePos = ui->graphicsView->mapToScene(pos).toPoint();
-                
+
                 QPoint currentTile(scenePos.x() / TILE_SIZE, scenePos.y() / TILE_SIZE);
-                
+
                 if (currentTile != lastProcessedTile) {
                     lastProcessedTile = currentTile;
                     onGridClicked(scenePos.toPoint());

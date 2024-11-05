@@ -6,8 +6,9 @@ target_sources(taller_editor
    mainwindow.cpp
    mainwindow.h
    mainwindow.ui
-   resources.qrc
+    resources.qrc
 )
+
 
 
 # Para correr en qt creator comentar lo de arriba y descomentar lo de abajo.
@@ -23,7 +24,6 @@ target_sources(taller_editor
 # set(CMAKE_CXX_STANDARD 17)
 # set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # include_directories(${CMAKE_SOURCE_DIR}/../common)
-# include_directories(${CMAKE_SOURCE_DIR}/../server)
 # find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets yaml-cpp)
 # find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 # add_definitions(-DSERVER_DATA_PATH="${PROJECT_SOURCE_DIR}/../server/maps")
@@ -34,9 +34,13 @@ target_sources(taller_editor
 #         mainwindow.h
 #         mainwindow.ui
 #         resources.qrc
+
+
+
+
 #         ${CMAKE_SOURCE_DIR}/../common/map_dto.h
-#         ${CMAKE_SOURCE_DIR}/../server/game/map_loader.h
-#         ${CMAKE_SOURCE_DIR}/../server/game/map_loader.cpp
+#         ${CMAKE_SOURCE_DIR}/../common/map_loader.h
+#         ${CMAKE_SOURCE_DIR}/../common/map_loader.cpp
 
 # )
 
