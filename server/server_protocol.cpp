@@ -69,6 +69,13 @@ void ServerProtocol::serializeSnapshot(Snapshot& snapshot) {
         bullet.x = htons(bullet.x);
         bullet.y = htons(bullet.y);
     }
+
+    int boxes_quantity = snapshot.boxes.size();
+    for (int i = 0; i < boxes_quantity; i++) {
+        Box& box = snapshot.boxes[i];
+        box.x = htons(box.x);
+        box.y = htons(box.y);
+    }
 }
 
 Command ServerProtocol::recv_player_command() {

@@ -68,6 +68,13 @@ void ClientProtocol::deserialize_snapshot(Snapshot& snapshot) {
         bullet.x = ntohs(bullet.x);
         bullet.y = ntohs(bullet.y);
     }
+
+    int boxes_quantity = snapshot.boxes.size();
+    for (int i = 0; i < boxes_quantity; i++) {
+        Box& box = snapshot.boxes[i];
+        box.x = ntohs(box.x);
+        box.y = ntohs(box.y);
+    }
 }
 
 void ClientProtocol::send_player_command(const Command& command) {

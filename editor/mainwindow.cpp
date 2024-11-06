@@ -58,7 +58,6 @@ void MainWindow::loadThemeTiles(uint8_t theme) {
                 tileSet.copy(TILE_SIZE * (i - 1), theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         iconsForTheme.push_back(QIcon(grassTextures[i + offset]));
     }
-
     themeTiles[theme] = iconsForTheme;
 
     qDebug() << "Tiles cargados para el tema " << theme << ": " << iconsForTheme.size();
