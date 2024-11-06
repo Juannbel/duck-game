@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../action.h"
+#include "common/commands.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 

@@ -78,13 +78,13 @@ void ServerProtocol::serializeSnapshot(Snapshot& snapshot) {
     }
 }
 
-Command ServerProtocol::recv_player_command() {
+action ServerProtocol::recv_player_action() {
     bool was_closed = false;
-    Command command;
-    socket.recvall(&command, sizeof(command), &was_closed);
+    action action;
+    socket.recvall(&action, sizeof(action), &was_closed);
     if (was_closed)
         throw SocketWasClosed();
-    return command;
+    return action;
 }
 
 int32_t ServerProtocol::receive_cmd() {

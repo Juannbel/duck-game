@@ -3,8 +3,10 @@
 
 #include <cstdint>
 #include <map>
+#include <utility>
 
 #include "../common/blocking_queue.h"
+#include "common/lobby.h"
 
 #include "game_loop.h"
 
@@ -14,7 +16,7 @@ private:
     Queue<action> gameloop_q;
     GameLoop gameloop;
     int cant_players = 0;
-    std::map<int, uint8_t> player_to_duck_id;
+    std::map<int, std::pair<uint8_t, uint8_t>> player_to_duck_ids;
     bool open = true;
     int id;
 
@@ -25,7 +27,7 @@ public:
 
     void start();
 
-    uint8_t add_player(int player_id, Queue<Snapshot>& player_sender_queue);
+    GameInfo add_player(int player_id, Queue<Snapshot>& player_sender_queue, const int num_players);
 
     void delete_player(const int id_player);
 

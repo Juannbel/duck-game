@@ -26,7 +26,7 @@ public:
 
     void send_game_info(GameInfo game_info);
 
-    Command recv_player_command();
+    action recv_player_action();
 
     void shutdown();
 

@@ -23,6 +23,7 @@
 #include "client/screen_manager.h"
 #include "client/textures_provider.h"
 #include "common/blocking_queue.h"
+#include "common/lobby.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 
@@ -31,17 +32,18 @@
 
 #define USE_CAMERA true
 
-ConstantLooper::ConstantLooper(uint8_t duck_id, Queue<Snapshot>& snapshot_q,
-                               Queue<Command>& command_q):
-        duck_id(duck_id),
+ConstantLooper::ConstantLooper(std::array<uint8_t, 2> duck_ids, Queue<Snapshot>& snapshot_q,
+                               Queue<action>& actions_q):
+        duck_ids(duck_ids),
         sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
         window(WIN_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_WIDTH, WIN_HEIGHT,
                SDL_WINDOW_RESIZABLE),
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
-        screen_manager(renderer, duck_id),
+        screen_manager(renderer, duck_ids),
         snapshot_q(snapshot_q),
-        command_q(command_q),
-        p1_controller(duck_id, command_q, last_snapshot, P1_CONTROLS),
+        actions_q(actions_q),
+        p1_controller(duck_ids[0], actions_q, last_snapshot, P1_CONTROLS),
+        p2_controller(duck_ids[1], actions_q, last_snapshot, P2_CONTROLS),
         map_dto() {}
 
 void ConstantLooper::run() try {
@@ -182,11 +184,14 @@ void ConstantLooper::render(Camera& camera, RenderableMapDto& map) {
     }
 
     for (auto& duck: ducks_renderables) {
-        if (duck.first == duck_id)
+        if (duck.first == duck_ids[0] || duck.first == duck_ids[1])
             continue;
         duck.second->render(renderer, camera);
     }
-    ducks_renderables[duck_id]->render(renderer, camera);
+    ducks_renderables[duck_ids[0]]->render(renderer, camera);
+    if (duck_ids[1] != INVALID_DUCK_ID) {
+        ducks_renderables[duck_ids[1]]->render(renderer, camera);
+    }
 
     for (auto& collectable: collectables_renderables) {
         collectable.second->render(renderer, camera);
@@ -213,12 +218,14 @@ bool ConstantLooper::process_events() {
         }
 
         p1_controller.process_event(event);
-        // para cuando haya un segundo jugador
-        // p2_controller.process_event(event);
+        if (duck_ids[1] != INVALID_DUCK_ID)
+            p2_controller.process_event(event);
     }
 
     p1_controller.send_last_move_command();
-    // p2_controller.send_last_move_command();
+    if (duck_ids[1] != INVALID_DUCK_ID)
+        p2_controller.send_last_move_command();
+
     return true;
 }
 

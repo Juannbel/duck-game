@@ -77,9 +77,9 @@ void ClientProtocol::deserialize_snapshot(Snapshot& snapshot) {
     }
 }
 
-void ClientProtocol::send_player_command(const Command& command) {
+void ClientProtocol::send_player_action(const action& action) {
     bool was_closed = false;
-    socket.sendall(&command, sizeof(command), &was_closed);
+    socket.sendall(&action, sizeof(action), &was_closed);
     if (was_closed)
         throw SocketWasClosed();
 }

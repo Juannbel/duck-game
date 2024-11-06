@@ -1,6 +1,7 @@
 #ifndef SCREEN_MANAGER_H
 #define SCREEN_MANAGER_H
 
+#include <array>
 #include <cstdint>
 #include <memory>
 
@@ -14,7 +15,7 @@
 
 class ScreenManager {
 private:
-    uint8_t duck_id;
+    std::array<uint8_t, 2>& duck_ids;
     SDL2pp::Renderer& renderer;
     SDL2pp::SDLTTF sdl_ttf;
     SDL2pp::Font primary_font;
@@ -24,7 +25,7 @@ private:
                           AnimationData& animation_data);
 
 public:
-    ScreenManager(SDL2pp::Renderer& renderer, uint8_t duck_id);
+    ScreenManager(SDL2pp::Renderer& renderer, std::array<uint8_t, 2>& duck_ids);
 
     bool waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 

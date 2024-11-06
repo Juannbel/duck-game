@@ -11,7 +11,8 @@
 
 struct GameInfo {
     int32_t game_id;
-    uint8_t duck_id;
+    uint8_t duck_id_1;
+    uint8_t duck_id_2;
 } __attribute__((packed));
 
 #endif

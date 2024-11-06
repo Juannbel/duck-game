@@ -10,11 +10,6 @@
 #include "common/snapshot.h"
 #include "common/socket.h"
 
-#include "action.h"
-
-#define CREATE 1
-#define JOIN 2
-
 ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor,
                                Queue<Snapshot>& sender_q, int playerId,
                                std::atomic<bool>& is_alive):
@@ -28,18 +23,15 @@ ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_mon
 
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
 void ServerReceiver::run() {
-    // bool was_closed = false; // comento hasta que se use por cppcheck
-    // Snapshot msg;
-
     setup_game();
 
     // Ya tengo todo, lanzo thread sender
     sender.start();
 
     while (_keep_running) {
-        Command cmd;
+        action action;
         try {
-            cmd = protocol.recv_player_command();
+            action = protocol.recv_player_action();
         } catch (const LibError& le) {  // Catchear excepcion de socket cerrado
             std::cout << "LibError en receiver player id: " << playerId << " " << le.what()
                       << std::endl;
@@ -50,10 +42,6 @@ void ServerReceiver::run() {
             std::cout << "Client dissconected" << std::endl;
             break;
         }
-
-        action action;
-        action.duck_id = duck_id;  // Agregar el n de pato
-        action.command = cmd;
 
         try {
             gameloop_q->push(action);
@@ -71,8 +59,12 @@ void ServerReceiver::setup_game() {
     while (true) {
         int32_t cmd = protocol.receive_cmd();
         if (cmd == CREATE_GAME) {
-            gameId = games_monitor.player_create_game(playerId, sender_q, std::ref(duck_id));
-            sender.send_game_info(gameId, duck_id);
+            int32_t num_players = protocol.receive_cmd();
+            GameInfo game_info = games_monitor.player_create_game(playerId, sender_q, num_players);
+            protocol.send_game_info(game_info);
+            if (game_info.game_id == INVALID_GAME_ID) {
+                continue;
+            }
             // esperamos comando para iniciar juego
             protocol.receive_cmd();
             games_monitor.start_game(gameId);
@@ -83,14 +75,13 @@ void ServerReceiver::setup_game() {
             continue;
         } else if (cmd == JOIN_GAME) {
             gameId = protocol.receive_cmd();
-            duck_id = games_monitor.player_join_game(playerId, gameId, sender_q);
-            if (duck_id == INVALID_DUCK_ID) {
-                sender.send_game_info(INVALID_GAME_ID, duck_id);
-                continue;
+            int32_t num_players = protocol.receive_cmd();
+            GameInfo game_info = games_monitor.player_join_game(playerId, gameId, sender_q, num_players);
+            protocol.send_game_info(game_info);
+            // si no se pudo unir, game_id es INVALID_GAME_ID
+            if (game_info.game_id != INVALID_GAME_ID) {
+                break;
             }
-
-            sender.send_game_info(gameId, duck_id);
-            break;
         }
     }
 

@@ -2,12 +2,13 @@
 
 #include <QMessageBox>
 #include <vector>
+#include <qinputdialog.h>
 
 #include "../../common/lobby.h"
 #include "./ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, uint8_t& duck_id):
-        QMainWindow(parent), ui(new Ui::MainWindow), protocol(protocol), duck_id(duck_id) {
+MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, std::array<uint8_t, 2>& duck_ids):
+        QMainWindow(parent), ui(new Ui::MainWindow), protocol(protocol), duck_ids(duck_ids) {
     ui->setupUi(this);
 
     ui->stackedWidget->setCurrentIndex(0);
@@ -22,9 +23,17 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, uint8_t& duck_
 }
 
 void MainWindow::onCreateGameClicked() {
+    bool ok;
+    int numPlayers = QInputDialog::getInt(this, tr("How many players?"),
+                                          tr("Number of players (1 o 2):"), 1, 1, 2, 1, &ok);
+    if (!ok) return;
+
     protocol.send_option(CREATE_GAME);
+    protocol.send_option(numPlayers);
+
     GameInfo gameInfo = protocol.recv_game_info();
-    duck_id = gameInfo.duck_id;
+    duck_ids[0] = gameInfo.duck_id_1;
+    duck_ids[1] = gameInfo.duck_id_2;
 
     ui->gameIdLabel->setText(QString("Game ID: %1").arg(gameInfo.game_id));
     ui->stackedWidget->setCurrentIndex(2);
@@ -46,15 +55,23 @@ void MainWindow::onJoinLobbyClicked() {
     }
 
     int32_t lobbyId = ui->lobbiesList->item(selectedRow)->text().toInt();
+
+    bool ok;
+    int numPlayers = QInputDialog::getInt(this, tr("How many players?"),
+                                          tr("Number of players (1 o 2):"), 1, 1, 2, 1, &ok);
+    if (!ok) return;
+
     protocol.send_option(JOIN_GAME);
     protocol.send_option(lobbyId);
+    protocol.send_option(numPlayers);
 
     GameInfo gameInfo = protocol.recv_game_info();
     if (gameInfo.game_id != INVALID_GAME_ID) {
-        duck_id = gameInfo.duck_id;
+        duck_ids[0] = gameInfo.duck_id_1;
+        duck_ids[1] = gameInfo.duck_id_2;
         close();
     } else {
-        QMessageBox::warning(this, "Error", "No se pudo unir al lobby.");
+        QMessageBox::warning(this, "Error", "Could not join the game.");
     }
 }
 

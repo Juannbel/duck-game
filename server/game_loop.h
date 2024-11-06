@@ -13,7 +13,7 @@
 #include "common/thread.h"
 #include "game/game_operator.h"
 
-#include "action.h"
+#include "common/commands.h"
 #include "list_monitor.h"
 
 class GameLoop: public Thread {

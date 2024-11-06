@@ -34,11 +34,4 @@ void ServerSender::run() {
     is_alive = false;
 }
 
-void ServerSender::send_game_info(int32_t game_id, uint8_t duck_id) {
-    GameInfo info;
-    info.game_id = game_id;
-    info.duck_id = duck_id;
-    protocol.send_game_info(info);
-}
-
 ServerSender::~ServerSender() { is_alive = false; }

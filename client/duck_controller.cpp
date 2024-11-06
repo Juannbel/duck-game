@@ -2,10 +2,10 @@
 
 #include <algorithm>
 
-DuckController::DuckController(int duck_id, Queue<Command>& command_q, Snapshot& snapshot,
+DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
                                ControlScheme controls):
         duck_id(duck_id),
-        command_q(command_q),
+        actions_q(actions_q),
         snapshot(snapshot),
         controls(controls),
         move_command(false),
@@ -26,18 +26,18 @@ void DuckController::handle_key_down(const SDL_Event& event, const Duck& duck) {
             move_command = true;
         }
     } else if (event.key.keysym.sym == controls.jump) {
-        command_q.push(Jump);
+        actions_q.push({duck_id, Jump});
     } else if (event.key.keysym.sym == controls.lay_down) {
         if (!duck.is_laying)
-            command_q.push(LayDown);
+            actions_q.push({duck_id, LayDown});
     } else if (event.key.keysym.sym == controls.shoot) {
         if (!duck.is_shooting)
-            command_q.push(StartShooting);
+            actions_q.push({duck_id, StartShooting});
     } else if (event.key.keysym.sym == controls.pick_up) {
-        command_q.push(PickUp);
+        actions_q.push({duck_id, PickUp});
     } else if (event.key.keysym.sym == controls.look_up) {
         if (!duck.facing_up)
-            command_q.push(StartLookup);
+            actions_q.push({duck_id, StartLookup});
     }
 }
 
@@ -61,13 +61,13 @@ void DuckController::handle_key_up(const SDL_Event& event) {
             move_command = true;
         }
     } else if (event.key.keysym.sym == controls.lay_down) {
-        command_q.push(StandUp);
+        actions_q.push({duck_id, StandUp});
     } else if (event.key.keysym.sym == controls.shoot) {
-        command_q.push(StopShooting);
+        actions_q.push({duck_id, StopShooting});
     } else if (event.key.keysym.sym == controls.look_up) {
-        command_q.push(StopLookup);
+        actions_q.push({duck_id, StopLookup});
     } else if (event.key.keysym.sym == controls.jump) {
-        command_q.push(StopJump);
+        actions_q.push({duck_id, StopJump});
     }
 }
 
@@ -88,7 +88,7 @@ void DuckController::process_event(const SDL_Event& event) {
 
 void DuckController::send_last_move_command() {
     if (move_command) {
-        command_q.push(last_move_command);
+        actions_q.push({duck_id, last_move_command});
         move_command = false;
     }
 }
