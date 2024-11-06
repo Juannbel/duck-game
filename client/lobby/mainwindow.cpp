@@ -7,7 +7,7 @@
 #include "../../common/lobby.h"
 #include "./ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, std::array<uint8_t, 2>& duck_ids):
+MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids):
         QMainWindow(parent), ui(new Ui::MainWindow), protocol(protocol), duck_ids(duck_ids) {
     ui->setupUi(this);
 
@@ -32,8 +32,8 @@ void MainWindow::onCreateGameClicked() {
     protocol.send_option(numPlayers);
 
     GameInfo gameInfo = protocol.recv_game_info();
-    duck_ids[0] = gameInfo.duck_id_1;
-    duck_ids[1] = gameInfo.duck_id_2;
+    duck_ids.first = gameInfo.duck_id_1;
+    duck_ids.second = gameInfo.duck_id_2;
 
     ui->gameIdLabel->setText(QString("Game ID: %1").arg(gameInfo.game_id));
     ui->stackedWidget->setCurrentIndex(2);
@@ -50,7 +50,7 @@ void MainWindow::onBackClicked() { ui->stackedWidget->setCurrentIndex(0); }
 void MainWindow::onJoinLobbyClicked() {
     int selectedRow = ui->lobbiesList->currentRow();
     if (selectedRow < 0) {
-        QMessageBox::warning(this, "Error", "Selecciona un lobby para unirte.");
+        QMessageBox::warning(this, "Error", "Select a lobby to join");
         return;
     }
 
@@ -67,8 +67,8 @@ void MainWindow::onJoinLobbyClicked() {
 
     GameInfo gameInfo = protocol.recv_game_info();
     if (gameInfo.game_id != INVALID_GAME_ID) {
-        duck_ids[0] = gameInfo.duck_id_1;
-        duck_ids[1] = gameInfo.duck_id_2;
+        duck_ids.first = gameInfo.duck_id_1;
+        duck_ids.second = gameInfo.duck_id_2;
         close();
     } else {
         QMessageBox::warning(this, "Error", "Could not join the game.");

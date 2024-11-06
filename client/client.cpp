@@ -16,14 +16,14 @@ Client::Client(const char* hostname, const char* servname):
         sender(protocol, actions_q, alive) {}
 
 void Client::run() {
-    std::array<uint8_t, 2> duck_ids;
+    std::pair<uint8_t, uint8_t> duck_ids;
     Lobby lobby(protocol, duck_ids);
     lobby.run();
 
     receiver.start();
     sender.start();
 
-    if (duck_ids[0] == INVALID_DUCK_ID)
+    if (duck_ids.first == INVALID_DUCK_ID)
         return;
 
     ConstantLooper looper(duck_ids, snapshot_q, actions_q);

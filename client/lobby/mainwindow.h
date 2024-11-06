@@ -15,7 +15,7 @@ class MainWindow: public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent, ClientProtocol& protocol, std::array<uint8_t, 2>& duck_ids);
+    MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids);
     ~MainWindow();
 
 private slots:
@@ -28,7 +28,7 @@ private slots:
 private:
     Ui::MainWindow* ui;
     ClientProtocol& protocol;
-    std::array<uint8_t, 2>& duck_ids;
+    std::pair<uint8_t, uint8_t>& duck_ids;
 
     void updateLobbyList();
 };

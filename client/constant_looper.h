@@ -24,7 +24,7 @@
 
 class ConstantLooper {
 private:
-    std::array<uint8_t, 2> duck_ids;
+    std::pair<uint8_t, uint8_t> duck_ids;
     SDL2pp::SDL sdl;
     SDL2pp::Window window;
     SDL2pp::Renderer renderer;
@@ -54,7 +54,7 @@ private:
     void clear_renderables();
 
 public:
-    ConstantLooper(std::array<uint8_t, 2> duck_ids, Queue<Snapshot>& snapshot_q, Queue<action>& actions_q);
+    ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q, Queue<action>& actions_q);
 
     void run();
 

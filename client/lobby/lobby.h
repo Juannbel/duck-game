@@ -13,7 +13,7 @@ private:
     MainWindow mainWindow;
 
 public:
-    Lobby(ClientProtocol& protocol, std::array<uint8_t, 2>& duck_ids):
+    Lobby(ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids):
             app(argc, argv), mainWindow(nullptr, protocol, duck_ids) {}
 
     void run() {

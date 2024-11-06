@@ -32,7 +32,7 @@
 
 #define USE_CAMERA true
 
-ConstantLooper::ConstantLooper(std::array<uint8_t, 2> duck_ids, Queue<Snapshot>& snapshot_q,
+ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
         duck_ids(duck_ids),
         sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
@@ -42,8 +42,8 @@ ConstantLooper::ConstantLooper(std::array<uint8_t, 2> duck_ids, Queue<Snapshot>&
         screen_manager(renderer, duck_ids),
         snapshot_q(snapshot_q),
         actions_q(actions_q),
-        p1_controller(duck_ids[0], actions_q, last_snapshot, P1_CONTROLS),
-        p2_controller(duck_ids[1], actions_q, last_snapshot, P2_CONTROLS),
+        p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS),
+        p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS),
         map_dto() {}
 
 void ConstantLooper::run() try {
@@ -79,7 +79,6 @@ void ConstantLooper::run() try {
             camera.update(last_snapshot);
             continue;
         }
-
 
         // Actualizar el estado de todo lo que se renderiza
         process_snapshot();
@@ -184,13 +183,13 @@ void ConstantLooper::render(Camera& camera, RenderableMapDto& map) {
     }
 
     for (auto& duck: ducks_renderables) {
-        if (duck.first == duck_ids[0] || duck.first == duck_ids[1])
+        if (duck.first == duck_ids.first || duck.first == duck_ids.second)
             continue;
         duck.second->render(renderer, camera);
     }
-    ducks_renderables[duck_ids[0]]->render(renderer, camera);
-    if (duck_ids[1] != INVALID_DUCK_ID) {
-        ducks_renderables[duck_ids[1]]->render(renderer, camera);
+    ducks_renderables[duck_ids.first]->render(renderer, camera);
+    if (duck_ids.second != INVALID_DUCK_ID) {
+        ducks_renderables[duck_ids.second]->render(renderer, camera);
     }
 
     for (auto& collectable: collectables_renderables) {
@@ -218,12 +217,12 @@ bool ConstantLooper::process_events() {
         }
 
         p1_controller.process_event(event);
-        if (duck_ids[1] != INVALID_DUCK_ID)
+        if (duck_ids.second != INVALID_DUCK_ID)
             p2_controller.process_event(event);
     }
 
     p1_controller.send_last_move_command();
-    if (duck_ids[1] != INVALID_DUCK_ID)
+    if (duck_ids.second != INVALID_DUCK_ID)
         p2_controller.send_last_move_command();
 
     return true;

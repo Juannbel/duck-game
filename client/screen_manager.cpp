@@ -14,31 +14,27 @@
 
 #include "config.h"
 
-ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, std::array<uint8_t, 2>& duck_ids):
+ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, std::pair<uint8_t, uint8_t>& duck_ids):
         duck_ids(duck_ids), renderer(renderer), primary_font(DATA_PATH "/fonts/primary.ttf", 30) {}
 
 bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
-    // Cargar las texturas de los patos
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
 
-    // Cargar la animación de ambos patos
     AnimationData duck_data_1(AnimationDataProvider::get_animation_data(
-            "duck_" + std::to_string(duck_ids[0]) + "_standing"));
+            "duck_" + std::to_string(duck_ids.first) + "_standing"));
     AnimationData duck_data_2;
-    if (duck_ids[1] != INVALID_DUCK_ID) {
+    if (duck_ids.second != INVALID_DUCK_ID) {
         duck_data_2 = AnimationDataProvider::get_animation_data(
-                "duck_" + std::to_string(duck_ids[1]) + "_standing");
+                "duck_" + std::to_string(duck_ids.second) + "_standing");
     }
 
-    // Cargar textos de información
     SDL2pp::Texture info_1(renderer,
-                           primary_font.RenderText_Solid("P1: Duck ID " + std::to_string(duck_ids[0]),
+                           primary_font.RenderText_Solid("P1: Duck ID " + std::to_string(duck_ids.first),
                                                          SDL_Color{255, 255, 255, 255}));
     SDL2pp::Texture info_2(renderer,
-                           primary_font.RenderText_Solid("P2: Duck ID " + std::to_string(duck_ids[1]),
+                           primary_font.RenderText_Solid("P2: Duck ID " + std::to_string(duck_ids.second),
                                                          SDL_Color{255, 255, 255, 255}));
 
-    // Cargar textos de "Esperando jugadores..."
     std::array<SDL2pp::Texture, 4> waiting_texts = {
         SDL2pp::Texture(renderer, primary_font.RenderText_Solid("Waiting for players   ", SDL_Color{255, 255, 255, 255})),
         SDL2pp::Texture(renderer, primary_font.RenderText_Solid("Waiting for players.  ", SDL_Color{255, 255, 255, 255})),
@@ -49,15 +45,19 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     uint8_t it = 0;
     uint8_t it_since_change = 0;
 
-    // Configurar las posiciones de los patos y el texto en pantalla
     SDL2pp::Rect dst_1 = duck_data_1.frames[0].rect;
     dst_1.w *= 5;
     dst_1.h *= 5;
-    dst_1.x = renderer.GetOutputWidth() / 4 - dst_1.w / 2;
-    dst_1.y = renderer.GetOutputHeight() / 2;
+    if (duck_ids.second == INVALID_DUCK_ID) {
+        dst_1.x = renderer.GetOutputWidth() / 2 - dst_1.w / 2;
+        dst_1.y = renderer.GetOutputHeight() / 2;
+    } else {
+        dst_1.x = renderer.GetOutputWidth() / 4 - dst_1.w / 2;
+        dst_1.y = renderer.GetOutputHeight() / 2;
+    }
 
     SDL2pp::Rect dst_2;
-    if (duck_ids[1] != INVALID_DUCK_ID) {
+    if (duck_ids.second != INVALID_DUCK_ID) {
         dst_2 = duck_data_2.frames[0].rect;
         dst_2.w *= 5;
         dst_2.h *= 5;
@@ -75,15 +75,13 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
 
         renderer.Clear();
 
-        // Dibujar el primer pato e información
         renderer.Copy(*duck_texture, duck_data_1.frames[0].rect, dst_1);
         renderer.Copy(info_1, SDL2pp::NullOpt,
                       SDL2pp::Rect(SDL2pp::Point(dst_1.x + dst_1.w / 2 - info_1.GetSize().x / 2,
                                                  dst_1.y - info_1.GetSize().y - 10),
                                    info_1.GetSize()));
 
-        // Dibujar el segundo pato si está presente
-        if (duck_ids[1] != INVALID_DUCK_ID) {
+        if (duck_ids.second != INVALID_DUCK_ID) {
             renderer.Copy(*duck_texture, duck_data_2.frames[0].rect, dst_2);
             renderer.Copy(info_2, SDL2pp::NullOpt,
                           SDL2pp::Rect(SDL2pp::Point(dst_2.x + dst_2.w / 2 - info_2.GetSize().x / 2,
@@ -91,7 +89,6 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
                                        info_2.GetSize()));
         }
 
-        // Dibujar el texto "Waiting for players..."
         renderer.Copy(
                 waiting_texts[it], SDL2pp::NullOpt,
                 SDL2pp::Rect(SDL2pp::Point(renderer.GetOutputWidth() / 2 - waiting_texts[it].GetSize().x / 2,
@@ -100,7 +97,6 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
 
         renderer.Present();
 
-        // Cambiar texto de "Waiting for players..."
         it_since_change++;
         if (it_since_change == 40) {
             it = (it + 1) % waiting_texts.size();

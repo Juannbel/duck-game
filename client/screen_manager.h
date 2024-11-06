@@ -15,7 +15,7 @@
 
 class ScreenManager {
 private:
-    std::array<uint8_t, 2>& duck_ids;
+    std::pair<uint8_t, uint8_t>& duck_ids;
     SDL2pp::Renderer& renderer;
     SDL2pp::SDLTTF sdl_ttf;
     SDL2pp::Font primary_font;
@@ -25,7 +25,7 @@ private:
                           AnimationData& animation_data);
 
 public:
-    ScreenManager(SDL2pp::Renderer& renderer, std::array<uint8_t, 2>& duck_ids);
+    ScreenManager(SDL2pp::Renderer& renderer, std::pair<uint8_t, uint8_t>& duck_ids);
 
     bool waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 
