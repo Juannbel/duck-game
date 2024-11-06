@@ -18,7 +18,7 @@ uint8_t Game::add_player(int id_player, Queue<Snapshot>& player_sender_queue) {
         return INVALID_DUCK_ID;
     }
 
-    sv_msg_queues.add_element(&player_sender_queue);
+    sv_msg_queues.add_element(&player_sender_queue, id_player);
 
     const uint8_t game_duck_id = gameloop.add_player();
     player_to_duck_id[id_player] = game_duck_id;
@@ -35,9 +35,7 @@ void Game::start() {
 }
 
 void Game::delete_player(const int id_player) {
-    // ver como acceder a la queue del player para sacarla de la lista (tiene que ser con playerId)
-    // Queue<Snapshot>* queue = player.get_sender_queue();
-    // sv_msg_queues.remove_element(queue);
+    sv_msg_queues.remove_element(id_player);
     const int duck_id = player_to_duck_id[id_player];
     gameloop.delete_duck(duck_id);
 }

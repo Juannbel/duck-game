@@ -27,7 +27,7 @@ public:
 
     uint8_t add_player(int player_id, Queue<Snapshot>& player_sender_queue);
 
-    void delete_player(const int id_player);
+    void delete_player(int id_player);
 
     bool is_open() { return open; }
 

@@ -28,9 +28,6 @@ ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_mon
 
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
 void ServerReceiver::run() {
-    // bool was_closed = false; // comento hasta que se use por cppcheck
-    // Snapshot msg;
-
     setup_game();
 
     // Ya tengo todo, lanzo thread sender
@@ -51,9 +48,7 @@ void ServerReceiver::run() {
             break;
         }
 
-        action action;
-        action.duck_id = duck_id;  // Agregar el n de pato
-        action.command = cmd;
+        action action{duck_id, cmd};
 
         try {
             gameloop_q->push(action);
