@@ -7,10 +7,10 @@
 
 MainWindow::MainWindow(QWidget* parent):
         QMainWindow(parent), ui(new Ui::MainWindow), scene(new QGraphicsScene(this)) {
-    map_dto.theme = 0;
+    map.map_dto.theme = 0;
     for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
         for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
-            map_dto.blocks[i][j] = {Empty, false};
+            map.map_dto.blocks[i][j] = {Empty, false};
         }
     }
     ui->setupUi(this);
@@ -19,8 +19,10 @@ MainWindow::MainWindow(QWidget* parent):
     grassTextures.resize(MAP_THEMES * (static_cast<int>(HalfFloor) + 1));
 
     loadTiles();
+    loadDuckTexture();    
+    loadGunTexture();
     renderGrid();
-    updateThemeSelector(map_dto.theme);
+    updateThemeSelector(map.map_dto.theme);
 
     connect(ui->tileSelector, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
             &MainWindow::onTileSelected);
@@ -58,12 +60,29 @@ void MainWindow::loadThemeTiles(uint8_t theme) {
                 tileSet.copy(TILE_SIZE * (i - 1), theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         iconsForTheme.push_back(QIcon(grassTextures[i + offset]));
     }
-
+        /*
+        gunTexture =
+                gunSprite.copy(4 *32, 0, 32, 32);
+        duckTexture =
+                duckSprite.copy(0, 0, 32, 32);
+        
+    */
     themeTiles[theme] = iconsForTheme;
 
     qDebug() << "Tiles cargados para el tema " << theme << ": " << iconsForTheme.size();
 }
 
+void MainWindow::loadDuckTexture(){
+    QPixmap duckSprite(":/images/duck_sprite.png");
+    duckTexture =
+                duckSprite.copy(0, 0, DUCK_SIZE, DUCK_SIZE);
+    
+}    
+void MainWindow::loadGunTexture(){
+    QPixmap gunSprite(":/images/guns.png");
+    gunTexture =
+                gunSprite.copy(GUN_SIZE * GUN_INDEX , 0, GUN_SIZE, GUN_SIZE);
+}
 
 void MainWindow::updateThemeSelector(int themeIndex) {
     ui->tileSelector->clear();
@@ -81,9 +100,12 @@ void MainWindow::updateThemeSelector(int themeIndex) {
         for (int i = 0; i <= static_cast<int>(HalfFloor); i++) {
             ui->tileSelector->addItem(tiles[i], block_to_string[static_cast<BlockType>(i)]);
         }
-        map_dto.theme = themeIndex;
+        map.map_dto.theme = themeIndex;
     }
 
+    ui->tileSelector->addItem(QIcon(duckTexture), "Duck");
+    ui->tileSelector->addItem(QIcon(gunTexture), "Gun");
+    
     QPixmap backgroundPixmap;
     backgroundPixmap.load(":/images/background_" + QString::number(themeIndex) + ".png");
 
@@ -100,11 +122,7 @@ void MainWindow::renderGrid() {
     scene->clear();
 
     if (!currentBackground.isNull()) {
-        QGraphicsPixmapItem *backgroundItem = scene->addPixmap(currentBackground);
-        backgroundItem->setZValue(-1);
-        backgroundItem->setPos(0, 0);
-    }
-    if (!currentBackground.isNull()) {
+
         QSize gridSize = QSize(MAP_WIDTH_BLOCKS * TILE_SIZE, MAP_HEIGHT_BLOCKS * TILE_SIZE);
         QPixmap scaledBackground = currentBackground.scaled(gridSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
@@ -115,22 +133,22 @@ void MainWindow::renderGrid() {
 
     for (int x = 0; x <= MAP_WIDTH_BLOCKS; ++x) {
         scene->addLine(x * TILE_SIZE, 0, x * TILE_SIZE, MAP_HEIGHT_BLOCKS * TILE_SIZE,
-                       QPen(Qt::black, 1));  // Línea vertical
+                       QPen(Qt::black, 1));  
     }
     for (int y = 0; y <= MAP_HEIGHT_BLOCKS; ++y) {
         scene->addLine(0, y * TILE_SIZE, MAP_WIDTH_BLOCKS * TILE_SIZE, y * TILE_SIZE,
-                       QPen(Qt::black, 1));  // Línea horizontal
+                       QPen(Qt::black, 1)); 
     }
 
     for (int y = 0; y < MAP_HEIGHT_BLOCKS; ++y) {
         for (int x = 0; x < MAP_WIDTH_BLOCKS; ++x) {
-            Block block = map_dto.blocks[y][x];
+            Block block = map.map_dto.blocks[y][x];
             if (block.type == Empty) {
                 continue;
             }
 
             int tileIndex = static_cast<int>(block.type);
-            int offset = (static_cast<int>(HalfFloor) + 1) * map_dto.theme;
+            int offset = (static_cast<int>(HalfFloor) + 1) * map.map_dto.theme;
 
             QGraphicsPixmapItem* item = scene->addPixmap(grassTextures[tileIndex + offset]);
             item->setPos(x * TILE_SIZE, y * TILE_SIZE);
@@ -140,11 +158,34 @@ void MainWindow::renderGrid() {
             }
         }
     }
+
+    for (const std::pair<int16_t, int16_t>& duckPos : map.duck_spawns) {
+        QPoint pos(duckPos.first, duckPos.second); 
+        QGraphicsPixmapItem* duckItem = scene->addPixmap(duckTexture);
+        duckItem->setPos(pos.x() * TILE_SIZE, pos.y() * TILE_SIZE);
+        duckItem->setScale(0.5); 
+    }
+
+    for (const std::pair<int16_t, int16_t>& gunPos : map.collectables_spawns) {
+        QPoint pos(gunPos.first, gunPos.second); 
+        QGraphicsPixmapItem* gunItem = scene->addPixmap(gunTexture);
+        gunItem->setPos(pos.x() * TILE_SIZE, pos.y() * TILE_SIZE);
+        gunItem->setScale(0.5); 
+    }
 }
 
+
 void MainWindow::onTileSelected(int index) {
-    selectedTileIndex = static_cast<BlockType>(index);
-    qDebug() << "Tile seleccionado: " << selectedTileIndex;
+    if (index <= static_cast<int>(HalfFloor)) {
+        selectedTileIndex = static_cast<BlockType>(index);
+        qDebug() << "Tile seleccionado: " << selectedTileIndex;
+    } else if (index == static_cast<int>(HalfFloor) + 1) {
+        selectedTileIndex = index;
+        qDebug() << "Duck seleccionado";
+    } else if (index == static_cast<int>(HalfFloor) + 2) {
+        selectedTileIndex = index;
+        qDebug() << "Gun seleccionado";
+    }
 }
 
 bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
@@ -188,39 +229,47 @@ void MainWindow::onGridClicked(QPoint pos) {
     int gridY = pos.y() / TILE_SIZE;
 
     if (gridX >= 0 && gridX < MAP_WIDTH_BLOCKS && gridY >= 0 && gridY < MAP_HEIGHT_BLOCKS) {
-        Block& block = map_dto.blocks[gridY][gridX];
-
+        if(selectedTileIndex == static_cast<int>(HalfFloor) + 1){
+            map.duck_spawns.push_back(std::pair(gridX, gridY));
+            renderGrid();
+            return;
+        } else if(selectedTileIndex == static_cast<int>(HalfFloor) + 2){
+            map.collectables_spawns.push_back(std::pair(gridX, gridY));
+            renderGrid();
+            return;
+        }
+        Block& block = map.map_dto.blocks[gridY][gridX];
         if (block.type == Empty) {
-            placeTile(gridX, gridY, selectedTileIndex, true);
+            placeTile(gridX, gridY, static_cast<BlockType>(selectedTileIndex), true);
             qDebug() << "Nuevo bloque colocado en (" << gridX << "," << gridY
-                     << ") solid:" << map_dto.blocks[gridY][gridX].solid;
+                     << ") solid:" << map.map_dto.blocks[gridY][gridX].solid;
         } else if (block.type == selectedTileIndex) {
             block.solid = !block.solid;
             qDebug() << "Cambiando solidez en (" << gridX << "," << gridY << ") a:" << block.solid;
         } else {
-            placeTile(gridX, gridY, selectedTileIndex, true);
+            placeTile(gridX, gridY, static_cast<BlockType>(selectedTileIndex), true);
             qDebug() << "Reemplazando bloque en (" << gridX << "," << gridY
-                     << ") solid:" << map_dto.blocks[gridX][gridY].solid;
+                     << ") solid:" << map.map_dto.blocks[gridX][gridY].solid;
         }
 
         renderGrid();
 
         qDebug() << "Estado final del bloque en (" << gridX << "," << gridY << "):"
-                 << " tipo:" << static_cast<int>(map_dto.blocks[gridY][gridX].type)
-                 << " solid:" << map_dto.blocks[gridY][gridX].solid;
+                 << " tipo:" << static_cast<int>(map.map_dto.blocks[gridY][gridX].type)
+                 << " solid:" << map.map_dto.blocks[gridY][gridX].solid;
     }
 }
 
-void MainWindow::placeTile(int x, int y, BlockType block_type, bool solid) {
-    qDebug() << "Colocando bloque " << static_cast<int>(block_type);
-    map_dto.blocks[y][x] = {block_type, solid};
+void MainWindow::placeTile(int x, int y, BlockType blockType, bool solid) {
+    qDebug() << "Colocando bloque " << static_cast<int>(blockType);
+    if(blockType < static_cast<int>(HalfFloor))
+        map.map_dto.blocks[y][x] = {static_cast<BlockType>(blockType), solid};
+    
 }
 
 void MainWindow::on_save_mapButton_clicked() { saveToYaml(); }
 
 void MainWindow::saveToYaml() {
-    Map map;
-
     bool ok;
     QString fileName = QInputDialog::getText(
             nullptr, "Save MapDto", "Insert filename (without extension):", QLineEdit::Normal, "",
@@ -236,8 +285,6 @@ void MainWindow::saveToYaml() {
     }
 
     QString filePath = SERVER_DATA_PATH + static_cast<QString>("/") + fileName;
-
-    map.map_dto = this->map_dto;
 
     loader.save_map(filePath.toStdString(), map);
     std::cout << "Archivo guardado con éxito en: " << filePath.toStdString() << std::endl;
@@ -276,7 +323,7 @@ void MainWindow::on_load_mapButton_clicked() {
         selectedFile = SERVER_DATA_PATH + static_cast<QString>("/") + selectedFile;
 
         Map loaded_map = loader.load_map(selectedFile.toStdString());
-        this->map_dto = loaded_map.map_dto;
+        this->map = loaded_map;
         renderGrid();
         dialog.accept();
     });

@@ -24,6 +24,9 @@
 #include "ui_mainwindow.h"
 
 const int TILE_SIZE = 16;
+const int DUCK_SIZE = 32;
+const int GUN_SIZE = 32;
+const int GUN_INDEX = 4;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -49,21 +52,23 @@ private:
     Ui::MainWindow* ui;
     QGraphicsScene* scene;
     QVector<QPixmap> grassTextures;
-    BlockType selectedTileIndex = Empty;
+    int selectedTileIndex = 0;
     QMap<int, QVector<QIcon>> themeTiles;
-    MapDto map_dto;
+    Map map;
     QPoint lastProcessedTile = QPoint(-1, -1);
     MapLoader loader;
     QPixmap currentBackground;
+    QPixmap duckTexture;
+    QPixmap gunTexture;
 
     void saveToYaml();
-
+    void loadDuckTexture();
+    void loadGunTexture();
     void updateThemeSelector(int themeIndex);
     void loadThemeTiles(uint8_t theme);
     void loadTiles();
     void renderGrid();
     void placeTile(int x, int y, BlockType block_type, bool solid);
-    void updateTileTexture(int x, int y);
     bool eventFilter(QObject* watched, QEvent* event) override;
 };
 
