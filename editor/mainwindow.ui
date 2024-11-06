@@ -41,14 +41,14 @@
       <widget class="QComboBox" name="tileSelector"/>
      </item>
      <item>
-      <widget class="QPushButton" name="saveMapButton">
+      <widget class="QPushButton" name="save_mapButton">
        <property name="text">
         <string>save map</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="loadMapButton">
+      <widget class="QPushButton" name="load_mapButton">
        <property name="text">
         <string>load map</string>
        </property>

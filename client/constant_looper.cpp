@@ -55,7 +55,7 @@ void ConstantLooper::run() try {
 
     Camera camera(renderer);
 
-    RenderableMap map(map_dto);
+    RenderableMapDto map(map_dto);
 
     bool keep_running = true;
 
@@ -172,7 +172,7 @@ void ConstantLooper::process_snapshot() {
     }
 }
 
-void ConstantLooper::render(Camera& camera, RenderableMap& map) {
+void ConstantLooper::render(Camera& camera, RenderableMapDto& map) {
     renderer.Clear();
 
     map.render(renderer, camera);

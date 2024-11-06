@@ -2,9 +2,9 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <fstream>
 
 #include <sys/types.h>
-#include <fstream>
 
 std::vector<std::string> MapLoader::list_maps(const std::string& path_to_dir) {
     std::vector<std::string> maps;
@@ -14,9 +14,8 @@ std::vector<std::string> MapLoader::list_maps(const std::string& path_to_dir) {
     return maps;
 }
 
-Map MapLoader::loadMap(const std::string& path) {
-    Map map_blocks_info;
-
+Map MapLoader::load_map(const std::string& path) {
+    MapDto map_blocks_info;
 
     YAML::Node config = YAML::LoadFile(path);
 
@@ -31,7 +30,7 @@ Map MapLoader::loadMap(const std::string& path) {
         }
     }
 
-    for (const auto& block : config["blocks"]) {
+    for (const auto& block: config["blocks"]) {
         const BlockType type = static_cast<BlockType>(block["type"].as<int>());
         bool solid = block["solid"].as<bool>();
 
@@ -46,20 +45,37 @@ Map MapLoader::loadMap(const std::string& path) {
         map_blocks_info.blocks[y][x].solid = solid;
     }
 
-    return map_blocks_info;
+    Map map;
+    map.map_dto = map_blocks_info;
+
+    for (const auto& spawn: config["duck_spawns"]) {
+        map.duck_spawns.emplace_back(spawn["x"].as<int>(), spawn["y"].as<int>());
+    }
+
+    for (const auto& spawn: config["collectables_spawns"]) {
+        map.collectables_spawns.emplace_back(spawn["x"].as<int>(), spawn["y"].as<int>());
+    }
+
+    for (const auto& spawn: config["boxes_spawns"]) {
+        map.boxes_spawns.emplace_back(spawn["x"].as<int>(), spawn["y"].as<int>());
+    }
+
+    return map;
 }
 
-void MapLoader::saveMap(const std::string& path, const Map& map) {
+void MapLoader::save_map(const std::string& path, const Map& map) {
+    const MapDto& map_dto = map.map_dto;
+
     YAML::Node root;
     root["width"] = MAP_WIDTH_BLOCKS;
     root["height"] = MAP_HEIGHT_BLOCKS;
-    root["theme"] = static_cast<int>(map.theme);
+    root["theme"] = static_cast<int>(map_dto.theme);
 
     YAML::Node blocksNode = root["blocks"];
 
     for (int i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
         for (int j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
-            const Block &block = map.blocks[i][j];
+            const Block& block = map_dto.blocks[i][j];
             if (block.type != Empty) {
                 YAML::Node blockNode;
                 blockNode["x"] = j;
@@ -70,6 +86,30 @@ void MapLoader::saveMap(const std::string& path, const Map& map) {
                 blocksNode.push_back(blockNode);
             }
         }
+    }
+
+    YAML::Node duck_spawns = root["duck_spawns"];
+    for (const auto& spawn: map.duck_spawns) {
+        YAML::Node spawnNode;
+        spawnNode["x"] = spawn.first;
+        spawnNode["y"] = spawn.second;
+        duck_spawns.push_back(spawnNode);
+    }
+
+    YAML::Node collectables_spawns = root["collectables_spawns"];
+    for (const auto& spawn: map.collectables_spawns) {
+        YAML::Node spawnNode;
+        spawnNode["x"] = spawn.first;
+        spawnNode["y"] = spawn.second;
+        collectables_spawns.push_back(spawnNode);
+    }
+
+    YAML::Node boxes_spawns = root["boxes_spawns"];
+    for (const auto& spawn: map.boxes_spawns) {
+        YAML::Node spawnNode;
+        spawnNode["x"] = spawn.first;
+        spawnNode["y"] = spawn.second;
+        boxes_spawns.push_back(spawnNode);
     }
 
     std::ofstream file(path);

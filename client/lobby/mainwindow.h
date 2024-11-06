@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 #include "../client_protocol.h"
 
 QT_BEGIN_NAMESPACE
@@ -14,7 +15,7 @@ class MainWindow: public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent, ClientProtocol& protocol, uint8_t &duck_id);
+    MainWindow(QWidget* parent, ClientProtocol& protocol, uint8_t& duck_id);
     ~MainWindow();
 
 private slots:
@@ -27,7 +28,7 @@ private slots:
 private:
     Ui::MainWindow* ui;
     ClientProtocol& protocol;
-    uint8_t &duck_id;
+    uint8_t& duck_id;
 
     void updateLobbyList();
 };

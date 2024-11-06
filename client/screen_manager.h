@@ -37,7 +37,7 @@ public:
      * En el segundo caso, muestra tambien la pantalla de fin de juego
      */
     bool between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                               RenderableMap& map, Camera& camera);
+                               RenderableMapDto& map, Camera& camera);
 };
 
 #endif

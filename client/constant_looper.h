@@ -33,7 +33,7 @@ private:
     Queue<Command>& command_q;
     Snapshot last_snapshot;
     DuckController p1_controller;
-    Map map_dto;
+    MapDto map_dto;
 
     std::unordered_map<uint8_t, std::unique_ptr<RenderableDuck>> ducks_renderables;
     std::unordered_map<uint32_t, std::unique_ptr<RenderableCollectable>> collectables_renderables;
@@ -43,7 +43,7 @@ private:
 
     void process_snapshot();
 
-    void render(Camera& camera, RenderableMap& map);
+    void render(Camera& camera, RenderableMapDto& map);
 
     void sleep_or_catch_up(uint32_t& t1);
 

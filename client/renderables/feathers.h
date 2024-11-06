@@ -2,6 +2,7 @@
 #define RENDERABLE_FEATHERS_H
 
 #include "client/camera.h"
+
 #include "animation.h"
 
 class RenderableFeathers {

@@ -1,6 +1,7 @@
 #include "client.h"
 
 #include <cstdint>
+
 #include "common/blocking_queue.h"
 #include "common/lobby.h"
 #include "lobby/lobby.h"
@@ -21,7 +22,8 @@ void Client::run() {
     receiver.start();
     sender.start();
 
-    if (duck_id == INVALID_DUCK_ID) return;
+    if (duck_id == INVALID_DUCK_ID)
+        return;
 
     ConstantLooper looper(duck_id, snapshot_q, command_q);
     looper.run();
@@ -31,8 +33,12 @@ void Client::run() {
 
 Client::~Client() {
     protocol.shutdown();
-    try { snapshot_q.close(); } catch (...) {};
-    try { command_q.close(); } catch (...) {};
+    try {
+        snapshot_q.close();
+    } catch (...) {};
+    try {
+        command_q.close();
+    } catch (...) {};
     receiver.stop();
     sender.stop();
     receiver.join();

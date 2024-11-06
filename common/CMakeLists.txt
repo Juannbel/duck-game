@@ -15,5 +15,6 @@ target_sources(taller_common
     resolvererror.h
     liberror.h
     map_dto.h
+    map.h
     map_loader.h
     )

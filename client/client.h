@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include <atomic>
+
 #include "client_protocol.h"
 #include "client_receiver.h"
 #include "client_sender.h"

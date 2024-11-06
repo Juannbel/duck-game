@@ -1,11 +1,13 @@
 #include "client_receiver.h"
+
 #include <atomic>
 
 #include "common/liberror.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
 
-ClientReceiver::ClientReceiver(ClientProtocol& protocol, Queue<Snapshot>& q, std::atomic<bool>& alive):
+ClientReceiver::ClientReceiver(ClientProtocol& protocol, Queue<Snapshot>& q,
+                               std::atomic<bool>& alive):
         protocol(protocol), snapshot_q(q), alive(alive) {}
 
 void ClientReceiver::run() {
@@ -30,6 +32,8 @@ void ClientReceiver::run() {
         }
     }
 
-    try { snapshot_q.close(); } catch (...) {}
+    try {
+        snapshot_q.close();
+    } catch (...) {}
     alive = false;
 }

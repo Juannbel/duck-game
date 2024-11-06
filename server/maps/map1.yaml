@@ -438,3 +438,9 @@ blocks:
     y: 18
     type: 6
     solid: true
+
+duck_spawns:
+
+collectables_spawns:
+
+boxes_spawns:

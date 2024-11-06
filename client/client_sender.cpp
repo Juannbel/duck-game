@@ -3,7 +3,8 @@
 #include "common/blocking_queue.h"
 #include "common/liberror.h"
 
-ClientSender::ClientSender(ClientProtocol& protocol, Queue<Command>& sender_q, std::atomic<bool>& alive):
+ClientSender::ClientSender(ClientProtocol& protocol, Queue<Command>& sender_q,
+                           std::atomic<bool>& alive):
         protocol(protocol), sender_q(sender_q), alive(alive) {}
 
 void ClientSender::run() {
@@ -28,6 +29,8 @@ void ClientSender::run() {
         }
     }
 
-    try { sender_q.close(); } catch (...) {}
+    try {
+        sender_q.close();
+    } catch (...) {}
     alive = false;
 }

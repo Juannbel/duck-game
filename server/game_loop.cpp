@@ -30,7 +30,10 @@ std::string get_rand_string(std::vector<std::string>& v_strings) {
 }
 
 void GameLoop::initialice_new_round() {
-    curr_map_dto = map_loader.loadMap(get_rand_string(paths_to_maps));
+    // FEDE ARREGLAR ESTO
+    // CARGAS EL MAPA, LO GUARDAS COMPLETO, Y DESPUES A LA HORA DE PASARLE AL PROTOCOLO LE PASAS
+    // SOLO EL MAP DTO
+    curr_map_dto = map_loader.load_map(get_rand_string(paths_to_maps)).map_dto;
     game_operator.initialize_game(curr_map_dto, duck_ids);
 }
 
@@ -131,10 +134,12 @@ bool GameLoop::check_for_winner(Snapshot& actual_status) {
 }
 
 uint8_t GameLoop::add_player() {
+    // uint8_t GameLoop::add_player(const std::string& player_name) {
     if (duck_ids.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
     }
     uint8_t duck_id = duck_ids.size();
+    // ducks_info.emplace_back(duck_id, player_name);
     duck_ids.emplace_back(duck_id);
     return duck_id;
 }

@@ -7,7 +7,8 @@
 #include "common/lobby.h"
 #include "common/snapshot.h"
 
-ServerSender::ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, int playerId, std::atomic<bool>& is_alive):
+ServerSender::ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, int playerId,
+                           std::atomic<bool>& is_alive):
         protocol(protocol), sender_q(sender_q), playerId(playerId), is_alive(is_alive) {}
 
 void ServerSender::run() {
@@ -40,6 +41,4 @@ void ServerSender::send_game_info(int32_t game_id, uint8_t duck_id) {
     protocol.send_game_info(info);
 }
 
-ServerSender::~ServerSender() {
-    is_alive = false;
-}
+ServerSender::~ServerSender() { is_alive = false; }

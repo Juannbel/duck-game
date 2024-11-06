@@ -33,12 +33,12 @@ private:
     void check_spawn_picked(uint32_t id);
     GunType get_random_guntype();
 
-    void load_map(Map& map_dto);
+    void load_map(MapDto& map_dto);
     void initialize_players(const std::vector<uint8_t>& duck_ids);
 
 public:
     GameOperator();
-    void initialize_game(Map& map_dto, const std::vector<uint8_t>& duck_ids);
+    void initialize_game(MapDto& map_dto, const std::vector<uint8_t>& duck_ids);
     void process_action(action& action);
     void update_game_status();
 

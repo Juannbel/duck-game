@@ -48,7 +48,7 @@ struct Duck {
     bool facing_up;
     bool is_laying;  // se esta haciendo el muerto
     bool is_dead;
-    bool is_damaged; // recibio un disparo
+    bool is_damaged;  // recibio un disparo
 
     bool helmet_equiped;
     bool armor_equiped;
@@ -78,13 +78,22 @@ struct Bullet {
     GunType type;
 } __attribute__((packed));
 
+enum BoxStatus { NoDamage, LittleDamage, MediumDamage, HeavyDamage };
+
+struct Box {
+    int16_t x;
+    int16_t y;
+    BoxStatus status;
+} __attribute__((packed));
+
 struct Snapshot {
     // cppcheck-suppress unusedStructMember
     bool match_finished = true;  // each match has five rounds.
     std::vector<Duck> ducks;
     std::vector<Gun> guns;
     std::vector<Bullet> bullets;
-    std::vector<Map> maps;
+    std::vector<Box> boxes;
+    std::vector<MapDto> maps;
 };
 
 

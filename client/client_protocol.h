@@ -29,13 +29,12 @@ public:
     void shutdown();
 
 private:
-    Snapshot deserializeSnapshot(const Snapshot& snapshot);
+    void deserialize_snapshot(Snapshot& snapshot);
 
     bool recv_match_finished(bool& was_closed);
-    std::vector<Map> recv_maps_vector(bool& wasClosed);
-    std::vector<Duck> recv_ducks_vector(bool& was_closed);
-    std::vector<Gun> recv_guns_vector(bool& was_closed);
-    std::vector<Bullet> recv_bullets_vector(bool& was_closed);
+
+    template <typename T>
+    void recv_vector(std::vector<T>& v, bool& was_closed);
 
     ClientProtocol(const ClientProtocol&) = delete;
     ClientProtocol& operator=(const ClientProtocol&) = delete;

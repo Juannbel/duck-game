@@ -18,11 +18,11 @@ public:
 
     void send_duck_id(const uint8_t& duck_id);
 
-    void send_snapshot(const Snapshot& snapshot);
+    void send_snapshot(Snapshot& snapshot);
 
     int32_t receive_cmd();
 
-    void send_lobbies_info(std::vector<int32_t> &lobbies);
+    void send_lobbies_info(std::vector<int32_t>& lobbies);
 
     void send_game_info(GameInfo game_info);
 
@@ -31,20 +31,12 @@ public:
     void shutdown();
 
 private:
-    Snapshot serializeSnapshot(const Snapshot& snapshot);
+    void serializeSnapshot(Snapshot& snapshot);
 
     void send_match_finished(const bool& match_finished, bool& was_closed);
 
     template <typename T>
     void send_snapshot_vector(const std::vector<T>& vector, bool& wasClosed);
-
-    void send_maps_vector(const std::vector<Map>& maps, bool& wasClosed);
-
-    void send_ducks_vector(const std::vector<Duck>& ducks, bool& wasClosed);
-
-    void send_guns_vector(const std::vector<Gun>& guns, bool& wasClosed);
-
-    void send_bullets_vector(const std::vector<Bullet>& bullets, bool& wasClosed);
 
     ServerProtocol(const ServerProtocol&) = delete;
     ServerProtocol& operator=(const ServerProtocol&) = delete;

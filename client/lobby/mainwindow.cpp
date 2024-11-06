@@ -1,11 +1,13 @@
 #include "mainwindow.h"
 
-#include "./ui_mainwindow.h"
-#include "../../common/lobby.h"
 #include <QMessageBox>
 #include <vector>
 
-MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, uint8_t& duck_id): QMainWindow(parent), ui(new Ui::MainWindow), protocol(protocol), duck_id(duck_id) {
+#include "../../common/lobby.h"
+#include "./ui_mainwindow.h"
+
+MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, uint8_t& duck_id):
+        QMainWindow(parent), ui(new Ui::MainWindow), protocol(protocol), duck_id(duck_id) {
     ui->setupUi(this);
 
     ui->stackedWidget->setCurrentIndex(0);
@@ -34,9 +36,7 @@ void MainWindow::onJoinGameClicked() {
     ui->stackedWidget->setCurrentIndex(1);
 }
 
-void MainWindow::onBackClicked() {
-    ui->stackedWidget->setCurrentIndex(0);
-}
+void MainWindow::onBackClicked() { ui->stackedWidget->setCurrentIndex(0); }
 
 void MainWindow::onJoinLobbyClicked() {
     int selectedRow = ui->lobbiesList->currentRow();
@@ -67,7 +67,7 @@ void MainWindow::updateLobbyList() {
     ui->lobbiesList->clear();
     std::vector<int32_t> lobbies = protocol.recv_lobbies_info();
 
-    for (int32_t lobby : lobbies) {
+    for (int32_t lobby: lobbies) {
         ui->lobbiesList->addItem(QString::number(lobby));
     }
 }

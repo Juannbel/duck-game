@@ -16,7 +16,8 @@
 #define JOIN 2
 
 ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor,
-                               Queue<Snapshot>& sender_q, int playerId, std::atomic<bool>& is_alive):
+                               Queue<Snapshot>& sender_q, int playerId,
+                               std::atomic<bool>& is_alive):
         protocol(protocol),
         games_monitor(games_monitor),
         playerId(playerId),

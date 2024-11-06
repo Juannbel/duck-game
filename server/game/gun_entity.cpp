@@ -79,8 +79,8 @@ void GunEntity::add_bullet(DuckPlayer& player) {
     if ((trigger_pulled && it_since_shoot > it_to_shoot) ||
         (bullets_to_shoot > shooted_bullets && shooted_bullets > 0)) {
         Duck status = player.get_status();
-        int16_t x =
-                status.facing_right ? status.x + DUCK_HITBOX_WIDTH + 1 : status.x - BULLET_HITBOX_WIDTH - 1;
+        int16_t x = status.facing_right ? status.x + DUCK_HITBOX_WIDTH + 1 :
+                                          status.x - BULLET_HITBOX_WIDTH - 1;
         int16_t y = status.y + DUCK_LAYED_HITBOX_HEIGHT;
         int16_t angle = status.facing_right ? 0 : 180;
         angle = status.facing_up ? 90 : angle;

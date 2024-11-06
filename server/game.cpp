@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstdio>
+
 #include "common/lobby.h"
 
 Game::Game(const int id): gameloop(gameloop_q, sv_msg_queues), id(id) {

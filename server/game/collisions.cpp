@@ -12,7 +12,7 @@ void CollisionChecks::add_block(float x, float y, bool half, bool solid) {
     blocks[y / BLOCK_SIZE].push_back({rectangle, solid});
 }
 
-void CollisionChecks::load_map(Map& map_dto) {
+void CollisionChecks::load_map(MapDto& map_dto) {
     blocks.clear();
     for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
         for (int16_t j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
