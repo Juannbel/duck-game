@@ -83,12 +83,35 @@ void MainWindow::updateThemeSelector(int themeIndex) {
         }
         map_dto.theme = themeIndex;
     }
+
+    QPixmap backgroundPixmap;
+    backgroundPixmap.load(":/images/background_" + QString::number(themeIndex) + ".png");
+
+    if (!backgroundPixmap.isNull()) {
+        currentBackground = backgroundPixmap;
+    } else {
+        std::cerr << "No se pudo cargar el fondo para el tema " << themeIndex << std::endl;
+    }
     renderGrid();
 }
 
 
 void MainWindow::renderGrid() {
     scene->clear();
+
+    if (!currentBackground.isNull()) {
+        QGraphicsPixmapItem *backgroundItem = scene->addPixmap(currentBackground);
+        backgroundItem->setZValue(-1);
+        backgroundItem->setPos(0, 0);
+    }
+    if (!currentBackground.isNull()) {
+        QSize gridSize = QSize(MAP_WIDTH_BLOCKS * TILE_SIZE, MAP_HEIGHT_BLOCKS * TILE_SIZE);
+        QPixmap scaledBackground = currentBackground.scaled(gridSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+        QGraphicsPixmapItem *backgroundItem = scene->addPixmap(scaledBackground);
+        backgroundItem->setZValue(-1);
+        backgroundItem->setPos(0, 0);
+    }
 
     for (int x = 0; x <= MAP_WIDTH_BLOCKS; ++x) {
         scene->addLine(x * TILE_SIZE, 0, x * TILE_SIZE, MAP_HEIGHT_BLOCKS * TILE_SIZE,
@@ -113,7 +136,7 @@ void MainWindow::renderGrid() {
             item->setPos(x * TILE_SIZE, y * TILE_SIZE);
 
             if (!block.solid) {
-                item->setOpacity(0.5);
+                item->setOpacity(0.6);
             }
         }
     }

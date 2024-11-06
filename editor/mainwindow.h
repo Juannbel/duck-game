@@ -19,9 +19,7 @@
 
 #include <qpoint.h>
 #include <yaml-cpp/yaml.h>
-
-#include "../common/map_dto.h"
-#include "common/map_loader.h"
+#include "../common/map_loader.h"
 
 #include "ui_mainwindow.h"
 
@@ -56,6 +54,7 @@ private:
     MapDto map_dto;
     QPoint lastProcessedTile = QPoint(-1, -1);
     MapLoader loader;
+    QPixmap currentBackground;
 
     void saveToYaml();
 
