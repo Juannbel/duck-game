@@ -21,6 +21,7 @@ struct ControlScheme {
 class DuckController {
 private:
     uint8_t duck_id;
+    Duck duck;
     Queue<action>& actions_q;
     Snapshot& snapshot;
     ControlScheme controls;
@@ -30,16 +31,20 @@ private:
     bool moving_left;
     bool moving_right;
 
-    void handle_key_down(const SDL_Event& event, const Duck& duck);
+    void handle_key_down(const SDL_Event& event);
     void handle_key_up(const SDL_Event& event);
 
 public:
     DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
                    ControlScheme controls);
 
+    void update_duck_status();
+
     void process_event(const SDL_Event& event);
 
     void send_last_move_command();
+
+    void restart_movement();
 };
 
 #endif

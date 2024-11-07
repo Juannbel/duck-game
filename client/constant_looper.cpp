@@ -80,6 +80,8 @@ void ConstantLooper::run() try {
             process_snapshot();
             map.update(map_dto);
             camera.update(last_snapshot);
+            p1_controller.restart_movement();
+            p2_controller.restart_movement();
             continue;
         }
 
@@ -205,6 +207,10 @@ void ConstantLooper::render(Camera& camera, RenderableMapDto& map) {
 
 bool ConstantLooper::process_events() {
     SDL_Event event;
+    p1_controller.update_duck_status();
+    if (duck_ids.second != INVALID_DUCK_ID)
+        p2_controller.update_duck_status();
+
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             return false;

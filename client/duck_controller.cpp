@@ -1,6 +1,8 @@
 #include "duck_controller.h"
 
 #include <algorithm>
+#include <iostream>
+#include "common/lobby.h"
 
 DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
                                ControlScheme controls):
@@ -10,9 +12,27 @@ DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapsh
         controls(controls),
         move_command(false),
         moving_left(false),
-        moving_right(false) {}
+        moving_right(false) {
+            if (duck_id != INVALID_DUCK_ID)
+                update_duck_status();
+        }
 
-void DuckController::handle_key_down(const SDL_Event& event, const Duck& duck) {
+void DuckController::restart_movement() {
+    moving_left = false;
+    moving_right = false;
+    move_command = false;
+}
+
+void DuckController::update_duck_status() {
+    auto it = std::find_if(snapshot.ducks.begin(), snapshot.ducks.end(),
+                           [this](const Duck& duck) { return duck.duck_id == duck_id; });
+    if (it == snapshot.ducks.end() || it->is_dead)
+        return;
+
+    duck = *it;
+}
+
+void DuckController::handle_key_down(const SDL_Event& event) {
     if (event.key.keysym.sym == controls.move_right) {
         if (!moving_right && !(duck.is_running && duck.facing_right)) {
             moving_right = true;
@@ -72,15 +92,8 @@ void DuckController::handle_key_up(const SDL_Event& event) {
 }
 
 void DuckController::process_event(const SDL_Event& event) {
-    auto it = std::find_if(snapshot.ducks.begin(), snapshot.ducks.end(),
-                           [this](const Duck& duck) { return duck.duck_id == duck_id; });
-    if (it == snapshot.ducks.end() || it->is_dead)
-        return;
-
-    const Duck& duck = *it;
-
     if (event.type == SDL_KEYDOWN) {
-        handle_key_down(event, duck);
+        handle_key_down(event);
     } else if (event.type == SDL_KEYUP) {
         handle_key_up(event);
     }
