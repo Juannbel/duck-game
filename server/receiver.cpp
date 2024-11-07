@@ -60,7 +60,12 @@ void ServerReceiver::setup_game() {
         int32_t cmd = protocol.receive_cmd();
         if (cmd == CREATE_GAME) {
             int32_t num_players = protocol.receive_cmd();
-            GameInfo game_info = games_monitor.player_create_game(playerId, sender_q, num_players);
+            std::vector<std::string> players;
+            players.push_back(protocol.recv_string());
+            if (num_players == 2) {
+                players.push_back(protocol.recv_string());
+            }
+            GameInfo game_info = games_monitor.player_create_game(playerId, sender_q, players);
             protocol.send_game_info(game_info);
             if (game_info.game_id == INVALID_GAME_ID) {
                 continue;
@@ -76,7 +81,12 @@ void ServerReceiver::setup_game() {
         } else if (cmd == JOIN_GAME) {
             gameId = protocol.receive_cmd();
             int32_t num_players = protocol.receive_cmd();
-            GameInfo game_info = games_monitor.player_join_game(playerId, gameId, sender_q, num_players);
+            std::vector<std::string> players;
+            players.push_back(protocol.recv_string());
+            if (num_players == 2) {
+                players.push_back(protocol.recv_string());
+            }
+            GameInfo game_info = games_monitor.player_join_game(playerId, gameId, sender_q, players);
             protocol.send_game_info(game_info);
             // si no se pudo unir, game_id es INVALID_GAME_ID
             if (game_info.game_id != INVALID_GAME_ID) {

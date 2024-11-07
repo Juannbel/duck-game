@@ -97,6 +97,18 @@ void ClientProtocol::send_option(int32_t option) {
         throw SocketWasClosed();
 }
 
+void ClientProtocol::send_string(const std::string& str) {
+    bool was_closed = false;
+    uint8_t str_len = str.size();
+    socket.sendall(&str_len, sizeof(str_len), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+
+    socket.sendall(str.c_str(), str_len, &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+}
+
 GameInfo ClientProtocol::recv_game_info() {
     bool was_closed = false;
     GameInfo game_info;

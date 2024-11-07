@@ -24,11 +24,14 @@ private slots:
     void onBackClicked();
     void onJoinLobbyClicked();
     void onStartGameClicked();
+    void onCreateGameConfirmed();
+    void onJoinGameConfirmed();
 
 private:
     Ui::MainWindow* ui;
     ClientProtocol& protocol;
     std::pair<uint8_t, uint8_t>& duck_ids;
+    int selected_lobby_row = -1;
 
     void updateLobbyList();
 };

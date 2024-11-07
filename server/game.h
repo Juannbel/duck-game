@@ -27,7 +27,7 @@ public:
 
     void start();
 
-    GameInfo add_player(int player_id, Queue<Snapshot>& player_sender_queue, const int num_players);
+    GameInfo add_player(int player_id, Queue<Snapshot>& player_sender_queue, const std::vector<std::string> players_names);
 
     void delete_player(const int id_player);
 

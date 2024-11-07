@@ -34,7 +34,7 @@ void GameLoop::initialice_new_round() {
     // CARGAS EL MAPA, LO GUARDAS COMPLETO, Y DESPUES A LA HORA DE PASARLE AL PROTOCOLO LE PASAS
     // SOLO EL MAP DTO
     curr_map_dto = map_loader.load_map(get_rand_string(paths_to_maps)).map_dto;
-    game_operator.initialize_game(curr_map_dto, duck_ids);
+    game_operator.initialize_game(curr_map_dto, ducks_info);
 }
 
 void GameLoop::run() {
@@ -133,26 +133,25 @@ bool GameLoop::check_for_winner(Snapshot& actual_status) {
     return false;
 }
 
-uint8_t GameLoop::add_player() {
-    // uint8_t GameLoop::add_player(const std::string& player_name) {
-    if (duck_ids.size() >= MAX_DUCKS) {
+// uint8_t GameLoop::add_player() {
+uint8_t GameLoop::add_player(const std::string& player_name) {
+    if (ducks_info.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
     }
-    uint8_t duck_id = duck_ids.size();
-    // ducks_info.emplace_back(duck_id, player_name);
-    duck_ids.emplace_back(duck_id);
+    uint8_t duck_id = ducks_info.size();
+    ducks_info.emplace_back(duck_id, player_name);
     return duck_id;
 }
 
 void GameLoop::delete_duck(const uint8_t duck_id) {
     game_operator.delete_duck_player(duck_id);
-    // duck_ids.erase(duck_ids.begin() + duck_id);
-    auto it = std::find(duck_ids.begin(), duck_ids.end(), duck_id);
-    if (it != duck_ids.end()) {
-        duck_ids.erase(it);
+    auto it = std::find_if(ducks_info.begin(), ducks_info.end(),
+                           [duck_id](auto& info) { return info.first == duck_id; });
+    if (it != ducks_info.end()) {
+        ducks_info.erase(it);
     }
 
-    if (duck_ids.size() <= 1) {
+    if (ducks_info.size() <= 1) {
         // TODO: ver como borrar el game
     }
 }

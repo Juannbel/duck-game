@@ -2,6 +2,7 @@
 #define GAME_MANAGER_H
 
 #include <cstdint>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -34,11 +35,11 @@ private:
     GunType get_random_guntype();
 
     void load_map(MapDto& map_dto);
-    void initialize_players(const std::vector<uint8_t>& duck_ids);
+    void initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info);
 
 public:
     GameOperator();
-    void initialize_game(MapDto& map_dto, const std::vector<uint8_t>& duck_ids);
+    void initialize_game(MapDto& map_dto, const std::vector<std::pair<uint8_t, std::string>>& ducks_info);
     void process_action(action& action);
     void update_game_status();
 

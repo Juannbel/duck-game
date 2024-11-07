@@ -96,6 +96,21 @@ int32_t ServerProtocol::receive_cmd() {
     return ntohl(command);
 }
 
+std::string ServerProtocol::recv_string() {
+    bool wasClosed = false;
+    uint8_t str_len;
+    socket.recvall(&str_len, sizeof(str_len), &wasClosed);
+    if (wasClosed)
+        throw SocketWasClosed();
+
+    std::string str(str_len, 0);
+    socket.recvall(&str[0], str_len, &wasClosed);
+    if (wasClosed)
+        throw SocketWasClosed();
+
+    return str;
+}
+
 void ServerProtocol::send_lobbies_info(std::vector<int32_t>& lobbies) {
     uint8_t lobbies_quantity = lobbies.size();
 

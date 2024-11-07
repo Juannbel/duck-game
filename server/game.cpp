@@ -13,9 +13,9 @@ Game::Game(const int id): gameloop(gameloop_q, sv_msg_queues), id(id) {
 
 Queue<action>& Game::get_gameloop_queue() { return gameloop_q; }
 
-GameInfo Game::add_player(int id_player, Queue<Snapshot>& player_sender_queue, const int num_players) {
+GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue, const std::vector<std::string> players_names) {
     GameInfo game_info = {INVALID_GAME_ID, INVALID_DUCK_ID, INVALID_DUCK_ID};
-    if (!open || cant_players + num_players > MAX_DUCKS) {
+    if (!open || cant_players + players_names.size() > MAX_DUCKS) {
         return game_info;
     }
 
@@ -23,16 +23,18 @@ GameInfo Game::add_player(int id_player, Queue<Snapshot>& player_sender_queue, c
     sv_msg_queues.add_element(&player_sender_queue);
 
     std::pair<uint8_t, uint8_t> duck_ids = {INVALID_DUCK_ID, INVALID_DUCK_ID};
-    duck_ids.first = gameloop.add_player();
+    duck_ids.first = gameloop.add_player(players_names[0]);
+    // duck_ids.first = gameloop.add_player();
     game_info.duck_id_1 = duck_ids.first;
 
-    if (num_players == 2) {
-        duck_ids.second = gameloop.add_player();
+    if (players_names.size() == 2) {
+        duck_ids.second = gameloop.add_player(players_names[1]);
+        // duck_ids.second = gameloop.add_player();
         game_info.duck_id_2 = duck_ids.second;
     }
 
-    player_to_duck_ids[id_player] = duck_ids;
-    cant_players += num_players;
+    player_to_duck_ids[player_id] = duck_ids;
+    cant_players += players_names.size();
 
     if (cant_players == MAX_DUCKS) {
         open = false;

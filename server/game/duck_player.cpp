@@ -1,6 +1,7 @@
 #include "duck_player.h"
 
 #include <cstdint>
+#include <cstring>
 #include <memory>
 
 #include "common/snapshot.h"
@@ -40,6 +41,11 @@ void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     status.y = y;
     status.duck_id = id;
     ready_to_jump = true;
+}
+
+void DuckPlayer::set_player_name(const std::string& name) {
+    std::strncpy(status.player_name, name.c_str(), MAX_PLAYER_NAME);
+    status.player_name[MAX_PLAYER_NAME - 1] = '\0';
 }
 
 void DuckPlayer::die() {

@@ -180,7 +180,7 @@ void ScreenManager::render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
     renderer.Copy(*ducks_texture, animation_data.frames[0].rect, dst_rect);
 
     SDL2pp::Texture name_texture(
-            renderer, primary_font.RenderText_Solid("Duck " + std::to_string(duck.duck_id),
+            renderer, primary_font.RenderText_Solid(duck.player_name,
                                                     SDL_Color{255, 255, 255, 255}));
     renderer.Copy(name_texture, SDL2pp::NullOpt,
                   SDL2pp::Rect(SDL2pp::Point(dst_rect.x + dst_rect.w + 20,

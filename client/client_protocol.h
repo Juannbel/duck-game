@@ -21,6 +21,8 @@ public:
 
     void send_option(int32_t option);
 
+    void send_string(const std::string& str);
+
     GameInfo recv_game_info();
 
     std::vector<int32_t> recv_lobbies_info();
