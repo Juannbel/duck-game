@@ -1,8 +1,12 @@
 #include "mainwindow.h"
 
 #include <QMessageBox>
+#include <iostream>
 #include <vector>
 #include <qinputdialog.h>
+#include <qresource.h>
+#include <QFile>
+#include <QResource>
 
 #include "../../common/lobby.h"
 #include "./ui_mainwindow.h"
@@ -20,6 +24,14 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint
     connect(ui->joinLobbyButton, &QPushButton::clicked, this, &MainWindow::onJoinLobbyClicked);
 
     connect(ui->startGameButton, &QPushButton::clicked, this, &MainWindow::onStartGameClicked);
+
+    QPixmap logoPixmap(DATA_PATH "/logo.png");
+
+    ui->p3logo->setPixmap(logoPixmap);
+    ui->p1logo->setPixmap(logoPixmap);
+    // centramos horizontalmente
+    ui->p3logo->setAlignment(Qt::AlignCenter);
+    ui->p1logo->setAlignment(Qt::AlignCenter);
 }
 
 void MainWindow::onCreateGameClicked() {

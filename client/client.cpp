@@ -16,7 +16,7 @@ Client::Client(const char* hostname, const char* servname):
         sender(protocol, actions_q, alive) {}
 
 void Client::run() {
-    std::pair<uint8_t, uint8_t> duck_ids;
+    std::pair<uint8_t, uint8_t> duck_ids = {INVALID_DUCK_ID, INVALID_DUCK_ID};
     Lobby lobby(protocol, duck_ids);
     lobby.run();
 
