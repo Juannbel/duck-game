@@ -23,7 +23,9 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         snaps_queue_list(queue_list),
         match_number(10),
         round_finished(),
-        paths_to_maps(map_loader.list_maps(SERVER_DATA_PATH)) {}
+        paths_to_maps(map_loader.list_maps(SERVER_DATA_PATH)),
+        curr_map(),
+        ducks_info() {}
 
 std::string get_rand_string(std::vector<std::string>& v_strings) {
     std::random_device rd;

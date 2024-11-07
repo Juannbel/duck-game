@@ -13,7 +13,6 @@
 #include "ticks.h"
 
 const float GUN_FALL_SPEED = 120.0f / TICKS;
-const int16_t NEAR_CELLS = 3;
 
 CollectablesManager::CollectablesManager(CollisionChecks& collision,
                                          std::unordered_map<uint8_t, DuckPlayer>& ducks):
@@ -120,6 +119,9 @@ void CollectablesManager::move_guns_falling() {
     Coordenades coords = {0, 0};
     Rectangle gun_r = {coords, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
     for (auto& [id, gun]: guns) {
+        if (picked_up_guns.find(id) != picked_up_guns.end()) {
+            continue;
+        }
         Gun gun_info = gun->get_gun_info();
         gun_r.coords.x = gun_info.x;
         gun_r.coords.y = gun_info.y;

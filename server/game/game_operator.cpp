@@ -20,7 +20,7 @@ void GameOperator::load_map(Map& map_info) {
     collisions.load_map(map_info.map_dto);
     spawns.clear();
     for (std::pair<int16_t, int16_t>& coords : map_info.collectables_spawns) {
-        Spawn act_spawn {coords.first, coords.second, 0, 100, true, 0};
+        Spawn act_spawn { static_cast<int16_t>(coords.first * BLOCK_SIZE), static_cast<int16_t>(coords.second * BLOCK_SIZE), 0, 100, true, 0};
         spawns.push_back(act_spawn);
     }
 }
@@ -29,7 +29,7 @@ void GameOperator::initialize_players(const std::vector<std::pair<uint8_t, std::
     auto& spawn_points = map_info.duck_spawns;
     players.clear();
     for (auto& duck : ducks_info) {
-        DuckPlayer player(collectables, collisions, spawn_points[duck.first].first, spawn_points[duck.first].second, duck.first, duck.second);
+        DuckPlayer player(collectables, collisions, spawn_points[duck.first].first * BLOCK_SIZE, spawn_points[duck.first].second * BLOCK_SIZE, duck.first, duck.second);
         //player.set_coordenades_and_id(spawn_points[duck.first].first, spawn_points[duck.first].second, duck.first);
         //player.set_player_name(duck.second);
         players.emplace(duck.first, std::move(player));
@@ -102,7 +102,6 @@ void GameOperator::update_game_status() {
     }
     // Actualizar la posicion de las balas y vida de los patos si les pegan
     verify_spawn();
-    collectables.move_guns_falling();
     collectables.move_guns_falling();
 }
 
