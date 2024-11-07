@@ -48,6 +48,7 @@ private slots:
     void on_save_mapButton_clicked();
     void on_load_mapButton_clicked();
     void onGridRightClicked(QPoint pos);
+    void on_clear_mapButton_clicked();
 
 private:
     Ui::MainWindow* ui;
