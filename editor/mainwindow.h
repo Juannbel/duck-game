@@ -16,6 +16,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QVector>
+#include <algorithm>
 
 #include <qpoint.h>
 #include <yaml-cpp/yaml.h>
@@ -24,6 +25,9 @@
 #include "ui_mainwindow.h"
 
 const int TILE_SIZE = 16;
+const int DUCK_SIZE = 32;
+const int GUN_SIZE = 32;
+const int GUN_INDEX = 4;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -39,32 +43,35 @@ public:
     ~MainWindow();
 
 private slots:
-    void onTileSelected(int index);
+    void onItemSelected(int index);
     void onGridClicked(QPoint pos);
     void on_save_mapButton_clicked();
-
     void on_load_mapButton_clicked();
+    void onGridRightClicked(QPoint pos);
 
 private:
     Ui::MainWindow* ui;
     QGraphicsScene* scene;
     QVector<QPixmap> grassTextures;
-    BlockType selectedTileIndex = Empty;
+    int selectedItemIndex = 0;
     QMap<int, QVector<QIcon>> themeTiles;
-    MapDto map_dto;
+    Map map;
     QPoint lastProcessedTile = QPoint(-1, -1);
     MapLoader loader;
     QPixmap currentBackground;
+    QPixmap duckTexture;
+    QPixmap gunTexture;
 
     void saveToYaml();
-
+    void loadDuckTexture();
+    void loadGunTexture();
     void updateThemeSelector(int themeIndex);
     void loadThemeTiles(uint8_t theme);
     void loadTiles();
     void renderGrid();
     void placeTile(int x, int y, BlockType block_type, bool solid);
-    void updateTileTexture(int x, int y);
     bool eventFilter(QObject* watched, QEvent* event) override;
+    bool validatePosition(std::pair<int16_t, int16_t> pos, bool check_blocks);
 };
 
 #endif  // MAINWINDOW_H
