@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget* parent):
     ui->setupUi(this);
     ui->graphicsView->setScene(scene);
 
-    grassTextures.resize(MAP_THEMES * (static_cast<int>(HalfFloor) + 1));
+    grassTextures.resize(MAP_THEMES * (static_cast<int>(HalfFloor)));
 
     loadTiles();
     loadDuckTexture();    
@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget* parent):
     updateThemeSelector(map.map_dto.theme);
 
     connect(ui->tileSelector, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-            &MainWindow::onTileSelected);
+            &MainWindow::onItemSelected);
 
     ui->graphicsView->setMouseTracking(true);
     ui->graphicsView->viewport()->installEventFilter(this);
@@ -52,12 +52,11 @@ void MainWindow::loadTiles() {
 
 void MainWindow::loadThemeTiles(uint8_t theme) {
     QPixmap tileSet(":/images/blocks.png");
-    int offset = ((static_cast<int>(HalfFloor) + 1) * theme);
+    int offset = ((static_cast<int>(HalfFloor)) * theme);
     QVector<QIcon> iconsForTheme;
-    iconsForTheme.push_back(QIcon(grassTextures[static_cast<int>(Empty) + offset]));
-    for (int i = 1; i <= static_cast<int>(HalfFloor); i++) {
+    for (int i = 0; i < static_cast<int>(HalfFloor); i++) {
         grassTextures[i + offset] =
-                tileSet.copy(TILE_SIZE * (i - 1), theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                tileSet.copy(TILE_SIZE * i, theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         iconsForTheme.push_back(QIcon(grassTextures[i + offset]));
     }
     themeTiles[theme] = iconsForTheme;
@@ -90,8 +89,8 @@ void MainWindow::updateThemeSelector(int themeIndex) {
 
     if (themeTiles.contains(themeIndex)) {
         auto& tiles = themeTiles[themeIndex];
-        for (int i = 0; i <= static_cast<int>(HalfFloor); i++) {
-            ui->tileSelector->addItem(tiles[i], block_to_string[static_cast<BlockType>(i)]);
+        for (int i = 0; i < static_cast<int>(HalfFloor); i++) {
+            ui->tileSelector->addItem(tiles[i], block_to_string[static_cast<BlockType>(i+1)]);
         }
         map.map_dto.theme = themeIndex;
     }
@@ -140,8 +139,8 @@ void MainWindow::renderGrid() {
                 continue;
             }
 
-            int tileIndex = static_cast<int>(block.type);
-            int offset = (static_cast<int>(HalfFloor) + 1) * map.map_dto.theme;
+            int tileIndex = static_cast<int>(block.type)-1;
+            int offset = (static_cast<int>(HalfFloor)) * map.map_dto.theme;
 
             QGraphicsPixmapItem* item = scene->addPixmap(grassTextures[tileIndex + offset]);
             item->setPos(x * TILE_SIZE, y * TILE_SIZE);
@@ -168,15 +167,15 @@ void MainWindow::renderGrid() {
 }
 
 
-void MainWindow::onTileSelected(int index) {
+void MainWindow::onItemSelected(int index) {
     if (index <= static_cast<int>(HalfFloor)) {
-        selectedTileIndex = static_cast<BlockType>(index);
-        qDebug() << "Tile seleccionado: " << selectedTileIndex;
+        selectedItemIndex = static_cast<BlockType>(index);
+        qDebug() << "Tile seleccionado: " << selectedItemIndex;
     } else if (index == static_cast<int>(HalfFloor) + 1) {
-        selectedTileIndex = index;
+        selectedItemIndex = index;
         qDebug() << "Duck seleccionado";
     } else if (index == static_cast<int>(HalfFloor) + 2) {
-        selectedTileIndex = index;
+        selectedItemIndex = index;
         qDebug() << "Gun seleccionado";
     }
 }
@@ -239,14 +238,14 @@ void MainWindow::onGridClicked(QPoint pos) {
     if (gridX >= 0 && gridX < MAP_WIDTH_BLOCKS && gridY >= 0 && gridY < MAP_HEIGHT_BLOCKS) {
         std::pair<int16_t, int16_t> gridPos = std::pair<int16_t, int16_t>(gridX, gridY);
 
-        if(selectedTileIndex == static_cast<int>(HalfFloor) + 1){   
+        if(selectedItemIndex == static_cast<int>(HalfFloor)){   
             bool check_blocks = true;
             if(!validatePosition(gridPos, check_blocks))
                 return;
             map.duck_spawns.push_back(gridPos);
             renderGrid();
             return;
-        } else if(selectedTileIndex == static_cast<int>(HalfFloor) + 2){
+        } else if(selectedItemIndex == static_cast<int>(HalfFloor) + 1){
             bool check_blocks = true;
             if(!validatePosition(gridPos, check_blocks))
                 return;
@@ -259,14 +258,14 @@ void MainWindow::onGridClicked(QPoint pos) {
             return;
         Block& block = map.map_dto.blocks[gridY][gridX];
         if (block.type == Empty) {
-            placeTile(gridX, gridY, static_cast<BlockType>(selectedTileIndex), true);
+            placeTile(gridX, gridY, static_cast<BlockType>(selectedItemIndex), true);
             qDebug() << "Nuevo bloque colocado en (" << gridX << "," << gridY
                      << ") solid:" << map.map_dto.blocks[gridY][gridX].solid;
-        } else if (block.type == selectedTileIndex) {
+        } else if (block.type == (selectedItemIndex+1)) {
             block.solid = !block.solid;
             qDebug() << "Cambiando solidez en (" << gridX << "," << gridY << ") a:" << block.solid;
         } else {
-            placeTile(gridX, gridY, static_cast<BlockType>(selectedTileIndex), true);
+            placeTile(gridX, gridY, static_cast<BlockType>(selectedItemIndex), true);
             qDebug() << "Reemplazando bloque en (" << gridX << "," << gridY
                      << ") solid:" << map.map_dto.blocks[gridX][gridY].solid;
         }
@@ -313,7 +312,7 @@ void MainWindow::onGridRightClicked(QPoint pos) {
 void MainWindow::placeTile(int x, int y, BlockType blockType, bool solid) {
     qDebug() << "Colocando bloque " << static_cast<int>(blockType);
     if(blockType < static_cast<int>(HalfFloor))
-        map.map_dto.blocks[y][x] = {static_cast<BlockType>(blockType), solid};
+        map.map_dto.blocks[y][x] = {static_cast<BlockType>(blockType+1), solid};
     
 }
 

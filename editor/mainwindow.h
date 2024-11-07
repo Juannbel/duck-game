@@ -43,7 +43,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void onTileSelected(int index);
+    void onItemSelected(int index);
     void onGridClicked(QPoint pos);
     void on_save_mapButton_clicked();
     void on_load_mapButton_clicked();
@@ -53,7 +53,7 @@ private:
     Ui::MainWindow* ui;
     QGraphicsScene* scene;
     QVector<QPixmap> grassTextures;
-    int selectedTileIndex = 0;
+    int selectedItemIndex = 0;
     QMap<int, QVector<QIcon>> themeTiles;
     Map map;
     QPoint lastProcessedTile = QPoint(-1, -1);
