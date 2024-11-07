@@ -4,6 +4,7 @@
 #include <random>
 #include <utility>
 
+#include "common/map.h"
 #include "common/shared_constants.h"
 
 #include "ticks.h"
@@ -15,37 +16,31 @@ const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 
 GameOperator::GameOperator(): collisions(), collectables(collisions, players) {}
 
-void GameOperator::load_map(MapDto& map_dto) {
-    collisions.load_map(map_dto);
+void GameOperator::load_map(Map& map_info) {
+    collisions.load_map(map_info.map_dto);
     spawns.clear();
-    Spawn spawn = {200, 200, 0, 50, true, 0};
-    spawns.push_back(spawn);
-    spawn = {250, 200, 1, 0, true, 0};
-    spawns.push_back(spawn);
-    spawn = {300, 200, 1, 0, true, 0};
-    spawns.push_back(spawn);
-    spawn = {350, 200, 1, 0, true, 0};
-    spawns.push_back(spawn);
+    for (std::pair<int16_t, int16_t>& coords : map_info.collectables_spawns) {
+        Spawn act_spawn {coords.first, coords.second, 0, 100, true, 0};
+        spawns.push_back(act_spawn);
+    }
 }
 
-void GameOperator::initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info) {
-    std::vector<std::pair<int16_t, int16_t>> spawn_points = {
-            {50, 25}, {MAP_WIDTH_PIXELS - 50, 50}, {50, 25}, {MAP_WIDTH_PIXELS - 50, 200}};
+void GameOperator::initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info, Map& map_info) {
+    auto& spawn_points = map_info.duck_spawns;
     players.clear();
-
     for (auto& duck : ducks_info) {
-        DuckPlayer player(collectables, collisions);
-        player.set_coordenades_and_id(spawn_points[duck.first].first, spawn_points[duck.first].second, duck.first);
-        player.set_player_name(duck.second);
+        DuckPlayer player(collectables, collisions, spawn_points[duck.first].first, spawn_points[duck.first].second, duck.first, duck.second);
+        //player.set_coordenades_and_id(spawn_points[duck.first].first, spawn_points[duck.first].second, duck.first);
+        //player.set_player_name(duck.second);
         players.emplace(duck.first, std::move(player));
     }
 }
 
 void GameOperator::delete_duck_player(uint8_t id_duck) { players.erase(id_duck); }
 
-void GameOperator::initialize_game(MapDto& map_dto, const std::vector<std::pair<uint8_t, std::string>>& ducks_info) {
-    load_map(map_dto);
-    initialize_players(ducks_info);
+void GameOperator::initialize_game(Map& map_info, const std::vector<std::pair<uint8_t, std::string>>& ducks_info) {
+    load_map(map_info);
+    initialize_players(ducks_info, map_info);
     collectables.reset_collectables();
 }
 

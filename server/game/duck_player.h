@@ -16,7 +16,6 @@ private:
     Duck status;
     uint8_t it_jumping;
     uint8_t it_flapping;
-    uint8_t it_since_hit;
     bool ready_to_jump;
     Rectangle hitbox;
     CollisionChecks& collisions;
@@ -27,9 +26,9 @@ private:
     void die();
 
 public:
-    DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions);
-    void set_coordenades_and_id(int16_t x, int16_t y, uint8_t id);
-    void set_player_name(const std::string& name);
+    DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x, int16_t y, uint8_t id, const std::string& name);
+    // void set_coordenades_and_id(int16_t x, int16_t y, uint8_t id);
+    // void set_player_name(const std::string& name);
     void move_duck();
     void run(bool right);
     void stop_running();

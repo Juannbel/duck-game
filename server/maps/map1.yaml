@@ -440,7 +440,23 @@ blocks:
     solid: true
 
 duck_spawns:
+  - x: 30
+    y: 5
+  - x: 400
+    y: 5
+  - x: 30
+    y: 50
+  - x: 400
+    y: 50
 
 collectables_spawns:
+  - x: 30
+    y: 5
+  - x: 400
+    y: 5
+  - x: 30
+    y: 50
+  - x: 400
+    y: 50
 
 boxes_spawns:

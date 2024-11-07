@@ -31,11 +31,8 @@ std::string get_rand_string(std::vector<std::string>& v_strings) {
 }
 
 void GameLoop::initialice_new_round() {
-    // FEDE ARREGLAR ESTO
-    // CARGAS EL MAPA, LO GUARDAS COMPLETO, Y DESPUES A LA HORA DE PASARLE AL PROTOCOLO LE PASAS
-    // SOLO EL MAP DTO
-    curr_map_dto = map_loader.load_map(get_rand_string(paths_to_maps)).map_dto;
-    game_operator.initialize_game(curr_map_dto, ducks_info);
+    curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
+    game_operator.initialize_game(curr_map, ducks_info);
 }
 
 void GameLoop::run() {
@@ -71,7 +68,7 @@ void GameLoop::run() {
 void GameLoop::initial_snapshot() {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
-    actual_status.maps.push_back(curr_map_dto);
+    actual_status.maps.push_back(curr_map.map_dto);
     actual_status.match_finished = false;
     add_rounds_won(actual_status);
     push_responce(actual_status);
