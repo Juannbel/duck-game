@@ -116,7 +116,7 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
 }
 
 bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                                   RenderableMapDto& map, Camera& camera) {
+                                   RenderableMap& map, Camera& camera) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<Duck>& ducks = last_snapshot.ducks;
     std::vector<AnimationData> duck_animations;
@@ -190,7 +190,7 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
 }
 
 bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                                          RenderableMapDto& map, Camera& camera) {
+                                          RenderableMap& map, Camera& camera) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
 

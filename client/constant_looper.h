@@ -45,7 +45,7 @@ private:
 
     void process_snapshot();
 
-    void render(Camera& camera, RenderableMapDto& map);
+    void render(Camera& camera, RenderableMap& map);
 
     void sleep_or_catch_up(uint32_t& t1);
 

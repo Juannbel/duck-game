@@ -5,47 +5,47 @@ blocks:
   - x: 12
     y: 7
     type: 7
-    solid: true
+    solid: false
   - x: 13
     y: 7
     type: 8
-    solid: true
+    solid: false
   - x: 14
     y: 7
     type: 8
-    solid: true
+    solid: false
   - x: 15
     y: 7
     type: 8
-    solid: true
+    solid: false
   - x: 16
     y: 7
     type: 8
-    solid: true
+    solid: false
   - x: 17
     y: 7
     type: 8
-    solid: true
+    solid: false
   - x: 18
     y: 7
     type: 8
-    solid: true
+    solid: false
   - x: 19
     y: 7
     type: 8
-    solid: true
+    solid: false
   - x: 20
     y: 7
     type: 8
-    solid: true
+    solid: false
   - x: 21
     y: 7
     type: 8
-    solid: true
+    solid: false
   - x: 22
     y: 7
     type: 9
-    solid: true
+    solid: false
   - x: 3
     y: 9
     type: 12

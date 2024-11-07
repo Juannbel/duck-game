@@ -27,10 +27,10 @@ void RenderableCollectable::update(const Gun& snapshot) {
 
 void RenderableCollectable::render(SDL2pp::Renderer& renderer, Camera& camera) {
     // como falta ajustar los offsets, dibujo la hitbox
-    SDL2pp::Rect hitbox(position.x, position.y, COLLECTABLE_HITBOX_WIDTH,
-                        COLLECTABLE_HITBOX_HEIGHT);
-    camera.transform_rect(hitbox);
-    renderer.DrawRect(hitbox);
+    // SDL2pp::Rect hitbox(position.x, position.y, COLLECTABLE_HITBOX_WIDTH,
+    //                     COLLECTABLE_HITBOX_HEIGHT);
+    // camera.transform_rect(hitbox);
+    // renderer.DrawRect(hitbox);
 
     animation.render(renderer, camera, position);
 }
