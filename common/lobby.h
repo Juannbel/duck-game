@@ -2,6 +2,7 @@
 #define LOBBY_MESSAGE_H
 
 #include <cstdint>
+
 #include "common/snapshot.h"
 
 #define INVALID_GAME_ID -1

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <unordered_set>
+#include <utility>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>

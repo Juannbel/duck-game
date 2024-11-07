@@ -1,19 +1,21 @@
 #include "mainwindow.h"
 
+#include <QFile>
 #include <QMessageBox>
-#include <iostream>
+#include <QResource>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <utility>
 #include <vector>
+
 #include <qinputdialog.h>
 #include <qresource.h>
-#include <QFile>
-#include <QResource>
 
 #include "../../common/lobby.h"
 #include "./ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids):
+MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
+                       std::pair<uint8_t, uint8_t>& duck_ids):
         QMainWindow(parent), ui(new Ui::MainWindow), protocol(protocol), duck_ids(duck_ids) {
     ui->setupUi(this);
 
@@ -27,15 +29,15 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint
 
     connect(ui->startGameButton, &QPushButton::clicked, this, &MainWindow::onStartGameClicked);
 
-    connect(ui->namesConfirmButton, &QPushButton::clicked, this, &MainWindow::onCreateGameConfirmed);
+    connect(ui->namesConfirmButton, &QPushButton::clicked, this,
+            &MainWindow::onCreateGameConfirmed);
     connect(ui->namesBackButton, &QPushButton::clicked, this, &MainWindow::onBackClicked);
 
     ui->player2NameEdit->setVisible(false);
-    connect(ui->singlePlayerRadio, &QRadioButton::toggled,
-            [this](bool checked) {
-                ui->player2NameEdit->setEnabled(!checked);
-                ui->player2NameEdit->setVisible(!checked);
-            });
+    connect(ui->singlePlayerRadio, &QRadioButton::toggled, [this](bool checked) {
+        ui->player2NameEdit->setEnabled(!checked);
+        ui->player2NameEdit->setVisible(!checked);
+    });
 
 
     QPixmap logoPixmap(DATA_PATH "/logo.png");
@@ -48,7 +50,8 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint
 
 void MainWindow::onCreateGameClicked() {
     disconnect(ui->namesConfirmButton, nullptr, this, nullptr);
-    connect(ui->namesConfirmButton, &QPushButton::clicked, this, &MainWindow::onCreateGameConfirmed);
+    connect(ui->namesConfirmButton, &QPushButton::clicked, this,
+            &MainWindow::onCreateGameConfirmed);
     ui->stackedWidget->setCurrentIndex(3);
 }
 
@@ -109,7 +112,7 @@ void MainWindow::onJoinGameConfirmed() {
     protocol.send_option(numPlayers);
     protocol.send_string(player1Name.toStdString());
     if (numPlayers == 2) {
-       protocol.send_string(player2Name.toStdString());
+        protocol.send_string(player2Name.toStdString());
     }
 
     GameInfo gameInfo = protocol.recv_game_info();
@@ -155,13 +158,15 @@ void MainWindow::updateLobbyList() {
     ui->lobbiesList->setRowCount(lobbies_info.size());
 
     QStringList headers;
-    headers << "Game ID" << "Players" << "Creator";
+    headers << "Game ID"
+            << "Players"
+            << "Creator";
     ui->lobbiesList->setHorizontalHeaderLabels(headers);
 
     ui->lobbiesList->verticalHeader()->setVisible(false);
 
     int row = 0;
-    for (const LobbyInfo& lobby : lobbies_info) {
+    for (const LobbyInfo& lobby: lobbies_info) {
         QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(lobby.game_id));
         idItem->setTextAlignment(Qt::AlignCenter);
         ui->lobbiesList->setItem(row, 0, idItem);

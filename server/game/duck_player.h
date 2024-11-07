@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
@@ -26,7 +27,8 @@ private:
     void die();
 
 public:
-    DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x, int16_t y, uint8_t id, const std::string& name);
+    DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x, int16_t y,
+               uint8_t id, const std::string& name);
     // void set_coordenades_and_id(int16_t x, int16_t y, uint8_t id);
     // void set_player_name(const std::string& name);
     void move_duck();
@@ -43,7 +45,7 @@ public:
     void stop_jump();
     uint32_t drop_and_pickup();
     void drop_collectable();
-    bool get_hit(Rectangle& bullet, uint8_t damage);
+    bool get_hit(const Rectangle& bullet, uint8_t damage);
     void knockback();
     Duck get_status();
     Rectangle& get_hitbox();

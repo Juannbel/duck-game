@@ -1,6 +1,7 @@
 #ifndef CLIENT_PROTOCOL_H
 #define CLIENT_PROTOCOL_H
 
+#include <string>
 #include <vector>
 
 #include "common/commands.h"

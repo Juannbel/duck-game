@@ -12,7 +12,7 @@ void CollisionChecks::add_block(float x, float y, bool half, bool solid) {
     blocks[y / BLOCK_SIZE].push_back({rectangle, solid});
 }
 
-void CollisionChecks::load_map(MapDto& map_dto) {
+void CollisionChecks::load_map(const MapDto& map_dto) {
     blocks.clear();
     for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
         for (int16_t j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
@@ -29,12 +29,11 @@ bool CollisionChecks::out_of_map(float x, float y) {
     return x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE;
 }
 
-bool check_collision_with_no_solid(float new_y, Rectangle& entity,
-                                   Rectangle& block_hb) {
+bool check_collision_with_no_solid(float new_y, const Rectangle& entity,
+                                   const Rectangle& block_hb) {
     if (new_y < entity.coords.y) {
         return true;
-    } else if (new_y > entity.coords.y &&
-               entity.coords.y + entity.height > block_hb.coords.y) {
+    } else if (new_y > entity.coords.y && entity.coords.y + entity.height > block_hb.coords.y) {
         return true;
     }
     return false;
@@ -47,7 +46,7 @@ Collision CollisionChecks::check_collisions_in_row(std::vector<BlockInfo>& block
     for (auto& block: block_columns) {
         Rectangle& block_hb = block.hitbox;
         if (!block.solid) {
-            if (check_collision_with_no_solid(new_y, entity,block_hb)) { 
+            if (check_collision_with_no_solid(new_y, entity, block_hb)) {
                 continue;
             }
         }

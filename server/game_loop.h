@@ -4,17 +4,19 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
+
 #include <sys/types.h>
 
 #include "common/blocking_queue.h"
+#include "common/commands.h"
 #include "common/map_loader.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 #include "common/thread.h"
 #include "game/game_operator.h"
 
-#include "common/commands.h"
 #include "list_monitor.h"
 
 class GameLoop: public Thread {

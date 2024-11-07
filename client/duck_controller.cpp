@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+
 #include "common/lobby.h"
 
 DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
@@ -13,9 +14,9 @@ DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapsh
         move_command(false),
         moving_left(false),
         moving_right(false) {
-            if (duck_id != INVALID_DUCK_ID)
-                update_duck_status();
-        }
+    if (duck_id != INVALID_DUCK_ID)
+        update_duck_status();
+}
 
 void DuckController::restart_movement() {
     moving_left = false;

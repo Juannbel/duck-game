@@ -39,7 +39,7 @@ private:
 
 public:
     CollisionChecks(): blocks() {}
-    void load_map(MapDto&);
+    void load_map(const MapDto& map_dto);
 
     bool out_of_map(float x, float y);
 

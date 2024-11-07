@@ -2,6 +2,7 @@
 #define CLIENT_CONFIG_H
 
 #include <SDL_keycode.h>
+
 #include "client/duck_controller.h"
 
 #define FPS 60

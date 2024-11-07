@@ -2,18 +2,22 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "common/lobby.h"
 
-Game::Game(const int id, const std::string& creator): gameloop(gameloop_q, sv_msg_queues), creator(creator), id(id) {
+Game::Game(const int id, const std::string& creator):
+        gameloop(gameloop_q, sv_msg_queues), creator(creator), id(id) {
     open = true;
     cant_players = 0;
 }
 
 Queue<action>& Game::get_gameloop_queue() { return gameloop_q; }
 
-GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue, const std::vector<std::string> players_names) {
+GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
+                          const std::vector<std::string>& players_names) {
     GameInfo game_info = {INVALID_GAME_ID, INVALID_DUCK_ID, INVALID_DUCK_ID};
     if (!open || cant_players + players_names.size() > MAX_DUCKS) {
         return game_info;

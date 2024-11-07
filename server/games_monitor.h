@@ -1,10 +1,11 @@
 #ifndef GAMES_MONITOR_H
 #define GAMES_MONITOR_H
 
-#include <cstdint>
 #include <map>
 #include <mutex>
+#include <string>
 #include <vector>
+
 #include "common/lobby.h"
 
 #include "game.h"
@@ -18,9 +19,11 @@ private:
     int id = 0;
 
 public:
-    GameInfo player_create_game(const int id_player, Queue<Snapshot>& player_sender_queue, const std::vector<std::string>& players_names);
+    GameInfo player_create_game(const int id_player, Queue<Snapshot>& player_sender_queue,
+                                const std::vector<std::string>& players_names);
 
-    GameInfo player_join_game(int id_player, int id_game, Queue<Snapshot>& player_sender_queue, const std::vector<std::string>& players_names);
+    GameInfo player_join_game(int id_player, int id_game, Queue<Snapshot>& player_sender_queue,
+                              const std::vector<std::string>& players_names);
 
     void start_game(int id);
 
