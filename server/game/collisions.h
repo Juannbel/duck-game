@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <map>
-#include <vector>
+#include <utility>
 
 #include "common/map_dto.h"
 
@@ -31,14 +31,14 @@ struct Collision {
 
 class CollisionChecks {
 private:
-    std::map<uint16_t, std::vector<BlockInfo>> blocks;
+    std::map<std::pair<int16_t, int16_t>, BlockInfo> blocks;
     void add_block(float x, float y, bool half, bool solid);
-    Collision check_collisions_in_row(std::vector<BlockInfo>& block_columns, Rectangle& final_rec,
-                                      Rectangle& entity, float new_y);
+    Collision check_collisions_with_block(BlockInfo& block, Rectangle& final_rec, Rectangle& entity,
+                                                   float new_y);
 
 
 public:
-    CollisionChecks(): blocks() {}
+    CollisionChecks();
     void load_map(MapDto&);
 
     bool out_of_map(float x, float y);
