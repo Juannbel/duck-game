@@ -60,13 +60,6 @@ void MainWindow::loadThemeTiles(uint8_t theme) {
                 tileSet.copy(TILE_SIZE * (i - 1), theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         iconsForTheme.push_back(QIcon(grassTextures[i + offset]));
     }
-        /*
-        gunTexture =
-                gunSprite.copy(4 *32, 0, 32, 32);
-        duckTexture =
-                duckSprite.copy(0, 0, 32, 32);
-        
-    */
     themeTiles[theme] = iconsForTheme;
 
     qDebug() << "Tiles cargados para el tema " << theme << ": " << iconsForTheme.size();
@@ -204,17 +197,17 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
         } else if (event->type() == QEvent::MouseButtonPress ||
                    event->type() == QEvent::MouseMove) {
             QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-
+            QPoint pos = ui->graphicsView->mapFromGlobal(mouseEvent->globalPos());
+            QPointF scenePos = ui->graphicsView->mapToScene(pos).toPoint();
             if (mouseEvent->buttons() & Qt::LeftButton) {
-                QPoint pos = ui->graphicsView->mapFromGlobal(mouseEvent->globalPos());
-                QPointF scenePos = ui->graphicsView->mapToScene(pos).toPoint();
-
                 QPoint currentTile(scenePos.x() / TILE_SIZE, scenePos.y() / TILE_SIZE);
-
                 if (currentTile != lastProcessedTile) {
                     lastProcessedTile = currentTile;
                     onGridClicked(scenePos.toPoint());
                 }
+                return true;
+            }else if (mouseEvent->button() & Qt::RightButton) {
+                onGridRightClicked(scenePos.toPoint()); 
                 return true;
             }
         } else if (event->type() == QEvent::MouseButtonRelease) {
@@ -224,20 +217,46 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
     return QMainWindow::eventFilter(watched, event);
 }
 
+bool MainWindow::validatePosition(std::pair<int16_t, int16_t> pos, bool check_blocks){
+    auto it = std::find(map.duck_spawns.begin(), map.duck_spawns.end(), pos);
+    if(it != map.duck_spawns.end())
+        return false;
+    it = std::find(map.collectables_spawns.begin(), map.collectables_spawns.end(), pos);
+    if(it != map.collectables_spawns.end())
+        return false;
+    if(check_blocks){
+    Block block = map.map_dto.blocks[pos.second][pos.first];
+    if (block.type != Empty) 
+        return false;   
+    }
+    return true;
+}
+
 void MainWindow::onGridClicked(QPoint pos) {
     int gridX = pos.x() / TILE_SIZE;
     int gridY = pos.y() / TILE_SIZE;
 
     if (gridX >= 0 && gridX < MAP_WIDTH_BLOCKS && gridY >= 0 && gridY < MAP_HEIGHT_BLOCKS) {
-        if(selectedTileIndex == static_cast<int>(HalfFloor) + 1){
-            map.duck_spawns.push_back(std::pair(gridX, gridY));
+        std::pair<int16_t, int16_t> gridPos = std::pair<int16_t, int16_t>(gridX, gridY);
+
+        if(selectedTileIndex == static_cast<int>(HalfFloor) + 1){   
+            bool check_blocks = true;
+            if(!validatePosition(gridPos, check_blocks))
+                return;
+            map.duck_spawns.push_back(gridPos);
             renderGrid();
             return;
         } else if(selectedTileIndex == static_cast<int>(HalfFloor) + 2){
-            map.collectables_spawns.push_back(std::pair(gridX, gridY));
+            bool check_blocks = true;
+            if(!validatePosition(gridPos, check_blocks))
+                return;
+            map.collectables_spawns.push_back(gridPos);
             renderGrid();
             return;
         }
+        bool check_blocks = false;
+        if(!validatePosition(gridPos, check_blocks))
+            return;
         Block& block = map.map_dto.blocks[gridY][gridX];
         if (block.type == Empty) {
             placeTile(gridX, gridY, static_cast<BlockType>(selectedTileIndex), true);
@@ -259,6 +278,37 @@ void MainWindow::onGridClicked(QPoint pos) {
                  << " solid:" << map.map_dto.blocks[gridY][gridX].solid;
     }
 }
+
+void MainWindow::onGridRightClicked(QPoint pos) {
+    int gridX = pos.x() / TILE_SIZE;
+    int gridY = pos.y() / TILE_SIZE;
+
+    if (gridX >= 0 && gridX < MAP_WIDTH_BLOCKS && gridY >= 0 && gridY < MAP_HEIGHT_BLOCKS) {
+        std::pair<int16_t, int16_t> gridPos(gridX, gridY);
+
+        auto duckIt = std::find(map.duck_spawns.begin(), map.duck_spawns.end(), gridPos);
+        if (duckIt != map.duck_spawns.end()) {
+            map.duck_spawns.erase(duckIt);
+            renderGrid();
+            return;
+        }
+
+        auto gunIt = std::find(map.collectables_spawns.begin(), map.collectables_spawns.end(), gridPos);
+        if (gunIt != map.collectables_spawns.end()) {
+            map.collectables_spawns.erase(gunIt);
+            renderGrid();
+            return;
+        }
+
+        Block& block = map.map_dto.blocks[gridY][gridX];
+        if (block.type != Empty) {
+            block.type = Empty;
+            renderGrid();
+        }
+    }
+}
+
+
 
 void MainWindow::placeTile(int x, int y, BlockType blockType, bool solid) {
     qDebug() << "Colocando bloque " << static_cast<int>(blockType);

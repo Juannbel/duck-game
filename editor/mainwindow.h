@@ -16,6 +16,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QVector>
+#include <algorithm>
 
 #include <qpoint.h>
 #include <yaml-cpp/yaml.h>
@@ -45,8 +46,8 @@ private slots:
     void onTileSelected(int index);
     void onGridClicked(QPoint pos);
     void on_save_mapButton_clicked();
-
     void on_load_mapButton_clicked();
+    void onGridRightClicked(QPoint pos);
 
 private:
     Ui::MainWindow* ui;
@@ -70,6 +71,7 @@ private:
     void renderGrid();
     void placeTile(int x, int y, BlockType block_type, bool solid);
     bool eventFilter(QObject* watched, QEvent* event) override;
+    bool validatePosition(std::pair<int16_t, int16_t> pos, bool check_blocks);
 };
 
 #endif  // MAINWINDOW_H
