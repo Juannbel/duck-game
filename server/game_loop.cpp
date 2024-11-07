@@ -16,12 +16,16 @@ using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 
 const milliseconds RATE(1000 / TICKS);
+const uint its_after_round = 3000/(1000/TICKS);
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
         snaps_queue_list(queue_list),
         match_number(10),
-        paths_to_maps(map_loader.list_maps(SERVER_DATA_PATH)) {}
+        round_finished(),
+        paths_to_maps(map_loader.list_maps(SERVER_DATA_PATH)),
+        curr_map(),
+        ducks_info() {}
 
 std::string get_rand_string(std::vector<std::string>& v_strings) {
     std::random_device rd;
@@ -38,17 +42,17 @@ void GameLoop::initialice_new_round() {
 void GameLoop::run() {
 
     initialice_new_round();
-    // uint it = 0;
     initial_snapshot();
 
     // Tiempo para que los jugadores vean que pato les toco
     std::this_thread::sleep_for(milliseconds(4000));
 
+    uint it = its_after_round;
     auto t1 = high_resolution_clock::now();
     initial_snapshot();
     while (_keep_running) {
         pop_and_process_all();
-        create_and_push_snapshot(t1);
+        create_and_push_snapshot(t1, it);
         auto t2 = high_resolution_clock::now();
         milliseconds duration = duration_cast<milliseconds>(t2 - t1);
         milliseconds rest = RATE - duration;
@@ -56,12 +60,11 @@ void GameLoop::run() {
             milliseconds behind = duration - rest;
             milliseconds lost = behind - behind % RATE;
             t1 += lost;
-            // it += floor(lost / RATE);
+            
         } else {
             std::this_thread::sleep_for(rest);
         }
         t1 += RATE;
-        // ++it;
     }
 }
 
@@ -82,20 +85,25 @@ void GameLoop::pop_and_process_all() {
     game_operator.update_game_status();
 }
 
-void GameLoop::create_and_push_snapshot(auto& t1) {
+void GameLoop::create_and_push_snapshot(auto& t1, uint& its_since_finish) {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
-    bool round_finished = check_for_winner(actual_status);
-    actual_status.match_finished = round_finished;
+    check_for_winner(actual_status);
+
+    actual_status.match_finished = its_since_finish == 0 ? round_finished : false;
     add_rounds_won(actual_status);
     push_responce(actual_status);
-    if (round_finished) {
+    if (!its_since_finish) {
         std::this_thread::sleep_for(milliseconds(3000));
         initialice_new_round();
         initial_snapshot();
         t1 = high_resolution_clock::now();
         struct action action;
         while (actions_queue.try_pop(action)) {}
+        its_since_finish = its_after_round;
+        round_finished = false;
+    } else if (round_finished) {
+        --its_since_finish;
     }
 }
 
@@ -109,7 +117,10 @@ void GameLoop::push_responce(Snapshot& actual_status) {
     snaps_queue_list.send_to_every(actual_status);
 }
 
-bool GameLoop::check_for_winner(Snapshot& actual_status) {
+void GameLoop::check_for_winner(Snapshot& actual_status) {
+    if (round_finished) {
+        return;
+    }
     uint8_t winner_id;
     uint8_t players_alive = 0;
     for (auto& duck: actual_status.ducks) {
@@ -118,22 +129,13 @@ bool GameLoop::check_for_winner(Snapshot& actual_status) {
             ++players_alive;
         }
     }
-    if (players_alive == 1) {
-        uint8_t i = 0;
-        for (auto& [id, wins]: winners_id_count) {  // VALIDACION PARA QUE NO SE SUME MAS DE UNA VEZ
-            i += wins;                              // PROVOSORIO, SOLO COMO TEST
-        }
-        if (i == match_number) {
-            return false;
-        }
-
+    if (players_alive == 1 && !round_finished) {
         if (winners_id_count.find(winner_id) == winners_id_count.end()) {
             winners_id_count[winner_id] = 0;
         }
         ++winners_id_count[winner_id];
-        return true;
+        round_finished = true;
     }
-    return false;
 }
 
 // uint8_t GameLoop::add_player() {
