@@ -8,24 +8,6 @@
 
 #include "duck_player.h"
 
-GunEntity::GunEntity(BulletManager* bullets):
-        id(),
-        type(),
-        x(),
-        y(),
-        ammo(),
-        range(),
-        bullets_to_shoot(),
-        shooted_bullets(),
-        inaccuracy(),
-        trigger_pulled(),
-        ready_to_shoot(),
-        it_since_shoot(),
-        it_to_shoot(),
-        it_to_reload(),
-        it_reloading(),
-        bullets(bullets) {}
-
 GunEntity::GunEntity(Gun& gun, BulletManager* bullets):
         id(gun.gun_id),
         type(gun.type),

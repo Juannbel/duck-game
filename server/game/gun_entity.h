@@ -34,7 +34,6 @@ protected:
     void add_bullet(DuckPlayer& player);
 
 public:
-    explicit GunEntity(BulletManager* bullets);
     GunEntity(Gun& gun, BulletManager* bullets);
     explicit GunEntity(GunEntity&&);
     GunEntity& operator=(GunEntity&&);

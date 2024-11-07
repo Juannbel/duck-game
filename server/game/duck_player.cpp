@@ -208,13 +208,15 @@ void DuckPlayer::stop_jump() { ready_to_jump = true; }
 
 bool DuckPlayer::get_hit(Rectangle& bullet, uint8_t damage) {
     if (collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
+        if (status.armor_equiped) {
+            status.armor_equiped = false;
+            return true;
+        } else if (status.helmet_equiped) {
+            status.helmet_equiped = false;
+            return true;
+        }
         uint8_t taken_dmg = damage;
         status.is_damaged = true;
-        if (status.helmet_equiped && status.armor_equiped) {
-            taken_dmg /= 3;
-        } else if (status.helmet_equiped || status.armor_equiped) {
-            taken_dmg /= 2;
-        }
         if (status.duck_hp < taken_dmg) {
             die();
         } else {
