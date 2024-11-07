@@ -182,10 +182,17 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
             QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(event);
             if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
                 const double scaleFactor = 1.15;
+                const double minScale = 0.7;
+                const double maxScale = 4.0;
+               
                 if (wheelEvent->angleDelta().y() > 0) {
-                    ui->graphicsView->scale(scaleFactor, scaleFactor);
+                    if (ui->graphicsView->transform().m11() < maxScale) {
+                        ui->graphicsView->scale(scaleFactor, scaleFactor);
+                    }
                 } else {
-                    ui->graphicsView->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+                    if (ui->graphicsView->transform().m11() > minScale) {
+                        ui->graphicsView->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+                    }
                 }
                 return true;
             }
@@ -201,8 +208,12 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
                     onGridClicked(scenePos.toPoint());
                 }
                 return true;
-            }else if (mouseEvent->button() & Qt::RightButton) {
-                onGridRightClicked(scenePos.toPoint()); 
+            }else if (mouseEvent->buttons() & Qt::RightButton) {
+                QPoint currentTile(scenePos.x() / TILE_SIZE, scenePos.y() / TILE_SIZE);
+                if (currentTile != lastProcessedTile) {
+                    lastProcessedTile = currentTile;
+                    onGridRightClicked(scenePos.toPoint());
+                }
                 return true;
             }
         } else if (event->type() == QEvent::MouseButtonRelease) {
@@ -211,6 +222,18 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
     }
     return QMainWindow::eventFilter(watched, event);
 }
+
+void MainWindow::on_clear_mapButton_clicked() {
+    map.duck_spawns.clear();
+    map.collectables_spawns.clear();
+    for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
+        for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
+            map.map_dto.blocks[i][j] = {Empty, false};
+        }
+    }
+    renderGrid();
+}
+
 
 bool MainWindow::validatePosition(std::pair<int16_t, int16_t> pos, bool check_blocks){
     auto it = std::find(map.duck_spawns.begin(), map.duck_spawns.end(), pos);
@@ -234,7 +257,11 @@ void MainWindow::onGridClicked(QPoint pos) {
     if (gridX >= 0 && gridX < MAP_WIDTH_BLOCKS && gridY >= 0 && gridY < MAP_HEIGHT_BLOCKS) {
         std::pair<int16_t, int16_t> gridPos = std::pair<int16_t, int16_t>(gridX, gridY);
 
-        if(selectedItemIndex == static_cast<int>(HalfFloor)){   
+        if(selectedItemIndex == static_cast<int>(HalfFloor)){ //pato
+            if(map.duck_spawns.size() >= 4){
+                QMessageBox::warning(this, "Error", "Ya hay 4 spawns de patos.");
+                return;
+            }
             bool check_blocks = true;
             if(!validatePosition(gridPos, check_blocks))
                 return;
