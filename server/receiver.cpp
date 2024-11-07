@@ -70,12 +70,13 @@ void ServerReceiver::setup_game() {
             if (game_info.game_id == INVALID_GAME_ID) {
                 continue;
             }
+            gameId = game_info.game_id;
             // esperamos comando para iniciar juego
             protocol.receive_cmd();
             games_monitor.start_game(gameId);
             break;
         } else if (cmd == LIST_GAMES) {
-            std::vector<int32_t> lobbies = games_monitor.list_lobbies();
+            std::vector<LobbyInfo> lobbies = games_monitor.list_lobbies();
             protocol.send_lobbies_info(lobbies);
             continue;
         } else if (cmd == JOIN_GAME) {

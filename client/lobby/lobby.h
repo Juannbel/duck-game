@@ -1,5 +1,4 @@
 #include <QApplication>
-#include <array>
 
 #include "../client_protocol.h"
 

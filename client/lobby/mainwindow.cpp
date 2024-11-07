@@ -2,6 +2,8 @@
 
 #include <QMessageBox>
 #include <iostream>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 #include <vector>
 #include <qinputdialog.h>
 #include <qresource.h>
@@ -33,7 +35,6 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint
 
     ui->p3logo->setPixmap(logoPixmap);
     ui->p1logo->setPixmap(logoPixmap);
-    // centramos horizontalmente
     ui->p3logo->setAlignment(Qt::AlignCenter);
     ui->p1logo->setAlignment(Qt::AlignCenter);
 }
@@ -95,7 +96,7 @@ void MainWindow::onJoinGameConfirmed() {
 
     int numPlayers = ui->multiPlayerRadio->isChecked() ? 2 : 1;
 
-    int32_t game_id = ui->lobbiesList->item(selected_lobby_row)->text().toInt();
+    int32_t game_id = lobbies_info[selected_lobby_row].game_id;
     protocol.send_option(JOIN_GAME);
     protocol.send_option(game_id);
     protocol.send_option(numPlayers);
@@ -141,11 +142,42 @@ void MainWindow::onStartGameClicked() {
 
 void MainWindow::updateLobbyList() {
     ui->lobbiesList->clear();
-    std::vector<int32_t> lobbies = protocol.recv_lobbies_info();
+    lobbies_info = protocol.recv_lobbies_info();
 
-    for (int32_t lobby: lobbies) {
-        ui->lobbiesList->addItem(QString::number(lobby));
+    ui->lobbiesList->setColumnCount(3);
+    ui->lobbiesList->setRowCount(lobbies_info.size());
+
+    QStringList headers;
+    headers << "Game ID" << "Players" << "Creator";
+    ui->lobbiesList->setHorizontalHeaderLabels(headers);
+
+    ui->lobbiesList->verticalHeader()->setVisible(false);
+
+    int row = 0;
+    for (const LobbyInfo& lobby : lobbies_info) {
+        QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(lobby.game_id));
+        idItem->setTextAlignment(Qt::AlignCenter);
+        ui->lobbiesList->setItem(row, 0, idItem);
+
+        QString playersText = QString("%1/%2").arg(lobby.connected_players).arg(MAX_DUCKS);
+        QTableWidgetItem* playersItem = new QTableWidgetItem(playersText);
+        playersItem->setTextAlignment(Qt::AlignCenter);
+        ui->lobbiesList->setItem(row, 1, playersItem);
+
+        QTableWidgetItem* creatorItem = new QTableWidgetItem(lobby.creator);
+        creatorItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        ui->lobbiesList->setItem(row, 2, creatorItem);
+
+        row++;
     }
+
+    ui->lobbiesList->resizeColumnsToContents();
+    ui->lobbiesList->horizontalHeader()->setStretchLastSection(true);
+
+    ui->lobbiesList->setAlternatingRowColors(true);
+    ui->lobbiesList->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->lobbiesList->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->lobbiesList->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
 MainWindow::~MainWindow() { delete ui; }

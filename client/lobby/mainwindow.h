@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "../client_protocol.h"
+#include "common/lobby.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -31,6 +32,7 @@ private:
     Ui::MainWindow* ui;
     ClientProtocol& protocol;
     std::pair<uint8_t, uint8_t>& duck_ids;
+    std::vector<LobbyInfo> lobbies_info;
     int selected_lobby_row = -1;
 
     void updateLobbyList();

@@ -6,7 +6,7 @@
 
 #include "common/lobby.h"
 
-Game::Game(const int id): gameloop(gameloop_q, sv_msg_queues), id(id) {
+Game::Game(const int id, const std::string& creator): gameloop(gameloop_q, sv_msg_queues), creator(creator), id(id) {
     open = true;
     cant_players = 0;
 }
