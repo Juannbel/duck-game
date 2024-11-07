@@ -2,9 +2,13 @@
 #define GAME_H
 
 #include <cstdint>
+#include <cstring>
 #include <map>
+#include <utility>
 
 #include "../common/blocking_queue.h"
+#include "common/lobby.h"
+#include "common/snapshot.h"
 
 #include "game_loop.h"
 
@@ -14,24 +18,33 @@ private:
     Queue<action> gameloop_q;
     GameLoop gameloop;
     int cant_players = 0;
-    std::map<int, uint8_t> player_to_duck_id;
+    std::string creator;
+    std::map<int, std::pair<uint8_t, uint8_t>> player_to_duck_ids;
     bool open = true;
     int id;
 
 public:
-    explicit Game(int id);
+    Game(int id, const std::string& creator);
 
     Queue<action>& get_gameloop_queue();
 
     void start();
 
-    uint8_t add_player(int player_id, Queue<Snapshot>& player_sender_queue);
+    GameInfo add_player(int player_id, Queue<Snapshot>& player_sender_queue, const std::vector<std::string> players_names);
 
     void delete_player(const int id_player);
 
     bool is_open() { return open; }
 
-    int get_id() { return id; }
+    LobbyInfo get_info() {
+        LobbyInfo info;
+        info.game_id = id;
+        info.connected_players = cant_players;
+        std::strncpy(info.creator, creator.c_str(), MAX_PLAYER_NAME-1);
+        info.creator[MAX_PLAYER_NAME-1] = '\0';
+
+        return info;
+    }
 
     ~Game();
 };

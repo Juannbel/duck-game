@@ -27,6 +27,8 @@ option(TALLER_MAKE_WARNINGS_AS_ERRORS "Enable / disable warnings as errors." ON)
 
 message(CMAKE_CXX_COMPILER_ID="${CMAKE_CXX_COMPILER_ID}")
 
+find_package(yaml-cpp REQUIRED)
+
 # Define target: lib common between client, server and editor programs
 # HEY TODO XXX: change the name to something that you like
 add_library(taller_common STATIC)
@@ -35,6 +37,8 @@ add_library(taller_common STATIC)
 # HEY!! TODO XXX: add more subfolders here
 add_subdirectory(common/)
 
+# Añadir yaml-cpp como una dependencia de linkeo de taller_common
+target_link_libraries(taller_common PUBLIC yaml-cpp)
 
 # set compiler warnings to the targets
 include(cmake/CompilerWarnings.cmake)
@@ -70,6 +74,13 @@ endif()
 # ---------------
 if(TALLER_CLIENT)
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
+    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+
     add_executable(taller_client)
 
     # Make them depend on taller_common lib
@@ -82,10 +93,10 @@ if(TALLER_CLIENT)
     set_project_warnings(taller_client ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # add libSDL2pp's headers
-    target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
+    target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR} ${Qt${QT_VERSION_MAJOR}_INCLUDE_DIRS})
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp yaml-cpp)
+    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp yaml-cpp lobby Qt${QT_VERSION_MAJOR}::Widgets)
 endif()
 
 if(TALLER_SERVER)
@@ -108,23 +119,26 @@ if(TALLER_SERVER)
 endif()
 
 if(TALLER_EDITOR)
-    # HEY!! TODO XXX: Change the name of the executable to the one you like!
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    set(CMAKE_AUTOUIC ON)
+
     add_executable(taller_editor)
-
-    # Make them depend on taller_common lib
-    add_dependencies(taller_editor taller_common SDL2pp::SDL2pp)
-
-    # Add source files and enable warnings
-    # HEY!! TODO XXX: add more subfolders here
+    add_dependencies(taller_editor taller_common)
     add_subdirectory(editor)
 
+    find_package(Qt5 COMPONENTS Widgets REQUIRED)
     set_project_warnings(taller_editor ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
-    # add libSDL2pp's headers
-    target_include_directories(taller_editor PRIVATE ${libSDL2pp_SOURCE_DIR})
+    find_package(yaml-cpp REQUIRED)
 
-    # Link the taller_common lib target
-    target_link_libraries(taller_editor taller_common SDL2pp::SDL2pp)
+    target_link_libraries(taller_editor
+        PRIVATE
+        Qt5::Widgets
+        yaml-cpp
+        taller_common
+    )
+
 endif()
 
 

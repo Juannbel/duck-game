@@ -3,21 +3,26 @@
 #include <cstdint>
 #include <utility>
 
+#include "common/lobby.h"
+
 #define CREATE 1
 #define JOIN 2
 
-int GamesMonitor::player_create_game(const int id_player, Queue<Snapshot>& player_sender_queue,
-                                     uint8_t& duck_id) {
-    Game* game = create_game();
-    duck_id = game->add_player(id_player, player_sender_queue);
-    return game->get_id();
+GameInfo GamesMonitor::player_create_game(const int id_player, Queue<Snapshot>& player_sender_queue,
+                                 const std::vector<std::string>& players_names) {
+    Game* game = create_game(players_names[0]);
+    GameInfo game_info = game->add_player(id_player, player_sender_queue, players_names);
+    return game_info;
 }
 
-uint8_t GamesMonitor::player_join_game(const int id_player, const int id_game,
-                                       Queue<Snapshot>& player_sender_queue) {
+GameInfo GamesMonitor::player_join_game(const int id_player, const int id_game,
+                                       Queue<Snapshot>& player_sender_queue, const std::vector<std::string>& players_names) {
     std::lock_guard<std::mutex> lck(m);
+    if (map_games.find(id_game) == map_games.end()) {
+        return {INVALID_GAME_ID, INVALID_DUCK_ID, INVALID_DUCK_ID};
+    }
     Game* game = map_games[id_game];
-    return game->add_player(id_player, player_sender_queue);
+    return game->add_player(id_player, player_sender_queue, players_names);
 }
 
 void GamesMonitor::start_game(int id_game) {
@@ -26,20 +31,19 @@ void GamesMonitor::start_game(int id_game) {
     game->start();
 }
 
-std::vector<int> GamesMonitor::list_lobbies() {
+std::vector<LobbyInfo> GamesMonitor::list_lobbies() {
     std::lock_guard<std::mutex> lck(m);
-    std::vector<int> lobbies;
+    std::vector<LobbyInfo> lobbies;
     for (auto& game: map_games) {
         if (game.second->is_open()) {
-            lobbies.push_back(game.first);
+            lobbies.push_back(game.second->get_info());
         }
     }
-    lobbies.push_back(-1);
     return lobbies;
 }
 
-Game* GamesMonitor::create_game() {
-    Game* game = new Game(id);
+Game* GamesMonitor::create_game(const std::string& creator_name) {
+    Game* game = new Game(id, creator_name);
     std::lock_guard<std::mutex> lck(m);
     map_games.emplace(id, game);
     id++;

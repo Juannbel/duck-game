@@ -1,93 +1,45 @@
 #include "client.h"
 
+#include <array>
 #include <cstdint>
+
+#include "common/blocking_queue.h"
+#include "common/lobby.h"
+#include "lobby/lobby.h"
 
 #include "constant_looper.h"
 
-#define JOIN 2
-#define CREATE 1
-
 Client::Client(const char* hostname, const char* servname):
+        alive(true),
         protocol(Socket(hostname, servname)),
-        receiver(protocol, snapshot_q),
-        sender(protocol, command_q) {}
+        receiver(protocol, snapshot_q, alive),
+        sender(protocol, actions_q, alive) {}
 
 void Client::run() {
-    const int option = displayMenuAndGetOption();
-    protocol.send_option(option);
-
-    if (option == JOIN) {
-        if (!joinLobby()) {
-            run();
-        }
-    } else if (option == CREATE) {
-        std::cout << "Enter 3 to start lobby" << std::endl;
-
-        int option;
-        std::cin >> option;
-        protocol.send_option(option);
-    }
-
-    uint8_t duck_id = protocol.recv_duck_id();
-    std::cout << "Match info received" << std::endl;
-    std::cout << "Duck id: " << static_cast<int>(duck_id) << std::endl;
+    std::pair<uint8_t, uint8_t> duck_ids = {INVALID_DUCK_ID, INVALID_DUCK_ID};
+    Lobby lobby(protocol, duck_ids);
+    lobby.run();
 
     receiver.start();
     sender.start();
 
-    ConstantLooper looper(duck_id, snapshot_q, command_q);
+    if (duck_ids.first == INVALID_DUCK_ID)
+        return;
+
+    ConstantLooper looper(duck_ids, snapshot_q, actions_q);
     looper.run();
 
     std::cout << "Game ended" << std::endl;
 }
 
-int Client::displayMenuAndGetOption() {
-    std::cout << "1 - Create Lobby" << std::endl;
-    std::cout << "2 - Join a Lobby" << std::endl;
-    int option;
-    std::cout << "Enter an option (1 or 2): ";
-    std::cin >> option;
-    return option;
-}
-
-// Devuelve false si no hay lobbies disponibles para conectarse, true en caso contrario
-bool Client::joinLobby() {
-    if (!displayLobbyList()) {
-        return false;
-    }
-    const int lobbyId = getLobbyIdFromUser();
-    protocol.send_option(lobbyId);
-    return true;
-}
-
-// Devuelve false si no hay lobbies disponibles, true en caso contrario
-bool Client::displayLobbyList() {
-    int countLobbys = 0;
-    // TODO:? cambiar el protocolo y que lo primero que recibo sea la cantidad de lobbies?
-    int id = protocol.recv_lobby();
-    while (id != -1) {
-        std::cout << "Lobby: " << id << std::endl;
-        countLobbys++;
-        id = protocol.recv_lobby();
-    }
-    if (countLobbys == 0) {
-        std::cout << "No lobbies available" << std::endl;
-        return false;
-    }
-    return true;
-}
-
-int Client::getLobbyIdFromUser() {
-    int lobbyId;
-    std::cout << "Enter an option (id of lobby): ";
-    std::cin >> lobbyId;
-    return lobbyId;
-}
-
 Client::~Client() {
     protocol.shutdown();
-    snapshot_q.close();
-    command_q.close();
+    try {
+        snapshot_q.close();
+    } catch (...) {};
+    try {
+        actions_q.close();
+    } catch (...) {};
     receiver.stop();
     sender.stop();
     receiver.join();

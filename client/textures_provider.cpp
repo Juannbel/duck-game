@@ -23,6 +23,8 @@ void TexturesProvider::load_textures(SDL2pp::Renderer& renderer) {
             renderer, DATA_PATH "/sprites/collectables/collectables.png");
     textures["wings"] =
             std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/wings/wings.png");
+    textures["feathers"] =
+            std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/feathers/feathers.png");
     textures["helmet"] =
             std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/equipment/helmet.png");
     textures["armor"] =

@@ -4,9 +4,11 @@
 #include <iostream>
 
 #include "common/liberror.h"
+#include "common/lobby.h"
 #include "common/snapshot.h"
 
-ServerSender::ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, int playerId, std::atomic<bool>& is_alive):
+ServerSender::ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, int playerId,
+                           std::atomic<bool>& is_alive):
         protocol(protocol), sender_q(sender_q), playerId(playerId), is_alive(is_alive) {}
 
 void ServerSender::run() {
@@ -32,8 +34,4 @@ void ServerSender::run() {
     is_alive = false;
 }
 
-void ServerSender::send_duck_id(const uint8_t& duck_id) { protocol.send_duck_id(duck_id); }
-
-ServerSender::~ServerSender() {
-    is_alive = false;
-}
+ServerSender::~ServerSender() { is_alive = false; }

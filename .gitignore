@@ -2,3 +2,4 @@ build/
 tags.*
 .cache/
 .vscode/
+CMakeLists.txt.user*

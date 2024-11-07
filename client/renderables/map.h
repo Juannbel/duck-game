@@ -13,7 +13,7 @@
 
 #include "block.h"
 
-class RenderableMap {
+class RenderableMapDto {
 private:
     std::shared_ptr<SDL2pp::Texture> background_texture;
 
@@ -23,11 +23,11 @@ private:
     static std::unordered_map<BlockType, std::string> block_to_string;
 
 public:
-    explicit RenderableMap(const Map& map_dto);
+    explicit RenderableMapDto(const MapDto& map_dto);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 
-    void update(const Map& new_map_dto);
+    void update(const MapDto& new_map_dto);
 };
 
 #endif

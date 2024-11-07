@@ -5,11 +5,17 @@
 #include <yaml-cpp/yaml.h>
 
 #include "client/animation_data_provider.h"
+#include "client/renderables/feathers.h"
 #include "client/textures_provider.h"
 #include "common/shared_constants.h"
 
 RenderableDuck::RenderableDuck(uint8_t duck_id):
-        duck_id(duck_id), wings(duck_id), position(50, 50), is_facing_right(true), is_alive(true) {
+        duck_id(duck_id),
+        wings(duck_id),
+        feathers(duck_id),
+        position(50, 50),
+        is_facing_right(true),
+        is_alive(true) {
     load_animations();
     curr_animation = animations["standing"];
 }
@@ -65,6 +71,7 @@ void RenderableDuck::update(const Duck& duck) {
     armor.update(duck);
     gun.update(duck);
     wings.update(duck);
+    feathers.update(duck);
 }
 
 void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
@@ -78,6 +85,7 @@ void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
 
     curr_animation->render(renderer, camera, position, is_facing_right);
 
+    feathers.render(renderer, camera);
     helmet.render(renderer, camera);
     armor.render(renderer, camera);
     gun.render(renderer, camera);
@@ -86,6 +94,7 @@ void RenderableDuck::render(SDL2pp::Renderer& renderer, Camera& camera) {
 
 void RenderableDuck::skip_frames(uint8_t frames) {
     curr_animation->skip_frames(frames);
+    feathers.skip_frames(frames);
     helmet.skip_frames(frames);
     armor.skip_frames(frames);
     wings.skip_frames(frames);

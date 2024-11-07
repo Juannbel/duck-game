@@ -20,9 +20,9 @@ struct ControlScheme {
 
 class DuckController {
 private:
-    int duck_id;
-    Queue<Command>& command_q;  // Cola de comandos compartida
-    const Snapshot& snapshot;
+    uint8_t duck_id;
+    Queue<action>& actions_q;
+    Snapshot& snapshot;
     ControlScheme controls;
 
     Command last_move_command;
@@ -34,7 +34,7 @@ private:
     void handle_key_up(const SDL_Event& event);
 
 public:
-    DuckController(int duck_id, Queue<Command>& command_q, const Snapshot& snapshot,
+    DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
                    ControlScheme controls);
 
     void process_event(const SDL_Event& event);

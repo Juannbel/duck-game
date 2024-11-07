@@ -7,13 +7,13 @@
 #include <vector>
 
 #include "common/blocking_queue.h"
+#include "common/map_loader.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 #include "common/thread.h"
 #include "game/game_operator.h"
-#include "game/map_loader.h"
 
-#include "action.h"
+#include "common/commands.h"
 #include "list_monitor.h"
 
 class GameLoop: public Thread {
@@ -25,8 +25,9 @@ private:
     std::map<uint8_t, uint8_t> winners_id_count;
     MapLoader map_loader;
     std::vector<std::string> paths_to_maps;
-    Map curr_map_dto;
-    std::vector<uint8_t> duck_ids;
+    MapDto curr_map_dto;
+    // std::vector<uint8_t> duck_ids;
+    std::vector<std::pair<uint8_t, std::string>> ducks_info;
 
     void initialice_new_round();
 
@@ -51,7 +52,9 @@ public:
      */
     virtual void run() override;
 
-    uint8_t add_player();
+    uint8_t add_player(const std::string& player_name);
+    // uint8_t add_player();
+
     void delete_duck(uint8_t duck_id);
 
     ~GameLoop();

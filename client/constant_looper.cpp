@@ -22,6 +22,8 @@
 #include "client/renderables/map.h"
 #include "client/screen_manager.h"
 #include "client/textures_provider.h"
+#include "common/blocking_queue.h"
+#include "common/lobby.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 
@@ -30,17 +32,18 @@
 
 #define USE_CAMERA true
 
-ConstantLooper::ConstantLooper(uint8_t duck_id, Queue<Snapshot>& snapshot_q,
-                               Queue<Command>& command_q):
-        duck_id(duck_id),
+ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
+                               Queue<action>& actions_q):
+        duck_ids(duck_ids),
         sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
         window(WIN_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_WIDTH, WIN_HEIGHT,
                SDL_WINDOW_RESIZABLE),
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
-        screen_manager(renderer, duck_id),
+        screen_manager(renderer, duck_ids),
         snapshot_q(snapshot_q),
-        command_q(command_q),
-        p1_controller(duck_id, command_q, last_snapshot, P1_CONTROLS),
+        actions_q(actions_q),
+        p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS),
+        p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS),
         map_dto() {}
 
 void ConstantLooper::run() try {
@@ -54,7 +57,7 @@ void ConstantLooper::run() try {
 
     Camera camera(renderer);
 
-    RenderableMap map(map_dto);
+    RenderableMapDto map(map_dto);
 
     bool keep_running = true;
 
@@ -64,7 +67,6 @@ void ConstantLooper::run() try {
         keep_running = process_events();
 
         while (snapshot_q.try_pop(last_snapshot)) {}
-
 
         if (last_snapshot.match_finished) {
             keep_running =
@@ -78,7 +80,6 @@ void ConstantLooper::run() try {
             continue;
         }
 
-
         // Actualizar el estado de todo lo que se renderiza
         process_snapshot();
 
@@ -90,11 +91,8 @@ void ConstantLooper::run() try {
 
         sleep_or_catch_up(t1);
     }
-
-} catch (std::exception& e) {
-    std::cerr << "Excepction on constant looper " << e.what() << std::endl;
-} catch (...) {
-    std::cerr << "Unknown exception on constant looper " << std::endl;
+} catch (const ClosedQueue& e) {
+    std::cout << "Server disconnected, leaving constant looper" << std::endl;
 }
 
 void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
@@ -175,7 +173,7 @@ void ConstantLooper::process_snapshot() {
     }
 }
 
-void ConstantLooper::render(Camera& camera, RenderableMap& map) {
+void ConstantLooper::render(Camera& camera, RenderableMapDto& map) {
     renderer.Clear();
 
     map.render(renderer, camera);
@@ -185,11 +183,14 @@ void ConstantLooper::render(Camera& camera, RenderableMap& map) {
     }
 
     for (auto& duck: ducks_renderables) {
-        if (duck.first == duck_id)
+        if (duck.first == duck_ids.first || duck.first == duck_ids.second)
             continue;
         duck.second->render(renderer, camera);
     }
-    ducks_renderables[duck_id]->render(renderer, camera);
+    ducks_renderables[duck_ids.first]->render(renderer, camera);
+    if (duck_ids.second != INVALID_DUCK_ID) {
+        ducks_renderables[duck_ids.second]->render(renderer, camera);
+    }
 
     for (auto& collectable: collectables_renderables) {
         collectable.second->render(renderer, camera);
@@ -216,12 +217,14 @@ bool ConstantLooper::process_events() {
         }
 
         p1_controller.process_event(event);
-        // para cuando haya un segundo jugador
-        // p2_controller.process_event(event);
+        if (duck_ids.second != INVALID_DUCK_ID)
+            p2_controller.process_event(event);
     }
 
     p1_controller.send_last_move_command();
-    // p2_controller.send_last_move_command();
+    if (duck_ids.second != INVALID_DUCK_ID)
+        p2_controller.send_last_move_command();
+
     return true;
 }
 

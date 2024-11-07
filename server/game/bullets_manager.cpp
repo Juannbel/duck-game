@@ -29,7 +29,7 @@ void BulletManager::add_bullet(BulletInfo& bullet) {
 bool BulletManager::check_collision_with_ducks(Rectangle& bullet, uint8_t damage) {
     for (auto& [id, duck]: ducks) {
         if (duck.get_hit(bullet, damage)) {
-            return true; 
+            return true;
         }
     }
     return false;

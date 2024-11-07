@@ -2,10 +2,11 @@
 #define GAME_MANAGER_H
 
 #include <cstdint>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
-#include "../action.h"
+#include "common/commands.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 
@@ -33,12 +34,12 @@ private:
     void check_spawn_picked(uint32_t id);
     GunType get_random_guntype();
 
-    void load_map(Map& map_dto);
-    void initialize_players(const std::vector<uint8_t>& duck_ids);
+    void load_map(MapDto& map_dto);
+    void initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info);
 
 public:
     GameOperator();
-    void initialize_game(Map& map_dto, const std::vector<uint8_t>& duck_ids);
+    void initialize_game(MapDto& map_dto, const std::vector<std::pair<uint8_t, std::string>>& ducks_info);
     void process_action(action& action);
     void update_game_status();
 

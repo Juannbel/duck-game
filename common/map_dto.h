@@ -28,7 +28,7 @@ struct Block {
     bool solid;
 } __attribute__((packed));
 
-struct Map {
+struct MapDto {
     uint8_t theme;
     Block blocks[MAP_HEIGHT_BLOCKS][MAP_WIDTH_BLOCKS];
 } __attribute__((packed));

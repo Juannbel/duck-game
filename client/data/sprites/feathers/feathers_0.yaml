@@ -1,0 +1,55 @@
+define: &y_row 0
+width: 32
+height: 32
+
+feathers_0:
+  damaged:
+    iter_per_frame: 4
+    loops: false
+    frames:
+      - { x: 0, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9 }
+      - { x: 32, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9 }
+      - { x: 64, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9 }
+      - { x: 96, y: *y_row, x_offset_right: 10, x_offset_left: 10, y_offset: 9 }
+      - {
+          x: 128,
+          y: *y_row,
+          x_offset_right: 10,
+          x_offset_left: 10,
+          y_offset: 9,
+        }
+      - {
+          x: 160,
+          y: *y_row,
+          x_offset_right: 10,
+          x_offset_left: 10,
+          y_offset: 9,
+        }
+      - {
+          x: 192,
+          y: *y_row,
+          x_offset_right: 10,
+          x_offset_left: 10,
+          y_offset: 9,
+        }
+      - {
+          x: 224,
+          y: *y_row,
+          x_offset_right: 10,
+          x_offset_left: 10,
+          y_offset: 9,
+        }
+      - {
+          x: 256,
+          y: *y_row,
+          x_offset_right: 10,
+          x_offset_left: 10,
+          y_offset: 9,
+        }
+      - {
+          x: 288,
+          y: *y_row,
+          x_offset_right: 10,
+          x_offset_left: 10,
+          y_offset: 9,
+        }
