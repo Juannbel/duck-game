@@ -35,8 +35,6 @@ protected:
 
 public:
     GunEntity(Gun& gun, BulletManager* bullets);
-    explicit GunEntity(GunEntity&&);
-    GunEntity& operator=(GunEntity&&);
 
     virtual void start_shooting() {
         it_since_shoot = trigger_pulled ? it_since_shoot : 1;
@@ -53,6 +51,12 @@ public:
     void destroy();
     void set_new_coords(float x, float y);
     Gun get_gun_info();
+
+    GunEntity(const GunEntity&) = delete;
+    GunEntity& operator=(const GunEntity&) = delete;
+
+    GunEntity(GunEntity&&) = delete;
+    GunEntity& operator=(GunEntity&&) = delete;
 
     virtual ~GunEntity() {}
 };

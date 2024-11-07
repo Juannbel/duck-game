@@ -31,7 +31,7 @@ void GameOperator::load_map(const Map& map_info) {
 }
 
 void GameOperator::initialize_players(
-        const std::vector<std::pair<uint8_t, std::string>>& ducks_info, Map& map_info) {
+        const std::vector<std::pair<uint8_t, std::string>>& ducks_info, const Map& map_info) {
     const auto& spawn_points = map_info.duck_spawns;
     players.clear();
     for (auto& duck: ducks_info) {

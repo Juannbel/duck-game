@@ -42,9 +42,9 @@ private:
 
     void add_rounds_won(Snapshot& snapshot);
 
-    void push_responce(Snapshot& actual_status);
+    void push_responce(const Snapshot& actual_status);
 
-    void check_for_winner(Snapshot&);
+    void check_for_winner(const Snapshot&);
 
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list);

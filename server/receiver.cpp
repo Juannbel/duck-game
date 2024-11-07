@@ -15,8 +15,10 @@ ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_mon
                                Queue<Snapshot>& sender_q, int playerId,
                                std::atomic<bool>& is_alive):
         protocol(protocol),
+        gameloop_q(nullptr),
         games_monitor(games_monitor),
         playerId(playerId),
+        gameId(INVALID_GAME_ID),
         duck_id(-1),
         sender_q(sender_q),
         is_alive(is_alive),

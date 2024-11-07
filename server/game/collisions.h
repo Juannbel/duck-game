@@ -8,7 +8,9 @@
 #include "common/map_dto.h"
 
 struct Coordenades {
+    // cppcheck-suppress unusedStructMember
     float x;
+    // cppcheck-suppress unusedStructMember
     float y;
 };
 
@@ -33,8 +35,8 @@ class CollisionChecks {
 private:
     std::map<std::pair<int16_t, int16_t>, BlockInfo> blocks;
     void add_block(float x, float y, bool half, bool solid);
-    Collision check_collisions_with_block(BlockInfo& block, Rectangle& final_rec, Rectangle& entity,
-                                                   float new_y);
+    Collision check_collisions_with_block(const BlockInfo& block, Rectangle& final_rec,
+                                          const Rectangle& entity, float new_y);
 
 
 public:
@@ -43,9 +45,8 @@ public:
 
     bool out_of_map(float x, float y);
 
-    struct Collision check_near_blocks_collision(struct Rectangle& entity, float new_x,
-                                                 float new_y);
-    struct Collision rectangles_collision(const struct Rectangle& r1, const struct Rectangle& r2);
+    Collision check_near_blocks_collision(const Rectangle& entity, float new_x, float new_y);
+    Collision rectangles_collision(const Rectangle& r1, const Rectangle& r2);
 };
 
 #endif

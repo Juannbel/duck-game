@@ -38,7 +38,7 @@ private:
 
     void load_map(const Map& map_dto);
     void initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info,
-                            Map& map_info);
+                            const Map& map_info);
 
 public:
     GameOperator();
