@@ -29,14 +29,9 @@ public:
 
     bool waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 
-    /*
-     * Pre: last_snapshot es valida, para poder mostrar las estadisticas
-     * Devuelve true si se sigue jugando, false si no
-     * Puede devolver false por dos razones:
-     *       - el jugador quiere salir
-     *       - el juego terminó
-     * En el segundo caso, muestra tambien la pantalla de fin de juego
-     */
+    bool initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot, RenderableMapDto& map,
+                        Camera& camera);
+
     bool between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
                                RenderableMapDto& map, Camera& camera);
 };

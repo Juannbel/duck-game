@@ -6,6 +6,7 @@
 #include <random>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "common/snapshot.h"
@@ -40,8 +41,13 @@ void GameLoop::initialice_new_round() {
 void GameLoop::run() {
 
     initialice_new_round();
-    auto t1 = high_resolution_clock::now();
     // uint it = 0;
+    initial_snapshot();
+
+    // Tiempo para que los jugadores vean que pato les toco
+    std::this_thread::sleep_for(milliseconds(4000));
+
+    auto t1 = high_resolution_clock::now();
     initial_snapshot();
     while (_keep_running) {
         pop_and_process_all();

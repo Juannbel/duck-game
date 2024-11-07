@@ -59,6 +59,9 @@ void ConstantLooper::run() try {
 
     RenderableMapDto map(map_dto);
 
+    if (!screen_manager.initial_screen(snapshot_q, last_snapshot, map, camera))
+        return;
+
     bool keep_running = true;
 
     while (keep_running) {
