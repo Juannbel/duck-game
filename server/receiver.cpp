@@ -70,6 +70,7 @@ void ServerReceiver::setup_game() {
             if (game_info.game_id == INVALID_GAME_ID) {
                 continue;
             }
+            gameId = game_info.game_id;
             // esperamos comando para iniciar juego
             protocol.receive_cmd();
             games_monitor.start_game(gameId);
