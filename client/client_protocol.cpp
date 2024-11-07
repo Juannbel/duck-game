@@ -5,6 +5,7 @@
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include "common/lobby.h"
 
 ClientProtocol::ClientProtocol(Socket&& socket): socket(std::move(socket)) {}
 
@@ -119,18 +120,19 @@ GameInfo ClientProtocol::recv_game_info() {
     return game_info;
 }
 
-std::vector<int32_t> ClientProtocol::recv_lobbies_info() {
+std::vector<LobbyInfo> ClientProtocol::recv_lobbies_info() {
     bool was_closed = false;
     uint8_t lobbies_quantity;
     socket.recvall(&lobbies_quantity, sizeof(lobbies_quantity), &was_closed);
 
-    std::vector<int32_t> lobbies_info(lobbies_quantity);
-    socket.recvall(lobbies_info.data(), lobbies_quantity * sizeof(int32_t), &was_closed);
+    std::vector<LobbyInfo> lobbies_info(lobbies_quantity);
+    socket.recvall(lobbies_info.data(), lobbies_quantity * sizeof(LobbyInfo), &was_closed);
     if (was_closed)
         throw SocketWasClosed();
 
-    for (int i = 0; i < lobbies_quantity; i++) {
-        lobbies_info[i] = ntohl(lobbies_info[i]);
+    for (auto& lobby : lobbies_info) {
+        lobby.game_id = ntohl(lobby.game_id);
     }
+
     return lobbies_info;
 }

@@ -25,7 +25,7 @@ public:
 
     GameInfo recv_game_info();
 
-    std::vector<int32_t> recv_lobbies_info();
+    std::vector<LobbyInfo> recv_lobbies_info();
 
     void shutdown();
 

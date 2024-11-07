@@ -24,7 +24,7 @@ public:
 
     std::string recv_string();
 
-    void send_lobbies_info(std::vector<int32_t>& lobbies);
+    void send_lobbies_info(std::vector<LobbyInfo>& lobbies);
 
     void send_game_info(GameInfo game_info);
 

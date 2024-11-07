@@ -111,16 +111,16 @@ std::string ServerProtocol::recv_string() {
     return str;
 }
 
-void ServerProtocol::send_lobbies_info(std::vector<int32_t>& lobbies) {
+void ServerProtocol::send_lobbies_info(std::vector<LobbyInfo>& lobbies) {
     uint8_t lobbies_quantity = lobbies.size();
 
-    for (int i = 0; i < lobbies_quantity; i++) {
-        lobbies[i] = htonl(lobbies[i]);
+    for (auto &lobby : lobbies) {
+        lobby.game_id = htonl(lobby.game_id);
     }
 
     bool wasClosed = false;
     socket.sendall(&lobbies_quantity, sizeof(lobbies_quantity), &wasClosed);
-    socket.sendall(lobbies.data(), lobbies_quantity * sizeof(int32_t), &wasClosed);
+    socket.sendall(lobbies.data(), lobbies_quantity * sizeof(LobbyInfo), &wasClosed);
 
     if (wasClosed)
         throw SocketWasClosed();
