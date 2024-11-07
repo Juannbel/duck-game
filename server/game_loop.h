@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <sys/types.h>
 
 #include "common/blocking_queue.h"
 #include "common/map_loader.h"
@@ -22,6 +23,7 @@ private:
     QueueListMonitor& snaps_queue_list;
     GameOperator game_operator;
     uint8_t match_number;
+    bool round_finished;
     std::map<uint8_t, uint8_t> winners_id_count;
     MapLoader map_loader;
     std::vector<std::string> paths_to_maps;
@@ -34,13 +36,13 @@ private:
 
     void pop_and_process_all();
 
-    void create_and_push_snapshot(auto& t1);
+    void create_and_push_snapshot(auto& t1, uint& it);
 
     void add_rounds_won(Snapshot& snapshot);
 
     void push_responce(Snapshot& actual_status);
 
-    bool check_for_winner(Snapshot&);
+    void check_for_winner(Snapshot&);
 
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list);
