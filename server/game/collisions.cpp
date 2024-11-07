@@ -1,6 +1,5 @@
 #include "collisions.h"
 #include <cstdint>
-#include <iostream>
 
 #include "common/map_dto.h"
 #include "common/shared_constants.h"
