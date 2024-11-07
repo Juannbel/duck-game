@@ -550,6 +550,7 @@ blocks:
     y: 18
     type: 9
     solid: true
+
 duck_spawns:
   - x: 2
     y: 3
@@ -559,6 +560,7 @@ duck_spawns:
     y: 14
   - x: 32
     y: 3
+
 collectables_spawns:
   - x: 13
     y: 17
