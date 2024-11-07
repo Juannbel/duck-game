@@ -17,20 +17,15 @@ const uint8_t IT_TO_GET_HIT_AGAIN = TICKS / 10;
 const float DUCK_SPEED = 120.0f / TICKS;
 const float FALL_SPEED = 120.0f / TICKS;
 
-DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions):
+DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x, int16_t y, uint8_t id, const std::string& name):
         status(),
         it_jumping(),
         it_flapping(),
-        it_since_hit(IT_TO_GET_HIT_AGAIN),
-        ready_to_jump(),
+        ready_to_jump(true),
         hitbox(),
         collisions(collisions),
         collectables(collectables),
         equipped_gun(nullptr) {
-    status.is_dead = true;
-}
-
-void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     status.duck_hp = 100;
     status.is_dead = false;
     hitbox.coords.x = static_cast<float>(x);
@@ -40,13 +35,27 @@ void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
     status.x = x;
     status.y = y;
     status.duck_id = id;
-    ready_to_jump = true;
-}
-
-void DuckPlayer::set_player_name(const std::string& name) {
     std::strncpy(status.player_name, name.c_str(), MAX_PLAYER_NAME);
     status.player_name[MAX_PLAYER_NAME - 1] = '\0';
 }
+
+//void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
+//    status.duck_hp = 100;
+//    status.is_dead = false;
+//    hitbox.coords.x = static_cast<float>(x);
+//    hitbox.coords.y = static_cast<float>(y);
+//    hitbox.height = DUCK_HITBOX_HEIGHT;
+//    hitbox.width = DUCK_HITBOX_WIDTH;
+//    status.x = x;
+//    status.y = y;
+//    status.duck_id = id;
+//    ready_to_jump = true;
+//}
+//
+//void DuckPlayer::set_player_name(const std::string& name) {
+//    std::strncpy(status.player_name, name.c_str(), MAX_PLAYER_NAME);
+//    status.player_name[MAX_PLAYER_NAME - 1] = '\0';
+//}
 
 void DuckPlayer::die() {
     status.is_dead = true;
@@ -77,9 +86,6 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
     }
     if (collisions.out_of_map(hitbox.coords.x, hitbox.coords.y)) {
         die();
-    }
-    if (it_since_hit < IT_TO_GET_HIT_AGAIN) {
-        ++it_since_hit;
     }
     status.x = static_cast<int16_t>(collision.last_valid_position.x);
     status.y = static_cast<int16_t>(collision.last_valid_position.y);

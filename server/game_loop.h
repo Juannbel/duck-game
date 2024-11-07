@@ -25,8 +25,7 @@ private:
     std::map<uint8_t, uint8_t> winners_id_count;
     MapLoader map_loader;
     std::vector<std::string> paths_to_maps;
-    MapDto curr_map_dto;
-    // std::vector<uint8_t> duck_ids;
+    Map curr_map;
     std::vector<std::pair<uint8_t, std::string>> ducks_info;
 
     void initialice_new_round();

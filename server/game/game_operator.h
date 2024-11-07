@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "common/commands.h"
-#include "common/map_dto.h"
+#include "common/map.h"
 #include "common/snapshot.h"
 
 #include "collectables_manager.h"
@@ -34,12 +34,12 @@ private:
     void check_spawn_picked(uint32_t id);
     GunType get_random_guntype();
 
-    void load_map(MapDto& map_dto);
-    void initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info);
+    void load_map(Map& map_dto);
+    void initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info, Map& map_info);
 
 public:
     GameOperator();
-    void initialize_game(MapDto& map_dto, const std::vector<std::pair<uint8_t, std::string>>& ducks_info);
+    void initialize_game(Map& map_info, const std::vector<std::pair<uint8_t, std::string>>& ducks_info);
     void process_action(action& action);
     void update_game_status();
 
