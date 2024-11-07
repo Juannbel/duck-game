@@ -1,6 +1,7 @@
 #ifndef CONSTANT_LOOPER_H
 #define CONSTANT_LOOPER_H
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
@@ -23,16 +24,17 @@
 
 class ConstantLooper {
 private:
-    uint8_t duck_id;
+    std::pair<uint8_t, uint8_t> duck_ids;
     SDL2pp::SDL sdl;
     SDL2pp::Window window;
     SDL2pp::Renderer renderer;
     ScreenManager screen_manager;
     SoundManager sound_manager;
     Queue<Snapshot>& snapshot_q;
-    Queue<Command>& command_q;
+    Queue<action>& actions_q;
     Snapshot last_snapshot;
     DuckController p1_controller;
+    DuckController p2_controller;
     MapDto map_dto;
 
     std::unordered_map<uint8_t, std::unique_ptr<RenderableDuck>> ducks_renderables;
@@ -52,7 +54,7 @@ private:
     void clear_renderables();
 
 public:
-    ConstantLooper(uint8_t duck_id, Queue<Snapshot>& snapshot_q, Queue<Command>& command_q);
+    ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q, Queue<action>& actions_q);
 
     void run();
 

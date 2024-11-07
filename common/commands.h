@@ -1,6 +1,7 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+#include <cstdint>
 enum Command {
     StartMovingRight,
     StartMovingLeft,
@@ -15,5 +16,10 @@ enum Command {
     LayDown,
     StandUp,
 };
+
+struct action {
+    uint8_t duck_id;  // del 0 al 3
+    enum Command command;
+} __attribute__((packed));
 
 #endif

@@ -1,13 +1,18 @@
 #include "mainwindow.h"
 
 #include <QMessageBox>
+#include <iostream>
 #include <vector>
+#include <qinputdialog.h>
+#include <qresource.h>
+#include <QFile>
+#include <QResource>
 
 #include "../../common/lobby.h"
 #include "./ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, uint8_t& duck_id):
-        QMainWindow(parent), ui(new Ui::MainWindow), protocol(protocol), duck_id(duck_id) {
+MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids):
+        QMainWindow(parent), ui(new Ui::MainWindow), protocol(protocol), duck_ids(duck_ids) {
     ui->setupUi(this);
 
     ui->stackedWidget->setCurrentIndex(0);
@@ -19,15 +24,94 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, uint8_t& duck_
     connect(ui->joinLobbyButton, &QPushButton::clicked, this, &MainWindow::onJoinLobbyClicked);
 
     connect(ui->startGameButton, &QPushButton::clicked, this, &MainWindow::onStartGameClicked);
+
+    connect(ui->namesConfirmButton, &QPushButton::clicked, this, &MainWindow::onCreateGameConfirmed);
+    connect(ui->namesBackButton, &QPushButton::clicked, this, &MainWindow::onBackClicked);
+    connect(ui->singlePlayerRadio, &QRadioButton::toggled,
+            [this](bool checked) { ui->player2NameEdit->setEnabled(!checked); });
+    QPixmap logoPixmap(DATA_PATH "/logo.png");
+
+    ui->p3logo->setPixmap(logoPixmap);
+    ui->p1logo->setPixmap(logoPixmap);
+    // centramos horizontalmente
+    ui->p3logo->setAlignment(Qt::AlignCenter);
+    ui->p1logo->setAlignment(Qt::AlignCenter);
 }
 
 void MainWindow::onCreateGameClicked() {
-    protocol.send_option(CREATE_GAME);
-    GameInfo gameInfo = protocol.recv_game_info();
-    duck_id = gameInfo.duck_id;
+    disconnect(ui->namesConfirmButton, nullptr, this, nullptr);
+    connect(ui->namesConfirmButton, &QPushButton::clicked, this, &MainWindow::onCreateGameConfirmed);
+    ui->stackedWidget->setCurrentIndex(3);
+}
 
+void MainWindow::onCreateGameConfirmed() {
+    QString player1Name = ui->player1NameEdit->text().trimmed();
+    QString player2Name = ui->player2NameEdit->text().trimmed();
+
+    if (player1Name.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Player 1 name is required");
+        return;
+    }
+
+    if (ui->multiPlayerRadio->isChecked() && player2Name.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Player 2 name is required");
+        return;
+    }
+
+    int numPlayers = ui->multiPlayerRadio->isChecked() ? 2 : 1;
+
+    protocol.send_option(CREATE_GAME);
+    protocol.send_option(numPlayers);
+    protocol.send_string(player1Name.toStdString());
+    if (numPlayers == 2) {
+        protocol.send_string(player2Name.toStdString());
+    }
+
+    GameInfo gameInfo = protocol.recv_game_info();
+    duck_ids.first = gameInfo.duck_id_1;
+    duck_ids.second = gameInfo.duck_id_2;
     ui->gameIdLabel->setText(QString("Game ID: %1").arg(gameInfo.game_id));
     ui->stackedWidget->setCurrentIndex(2);
+}
+
+void MainWindow::onJoinGameConfirmed() {
+    if (selected_lobby_row < 0) {
+        QMessageBox::warning(this, "Error", "Select a lobby to join");
+        return;
+    }
+
+    QString player1Name = ui->player1NameEdit->text().trimmed();
+    QString player2Name = ui->player2NameEdit->text().trimmed();
+
+    if (player1Name.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Player 1 name is required");
+        return;
+    }
+
+    if (ui->multiPlayerRadio->isChecked() && player2Name.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Player 2 name is required");
+        return;
+    }
+
+    int numPlayers = ui->multiPlayerRadio->isChecked() ? 2 : 1;
+
+    int32_t game_id = ui->lobbiesList->item(selected_lobby_row)->text().toInt();
+    protocol.send_option(JOIN_GAME);
+    protocol.send_option(game_id);
+    protocol.send_option(numPlayers);
+    protocol.send_string(player1Name.toStdString());
+    if (numPlayers == 2) {
+       protocol.send_string(player2Name.toStdString());
+    }
+
+    GameInfo gameInfo = protocol.recv_game_info();
+    if (gameInfo.game_id != INVALID_GAME_ID) {
+        duck_ids.first = gameInfo.duck_id_1;
+        duck_ids.second = gameInfo.duck_id_2;
+        close();
+    } else {
+        QMessageBox::warning(this, "Error", "Could not join the game.");
+    }
 }
 
 void MainWindow::onJoinGameClicked() {
@@ -39,23 +123,15 @@ void MainWindow::onJoinGameClicked() {
 void MainWindow::onBackClicked() { ui->stackedWidget->setCurrentIndex(0); }
 
 void MainWindow::onJoinLobbyClicked() {
-    int selectedRow = ui->lobbiesList->currentRow();
-    if (selectedRow < 0) {
-        QMessageBox::warning(this, "Error", "Selecciona un lobby para unirte.");
+    selected_lobby_row = ui->lobbiesList->currentRow();
+    if (selected_lobby_row < 0) {
+        QMessageBox::warning(this, "Error", "Select a lobby to join");
         return;
     }
 
-    int32_t lobbyId = ui->lobbiesList->item(selectedRow)->text().toInt();
-    protocol.send_option(JOIN_GAME);
-    protocol.send_option(lobbyId);
-
-    GameInfo gameInfo = protocol.recv_game_info();
-    if (gameInfo.game_id != INVALID_GAME_ID) {
-        duck_id = gameInfo.duck_id;
-        close();
-    } else {
-        QMessageBox::warning(this, "Error", "No se pudo unir al lobby.");
-    }
+    disconnect(ui->namesConfirmButton, nullptr, this, nullptr);
+    connect(ui->namesConfirmButton, &QPushButton::clicked, this, &MainWindow::onJoinGameConfirmed);
+    ui->stackedWidget->setCurrentIndex(3);
 }
 
 void MainWindow::onStartGameClicked() {

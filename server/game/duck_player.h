@@ -29,6 +29,7 @@ private:
 public:
     DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions);
     void set_coordenades_and_id(int16_t x, int16_t y, uint8_t id);
+    void set_player_name(const std::string& name);
     void move_duck();
     void run(bool right);
     void stop_running();

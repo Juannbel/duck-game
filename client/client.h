@@ -11,7 +11,7 @@ class Client {
 private:
     std::atomic<bool> alive;
     ClientProtocol protocol;
-    Queue<Command> command_q;
+    Queue<action> actions_q;
     Queue<Snapshot> snapshot_q;
     ClientReceiver receiver;
     ClientSender sender;

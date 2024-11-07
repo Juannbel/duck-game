@@ -68,11 +68,18 @@ void ClientProtocol::deserialize_snapshot(Snapshot& snapshot) {
         bullet.x = ntohs(bullet.x);
         bullet.y = ntohs(bullet.y);
     }
+
+    int boxes_quantity = snapshot.boxes.size();
+    for (int i = 0; i < boxes_quantity; i++) {
+        Box& box = snapshot.boxes[i];
+        box.x = ntohs(box.x);
+        box.y = ntohs(box.y);
+    }
 }
 
-void ClientProtocol::send_player_command(const Command& command) {
+void ClientProtocol::send_player_action(const action& action) {
     bool was_closed = false;
-    socket.sendall(&command, sizeof(command), &was_closed);
+    socket.sendall(&action, sizeof(action), &was_closed);
     if (was_closed)
         throw SocketWasClosed();
 }
@@ -86,6 +93,18 @@ void ClientProtocol::send_option(int32_t option) {
     bool was_closed = false;
     option = htonl(option);
     socket.sendall(&option, sizeof(option), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+}
+
+void ClientProtocol::send_string(const std::string& str) {
+    bool was_closed = false;
+    uint8_t str_len = str.size();
+    socket.sendall(&str_len, sizeof(str_len), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+
+    socket.sendall(str.c_str(), str_len, &was_closed);
     if (was_closed)
         throw SocketWasClosed();
 }

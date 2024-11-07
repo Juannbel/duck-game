@@ -1,6 +1,7 @@
 #ifndef CLIENT_CONFIG_H
 #define CLIENT_CONFIG_H
 
+#include <SDL_keycode.h>
 #include "client/duck_controller.h"
 
 #define FPS 60
@@ -17,6 +18,16 @@ const ControlScheme P1_CONTROLS = {
         .pick_up = SDLK_c,
         .shoot = SDLK_v,
         .look_up = SDLK_e,
+};
+
+const ControlScheme P2_CONTROLS = {
+        .move_right = SDLK_RIGHT,
+        .move_left = SDLK_LEFT,
+        .jump = SDLK_UP,
+        .lay_down = SDLK_DOWN,
+        .pick_up = SDLK_i,
+        .shoot = SDLK_o,
+        .look_up = SDLK_p,
 };
 
 #endif

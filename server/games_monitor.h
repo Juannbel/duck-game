@@ -5,6 +5,7 @@
 #include <map>
 #include <mutex>
 #include <vector>
+#include "common/lobby.h"
 
 #include "game.h"
 
@@ -17,10 +18,9 @@ private:
     int id = 0;
 
 public:
-    // Devuelve el game id y asigna el duck_id a la variable pasada por referencia
-    int player_create_game(int id_player, Queue<Snapshot>& player_sender_queue, uint8_t& duck_id);
+    GameInfo player_create_game(const int id_player, Queue<Snapshot>& player_sender_queue, const std::vector<std::string>& players_names);
 
-    uint8_t player_join_game(int id_player, int id_game, Queue<Snapshot>& player_sender_queue);
+    GameInfo player_join_game(int id_player, int id_game, Queue<Snapshot>& player_sender_queue, const std::vector<std::string>& players_names);
 
     void start_game(int id);
 

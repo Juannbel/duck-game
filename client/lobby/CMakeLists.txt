@@ -11,8 +11,8 @@ set(PROJECT_SOURCES
 
 add_library(lobby STATIC ${PROJECT_SOURCES})
 
-target_include_directories(lobby 
-    PUBLIC 
+target_include_directories(lobby
+    PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

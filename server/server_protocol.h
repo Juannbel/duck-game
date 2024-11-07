@@ -22,11 +22,13 @@ public:
 
     int32_t receive_cmd();
 
+    std::string recv_string();
+
     void send_lobbies_info(std::vector<int32_t>& lobbies);
 
     void send_game_info(GameInfo game_info);
 
-    Command recv_player_command();
+    action recv_player_action();
 
     void shutdown();
 

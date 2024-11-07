@@ -5,7 +5,6 @@
 
 #include "common/commands.h"
 #include "common/lobby.h"
-#include "common/map_dto.h"
 #include "common/snapshot.h"
 #include "common/socket.h"
 
@@ -18,9 +17,11 @@ public:
 
     Snapshot recv_snapshot();
 
-    void send_player_command(const Command& snapshot);
+    void send_player_action(const action& action);
 
     void send_option(int32_t option);
+
+    void send_string(const std::string& str);
 
     GameInfo recv_game_info();
 

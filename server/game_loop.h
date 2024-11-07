@@ -13,7 +13,7 @@
 #include "common/thread.h"
 #include "game/game_operator.h"
 
-#include "action.h"
+#include "common/commands.h"
 #include "list_monitor.h"
 
 class GameLoop: public Thread {
@@ -26,8 +26,8 @@ private:
     MapLoader map_loader;
     std::vector<std::string> paths_to_maps;
     MapDto curr_map_dto;
-    std::vector<uint8_t> duck_ids;
-    // std::vector<std::pair<uint8_t, std::string>> duck_info;
+    // std::vector<uint8_t> duck_ids;
+    std::vector<std::pair<uint8_t, std::string>> ducks_info;
 
     void initialice_new_round();
 
@@ -52,8 +52,9 @@ public:
      */
     virtual void run() override;
 
-    uint8_t add_player();
-    // uint8_t add_player(const std::string& player_name);
+    uint8_t add_player(const std::string& player_name);
+    // uint8_t add_player();
+
     void delete_duck(uint8_t duck_id);
 
     ~GameLoop();

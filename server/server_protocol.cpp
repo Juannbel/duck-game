@@ -69,15 +69,22 @@ void ServerProtocol::serializeSnapshot(Snapshot& snapshot) {
         bullet.x = htons(bullet.x);
         bullet.y = htons(bullet.y);
     }
+
+    int boxes_quantity = snapshot.boxes.size();
+    for (int i = 0; i < boxes_quantity; i++) {
+        Box& box = snapshot.boxes[i];
+        box.x = htons(box.x);
+        box.y = htons(box.y);
+    }
 }
 
-Command ServerProtocol::recv_player_command() {
+action ServerProtocol::recv_player_action() {
     bool was_closed = false;
-    Command command;
-    socket.recvall(&command, sizeof(command), &was_closed);
+    action action;
+    socket.recvall(&action, sizeof(action), &was_closed);
     if (was_closed)
         throw SocketWasClosed();
-    return command;
+    return action;
 }
 
 int32_t ServerProtocol::receive_cmd() {
@@ -87,6 +94,21 @@ int32_t ServerProtocol::receive_cmd() {
     if (wasClosed)
         throw SocketWasClosed();
     return ntohl(command);
+}
+
+std::string ServerProtocol::recv_string() {
+    bool wasClosed = false;
+    uint8_t str_len;
+    socket.recvall(&str_len, sizeof(str_len), &wasClosed);
+    if (wasClosed)
+        throw SocketWasClosed();
+
+    std::string str(str_len, 0);
+    socket.recvall(&str[0], str_len, &wasClosed);
+    if (wasClosed)
+        throw SocketWasClosed();
+
+    return str;
 }
 
 void ServerProtocol::send_lobbies_info(std::vector<int32_t>& lobbies) {
