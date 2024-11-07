@@ -1,7 +1,7 @@
 #include "client.h"
 
-#include <array>
 #include <cstdint>
+#include <utility>
 
 #include "common/blocking_queue.h"
 #include "common/lobby.h"
@@ -36,10 +36,10 @@ Client::~Client() {
     protocol.shutdown();
     try {
         snapshot_q.close();
-    } catch (...) {};
+    } catch (...) {}
     try {
         actions_q.close();
-    } catch (...) {};
+    } catch (...) {}
     receiver.stop();
     sender.stop();
     receiver.join();

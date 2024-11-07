@@ -38,8 +38,8 @@ private:
 
 
 public:
-    CollisionChecks();
-    void load_map(MapDto&);
+    CollisionChecks(): blocks() {}
+    void load_map(const MapDto& map_dto);
 
     bool out_of_map(float x, float y);
 

@@ -16,7 +16,7 @@ using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 
 const milliseconds RATE(1000 / TICKS);
-const uint its_after_round = 3000/(1000/TICKS);
+const uint its_after_round = 3000 / (1000 / TICKS);
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
@@ -60,7 +60,7 @@ void GameLoop::run() {
             milliseconds behind = duration - rest;
             milliseconds lost = behind - behind % RATE;
             t1 += lost;
-            
+
         } else {
             std::this_thread::sleep_for(rest);
         }

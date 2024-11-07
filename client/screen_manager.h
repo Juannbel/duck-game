@@ -1,9 +1,9 @@
 #ifndef SCREEN_MANAGER_H
 #define SCREEN_MANAGER_H
 
-#include <array>
 #include <cstdint>
 #include <memory>
+#include <utility>
 
 #include <SDL2pp/SDL2pp.hh>
 

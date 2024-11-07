@@ -1,9 +1,9 @@
 #ifndef SERVER_PROTOCOL_H
 #define SERVER_PROTOCOL_H
 
+#include <string>
 #include <vector>
 
-#include "../common/map_dto.h"
 #include "common/commands.h"
 #include "common/lobby.h"
 #include "common/snapshot.h"

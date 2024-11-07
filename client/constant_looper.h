@@ -1,10 +1,10 @@
 #ifndef CONSTANT_LOOPER_H
 #define CONSTANT_LOOPER_H
 
-#include <array>
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
+#include <utility>
 
 #include "SDL2pp/Renderer.hh"
 #include "SDL2pp/SDL.hh"
@@ -54,7 +54,8 @@ private:
     void clear_renderables();
 
 public:
-    ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q, Queue<action>& actions_q);
+    ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
+                   Queue<action>& actions_q);
 
     void run();
 
