@@ -29,8 +29,15 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint
 
     connect(ui->namesConfirmButton, &QPushButton::clicked, this, &MainWindow::onCreateGameConfirmed);
     connect(ui->namesBackButton, &QPushButton::clicked, this, &MainWindow::onBackClicked);
+
+    ui->player2NameEdit->setVisible(false);
     connect(ui->singlePlayerRadio, &QRadioButton::toggled,
-            [this](bool checked) { ui->player2NameEdit->setEnabled(!checked); });
+            [this](bool checked) {
+                ui->player2NameEdit->setEnabled(!checked);
+                ui->player2NameEdit->setVisible(!checked);
+            });
+
+
     QPixmap logoPixmap(DATA_PATH "/logo.png");
 
     ui->p3logo->setPixmap(logoPixmap);
