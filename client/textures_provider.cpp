@@ -13,6 +13,8 @@ void TexturesProvider::load_textures(SDL2pp::Renderer& renderer) {
     }
     textures["blocks"] =
             std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/blocks/blocks.png");
+    textures["boxes"] =
+            std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/boxes/boxes.png");
     textures["duck"] =
             std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/duck/duck_sprite.png");
     textures["guns"] =
