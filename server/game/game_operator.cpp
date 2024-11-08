@@ -4,6 +4,7 @@
 #include <random>
 #include <utility>
 
+#include "common/commands.h"
 #include "common/map.h"
 #include "common/shared_constants.h"
 
@@ -75,6 +76,12 @@ void GameOperator::process_action(action& action) {
             break;
         case StandUp:
             player.stand_up();
+            break;
+        case StartLookup:
+            player.face_up();
+            break;
+        case StopLookup:
+            player.stop_face_up();
             break;
         case Jump:
             player.jump();

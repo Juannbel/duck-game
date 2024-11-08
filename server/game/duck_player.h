@@ -41,6 +41,8 @@ public:
     void equip_helmet();
     void lay_down();
     void stand_up();
+    void face_up();
+    void stop_face_up();
     void jump();
     void stop_jump();
     uint32_t drop_and_pickup();

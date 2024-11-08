@@ -174,6 +174,17 @@ void DuckPlayer::stand_up() {
     hitbox.height = DUCK_HITBOX_HEIGHT;
 }
 
+void DuckPlayer::face_up() {
+    if (status.is_laying) {
+        return;
+    }
+    status.facing_up = true;
+}
+
+void DuckPlayer::stop_face_up() {
+    status.facing_up = false;
+}
+
 void DuckPlayer::jump() {
     if (!ready_to_jump || status.is_jumping) {
         return;
