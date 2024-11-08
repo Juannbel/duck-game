@@ -73,6 +73,7 @@ void ServerProtocol::serializeSnapshot(Snapshot& snapshot) {
     int boxes_quantity = snapshot.boxes.size();
     for (int i = 0; i < boxes_quantity; i++) {
         Box& box = snapshot.boxes[i];
+        box.box_id = htonl(box.box_id);
         box.x = htons(box.x);
         box.y = htons(box.y);
     }
