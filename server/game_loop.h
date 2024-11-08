@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <functional>
 
 #include <sys/types.h>
 
@@ -31,6 +32,7 @@ private:
     std::vector<std::string> paths_to_maps;
     Map curr_map;
     std::vector<std::pair<uint8_t, std::string>> ducks_info;
+    std::function<void()> on_game_end_callback;
 
     void initialice_new_round();
 
@@ -56,9 +58,10 @@ public:
     virtual void run() override;
 
     uint8_t add_player(const std::string& player_name);
-    // uint8_t add_player();
 
     void delete_duck(uint8_t duck_id);
+
+    void set_on_game_end_callback(std::function<void()> callback);
 
     ~GameLoop();
 

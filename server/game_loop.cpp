@@ -135,7 +135,6 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
     }
 }
 
-// uint8_t GameLoop::add_player() {
 uint8_t GameLoop::add_player(const std::string& player_name) {
     if (ducks_info.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
@@ -154,9 +153,15 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
     }
 
     if (ducks_info.size() <= 1) {
-        // TODO: ver como borrar el game
+        _keep_running = false;
+        if (on_game_end_callback) {
+            on_game_end_callback();
+        }
     }
 }
 
+void GameLoop::set_on_game_end_callback(std::function<void()> callback) {
+    on_game_end_callback = std::move(callback);
+}
 
 GameLoop::~GameLoop() {}
