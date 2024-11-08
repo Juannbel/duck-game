@@ -355,10 +355,15 @@ void MainWindow::saveToYaml() {
     if (!fileName.endsWith(".yaml", Qt::CaseInsensitive)) {
         fileName += ".yaml";
     }
+    
+    Map saveMap = map;
+    for(int i = 0; i < saveMap.duck_spawns.size() ; i++ ){
+        saveMap.map_dto.duck_spawns[i].second -= 1;
+    }
 
     QString filePath = SERVER_DATA_PATH + static_cast<QString>("/") + fileName;
 
-    loader.save_map(filePath.toStdString(), map);
+    loader.save_map(filePath.toStdString(), saveMap);
 }
 
 
@@ -394,6 +399,9 @@ void MainWindow::on_load_mapButton_clicked() {
         selectedFile = SERVER_DATA_PATH + static_cast<QString>("/") + selectedFile;
 
         Map loaded_map = loader.load_map(selectedFile.toStdString());
+        for(int i = 0; i < loaded_map.duck_spawns.size() ; i++ ){
+            loaded_map.map_dto.duck_spawns[i].second += 1;
+        }
         this->map = loaded_map;
         updateThemeSelector(map.map_dto.theme);
         renderGrid();
