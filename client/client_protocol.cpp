@@ -1,10 +1,12 @@
 #include "client_protocol.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
+
 #include "common/lobby.h"
 
 ClientProtocol::ClientProtocol(Socket&& socket): socket(std::move(socket)) {}
@@ -130,7 +132,7 @@ std::vector<LobbyInfo> ClientProtocol::recv_lobbies_info() {
     if (was_closed)
         throw SocketWasClosed();
 
-    for (auto& lobby : lobbies_info) {
+    for (auto& lobby: lobbies_info) {
         lobby.game_id = ntohl(lobby.game_id);
     }
 

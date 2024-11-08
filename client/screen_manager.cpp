@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "client/animation_data_provider.h"
@@ -28,19 +29,23 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
                 "duck_" + std::to_string(duck_ids.second) + "_standing");
     }
 
-    SDL2pp::Texture info_1(renderer,
-                           primary_font.RenderText_Solid("P1: Duck ID " + std::to_string(duck_ids.first),
-                                                         SDL_Color{255, 255, 255, 255}));
-    SDL2pp::Texture info_2(renderer,
-                           primary_font.RenderText_Solid("P2: Duck ID " + std::to_string(duck_ids.second),
-                                                         SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture info_1(
+            renderer, primary_font.RenderText_Solid("P1: Duck ID " + std::to_string(duck_ids.first),
+                                                    SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture info_2(renderer, primary_font.RenderText_Solid(
+                                             "P2: Duck ID " + std::to_string(duck_ids.second),
+                                             SDL_Color{255, 255, 255, 255}));
 
     std::array<SDL2pp::Texture, 4> waiting_texts = {
-        SDL2pp::Texture(renderer, primary_font.RenderText_Solid("Waiting for players   ", SDL_Color{255, 255, 255, 255})),
-        SDL2pp::Texture(renderer, primary_font.RenderText_Solid("Waiting for players.  ", SDL_Color{255, 255, 255, 255})),
-        SDL2pp::Texture(renderer, primary_font.RenderText_Solid("Waiting for players.. ", SDL_Color{255, 255, 255, 255})),
-        SDL2pp::Texture(renderer, primary_font.RenderText_Solid("Waiting for players...", SDL_Color{255, 255, 255, 255}))
-    };
+            SDL2pp::Texture(renderer, primary_font.RenderText_Solid("Waiting for players   ",
+                                                                    SDL_Color{255, 255, 255, 255})),
+            SDL2pp::Texture(renderer, primary_font.RenderText_Solid("Waiting for players.  ",
+                                                                    SDL_Color{255, 255, 255, 255})),
+            SDL2pp::Texture(renderer, primary_font.RenderText_Solid("Waiting for players.. ",
+                                                                    SDL_Color{255, 255, 255, 255})),
+            SDL2pp::Texture(renderer,
+                            primary_font.RenderText_Solid("Waiting for players...",
+                                                          SDL_Color{255, 255, 255, 255}))};
 
     uint8_t it = 0;
     uint8_t it_since_change = 0;
@@ -89,11 +94,12 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
                                        info_2.GetSize()));
         }
 
-        renderer.Copy(
-                waiting_texts[it], SDL2pp::NullOpt,
-                SDL2pp::Rect(SDL2pp::Point(renderer.GetOutputWidth() / 2 - waiting_texts[it].GetSize().x / 2,
-                                           renderer.GetOutputHeight() - waiting_texts[it].GetSize().y - 30),
-                             waiting_texts[it].GetSize()));
+        renderer.Copy(waiting_texts[it], SDL2pp::NullOpt,
+                      SDL2pp::Rect(SDL2pp::Point(renderer.GetOutputWidth() / 2 -
+                                                         waiting_texts[it].GetSize().x / 2,
+                                                 renderer.GetOutputHeight() -
+                                                         waiting_texts[it].GetSize().y - 30),
+                                   waiting_texts[it].GetSize()));
 
         renderer.Present();
 
@@ -109,26 +115,27 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     return true;
 }
 
-bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot, RenderableMapDto& map, Camera& camera) {
+bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
+                                   RenderableMap& map, Camera& camera) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
-
     std::vector<Duck>& ducks = last_snapshot.ducks;
-
     std::vector<AnimationData> duck_animations;
-    for (const auto& duck : ducks) {
-        duck_animations.emplace_back(AnimationDataProvider::get_animation_data("duck_" + std::to_string(duck.duck_id) + "_standing"));
+
+    std::sort(ducks.begin(), ducks.end(),
+              [](const Duck& a, const Duck& b) { return a.duck_id < b.duck_hp; });
+
+    for (const auto& duck: ducks) {
+        duck_animations.emplace_back(AnimationDataProvider::get_animation_data(
+                "duck_" + std::to_string(duck.duck_id) + "_standing"));
     }
 
     int screen_width = renderer.GetOutputWidth();
     int screen_height = renderer.GetOutputHeight();
-    int section_width = screen_width / ducks.size();
-
     SDL2pp::Rect background_rect(0, 0, screen_width, screen_height);
 
     while (!snapshot_q.try_pop(last_snapshot)) {
         screen_width = renderer.GetOutputWidth();
         screen_height = renderer.GetOutputHeight();
-        section_width = screen_width / ducks.size();
         background_rect.w = screen_width;
         background_rect.h = screen_height;
 
@@ -140,44 +147,50 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
         }
 
         renderer.Clear();
-
         map.render(renderer, camera);
         renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
         renderer.SetDrawColor(0, 0, 0, 50);
         renderer.FillRect(background_rect);
         renderer.SetDrawBlendMode();
 
+        int section_width = screen_width / 2;
+        int section_height = screen_height / 2;
+
         for (size_t i = 0; i < ducks.size(); ++i) {
             const Duck& duck = ducks[i];
             const AnimationData& animation_data = duck_animations[i];
 
-            int section_x = i * section_width;
-            int center_x = section_x + section_width / 2;
-            int center_y = screen_height / 2;
+            int row = i / 2;
+            int col = i % 2;
+
+            int center_x = col * section_width + section_width / 2;
+            int center_y = row * section_height + section_height / 2;
 
             SDL2pp::Rect duck_dst_rect = animation_data.frames[0].rect;
             duck_dst_rect.w *= 4;
             duck_dst_rect.h *= 4;
             duck_dst_rect.x = center_x - duck_dst_rect.w / 2;
             duck_dst_rect.y = center_y - duck_dst_rect.h / 2;
-
             renderer.Copy(*duck_texture, animation_data.frames[0].rect, duck_dst_rect);
 
-            SDL2pp::Texture player_name_texture(renderer, primary_font.RenderText_Solid(duck.player_name, SDL_Color{255, 255, 255, 255}));
+            SDL2pp::Texture player_name_texture(
+                    renderer,
+                    primary_font.RenderText_Solid(duck.player_name, SDL_Color{255, 255, 255, 255}));
             renderer.Copy(player_name_texture, SDL2pp::NullOpt,
-                          SDL2pp::Rect(SDL2pp::Point(center_x - player_name_texture.GetSize().x / 2, duck_dst_rect.y - player_name_texture.GetSize().y - 10),
+                          SDL2pp::Rect(SDL2pp::Point(center_x - player_name_texture.GetSize().x / 2,
+                                                     duck_dst_rect.y -
+                                                             player_name_texture.GetSize().y - 10),
                                        player_name_texture.GetSize()));
         }
 
         renderer.Present();
         SDL_Delay(RATE);
     }
-
     return true;
 }
 
 bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                                          RenderableMapDto& map, Camera& camera) {
+                                          RenderableMap& map, Camera& camera) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
 
@@ -247,8 +260,8 @@ void ScreenManager::render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
     renderer.Copy(*ducks_texture, animation_data.frames[0].rect, dst_rect);
 
     SDL2pp::Texture name_texture(
-            renderer, primary_font.RenderText_Solid(duck.player_name,
-                                                    SDL_Color{255, 255, 255, 255}));
+            renderer,
+            primary_font.RenderText_Solid(duck.player_name, SDL_Color{255, 255, 255, 255}));
     renderer.Copy(name_texture, SDL2pp::NullOpt,
                   SDL2pp::Rect(SDL2pp::Point(dst_rect.x + dst_rect.w + 20,
                                              rect.y + (rect.h - name_texture.GetSize().y) / 2),

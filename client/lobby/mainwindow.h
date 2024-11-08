@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <utility>
+#include <vector>
 
 #include "../client_protocol.h"
 #include "common/lobby.h"

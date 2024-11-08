@@ -12,7 +12,7 @@ private:
     bool never_damaged;
 
 public:
-    RenderableFeathers(uint8_t duck_id);
+    explicit RenderableFeathers(uint8_t duck_id);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 

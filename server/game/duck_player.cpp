@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <string>
 
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
@@ -17,7 +18,8 @@ const uint8_t IT_TO_GET_HIT_AGAIN = TICKS / 10;
 const float DUCK_SPEED = 120.0f / TICKS;
 const float FALL_SPEED = 120.0f / TICKS;
 
-DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x, int16_t y, uint8_t id, const std::string& name):
+DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x,
+                       int16_t y, uint8_t id, const std::string& name):
         status(),
         it_jumping(),
         it_flapping(),
@@ -38,24 +40,6 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& colli
     std::strncpy(status.player_name, name.c_str(), MAX_PLAYER_NAME);
     status.player_name[MAX_PLAYER_NAME - 1] = '\0';
 }
-
-//void DuckPlayer::set_coordenades_and_id(int16_t x, int16_t y, uint8_t id) {
-//    status.duck_hp = 100;
-//    status.is_dead = false;
-//    hitbox.coords.x = static_cast<float>(x);
-//    hitbox.coords.y = static_cast<float>(y);
-//    hitbox.height = DUCK_HITBOX_HEIGHT;
-//    hitbox.width = DUCK_HITBOX_WIDTH;
-//    status.x = x;
-//    status.y = y;
-//    status.duck_id = id;
-//    ready_to_jump = true;
-//}
-//
-//void DuckPlayer::set_player_name(const std::string& name) {
-//    std::strncpy(status.player_name, name.c_str(), MAX_PLAYER_NAME);
-//    status.player_name[MAX_PLAYER_NAME - 1] = '\0';
-//}
 
 void DuckPlayer::die() {
     status.is_dead = true;
@@ -206,15 +190,17 @@ void DuckPlayer::jump() {
 
 void DuckPlayer::stop_jump() { ready_to_jump = true; }
 
-bool DuckPlayer::get_hit(Rectangle& bullet, uint8_t damage) {
+bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
     if (collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
+        if (status.armor_equiped) {
+            status.armor_equiped = false;
+            return true;
+        } else if (status.helmet_equiped) {
+            status.helmet_equiped = false;
+            return true;
+        }
         uint8_t taken_dmg = damage;
         status.is_damaged = true;
-        if (status.helmet_equiped && status.armor_equiped) {
-            taken_dmg /= 3;
-        } else if (status.helmet_equiped || status.armor_equiped) {
-            taken_dmg /= 2;
-        }
         if (status.duck_hp < taken_dmg) {
             die();
         } else {
@@ -233,7 +219,6 @@ uint32_t DuckPlayer::drop_and_pickup() {
     Gun gun_info = {};
     if (new_gun) {
         gun_info = new_gun->get_gun_info();
-        status.gun = gun_info.type;
     }
     status.gun = gun_info.type;
     return gun_info.gun_id;

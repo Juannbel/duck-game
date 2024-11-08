@@ -16,10 +16,11 @@
 #include <QString>
 #include <QTextStream>
 #include <QVector>
-#include <algorithm>
+#include <utility>
 
 #include <qpoint.h>
 #include <yaml-cpp/yaml.h>
+
 #include "../common/map_loader.h"
 
 #include "ui_mainwindow.h"

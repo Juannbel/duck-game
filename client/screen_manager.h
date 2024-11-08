@@ -1,9 +1,9 @@
 #ifndef SCREEN_MANAGER_H
 #define SCREEN_MANAGER_H
 
-#include <array>
 #include <cstdint>
 #include <memory>
+#include <utility>
 
 #include <SDL2pp/SDL2pp.hh>
 
@@ -29,11 +29,11 @@ public:
 
     bool waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 
-    bool initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot, RenderableMapDto& map,
+    bool initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot, RenderableMap& map,
                         Camera& camera);
 
     bool between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                               RenderableMapDto& map, Camera& camera);
+                               RenderableMap& map, Camera& camera);
 };
 
 #endif

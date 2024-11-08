@@ -4,7 +4,9 @@
 #include <cstdint>
 #include <cstring>
 #include <map>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "../common/blocking_queue.h"
 #include "common/lobby.h"
@@ -30,9 +32,10 @@ public:
 
     void start();
 
-    GameInfo add_player(int player_id, Queue<Snapshot>& player_sender_queue, const std::vector<std::string> players_names);
+    GameInfo add_player(int player_id, Queue<Snapshot>& player_sender_queue,
+                        const std::vector<std::string>& players_names);
 
-    void delete_player(const int id_player);
+    void delete_player(int id_player);
 
     bool is_open() { return open; }
 
@@ -40,8 +43,8 @@ public:
         LobbyInfo info;
         info.game_id = id;
         info.connected_players = cant_players;
-        std::strncpy(info.creator, creator.c_str(), MAX_PLAYER_NAME-1);
-        info.creator[MAX_PLAYER_NAME-1] = '\0';
+        std::strncpy(info.creator, creator.c_str(), MAX_PLAYER_NAME - 1);
+        info.creator[MAX_PLAYER_NAME - 1] = '\0';
 
         return info;
     }

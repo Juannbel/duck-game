@@ -1,7 +1,7 @@
 #include "server_protocol.h"
 
 #include <cstdint>
-#include <iostream>
+#include <string>
 
 #include <arpa/inet.h>
 
@@ -114,7 +114,7 @@ std::string ServerProtocol::recv_string() {
 void ServerProtocol::send_lobbies_info(std::vector<LobbyInfo>& lobbies) {
     uint8_t lobbies_quantity = lobbies.size();
 
-    for (auto &lobby : lobbies) {
+    for (auto& lobby: lobbies) {
         lobby.game_id = htonl(lobby.game_id);
     }
 

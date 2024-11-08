@@ -1,4 +1,5 @@
 #include "collisions.h"
+
 #include <cstdint>
 
 #include "common/map_dto.h"
@@ -7,15 +8,13 @@
 const int16_t NEAR_CELLS = 4;
 const float MAP_EDGE = 100;
 
-CollisionChecks::CollisionChecks() : blocks() {}
-
 void CollisionChecks::add_block(float x, float y, bool half, bool solid) {
     float heigh = half ? static_cast<float>(BLOCK_SIZE) / 2 : BLOCK_SIZE;
     Rectangle rectangle = {{x, y}, BLOCK_SIZE, heigh};
-    blocks[{x/BLOCK_SIZE, y/BLOCK_SIZE}] = {rectangle, solid};
+    blocks[{x / BLOCK_SIZE, y / BLOCK_SIZE}] = {rectangle, solid};
 }
 
-void CollisionChecks::load_map(MapDto& map_dto) {
+void CollisionChecks::load_map(const MapDto& map_dto) {
     blocks.clear();
     for (int16_t i = 0; i < MAP_HEIGHT_BLOCKS; ++i) {
         for (int16_t j = 0; j < MAP_WIDTH_BLOCKS; ++j) {
@@ -32,25 +31,23 @@ bool CollisionChecks::out_of_map(float x, float y) {
     return x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE;
 }
 
-bool check_collision_with_no_solid(float new_y, Rectangle& entity,
-                                   Rectangle& block_hb) {
+bool check_collision_with_no_solid(float new_y, const Rectangle& entity,
+                                   const Rectangle& block_hb) {
     if (new_y < entity.coords.y) {
         return true;
-    } else if (new_y > entity.coords.y &&
-               entity.coords.y + entity.height > block_hb.coords.y) {
+    } else if (new_y > entity.coords.y && entity.coords.y + entity.height > block_hb.coords.y) {
         return true;
     }
     return false;
 }
 
-Collision CollisionChecks::check_collisions_with_block(BlockInfo& block,
-                                                   Rectangle& final_rec, Rectangle& entity,
-                                                   float new_y) {
-    struct Collision collision = {final_rec.coords, false, false};
-    
-    Rectangle& block_hb = block.hitbox;
+Collision CollisionChecks::check_collisions_with_block(const BlockInfo& block, Rectangle& final_rec,
+                                                       const Rectangle& entity, float new_y) {
+    Collision collision = {final_rec.coords, false, false};
+
+    const Rectangle& block_hb = block.hitbox;
     if (!block.solid) {
-        if (check_collision_with_no_solid(new_y, entity,block_hb)) { 
+        if (check_collision_with_no_solid(new_y, entity, block_hb)) {
             return collision;
         }
     }
@@ -60,10 +57,9 @@ Collision CollisionChecks::check_collisions_with_block(BlockInfo& block,
         collision.horizontal_collision = true;
         bool vertical_collision = rectangles_collision(final_rec, block_hb).vertical_collision;
         if (vertical_collision) {
-            Coordenades& entity_c = entity.coords;
-            Coordenades& block_c = block_hb.coords;
-            if (new_y > entity_c.y && new_y + entity.height > block_c.y &&
-                entity_c.y < block_c.y) {
+            const Coordenades& entity_c = entity.coords;
+            const Coordenades& block_c = block_hb.coords;
+            if (new_y > entity_c.y && new_y + entity.height > block_c.y && entity_c.y < block_c.y) {
                 final_rec.coords.y = block_c.y - entity.height;
             } else if (new_y < block_c.y + block_hb.height && entity_c.y > block_c.y) {
                 final_rec.coords.y = block_c.y + block_hb.height;
@@ -77,19 +73,19 @@ Collision CollisionChecks::check_collisions_with_block(BlockInfo& block,
     return collision;
 }
 
-struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& entity, float new_x,
-                                                              float new_y) {
+Collision CollisionChecks::check_near_blocks_collision(const Rectangle& entity, float new_x,
+                                                       float new_y) {
     int16_t row_index = entity.coords.y / BLOCK_SIZE;
     int16_t start_i = (row_index < NEAR_CELLS) ? 0 : row_index - NEAR_CELLS;
     int16_t end_i = (row_index + NEAR_CELLS > MAP_HEIGHT_BLOCKS) ? MAP_HEIGHT_BLOCKS :
                                                                    row_index + NEAR_CELLS;
     int16_t col_index = entity.coords.x / BLOCK_SIZE;
     int16_t start_j = (col_index < NEAR_CELLS) ? 0 : col_index - NEAR_CELLS;
-    int16_t end_j = (col_index + NEAR_CELLS > MAP_WIDTH_BLOCKS) ? MAP_WIDTH_BLOCKS :
-                                                                   col_index + NEAR_CELLS;
+    int16_t end_j =
+            (col_index + NEAR_CELLS > MAP_WIDTH_BLOCKS) ? MAP_WIDTH_BLOCKS : col_index + NEAR_CELLS;
 
-    struct Rectangle final_rec = {{new_x, new_y}, entity.width, entity.height};
-    struct Collision collision;
+    Rectangle final_rec = {{new_x, new_y}, entity.width, entity.height};
+    Collision collision;
     collision.horizontal_collision = false;
     collision.vertical_collision = false;
     for (int16_t i = start_i; i < end_i; ++i) {
@@ -111,9 +107,8 @@ struct Collision CollisionChecks::check_near_blocks_collision(struct Rectangle& 
     return collision;
 }
 
-struct Collision CollisionChecks::rectangles_collision(const struct Rectangle& r1,
-                                                       const struct Rectangle& r2) {
-    struct Collision collision;
+Collision CollisionChecks::rectangles_collision(const Rectangle& r1, const Rectangle& r2) {
+    Collision collision;
     collision.horizontal_collision = false;
     collision.vertical_collision = false;
     const Coordenades& r1_c = r1.coords;

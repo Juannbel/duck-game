@@ -13,9 +13,9 @@
 #define PARALLAX_FACTOR 0.05f
 #define MARGIN 100
 
-RenderableMapDto::RenderableMapDto(const MapDto& map_dto) { update(map_dto); }
+RenderableMap::RenderableMap(const MapDto& map_dto) { update(map_dto); }
 
-void RenderableMapDto::render(SDL2pp::Renderer& renderer, Camera& camera) {
+void RenderableMap::render(SDL2pp::Renderer& renderer, Camera& camera) {
     const SDL2pp::Rect& camera_rect = camera.get_current_rect();
     SDL2pp::Rect background_rect;
 
@@ -53,14 +53,14 @@ void RenderableMapDto::render(SDL2pp::Renderer& renderer, Camera& camera) {
     }
 }
 
-std::unordered_map<BlockType, std::string> RenderableMapDto::block_to_string = {
+std::unordered_map<BlockType, std::string> RenderableMap::block_to_string = {
         {Empty, "empty"},          {Floor1, "floor_1"},       {Floor2, "floor_2"},
         {Floor3, "floor_3"},       {Base1, "base_1"},         {Base2, "base_2"},
         {Base3, "base_3"},         {Platform1, "platform_1"}, {Platform2, "platform_2"},
         {Platform3, "platform_3"}, {Platform4, "platform_4"}, {Wall, "wall"},
         {HalfFloor, "half_floor"}};
 
-void RenderableMapDto::update(const MapDto& new_map_dto) {
+void RenderableMap::update(const MapDto& new_map_dto) {
     map.clear();
     background_texture =
             TexturesProvider::get_texture("background_" + std::to_string(new_map_dto.theme));

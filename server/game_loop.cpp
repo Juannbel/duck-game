@@ -16,7 +16,7 @@ using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 
 const milliseconds RATE(1000 / TICKS);
-const uint its_after_round = 3000/(1000/TICKS);
+const uint its_after_round = 3000 / (1000 / TICKS);
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
@@ -60,7 +60,7 @@ void GameLoop::run() {
             milliseconds behind = duration - rest;
             milliseconds lost = behind - behind % RATE;
             t1 += lost;
-            
+
         } else {
             std::this_thread::sleep_for(rest);
         }
@@ -113,11 +113,11 @@ void GameLoop::add_rounds_won(Snapshot& snapshot) {
     }
 }
 
-void GameLoop::push_responce(Snapshot& actual_status) {
+void GameLoop::push_responce(const Snapshot& actual_status) {
     snaps_queue_list.send_to_every(actual_status);
 }
 
-void GameLoop::check_for_winner(Snapshot& actual_status) {
+void GameLoop::check_for_winner(const Snapshot& actual_status) {
     if (round_finished) {
         return;
     }
@@ -130,10 +130,7 @@ void GameLoop::check_for_winner(Snapshot& actual_status) {
         }
     }
     if (players_alive == 1 && !round_finished) {
-        if (winners_id_count.find(winner_id) == winners_id_count.end()) {
-            winners_id_count[winner_id] = 0;
-        }
-        ++winners_id_count[winner_id];
+        winners_id_count[winner_id]++;
         round_finished = true;
     }
 }
@@ -151,7 +148,7 @@ uint8_t GameLoop::add_player(const std::string& player_name) {
 void GameLoop::delete_duck(const uint8_t duck_id) {
     game_operator.delete_duck_player(duck_id);
     auto it = std::find_if(ducks_info.begin(), ducks_info.end(),
-                           [duck_id](auto& info) { return info.first == duck_id; });
+                           [duck_id](const auto& info) { return info.first == duck_id; });
     if (it != ducks_info.end()) {
         ducks_info.erase(it);
     }

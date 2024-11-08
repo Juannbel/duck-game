@@ -125,7 +125,7 @@ void CollectablesManager::move_guns_falling() {
         Gun gun_info = gun->get_gun_info();
         gun_r.coords.x = gun_info.x;
         gun_r.coords.y = gun_info.y;
-        Coordenades coords =
+        coords =
                 collisions
                         .check_near_blocks_collision(gun_r, gun_info.x, gun_info.y + GUN_FALL_SPEED)
                         .last_valid_position;

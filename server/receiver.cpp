@@ -1,6 +1,7 @@
 #include "receiver.h"
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "common/blocking_queue.h"
@@ -14,8 +15,10 @@ ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_mon
                                Queue<Snapshot>& sender_q, int playerId,
                                std::atomic<bool>& is_alive):
         protocol(protocol),
+        gameloop_q(nullptr),
         games_monitor(games_monitor),
         playerId(playerId),
+        gameId(INVALID_GAME_ID),
         duck_id(-1),
         sender_q(sender_q),
         is_alive(is_alive),
@@ -87,7 +90,8 @@ void ServerReceiver::setup_game() {
             if (num_players == 2) {
                 players.push_back(protocol.recv_string());
             }
-            GameInfo game_info = games_monitor.player_join_game(playerId, gameId, sender_q, players);
+            GameInfo game_info =
+                    games_monitor.player_join_game(playerId, gameId, sender_q, players);
             protocol.send_game_info(game_info);
             // si no se pudo unir, game_id es INVALID_GAME_ID
             if (game_info.game_id != INVALID_GAME_ID) {

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <unordered_set>
+#include <utility>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
@@ -57,7 +58,7 @@ void ConstantLooper::run() try {
 
     Camera camera(renderer);
 
-    RenderableMapDto map(map_dto);
+    RenderableMap map(map_dto);
 
     if (!screen_manager.initial_screen(snapshot_q, last_snapshot, map, camera))
         return;
@@ -178,7 +179,7 @@ void ConstantLooper::process_snapshot() {
     }
 }
 
-void ConstantLooper::render(Camera& camera, RenderableMapDto& map) {
+void ConstantLooper::render(Camera& camera, RenderableMap& map) {
     renderer.Clear();
 
     map.render(renderer, camera);

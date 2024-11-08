@@ -4,17 +4,19 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
+
 #include <sys/types.h>
 
 #include "common/blocking_queue.h"
+#include "common/commands.h"
 #include "common/map_loader.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 #include "common/thread.h"
 #include "game/game_operator.h"
 
-#include "common/commands.h"
 #include "list_monitor.h"
 
 class GameLoop: public Thread {
@@ -40,9 +42,9 @@ private:
 
     void add_rounds_won(Snapshot& snapshot);
 
-    void push_responce(Snapshot& actual_status);
+    void push_responce(const Snapshot& actual_status);
 
-    void check_for_winner(Snapshot&);
+    void check_for_winner(const Snapshot&);
 
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list);

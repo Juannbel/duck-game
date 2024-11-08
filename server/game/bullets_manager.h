@@ -15,8 +15,11 @@ class DuckPlayer;
 struct BulletInfo {
     Bullet status;
     Rectangle hitbox;
+    // cppcheck-suppress unusedStructMember
     float speed;
+    // cppcheck-suppress unusedStructMember
     uint8_t damage;
+    // cppcheck-suppress unusedStructMember
     bool is_alive;
 };
 
