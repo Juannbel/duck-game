@@ -19,6 +19,12 @@ GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions
 void GrenadeG::stop_shooting() {}
 void GrenadeG::update_bullets(DuckPlayer& player) {
     hitbox.coords = player.get_coords();
+    if (it_since_shoot == it_to_shoot) {
+        explode_grenade();
+    }
+    if (trigger_pulled && it_since_shoot < it_to_shoot) {
+        ++it_since_shoot;
+    }
 }
 
 BananaG::BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions): GunEntity(gun, bullets, collisions) {

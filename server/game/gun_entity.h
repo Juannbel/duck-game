@@ -36,7 +36,7 @@ protected:
     int16_t get_rand_angle();
     Rectangle get_bullet_hitbox(Duck& status);
     void add_bullet(DuckPlayer& player);
-
+    void explode_grenade();
     void check_movement();
 public:
     GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);

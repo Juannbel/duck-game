@@ -111,6 +111,9 @@ void CollectablesManager::drop_gun(std::shared_ptr<GunEntity> gun, const Rectang
 void CollectablesManager::update_guns_and_bullets() {
     bullets.update_bullets();
     for (auto& [id, gun]: guns) {
+        if (picked_up_guns.find(id) != picked_up_guns.end()) {
+            continue;
+        }
         gun->update_status();
     }
 }

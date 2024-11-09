@@ -202,6 +202,8 @@ void DuckPlayer::jump() {
 void DuckPlayer::stop_jump() { ready_to_jump = true; }
 
 bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
+    if (status.is_dead)
+        return false;
     if (collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
         if (status.armor_equiped) {
             status.armor_equiped = false;
