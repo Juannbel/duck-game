@@ -34,8 +34,10 @@ protected:
     CollisionChecks& collisions;
 
     int16_t get_rand_angle();
+    Rectangle get_bullet_hitbox(Duck& status);
     void add_bullet(DuckPlayer& player);
 
+    void check_movement();
 public:
     GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);
 
@@ -44,16 +46,15 @@ public:
         trigger_pulled = true;
     }
 
-    virtual void update_bullets(DuckPlayer& player) = 0;
-
-
     virtual void stop_shooting() {
         trigger_pulled = false;
         it_since_shoot = it_to_shoot;
     }
 
+    virtual void update_bullets(DuckPlayer& player) = 0;
+    void update_status();
+    
     void trhow(bool facing_right);
-    void check_movement();
     void destroy();
     void set_new_coords(float x, float y);
     Gun get_gun_info();

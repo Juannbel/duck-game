@@ -23,6 +23,7 @@ class BulletEntity {
     void update_angle(float new_x, Collision collision);
     public:
     BulletEntity(const Duck& info, CollisionChecks& collision_ckecker, std::unordered_map<uint8_t, DuckPlayer>& ducks, int16_t angle, GunType type, uint32_t id, uint16_t range);
+    BulletEntity(const Rectangle& info, CollisionChecks& collision_ckecker, std::unordered_map<uint8_t, DuckPlayer>& ducks, int16_t angle, GunType type, uint32_t id, uint16_t range);
     void update_status();
     Bullet& get_status();
     bool still_alive();    

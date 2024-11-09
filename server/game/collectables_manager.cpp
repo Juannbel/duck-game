@@ -108,26 +108,28 @@ void CollectablesManager::drop_gun(std::shared_ptr<GunEntity> gun, const Rectang
     }
 }
 
-void CollectablesManager::move_guns_falling() {
+void CollectablesManager::update_guns_and_bullets() {
     bullets.update_bullets();
     for (auto& [id, gun]: guns) {
-        if (picked_up_guns.find(id) != picked_up_guns.end()) {
-            continue;
-        }
-        gun->check_movement();
+        gun->update_status();
     }
 }
 
 void CollectablesManager::add_guns_to_snapshot(Snapshot& snapshot) {
+    std::vector<uint32_t> id_to_eliminate;
     for (auto& [id, gun]: guns) {
         if (picked_up_guns.find(id) != picked_up_guns.end()) {
             continue;
         }
         Gun snapshot_gun = gun->get_gun_info();
         if (snapshot_gun.type == None) {
+            id_to_eliminate.push_back(id);
             continue;
         }
         snapshot.guns.push_back(snapshot_gun);
     }
     bullets.add_bullets_to_snapshot(snapshot);
+    for (uint32_t id: id_to_eliminate) {
+        guns.erase(id);
+    }
 }

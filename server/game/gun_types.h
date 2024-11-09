@@ -7,7 +7,7 @@ class GrenadeG: public GunEntity {
 public:
     GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);
     // void start_shooting() override;
-    // void stop_shooting() override;
+    void stop_shooting() override;
     void update_bullets(DuckPlayer& player) override;
 };
 

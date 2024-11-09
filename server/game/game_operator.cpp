@@ -117,7 +117,7 @@ void GameOperator::update_game_status() {
     }
     // Actualizar la posicion de las balas y vida de los patos si les pegan
     verify_spawn();
-    collectables.move_guns_falling();
+    collectables.update_guns_and_bullets();
 }
 
 GunType GameOperator::get_random_guntype() {

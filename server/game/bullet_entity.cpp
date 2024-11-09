@@ -22,6 +22,11 @@ BulletEntity::BulletEntity(const Duck& info, CollisionChecks& collision_ckecker,
     status = {id, x, y, static_cast<uint16_t>(angle % 360), type};
 }
 
+BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_ckecker, std::unordered_map<uint8_t, DuckPlayer>& ducks, int16_t angle, GunType type, uint32_t id, uint16_t range) : 
+    status(), hitbox(info), speed(9), damage(50), range(range), is_alive(true), collisions(collision_ckecker), ducks(ducks) {
+    status = {id, static_cast<int16_t>(info.coords.x), static_cast<int16_t>(info.coords.y), static_cast<uint16_t>(angle % 360), type};
+}
+
 bool BulletEntity::check_collision_with_ducks() {
     for (auto& [id, duck] : ducks) {
         if (duck.get_hit(hitbox, damage)) {

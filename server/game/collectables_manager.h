@@ -30,7 +30,7 @@ public:
     uint32_t get_and_inc_collectable_id();
     void add_gun(Gun& gun);
     void drop_gun(std::shared_ptr<GunEntity> gun, const Rectangle& duck_hitbox);
-    void move_guns_falling();
+    void update_guns_and_bullets();
     std::shared_ptr<GunEntity> pickup(const Rectangle& duck);
     void add_guns_to_snapshot(Snapshot& snapshot);
 };

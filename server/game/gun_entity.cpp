@@ -5,6 +5,7 @@
 #include <random>
 
 #include "common/shared_constants.h"
+#include "common/snapshot.h"
 #include "server/game/collisions.h"
 #include "ticks.h"
 
@@ -86,6 +87,25 @@ void GunEntity::check_movement() {
     float new_y = hitbox.coords.y + GUN_FALL_SPEED;
     hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position;
     hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, hitbox.coords.y).last_valid_position;
+}
+
+void GunEntity::update_status() {
+    check_movement();
+    if (type == Grenade) {
+        if (it_since_shoot == it_to_shoot) {
+            Rectangle hb = hitbox;
+            hb.height = BULLET_HITBOX_HEIGHT;
+            hb.width = BULLET_HITBOX_WIDTH;
+            for (int i = 0; i < 15; ++i) {
+                int16_t angle = 0;
+                angle += get_rand_angle();
+                bullets->add_bullet(hb, angle, type, range);
+            }
+            destroy();
+        } else if(trigger_pulled) {
+            ++it_since_shoot;
+        }
+    }
 }
 
 void GunEntity::trhow(bool facing_right) {

@@ -50,7 +50,7 @@ public:
     bool get_hit(const Rectangle& bullet, uint8_t damage);
     void knockback();
     Duck get_status();
-    Rectangle& get_hitbox();
+    const Coordenades& get_coords();
 };
 
 #endif

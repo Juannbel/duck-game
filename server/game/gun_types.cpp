@@ -9,14 +9,17 @@
 const uint8_t AK_CD = TICKS / 6;
 
 GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions): GunEntity(gun, bullets, collisions) {
-    ammo = 2;
-    it_to_shoot = 0;
+    ammo = 30;
+    it_to_shoot = TICKS * 4;
+    inaccuracy = 360;
     range = 5 * BLOCK_SIZE;
 }
 
 // void GrenadeG::start_shooting() {}
-// void GrenadeG::stop_shooting() {}
-void GrenadeG::update_bullets(DuckPlayer& player) { add_bullet(player); }
+void GrenadeG::stop_shooting() {}
+void GrenadeG::update_bullets(DuckPlayer& player) {
+    hitbox.coords = player.get_coords();
+}
 
 BananaG::BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions): GunEntity(gun, bullets, collisions) {
     ammo = 2;

@@ -253,3 +253,7 @@ Duck DuckPlayer::get_status() {
     status.is_damaged = false;
     return status_copy;
 }
+
+const Coordenades& DuckPlayer::get_coords() {
+    return hitbox.coords;
+}
