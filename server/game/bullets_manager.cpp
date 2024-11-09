@@ -22,9 +22,9 @@ void BulletManager::clear_bullets() {
     bullets.clear();
 }
 
-void BulletManager::add_bullet(const Duck& info, int16_t angle, GunType type) {
+void BulletManager::add_bullet(const Duck& info, int16_t angle, GunType type, uint16_t range) {
     ++bullet_id;
-    bullets.emplace(bullet_id, BulletEntity(info, collisions, ducks, angle, type, bullet_id));
+    bullets.emplace(bullet_id, BulletEntity(info, collisions, ducks, angle, type, bullet_id, range));
 }
 
 void BulletManager::update_bullets() {

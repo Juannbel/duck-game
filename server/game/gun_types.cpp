@@ -4,12 +4,14 @@
 
 #include "duck_player.h"
 #include "ticks.h"
+#include "common/shared_constants.h"
 
 const uint8_t AK_CD = TICKS / 6;
 
 GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
     ammo = 2;
     it_to_shoot = 0;
+    range = 5 * BLOCK_SIZE;
 }
 
 // void GrenadeG::start_shooting() {}
@@ -33,6 +35,7 @@ PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets): GunEntity(gun, bul
     bullets_to_shoot = 3;
     it_to_reload = TICKS / 2;
     it_reloading = it_to_reload;
+    range = 35 * BLOCK_SIZE;
 }
 
 // void PewPewLaserG::start_shooting() { trigger_pulled = true; }
@@ -54,7 +57,10 @@ LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets): GunEntity(gun, bulle
     inaccuracy = 10;
     it_to_reload = TICKS / 2;
     it_reloading = it_to_reload;
+    range = 30 * BLOCK_SIZE;
+
 }
+
 
 // void LaserRifleG::start_shooting() {}
 void LaserRifleG::update_bullets(DuckPlayer& player) {
@@ -75,6 +81,7 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
     inaccuracy = 15;
     it_to_reload = TICKS / 2;
     it_reloading = it_to_reload;
+    range = 13 * BLOCK_SIZE;
 }
 
 // void Ak47G::start_shooting() {
@@ -101,6 +108,7 @@ DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets): GunEntity(gun,
     inaccuracy = 8;
     it_to_reload = 0;
     it_reloading = it_to_reload;
+    range = 5 * BLOCK_SIZE;
 }
 
 // void DuelingPistolG::start_shooting() {}
@@ -121,6 +129,7 @@ CowboyPistolG::CowboyPistolG(Gun& gun, BulletManager* bullets): GunEntity(gun, b
     inaccuracy = 0;
     it_to_reload = 0;
     it_reloading = it_to_reload;
+    range = 20 * BLOCK_SIZE;
 }
 
 // void CowboyPistolG::start_shooting() {}
@@ -140,6 +149,7 @@ MagnumG::MagnumG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
     inaccuracy = 10;
     it_to_reload = 0;
     it_reloading = it_to_reload;
+    range = 20 * BLOCK_SIZE;
 }
 
 // void MagnumG::start_shooting() {}
@@ -160,6 +170,7 @@ ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) 
     bullets_to_shoot = 6;
     it_to_reload = TICKS / 2;
     it_reloading = it_to_reload;
+    range = 8 * BLOCK_SIZE;
 }
 
 // void ShootgunG::start_shooting() {}
@@ -179,6 +190,7 @@ SniperG::SniperG(Gun& gun, BulletManager* bullets): GunEntity(gun, bullets) {
     inaccuracy = 0;
     it_to_reload = TICKS / 2;
     it_reloading = it_to_reload;
+    range = 64 * BLOCK_SIZE;
 }
 
 // void SniperG::start_shooting() {}

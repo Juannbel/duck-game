@@ -43,7 +43,7 @@ void GunEntity::add_bullet(DuckPlayer& player) {
         int16_t angle = status.facing_right ? 0 : 180;
         angle = status.facing_up ? 90 : angle;
         angle += get_rand_angle();
-        bullets->add_bullet(status, angle, type);
+        bullets->add_bullet(status, angle, type, range);
         it_since_shoot = 0;
         it_reloading = 0;
         ++shooted_bullets;

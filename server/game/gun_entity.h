@@ -17,7 +17,7 @@ protected:
     float x;
     float y;
     uint8_t ammo;
-    uint8_t range;
+    uint16_t range;
     uint8_t bullets_to_shoot;
     uint8_t shooted_bullets;
     int16_t initial_angle;
