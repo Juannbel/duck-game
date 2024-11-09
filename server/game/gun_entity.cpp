@@ -5,14 +5,21 @@
 #include <random>
 
 #include "common/shared_constants.h"
+#include "server/game/collisions.h"
+#include "ticks.h"
+
+const float GUN_FALL_SPEED = 120.0f / TICKS;
+const float GUN_THROW_SPEED = 240.0f / TICKS;
+
 
 #include "duck_player.h"
 
-GunEntity::GunEntity(Gun& gun, BulletManager* bullets):
+GunEntity::GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         id(gun.gun_id),
         type(gun.type),
-        x(gun.x),
-        y(gun.y),
+        hitbox(),
+        facing_right(),
+        it_mooving(),
         ammo(),
         range(),
         bullets_to_shoot(),
@@ -25,7 +32,14 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets):
         it_to_shoot(),
         it_to_reload(),
         it_reloading(),
-        bullets(bullets) {}
+        bullets(bullets),
+        collisions(collisions) 
+        {
+            hitbox.coords.x = gun.x;
+            hitbox.coords.y = gun.y;
+            hitbox.height = COLLECTABLE_HITBOX_HEIGHT;
+            hitbox.width = COLLECTABLE_HITBOX_WIDTH;
+        }
 
 int16_t GunEntity::get_rand_angle() {
     if (inaccuracy == 0)
@@ -62,20 +76,41 @@ void GunEntity::add_bullet(DuckPlayer& player) {
     }
 }
 
+void GunEntity::check_movement() {
+    float new_x = hitbox.coords.x;
+    if (it_mooving) {
+        float move_x = GUN_THROW_SPEED * (static_cast<float>(it_mooving) / (static_cast<float>(TICKS)/2));
+        new_x = facing_right ? new_x + move_x : new_x - move_x;
+        --it_mooving;
+    }
+    float new_y = hitbox.coords.y + GUN_FALL_SPEED;
+    hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position;
+    hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, hitbox.coords.y).last_valid_position;
+}
+
+void GunEntity::trhow(bool facing_right) {
+    this->facing_right = facing_right;
+    it_mooving = TICKS / 2;
+}
+
 void GunEntity::destroy() {
     type = None;
-    x = 0;
-    y = 0;
+    hitbox.coords.x = 0;
+    hitbox.coords.y = 0;
     ammo = 0;
     trigger_pulled = false;
 }
 
 void GunEntity::set_new_coords(float x, float y) {
-    this->x = x;
-    this->y = y;
+    hitbox.coords.x = x;
+    hitbox.coords.y = y;
 }
 
 Gun GunEntity::get_gun_info() {
-    Gun gun_info = {id, type, static_cast<int16_t>(x), static_cast<int16_t>(y)};
+    Gun gun_info = {id, type, static_cast<int16_t>(hitbox.coords.x), static_cast<int16_t>(hitbox.coords.y)};
     return gun_info;
+}
+
+const Rectangle& GunEntity::get_hitbox() {
+    return hitbox;
 }

@@ -225,8 +225,11 @@ bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
 uint32_t DuckPlayer::drop_and_pickup() {
     stop_shooting();
     std::shared_ptr<GunEntity> new_gun = collectables.pickup(hitbox);
+    if (equipped_gun)
+        equipped_gun->trhow(status.facing_right);
     collectables.drop_gun(equipped_gun, hitbox);
     equipped_gun = new_gun;
+    
     Gun gun_info = {};
     if (new_gun) {
         gun_info = new_gun->get_gun_info();

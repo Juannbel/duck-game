@@ -10,9 +10,7 @@
 #include "server/game/gun_entity.h"
 
 #include "gun_types.h"
-#include "ticks.h"
 
-const float GUN_FALL_SPEED = 120.0f / TICKS;
 
 CollectablesManager::CollectablesManager(CollisionChecks& collision,
                                          std::unordered_map<uint8_t, DuckPlayer>& ducks):
@@ -35,40 +33,40 @@ void CollectablesManager::new_gun(Gun& gun) {
     uint32_t id = gun.gun_id;
     switch (gun.type) {
         case Grenade:
-            guns.emplace(id, new GrenadeG(gun, &bullets));
+            guns.emplace(id, new GrenadeG(gun, &bullets, collisions));
             break;
         case Banana:
-            guns.emplace(id, new BananaG(gun, &bullets));
+            guns.emplace(id, new BananaG(gun, &bullets, collisions));
             break;
         case PewPewLaser:
-            guns.emplace(id, new PewPewLaserG(gun, &bullets));
+            guns.emplace(id, new PewPewLaserG(gun, &bullets, collisions));
             break;
         case LaserRifle:
-            guns.emplace(id, new LaserRifleG(gun, &bullets));
+            guns.emplace(id, new LaserRifleG(gun, &bullets, collisions));
             break;
         case Ak47:
-            guns.emplace(id, new Ak47G(gun, &bullets));
+            guns.emplace(id, new Ak47G(gun, &bullets, collisions));
             break;
         case DuelingPistol:
-            guns.emplace(id, new DuelingPistolG(gun, &bullets));
+            guns.emplace(id, new DuelingPistolG(gun, &bullets, collisions));
             break;
         case CowboyPistol:
-            guns.emplace(id, new CowboyPistolG(gun, &bullets));
+            guns.emplace(id, new CowboyPistolG(gun, &bullets, collisions));
             break;
         case Magnum:
-            guns.emplace(id, new MagnumG(gun, &bullets));
+            guns.emplace(id, new MagnumG(gun, &bullets, collisions));
             break;
         case Shootgun:
-            guns.emplace(id, new ShootgunG(gun, &bullets));
+            guns.emplace(id, new ShootgunG(gun, &bullets, collisions));
             break;
         case Sniper:
-            guns.emplace(id, new SniperG(gun, &bullets));
+            guns.emplace(id, new SniperG(gun, &bullets, collisions));
             break;
         case Helmet:
-            guns.emplace(id, new HelmetG(gun, &bullets));
+            guns.emplace(id, new HelmetG(gun, &bullets, collisions));
             break;
         case Armor:
-            guns.emplace(id, new ArmorG(gun, &bullets));
+            guns.emplace(id, new ArmorG(gun, &bullets, collisions));
             break;
         default:
             break;
@@ -83,15 +81,11 @@ void CollectablesManager::add_gun(Gun& gun) {
 }
 
 std::shared_ptr<GunEntity> CollectablesManager::pickup(const Rectangle& duck) {
-    Coordenades coords = {0, 0};
-    Rectangle gun_r = {coords, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
     for (auto& [id, gun]: guns) {
         if (picked_up_guns.find(id) != picked_up_guns.end()) {
             continue;
         }
-        Gun gun_info = gun->get_gun_info();
-        gun_r.coords.x = gun_info.x;
-        gun_r.coords.y = gun_info.y;
+        const Rectangle& gun_r = gun->get_hitbox();
         Collision collision = collisions.rectangles_collision(duck, gun_r);
         if (collision.horizontal_collision && collision.vertical_collision) {
             picked_up_guns.insert(id);
@@ -116,20 +110,11 @@ void CollectablesManager::drop_gun(std::shared_ptr<GunEntity> gun, const Rectang
 
 void CollectablesManager::move_guns_falling() {
     bullets.update_bullets();
-    Coordenades coords = {0, 0};
-    Rectangle gun_r = {coords, COLLECTABLE_HITBOX_WIDTH, COLLECTABLE_HITBOX_HEIGHT};
     for (auto& [id, gun]: guns) {
         if (picked_up_guns.find(id) != picked_up_guns.end()) {
             continue;
         }
-        Gun gun_info = gun->get_gun_info();
-        gun_r.coords.x = gun_info.x;
-        gun_r.coords.y = gun_info.y;
-        coords =
-                collisions
-                        .check_near_blocks_collision(gun_r, gun_info.x, gun_info.y + GUN_FALL_SPEED)
-                        .last_valid_position;
-        gun->set_new_coords(coords.x, coords.y);
+        gun->check_movement();
     }
 }
 
