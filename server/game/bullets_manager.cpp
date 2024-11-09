@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "common/snapshot.h"
+#include "server/game/bullet_entity.h"
 #include "server/game/collisions.h"
 
 

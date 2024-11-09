@@ -13,7 +13,6 @@
 #include "collisions.h"
 class DuckPlayer;
 
-
 class BulletManager {
 private:
     uint32_t bullet_id;

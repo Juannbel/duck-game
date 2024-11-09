@@ -15,12 +15,11 @@ BulletEntity::BulletEntity(const Duck& info, CollisionChecks& collision_ckecker,
     int16_t x = info.facing_right ? info.x + DUCK_HITBOX_WIDTH + 1 :
                                       info.x - BULLET_HITBOX_WIDTH - 1;
     int16_t y =  info.facing_up ? info.y - BULLET_HITBOX_HEIGHT-1 : info.y + DUCK_LAYED_HITBOX_HEIGHT;
-    status.bullet_id = id;
     hitbox.coords.x = x;
     hitbox.coords.y = y;
     hitbox.height = BULLET_HITBOX_HEIGHT;
     hitbox.width = BULLET_HITBOX_WIDTH;
-    status = {0, x, y, static_cast<uint16_t>(angle % 360), type};
+    status = {id, x, y, static_cast<uint16_t>(angle % 360), type};
 }
 
 bool BulletEntity::check_collision_with_ducks() {
@@ -32,20 +31,43 @@ bool BulletEntity::check_collision_with_ducks() {
     return false;
 }
 
+void BulletEntity::update_angle(float new_x, float new_y, Collision collision) {
+    Coordenades& coords = collision.last_valid_position;
+    if (collision.horizontal_collision || collision.vertical_collision) {    
+        uint16_t diff = status.angle % 90;
+        if (coords.x != new_x && coords.y == new_y && diff != 0) {
+            status.angle = (status.angle + 360 - 2 * diff) % 360;    
+        } else {
+            status.angle = (status.angle + 180 - 2 * diff) % 360;
+        }
+        hitbox.coords.x = coords.x;
+        hitbox.coords.y = coords.y;
+    }
+}
+
+void BulletEntity::check_collision_and_change_angle(float new_x, float new_y) {
+    Collision collision = collisions.check_near_blocks_collision(hitbox, new_x, new_y);
+    hitbox.coords.x = new_x;
+    hitbox.coords.y = new_y;
+    if (status.type == PewPewLaser || status.type == LaserRifle) {
+        update_angle(new_x, new_y, collision);
+    }
+    else if (collision.vertical_collision || collision.horizontal_collision) {
+        is_alive = false;
+    }
+}
+
 void BulletEntity::update_status() {
-    float angle = static_cast<float>(status.angle);
     for (int i = 0; i < speed/SPEED_PER_IT; i++) {
+        float angle = static_cast<float>(status.angle);
         float new_x = hitbox.coords.x + (SPEED_PER_IT) *
                                                 std::cos(angle * (std::numbers::pi / 180));
         float new_y = hitbox.coords.y - (SPEED_PER_IT) *
                                                 std::sin(angle * (std::numbers::pi / 180));
-        Collision collision = collisions.check_near_blocks_collision(hitbox, new_x, new_y);
-        if (collision.vertical_collision || collision.horizontal_collision ||
-            collisions.out_of_map(new_x, new_y)) {
+        check_collision_and_change_angle(new_x, new_y);
+        if (collisions.out_of_map(new_x, new_y)) {
             is_alive = false;
-        }
-        hitbox.coords.x = new_x;
-        hitbox.coords.y = new_y;
+        } 
         bool hit = check_collision_with_ducks();
         if (hit || !is_alive) {
             is_alive = false;
