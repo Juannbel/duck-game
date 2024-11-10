@@ -26,10 +26,10 @@ protected:
     int16_t inaccuracy;
     bool trigger_pulled;
     bool ready_to_shoot;
-    uint8_t it_since_shoot;
-    uint8_t it_to_shoot;
-    uint8_t it_to_reload;
-    uint8_t it_reloading;
+    uint16_t it_since_shoot;
+    uint16_t it_to_shoot;
+    uint16_t it_to_reload;
+    uint16_t it_reloading;
     BulletManager* bullets;
     CollisionChecks& collisions;
 

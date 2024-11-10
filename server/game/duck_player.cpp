@@ -11,14 +11,14 @@
 
 #include "ticks.h"
 
-const uint8_t JUMP_IT = TICKS * 1.5;
-const uint8_t INC_JUMP_IT = TICKS / 20;
+const uint8_t JUMP_IT = TICKS;
 const uint8_t DECREACENT_JUMP_SPEED = TICKS / 3;
 const uint8_t FLAPPING_TIME = TICKS / 3;
 const uint8_t IT_TO_GET_HIT_AGAIN = TICKS / 10;
 const uint8_t SLIDING_ITS = TICKS / 2;
 const float DUCK_SPEED = 120.0f / TICKS;
 const float FALL_SPEED = 120.0f / TICKS;
+const float JUMP_SPEED = FALL_SPEED * 4;
 
 DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x,
                        int16_t y, uint8_t id, const std::string& name):
@@ -87,8 +87,8 @@ Collision DuckPlayer::move_sliding() {
     }
     if (status.is_jumping) {
         float move_y =
-                FALL_SPEED * (static_cast<float>(JUMP_IT - it_jumping) / DECREACENT_JUMP_SPEED);
-        it_jumping += INC_JUMP_IT;
+                JUMP_SPEED - (static_cast<float>(FALL_SPEED * it_jumping) / DECREACENT_JUMP_SPEED);
+        it_jumping += 2;
         new_y -= move_y;
     }
     --it_sliding;
@@ -121,8 +121,8 @@ Collision DuckPlayer::normal_duck_move() {
     }
     if (status.is_jumping) {
         float move_y =
-                FALL_SPEED * (static_cast<float>(JUMP_IT - it_jumping) / DECREACENT_JUMP_SPEED);
-        it_jumping += INC_JUMP_IT;
+                JUMP_SPEED - (static_cast<float>(FALL_SPEED * it_jumping) / DECREACENT_JUMP_SPEED);
+        it_jumping += 2;
         new_y -= move_y;
     }
     return collisions.check_near_blocks_collision(hitbox, new_x, new_y);

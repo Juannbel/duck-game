@@ -1,1 +1,1 @@
-#define TICKS 60
+#define TICKS 120
