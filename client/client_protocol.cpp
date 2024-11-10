@@ -75,6 +75,7 @@ void ClientProtocol::deserialize_snapshot(Snapshot& snapshot) {
     int boxes_quantity = snapshot.boxes.size();
     for (int i = 0; i < boxes_quantity; i++) {
         Box& box = snapshot.boxes[i];
+        box.box_id = ntohl(box.box_id);
         box.x = ntohs(box.x);
         box.y = ntohs(box.y);
     }

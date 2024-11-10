@@ -81,6 +81,7 @@ struct Bullet {
 enum BoxStatus { NoDamage, LittleDamage, MediumDamage, HeavyDamage };
 
 struct Box {
+    uint32_t box_id;
     int16_t x;
     int16_t y;
     BoxStatus status;
