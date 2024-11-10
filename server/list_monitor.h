@@ -18,8 +18,7 @@ public:
     // Append a new Queue reference to the list.
     void add_element(Queue<struct Snapshot>* queue, int id);
     // Remove a Queue reference from the list.
-    void remove_element(Queue<struct Snapshot>* queue);
-    void remove_element(int id);
+    Queue<Snapshot>* remove_element(int id);
     // push the string recieved to all the queues.
     /*  Closed queues should not be in this monitor.
      *   If some of the queues in it is closed it will throw ClosedQueue exception.

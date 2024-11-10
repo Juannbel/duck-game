@@ -12,7 +12,7 @@ ServerSender::ServerSender(ServerProtocol& protocol, Queue<Snapshot>& sender_q, 
         protocol(protocol), sender_q(sender_q), playerId(playerId), is_alive(is_alive) {}
 
 void ServerSender::run() {
-    while (_keep_running) {
+    while (_keep_running && is_alive) {
         Snapshot msg;
         // Espero que queue tenga algo y mando
         try {
@@ -34,4 +34,6 @@ void ServerSender::run() {
     is_alive = false;
 }
 
-ServerSender::~ServerSender() { is_alive = false; }
+ServerSender::~ServerSender() {
+    is_alive = false;
+}
