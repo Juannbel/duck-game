@@ -4,6 +4,7 @@
 #include <cstring>
 #include <memory>
 #include <string>
+
 #include <sys/types.h>
 
 #include "common/snapshot.h"
@@ -80,7 +81,7 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
 Collision DuckPlayer::move_sliding() {
     float new_x = hitbox.coords.x;
     float new_y = hitbox.coords.y;
-    new_x = status.facing_right ? new_x + DUCK_SPEED*1.5 : new_x - DUCK_SPEED*1.5;
+    new_x = status.facing_right ? new_x + DUCK_SPEED * 1.5 : new_x - DUCK_SPEED * 1.5;
     if (status.is_falling) {
         float move_y = FALL_SPEED;
         new_y += move_y;
@@ -126,7 +127,6 @@ Collision DuckPlayer::normal_duck_move() {
         new_y -= move_y;
     }
     return collisions.check_near_blocks_collision(hitbox, new_x, new_y);
-
 }
 
 void DuckPlayer::move_duck() {
@@ -136,11 +136,10 @@ void DuckPlayer::move_duck() {
     Collision collision{};
     if (it_sliding) {
         collision = move_sliding();
-    }
-    else {
+    } else {
         collision = normal_duck_move();
     }
-    
+
     hitbox.coords.x = collision.last_valid_position.x;
     hitbox.coords.y = collision.last_valid_position.y;
     status_after_move(collision);
@@ -215,9 +214,7 @@ void DuckPlayer::face_up() {
     status.facing_up = true;
 }
 
-void DuckPlayer::stop_face_up() {
-    status.facing_up = false;
-}
+void DuckPlayer::stop_face_up() { status.facing_up = false; }
 
 void DuckPlayer::jump() {
     if (!ready_to_jump || status.is_jumping || status.is_laying) {
@@ -274,7 +271,7 @@ uint32_t DuckPlayer::drop_and_pickup() {
         equipped_gun->trhow(status.facing_right);
     collectables.drop_gun(equipped_gun, hitbox);
     equipped_gun = new_gun;
-    
+
     Gun gun_info = {};
     if (new_gun) {
         gun_info = new_gun->get_gun_info();
@@ -299,6 +296,4 @@ Duck DuckPlayer::get_status() {
     return status_copy;
 }
 
-const Coordenades& DuckPlayer::get_coords() {
-    return hitbox.coords;
-}
+const Coordenades& DuckPlayer::get_coords() { return hitbox.coords; }

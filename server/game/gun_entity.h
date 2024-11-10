@@ -38,6 +38,7 @@ protected:
     void add_bullet(DuckPlayer& player);
     void explode_grenade();
     void check_movement();
+
 public:
     GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);
 
@@ -53,7 +54,7 @@ public:
 
     virtual void update_bullets(DuckPlayer& player) = 0;
     void update_status();
-    
+
     void trhow(bool facing_right);
     void destroy();
     void set_new_coords(float x, float y);

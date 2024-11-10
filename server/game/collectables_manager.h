@@ -22,10 +22,9 @@ private:
     uint32_t collectable_id;
 
     void new_gun(Gun& gun);
-    
+
 public:
-    CollectablesManager(CollisionChecks& collision,
-                                 std::unordered_map<uint8_t, DuckPlayer>& ducks);
+    CollectablesManager(CollisionChecks& collision, std::unordered_map<uint8_t, DuckPlayer>& ducks);
     void reset_collectables();
     uint32_t get_and_inc_collectable_id();
     void add_gun(Gun& gun);
