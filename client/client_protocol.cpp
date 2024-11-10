@@ -37,6 +37,7 @@ Snapshot ClientProtocol::recv_snapshot() {
     Snapshot snapshot;
 
     snapshot.round_finished = recv_bool(was_closed);
+    snapshot.show_stats = recv_bool(was_closed);
     snapshot.game_finished = recv_bool(was_closed);
     recv_vector<Duck>(snapshot.ducks, was_closed);
     recv_vector<Gun>(snapshot.guns, was_closed);

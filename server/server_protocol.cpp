@@ -32,6 +32,7 @@ void ServerProtocol::send_snapshot(Snapshot& snapshot) {
     serializeSnapshot(snapshot);
 
     send_bool(snapshot.round_finished, was_closed);
+    send_bool(snapshot.show_stats, was_closed);
     send_bool(snapshot.game_finished, was_closed);
     send_snapshot_vector(snapshot.ducks, was_closed);
     send_snapshot_vector(snapshot.guns, was_closed);
