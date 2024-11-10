@@ -25,6 +25,7 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& colli
         status(),
         it_jumping(),
         it_flapping(),
+        it_sliding(),
         ready_to_jump(true),
         hitbox(),
         collisions(collisions),
@@ -140,7 +141,7 @@ void DuckPlayer::move_duck() {
     else {
         collision = normal_duck_move();
     }
-    
+
     hitbox.coords.x = collision.last_valid_position.x;
     hitbox.coords.y = collision.last_valid_position.y;
     status_after_move(collision);
@@ -274,7 +275,7 @@ uint32_t DuckPlayer::drop_and_pickup() {
         equipped_gun->trhow(status.facing_right);
     collectables.drop_gun(equipped_gun, hitbox);
     equipped_gun = new_gun;
-    
+
     Gun gun_info = {};
     if (new_gun) {
         gun_info = new_gun->get_gun_info();
