@@ -38,8 +38,6 @@ void GameOperator::initialize_players(
     for (auto& duck: ducks_info) {
         DuckPlayer player(collectables, collisions, spawn_points[duck.first].first * BLOCK_SIZE,
                           spawn_points[duck.first].second * BLOCK_SIZE, duck.first, duck.second);
-        // player.set_coordenades_and_id(spawn_points[duck.first].first,
-        // spawn_points[duck.first].second, duck.first); player.set_player_name(duck.second);
         players.emplace(duck.first, std::move(player));
     }
 }
@@ -116,7 +114,6 @@ void GameOperator::update_game_status() {
         duck.move_duck();
         duck.update_gun_status();
     }
-    // Actualizar la posicion de las balas y vida de los patos si les pegan
     verify_spawn();
     collectables.update_guns_and_bullets();
 }

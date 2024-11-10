@@ -100,27 +100,8 @@ void GunEntity::check_movement() {
     }
 }
 
-void GunEntity::explode_grenade() {
-    Rectangle hb = hitbox;
-    hb.height = BULLET_HITBOX_HEIGHT;
-    hb.width = BULLET_HITBOX_WIDTH;
-    for (int i = 0; i < 30; ++i) {
-        int16_t angle = 0;
-        angle += get_rand_angle();
-        bullets->add_bullet(hb, angle, type, range);
-    }
-    destroy();
-}
-
 void GunEntity::update_status() {
     check_movement();
-    if (type == Grenade) {
-        if (it_since_shoot == it_to_shoot) {
-            explode_grenade();
-        } else if (trigger_pulled) {
-            ++it_since_shoot;
-        }
-    }
 }
 
 void GunEntity::trhow(bool facing_right) {
@@ -149,10 +130,6 @@ void GunEntity::destroy() {
 void GunEntity::set_new_coords(float x, float y) {
     hitbox.coords.x = x;
     hitbox.coords.y = y;
-    if (type == Banana && it_since_shoot > 0) {
-        hitbox.coords.x = facing_right ? hitbox.coords.x + DUCK_HITBOX_WIDTH + 1 :
-                                         hitbox.coords.x - BULLET_HITBOX_WIDTH - 1;
-    }
 }
 
 Gun GunEntity::get_gun_info() {

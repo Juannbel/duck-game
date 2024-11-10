@@ -17,7 +17,6 @@ GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions
     range = 5 * BLOCK_SIZE;
 }
 
-// void GrenadeG::start_shooting() {}
 void GrenadeG::stop_shooting() {}
 void GrenadeG::update_bullets(DuckPlayer& player) {
     hitbox.coords = player.get_coords();
@@ -29,6 +28,28 @@ void GrenadeG::update_bullets(DuckPlayer& player) {
         ++it_since_shoot;
     }
 }
+void GrenadeG::update_status() {
+    check_movement();
+    if (type == Grenade) {
+        if (it_since_shoot == it_to_shoot) {
+            explode_grenade();
+        } else if (trigger_pulled) {
+            ++it_since_shoot;
+        }
+    }
+}
+
+void GrenadeG::explode_grenade() {
+    Rectangle hb = hitbox;
+    hb.height = BULLET_HITBOX_HEIGHT;
+    hb.width = BULLET_HITBOX_WIDTH;
+    for (int i = 0; i < 30; ++i) {
+        int16_t angle = 0;
+        angle += get_rand_angle();
+        bullets->add_bullet(hb, angle, type, range);
+    }
+    destroy();
+}
 
 BananaG::BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
@@ -38,8 +59,23 @@ BananaG::BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 }
 
 // void BananaG::start_shooting() {}
-void BananaG::stop_shooting() {}
 void BananaG::update_bullets(DuckPlayer& player) { hitbox.coords = player.get_coords(); }
+
+void BananaG::trhow(bool facing_right) {
+    this->facing_right = facing_right;
+    it_mooving = TICKS / 2;
+    if (it_since_shoot > 0 && type == Banana) {
+        Rectangle b_hitbox = hitbox;
+        b_hitbox.height = BULLET_HITBOX_HEIGHT;
+        b_hitbox.width = BULLET_HITBOX_WIDTH;
+        b_hitbox.coords.x = facing_right ? b_hitbox.coords.x + DUCK_HITBOX_WIDTH + 2 :
+                                           b_hitbox.coords.x - BULLET_HITBOX_WIDTH - 2;
+        int16_t angle = facing_right ? 0 : 180;
+        bullets->add_bullet(b_hitbox, angle, type, range);
+        destroy();
+    }
+}
+void BananaG::stop_shooting() {}
 
 PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
