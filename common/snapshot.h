@@ -89,7 +89,8 @@ struct Box {
 
 struct Snapshot {
     // cppcheck-suppress unusedStructMember
-    bool match_finished = true;  // each match has five rounds.
+    bool round_finished = true;  // each match has five rounds.
+    bool game_finished = false;
     std::vector<Duck> ducks;
     std::vector<Gun> guns;
     std::vector<Bullet> bullets;

@@ -72,7 +72,7 @@ void GameLoop::initial_snapshot() {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
     actual_status.maps.push_back(curr_map.map_dto);
-    actual_status.match_finished = false;
+    actual_status.round_finished = false;
     add_rounds_won(actual_status);
     push_responce(actual_status);
 }
@@ -90,7 +90,7 @@ void GameLoop::create_and_push_snapshot(auto& t1, uint& its_since_finish) {
     game_operator.get_snapshot(actual_status);
     check_for_winner(actual_status);
 
-    actual_status.match_finished = its_since_finish == 0 ? round_finished : false;
+    actual_status.round_finished = its_since_finish == 0 ? round_finished : false;
     add_rounds_won(actual_status);
     push_responce(actual_status);
     if (!its_since_finish) {
