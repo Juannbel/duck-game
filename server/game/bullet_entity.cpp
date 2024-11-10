@@ -7,13 +7,12 @@
 #include "server/game/duck_player.h"
 #include "ticks.h"
 
-const int SPEED_PER_IT = 3;
-const uint8_t bullet_updates_per_it = 3;
+const int SPEED_PER_IT = TICKS/30;
 const float GUN_FALL_SPEED = 120.0f / TICKS;
 const float GUN_THROW_SPEED = 120.0f / TICKS;
 
 BulletEntity::BulletEntity(const Duck& info, CollisionChecks& collision_ckecker, std::unordered_map<uint8_t, DuckPlayer>& ducks, int16_t angle, GunType type, uint32_t id, uint16_t range) : 
-    status(), hitbox(), speed(9), damage(50), range(range), is_alive(true), collisions(collision_ckecker), ducks(ducks) {
+    status(), hitbox(), speed(12), damage(50), range(range), is_alive(true), collisions(collision_ckecker), ducks(ducks) {
     int16_t x = info.facing_right ? info.x + DUCK_HITBOX_WIDTH + 1 :
                                       info.x - BULLET_HITBOX_WIDTH - 1;
     int16_t y =  info.facing_up ? info.y - BULLET_HITBOX_HEIGHT-1 : info.y + DUCK_LAYED_HITBOX_HEIGHT;

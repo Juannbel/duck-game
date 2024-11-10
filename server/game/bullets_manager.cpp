@@ -11,7 +11,6 @@
 
 #include "duck_player.h"
 
-const uint8_t bullet_updates_per_it = 3;
 
 BulletManager::BulletManager(CollisionChecks& collisions,
                              std::unordered_map<uint8_t, DuckPlayer>& ducks):
