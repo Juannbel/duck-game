@@ -99,8 +99,9 @@ void CollectablesManager::drop_gun(std::shared_ptr<GunEntity> gun, const Rectang
     if (!gun)
         return;
     Gun gun_info = gun->get_gun_info();
-    gun->set_new_coords(duck_hitbox.coords.x - (duck_hitbox.width / 2),
-                        duck_hitbox.coords.y + duck_hitbox.height - COLLECTABLE_HITBOX_HEIGHT);
+    float new_x = duck_hitbox.coords.x - (duck_hitbox.width / 2);
+    float new_y = duck_hitbox.coords.y + duck_hitbox.height - COLLECTABLE_HITBOX_HEIGHT;
+    gun->set_new_coords(new_x, new_y);
     picked_up_guns.erase(gun_info.gun_id);
     if (gun_info.type == None) {
         guns[gun_info.gun_id].reset();

@@ -115,6 +115,15 @@ void GunEntity::update_status() {
 void GunEntity::trhow(bool facing_right) {
     this->facing_right = facing_right;
     it_mooving = TICKS / 2;
+    if (it_since_shoot > 0 && type == Banana) {
+        Rectangle b_hitbox = hitbox;
+        b_hitbox.height = BULLET_HITBOX_HEIGHT;
+        b_hitbox.width = BULLET_HITBOX_WIDTH;
+        b_hitbox.coords.x = facing_right ? b_hitbox.coords.x + DUCK_HITBOX_WIDTH + 2 : b_hitbox.coords.x - BULLET_HITBOX_WIDTH - 2;
+        int16_t angle = facing_right ? 0 : 180;
+        bullets->add_bullet(b_hitbox, angle, type, range);
+        destroy();
+    }
 }
 
 void GunEntity::destroy() {
@@ -128,6 +137,9 @@ void GunEntity::destroy() {
 void GunEntity::set_new_coords(float x, float y) {
     hitbox.coords.x = x;
     hitbox.coords.y = y;
+    if (type == Banana && it_since_shoot > 0) {
+        hitbox.coords.x = facing_right ? hitbox.coords.x + DUCK_HITBOX_WIDTH + 1 : hitbox.coords.x - BULLET_HITBOX_WIDTH - 1;
+    }
 }
 
 Gun GunEntity::get_gun_info() {

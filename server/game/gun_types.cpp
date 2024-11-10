@@ -29,13 +29,16 @@ void GrenadeG::update_bullets(DuckPlayer& player) {
 }
 
 BananaG::BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions): GunEntity(gun, bullets, collisions) {
-    ammo = 2;
+    ammo = 1;
     it_to_shoot = 0;
+    range = TICKS;
 }
 
 // void BananaG::start_shooting() {}
-// void BananaG::stop_shooting() {}
-void BananaG::update_bullets(DuckPlayer& player) { add_bullet(player); }
+void BananaG::stop_shooting() {}
+void BananaG::update_bullets(DuckPlayer& player) { 
+    hitbox.coords = player.get_coords();
+}
 
 PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions): GunEntity(gun, bullets, collisions) {
     ammo = 12 * 3;

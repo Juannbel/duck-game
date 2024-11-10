@@ -17,6 +17,7 @@ private:
     Duck status;
     uint8_t it_jumping;
     uint8_t it_flapping;
+    uint8_t it_sliding;
     bool ready_to_jump;
     Rectangle hitbox;
     CollisionChecks& collisions;
@@ -24,6 +25,8 @@ private:
     std::shared_ptr<GunEntity> equipped_gun;
 
     void status_after_move(struct Collision& collision);
+    Collision move_sliding();
+    Collision normal_duck_move();
     void die();
 
 public:
@@ -48,6 +51,7 @@ public:
     uint32_t drop_and_pickup();
     void drop_collectable();
     bool get_hit(const Rectangle& bullet, uint8_t damage);
+    void slide();
     void knockback();
     Duck get_status();
     const Coordenades& get_coords();

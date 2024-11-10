@@ -5,10 +5,12 @@
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
 #include "server/game/duck_player.h"
+#include "ticks.h"
 
 const int SPEED_PER_IT = 3;
 const uint8_t bullet_updates_per_it = 3;
-
+const float GUN_FALL_SPEED = 120.0f / TICKS;
+const float GUN_THROW_SPEED = 120.0f / TICKS;
 
 BulletEntity::BulletEntity(const Duck& info, CollisionChecks& collision_ckecker, std::unordered_map<uint8_t, DuckPlayer>& ducks, int16_t angle, GunType type, uint32_t id, uint16_t range) : 
     status(), hitbox(), speed(9), damage(50), range(range), is_alive(true), collisions(collision_ckecker), ducks(ducks) {
@@ -30,6 +32,9 @@ BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_cke
 bool BulletEntity::check_collision_with_ducks() {
     for (auto& [id, duck] : ducks) {
         if (duck.get_hit(hitbox, damage)) {
+            if (status.type == Banana) {
+                duck.slide();
+            }
             return true;
         }
     }
@@ -75,7 +80,28 @@ void BulletEntity::check_collision_and_change_angle(float new_x, float new_y) {
     }
 }
 
+void BulletEntity::move_banana() {
+    float new_x = hitbox.coords.x;
+    if (range) {
+        float move_x = GUN_THROW_SPEED * (static_cast<float>(range) / (static_cast<float>(TICKS)/2));
+        new_x = status.angle == 0 ? new_x + move_x : new_x - move_x;
+        --range;
+    }
+    float new_y = hitbox.coords.y + GUN_FALL_SPEED;
+    hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position;
+    hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, hitbox.coords.y).last_valid_position;
+}
+
 void BulletEntity::update_status() {
+    if (status.type == Banana) {
+        move_banana();
+        if (check_collision_with_ducks()) {
+            is_alive = false;
+        }
+        status.x = static_cast<int16_t>(hitbox.coords.x);
+        status.y = static_cast<int16_t>(hitbox.coords.y);
+        return;
+    }
     for (int i = 0; i < speed/SPEED_PER_IT; i++) {
         float angle = static_cast<float>(status.angle);
         float new_x = hitbox.coords.x + (SPEED_PER_IT) *
