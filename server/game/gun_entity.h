@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "common/snapshot.h"
+#include "server/game/collisions.h"
 
 #include "bullets_manager.h"
 
@@ -14,10 +15,11 @@ protected:
     uint32_t id;
     GunType type;
 
-    float x;
-    float y;
+    Rectangle hitbox;
+    bool facing_right;
+    uint8_t it_mooving;
     uint8_t ammo;
-    uint8_t range;
+    uint16_t range;
     uint8_t bullets_to_shoot;
     uint8_t shooted_bullets;
     int16_t initial_angle;
@@ -29,28 +31,34 @@ protected:
     uint8_t it_to_reload;
     uint8_t it_reloading;
     BulletManager* bullets;
+    CollisionChecks& collisions;
 
     int16_t get_rand_angle();
+    Rectangle get_bullet_hitbox(Duck& status);
     void add_bullet(DuckPlayer& player);
-
+    void explode_grenade();
+    void check_movement();
 public:
-    GunEntity(Gun& gun, BulletManager* bullets);
+    GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);
 
     virtual void start_shooting() {
         it_since_shoot = trigger_pulled ? it_since_shoot : 1;
         trigger_pulled = true;
     }
 
-    virtual void update_bullets(DuckPlayer& player) = 0;
-
     virtual void stop_shooting() {
         trigger_pulled = false;
         it_since_shoot = it_to_shoot;
     }
 
+    virtual void update_bullets(DuckPlayer& player) = 0;
+    void update_status();
+    
+    void trhow(bool facing_right);
     void destroy();
     void set_new_coords(float x, float y);
     Gun get_gun_info();
+    const Rectangle& get_hitbox();
 
     GunEntity(const GunEntity&) = delete;
     GunEntity& operator=(const GunEntity&) = delete;

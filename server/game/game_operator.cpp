@@ -4,6 +4,7 @@
 #include <random>
 #include <utility>
 
+#include "common/commands.h"
 #include "common/map.h"
 #include "common/shared_constants.h"
 
@@ -76,6 +77,12 @@ void GameOperator::process_action(action& action) {
         case StandUp:
             player.stand_up();
             break;
+        case StartLookup:
+            player.face_up();
+            break;
+        case StopLookup:
+            player.stop_face_up();
+            break;
         case Jump:
             player.jump();
             break;
@@ -110,7 +117,7 @@ void GameOperator::update_game_status() {
     }
     // Actualizar la posicion de las balas y vida de los patos si les pegan
     verify_spawn();
-    collectables.move_guns_falling();
+    collectables.update_guns_and_bullets();
 }
 
 GunType GameOperator::get_random_guntype() {
