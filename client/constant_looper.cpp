@@ -72,11 +72,11 @@ void ConstantLooper::run() try {
 
         while (snapshot_q.try_pop(last_snapshot)) {}
 
-        if (last_snapshot.match_finished) {
+        if (last_snapshot.round_finished) {
             keep_running =
                     screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
             if (!keep_running)
-                break;
+                continue;
             clear_renderables();
             process_snapshot();
             map.update(map_dto);

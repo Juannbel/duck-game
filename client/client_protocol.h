@@ -33,7 +33,7 @@ public:
 private:
     void deserialize_snapshot(Snapshot& snapshot);
 
-    bool recv_match_finished(bool& was_closed);
+    bool recv_bool(bool& was_closed);
 
     template <typename T>
     void recv_vector(std::vector<T>& v, bool& was_closed);

@@ -34,6 +34,8 @@ public:
 
     bool between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
                                RenderableMap& map, Camera& camera);
+    
+    bool end_game_screen(Snapshot& last_snapshot, RenderableMap& map, Camera& camera);
 };
 
 #endif
