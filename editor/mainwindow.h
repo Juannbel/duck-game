@@ -25,6 +25,7 @@
 #include "ui_mainwindow.h"
 
 const int TILE_SIZE = 16;
+const int BOX_SIZE = 16;
 const int DUCK_SIZE = 32;
 const int GUN_SIZE = 32;
 const int GUN_INDEX = 4;
@@ -62,7 +63,9 @@ private:
     QPixmap currentBackground;
     QPixmap duckTexture;
     QPixmap gunTexture;
+    QPixmap boxTexture;
 
+    void loadBoxTexture();
     void saveToYaml();
     void loadDuckTexture();
     void loadGunTexture();

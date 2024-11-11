@@ -7,5 +7,6 @@
         <file>background_3.png</file>
         <file>duck_sprite.png</file>
         <file>guns.png</file>
+        <file>boxes.png</file>
     </qresource>
 </RCC>

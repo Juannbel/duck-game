@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget* parent):
     loadTiles();
     loadDuckTexture();    
     loadGunTexture();
+    loadBoxTexture();
     renderGrid();
     updateThemeSelector(map.map_dto.theme);
 
@@ -68,11 +69,18 @@ void MainWindow::loadDuckTexture(){
     duckTexture =
                 duckSprite.copy(0, 0, DUCK_SIZE, DUCK_SIZE);
     
-}    
+}   
+
 void MainWindow::loadGunTexture(){
     QPixmap gunSprite(":/images/guns.png");
     gunTexture =
                 gunSprite.copy(GUN_SIZE * GUN_INDEX , 0, GUN_SIZE, GUN_SIZE);
+}
+
+void MainWindow::loadBoxTexture(){
+    QPixmap boxSprite(":/images/boxes.png");
+    boxTexture =
+                boxSprite.copy(0, 0, BOX_SIZE, BOX_SIZE);
 }
 
 void MainWindow::updateThemeSelector(int themeIndex) {
@@ -96,6 +104,7 @@ void MainWindow::updateThemeSelector(int themeIndex) {
 
     ui->tileSelector->addItem(QIcon(duckTexture), "duck_spawn");
     ui->tileSelector->addItem(QIcon(gunTexture), "collectable_spawn");
+    ui->tileSelector->addItem(QIcon(boxTexture), "collectable_box");
     
     QPixmap backgroundPixmap;
     backgroundPixmap.load(":/images/background_" + QString::number(themeIndex) + ".png");
@@ -163,17 +172,23 @@ void MainWindow::renderGrid() {
         gunItem->setPos(pos.x() * TILE_SIZE, pos.y() * TILE_SIZE);
         gunItem->setScale(0.5); 
     }
+    for(const std::pair<int16_t, int16_t>& boxPos : map.boxes_spawns){
+        QPoint pos(boxPos.first, boxPos.second);
+        QGraphicsPixmapItem* boxItem = scene->addPixmap(boxTexture);
+        boxItem->setPos(pos.x() * TILE_SIZE, pos.y() * TILE_SIZE);
+    }
 }
 
 
 void MainWindow::onItemSelected(int index) {
-    if (index <= static_cast<int>(HalfFloor)) {
-        selectedItemIndex = static_cast<BlockType>(index);
-    } else if (index == static_cast<int>(HalfFloor) + 1) {
-        selectedItemIndex = index;
-    } else if (index == static_cast<int>(HalfFloor) + 2) {
-        selectedItemIndex = index;
-    }
+    // if (index <= static_cast<int>(HalfFloor)) {
+    //     selectedItemIndex = static_cast<BlockType>(index);
+    // } else i (index == static_cast<int>(HalfFloor) + 1) {
+    //     selectedItemIndex = index;
+    // } else if (index == static_cast<int>(HalfFloor) + 2) {
+    //     selectedItemIndex = index;
+    // }
+    selectedItemIndex = index;
 }
 
 bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
@@ -226,6 +241,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
 void MainWindow::on_clear_mapButton_clicked() {
     map.duck_spawns.clear();
     map.collectables_spawns.clear();
+    map.boxes_spawns.clear();
     for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
         for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
             map.map_dto.blocks[i][j] = {Empty, false};
@@ -241,6 +257,9 @@ bool MainWindow::validatePosition(std::pair<int16_t, int16_t> pos, bool check_bl
         return false;
     it = std::find(map.collectables_spawns.begin(), map.collectables_spawns.end(), pos);
     if(it != map.collectables_spawns.end())
+        return false;
+    it = std::find(map.boxes_spawns.begin(), map.boxes_spawns.end(), pos);
+    if(it != map.boxes_spawns.end())
         return false;
     if(check_blocks){
     Block block = map.map_dto.blocks[pos.second][pos.first];
@@ -273,6 +292,13 @@ void MainWindow::onGridClicked(QPoint pos) {
             if(!validatePosition(gridPos, check_blocks))
                 return;
             map.collectables_spawns.push_back(gridPos);
+            renderGrid();
+            return;
+        } else if(selectedItemIndex == static_cast<int>(HalfFloor) + 2){
+            bool check_blocks = true;
+            if(!validatePosition(gridPos, check_blocks))
+                return;
+            map.boxes_spawns.push_back(gridPos);
             renderGrid();
             return;
         }
@@ -313,6 +339,13 @@ void MainWindow::onGridRightClicked(QPoint pos) {
             return;
         }
 
+        auto boxIt = std::find(map.boxes_spawns.begin(), map.boxes_spawns.end(), gridPos);
+        if (boxIt != map.boxes_spawns.end()) {
+            map.boxes_spawns.erase(boxIt);
+            renderGrid();
+            return;
+        }
+
         Block& block = map.map_dto.blocks[gridY][gridX];
         if (block.type != Empty) {
             block.type = Empty;
@@ -337,8 +370,12 @@ void MainWindow::saveToYaml() {
         QMessageBox::warning(this, "Error", "Debe haber 4 spawns de patos.");
         return;
     }
-    if(map.collectables_spawns.size() < 3 ){
+    if(map.collectables_spawns.size() < 2 ){
         QMessageBox::warning(this, "Error", "Debe haber al menos 2 spawns de armas (collectables).");
+        return;
+    }
+    if(map.boxes_spawns.size() < 2 ){
+        QMessageBox::warning(this, "Error", "Debe haber al menos 2 spawns de cajas.");
         return;
     }
 
@@ -357,8 +394,9 @@ void MainWindow::saveToYaml() {
     }
     
     Map saveMap = map;
-    for(int i = 0; i < saveMap.duck_spawns.size() ; i++ ){
-        saveMap.map_dto.duck_spawns[i].second -= 1;
+    int quantity_duck_spawns = static_cast<int>(saveMap.duck_spawns.size());
+    for(int i = 0; i < quantity_duck_spawns ; i++ ){
+        saveMap.duck_spawns[i].second -= 1;
     }
 
     QString filePath = SERVER_DATA_PATH + static_cast<QString>("/") + fileName;
@@ -399,8 +437,9 @@ void MainWindow::on_load_mapButton_clicked() {
         selectedFile = SERVER_DATA_PATH + static_cast<QString>("/") + selectedFile;
 
         Map loaded_map = loader.load_map(selectedFile.toStdString());
-        for(int i = 0; i < loaded_map.duck_spawns.size() ; i++ ){
-            loaded_map.map_dto.duck_spawns[i].second += 1;
+        int quantity_duck_spawns = static_cast<int>(loaded_map.duck_spawns.size());
+        for(int i = 0; i < quantity_duck_spawns ; i++ ){
+            loaded_map.duck_spawns[i].second += 1;
         }
         this->map = loaded_map;
         updateThemeSelector(map.map_dto.theme);
