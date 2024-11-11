@@ -91,8 +91,9 @@ void ServerReceiver::setup_game() {
                 int32_t cmd = protocol.receive_cmd();
                 if (cmd == START_GAME) {
                     break;
-                } else if (cmd == LIST_GAMES) {
-                    std::vector<LobbyInfo> lobbies = games_monitor.list_lobbies();
+                } else if (cmd == GET_INFO) {
+                    std::vector<LobbyInfo> lobbies(1);
+                    lobbies[0] = games_monitor.get_lobby_info(gameId);
                     protocol.send_lobbies_info(lobbies);
                 }
             }

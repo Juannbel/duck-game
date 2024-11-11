@@ -182,6 +182,7 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
     if (ducks_info.size() <= 1) {
         _keep_running = false;
         if (on_game_end_callback) {
+            std::cout << "Game ended" << std::endl;
             on_game_end_callback();
         }
     }

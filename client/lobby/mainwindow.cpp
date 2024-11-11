@@ -5,6 +5,7 @@
 #include <QResource>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <iostream>
 #include <utility>
 #include <vector>
 
@@ -158,14 +159,12 @@ void MainWindow::onStartGameClicked() {
 }
 
 void MainWindow::onRefreshConnectedClicked() {
-    protocol.send_option(LIST_GAMES);
-    std::vector <LobbyInfo> lobbies_info = protocol.recv_lobbies_info();
-    auto it = std::find_if(lobbies_info.begin(), lobbies_info.end(), [this](const LobbyInfo& lobby) {
-        return lobby.game_id == game_id;
-    });
-    if (it != lobbies_info.end()) {
-        ui->gameIdLabel->setText(QString("Game ID: %1 \nConnected players: %2/%3").arg(game_id).arg(it->connected_players).arg(MAX_DUCKS));
+    protocol.send_option(GET_INFO);
+    std::vector<LobbyInfo> lobbies_info = protocol.recv_lobbies_info();
+    if (lobbies_info[0].game_id != game_id) {
+        return;
     }
+    ui->gameIdLabel->setText(QString("Game ID: %1 \nConnected players: %2/%3").arg(game_id).arg(lobbies_info[0].connected_players).arg(MAX_DUCKS));
 }
 
 void MainWindow::onRefreshLobbiesClicked() {
