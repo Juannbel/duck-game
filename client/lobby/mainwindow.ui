@@ -133,9 +133,9 @@
      <colorrole role="AlternateBase">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>15</red>
-        <green>15</green>
-        <blue>23</blue>
+        <red>30</red>
+        <green>30</green>
+        <blue>46</blue>
        </color>
       </brush>
      </colorrole>
@@ -288,9 +288,9 @@
      <colorrole role="AlternateBase">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
-        <red>15</red>
-        <green>15</green>
-        <blue>23</blue>
+        <red>30</red>
+        <green>30</green>
+        <blue>46</blue>
        </color>
       </brush>
      </colorrole>
@@ -499,7 +499,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -572,9 +572,9 @@
       <widget class="QWidget" name="page_2">
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3" stretch="70,15,15">
+         <layout class="QVBoxLayout" name="verticalLayout_3" stretch="10,70,15,15">
           <property name="spacing">
-           <number>20</number>
+           <number>10</number>
           </property>
           <property name="leftMargin">
            <number>50</number>
@@ -589,6 +589,30 @@
            <number>50</number>
           </property>
           <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="refreshLobbiesButton">
+              <property name="text">
+               <string>Refresh</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
            <widget class="QTableWidget" name="lobbiesList">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -596,6 +620,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>true</bool>
+            </attribute>
            </widget>
           </item>
           <item>
@@ -631,9 +658,9 @@
       <widget class="QWidget" name="page_3">
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout" stretch="70,10,20">
+         <layout class="QVBoxLayout" name="verticalLayout" stretch="70,15,20">
           <property name="spacing">
-           <number>20</number>
+           <number>15</number>
           </property>
           <property name="sizeConstraint">
            <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
@@ -661,20 +688,44 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="gameIdLabel">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="10,80,10">
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="gameIdLabel">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>50</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="refreshConnectedButton">
+              <property name="text">
+               <string>Refresh</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QPushButton" name="startGameButton">
