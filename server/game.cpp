@@ -59,7 +59,9 @@ void Game::delete_player(const int id_player) {
     const std::pair<uint8_t, uint8_t> duck_ids = player_to_duck_ids[id_player];
     gameloop.delete_duck(duck_ids.first);
     if (duck_ids.second != INVALID_DUCK_ID) {
-        gameloop.delete_duck(duck_ids.second);
+        if (gameloop.is_alive()) {
+            gameloop.delete_duck(duck_ids.second);
+        }
     }
 }
 
@@ -70,14 +72,6 @@ void Game::set_on_game_end_callback(const std::function<void(int)>& callback) {
 }
 
 Game::~Game() {
-    // limpiar la sv_msg_queues de players que quedan conectados
-    // TODO: aca se le puede avisar a los jugadores que se cerro el juego
-    for (auto& pair: player_to_duck_ids) {
-        Queue<Snapshot>* player_sender_q = sv_msg_queues.remove_element(pair.first);
-        if (player_sender_q) {
-            player_sender_q->close();
-        }
-    }
     gameloop.stop();
     gameloop.join();
 }

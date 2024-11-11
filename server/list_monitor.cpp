@@ -24,7 +24,11 @@ Queue<Snapshot>* QueueListMonitor::remove_element(int player_id) {
 void QueueListMonitor::send_to_every(const Snapshot& status) {
     std::lock_guard<std::mutex> lock(m);
     for (auto& pair: list) {
-        pair.first->try_push(status);
+        try {
+            pair.first->try_push(status);
+        } catch (const ClosedQueue& e) {
+            remove_element(pair.second);
+        }
     }
 }
 

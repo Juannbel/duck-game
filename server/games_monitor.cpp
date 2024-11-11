@@ -36,7 +36,8 @@ std::vector<LobbyInfo> GamesMonitor::list_lobbies() {
     std::lock_guard<std::mutex> lck(m);
     std::vector<LobbyInfo> lobbies;
     for (auto& game: map_games) {
-        if (game.second->is_open()) {
+        Game* game_ptr = game.second;
+        if (game_ptr && game_ptr->is_open()) {
             lobbies.push_back(game.second->get_info());
         }
     }
@@ -71,8 +72,9 @@ Queue<action>* GamesMonitor::get_gameloop_q(const int id_game) {
 
 void GamesMonitor::remove_player(const int id_game, const int id_player) {
     std::lock_guard<std::mutex> lck(m);
-    Game* game = map_games[id_game];
-    game->delete_player(id_player);
+    if (Game* game = map_games[id_game]) {
+        game->delete_player(id_player);
+    }
 }
 
 GamesMonitor::~GamesMonitor() {
