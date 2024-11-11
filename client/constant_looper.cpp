@@ -72,11 +72,11 @@ void ConstantLooper::run() try {
 
         while (snapshot_q.try_pop(last_snapshot)) {}
 
-        if (last_snapshot.match_finished) {
+        if (last_snapshot.round_finished) {
             keep_running =
                     screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
             if (!keep_running)
-                break;
+                continue;
             clear_renderables();
             process_snapshot();
             map.update(map_dto);
@@ -144,6 +144,21 @@ void ConstantLooper::process_snapshot() {
         }
     }
 
+    std::unordered_set<uint32_t> boxes_in_snapshot;
+    for (const Box& box: last_snapshot.boxes) {
+        boxes_in_snapshot.insert(box.box_id);
+        boxes_renderables.try_emplace(box.box_id, std::make_unique<RenderableBox>(box.box_id));
+        boxes_renderables[box.box_id]->update(box);
+    }
+
+    for (auto it = boxes_renderables.begin(); it != boxes_renderables.end();) {
+        if (boxes_in_snapshot.find(it->first) == boxes_in_snapshot.end()) {
+            it = boxes_renderables.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
     std::unordered_set<uint32_t> collectables_in_snapshot;
     for (const Gun& gun: last_snapshot.guns) {
         collectables_in_snapshot.insert(gun.gun_id);
@@ -154,7 +169,7 @@ void ConstantLooper::process_snapshot() {
 
     for (auto it = collectables_renderables.begin(); it != collectables_renderables.end();) {
         if (collectables_in_snapshot.find(it->first) == collectables_in_snapshot.end()) {
-            it = collectables_renderables.erase(it);  // al ser smart pointers se libera la memoria
+            it = collectables_renderables.erase(it);
         } else {
             ++it;
         }
@@ -162,8 +177,6 @@ void ConstantLooper::process_snapshot() {
 
     std::unordered_set<uint32_t> bullets_in_snapshot;
     for (const Bullet& bullet: last_snapshot.bullets) {
-        if (bullet.type == Helmet || bullet.type == Armor)
-            continue;
         bullets_in_snapshot.insert(bullet.bullet_id);
         bullets_renderables.try_emplace(bullet.bullet_id, std::make_unique<RenderableBullet>(
                                                                   bullet.bullet_id, bullet.type));
@@ -183,6 +196,10 @@ void ConstantLooper::render(Camera& camera, RenderableMap& map) {
     renderer.Clear();
 
     map.render(renderer, camera);
+
+    for (auto& box: boxes_renderables) {
+        box.second->render(renderer, camera);
+    }
 
     for (auto& bullet: bullets_renderables) {
         bullet.second->render(renderer, camera);
@@ -243,6 +260,7 @@ void ConstantLooper::clear_renderables() {
     ducks_renderables.clear();
     collectables_renderables.clear();
     bullets_renderables.clear();
+    boxes_renderables.clear();
 }
 
 ConstantLooper::~ConstantLooper() { clear_renderables(); }

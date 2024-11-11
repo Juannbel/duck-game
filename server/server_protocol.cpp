@@ -21,8 +21,8 @@ void ServerProtocol::send_snapshot_vector(const std::vector<T>& vector, bool& wa
         throw SocketWasClosed();
 }
 
-void ServerProtocol::send_match_finished(const bool& match_finished, bool& was_closed) {
-    socket.sendall(&match_finished, sizeof(match_finished), &was_closed);
+void ServerProtocol::send_bool(const bool& b, bool& was_closed) {
+    socket.sendall(&b, sizeof(b), &was_closed);
     if (was_closed)
         throw SocketWasClosed();
 }
@@ -31,7 +31,9 @@ void ServerProtocol::send_snapshot(Snapshot& snapshot) {
     bool was_closed = false;
     serializeSnapshot(snapshot);
 
-    send_match_finished(snapshot.match_finished, was_closed);
+    send_bool(snapshot.round_finished, was_closed);
+    send_bool(snapshot.show_stats, was_closed);
+    send_bool(snapshot.game_finished, was_closed);
     send_snapshot_vector(snapshot.ducks, was_closed);
     send_snapshot_vector(snapshot.guns, was_closed);
     send_snapshot_vector(snapshot.bullets, was_closed);
@@ -73,6 +75,7 @@ void ServerProtocol::serializeSnapshot(Snapshot& snapshot) {
     int boxes_quantity = snapshot.boxes.size();
     for (int i = 0; i < boxes_quantity; i++) {
         Box& box = snapshot.boxes[i];
+        box.box_id = htonl(box.box_id);
         box.x = htons(box.x);
         box.y = htons(box.y);
     }

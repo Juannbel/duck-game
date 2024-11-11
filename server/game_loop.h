@@ -25,8 +25,9 @@ private:
     Queue<struct action>& actions_queue;
     QueueListMonitor& snaps_queue_list;
     GameOperator game_operator;
-    uint8_t match_number;
+    uint8_t round_number;
     bool round_finished;
+    bool game_finished;
     std::map<uint8_t, uint8_t> winners_id_count;
     MapLoader map_loader;
     std::vector<std::string> paths_to_maps;

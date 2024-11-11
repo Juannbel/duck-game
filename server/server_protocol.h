@@ -35,7 +35,7 @@ public:
 private:
     void serializeSnapshot(Snapshot& snapshot);
 
-    void send_match_finished(const bool& match_finished, bool& was_closed);
+    void send_bool(const bool& b, bool& was_closed);
 
     template <typename T>
     void send_snapshot_vector(const std::vector<T>& vector, bool& wasClosed);

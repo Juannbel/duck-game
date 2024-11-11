@@ -9,6 +9,7 @@
 #include "SDL2pp/Renderer.hh"
 #include "SDL2pp/SDL.hh"
 #include "SDL2pp/Window.hh"
+#include "client/renderables/box.h"
 #include "client/renderables/bullet.h"
 #include "client/renderables/collectable.h"
 #include "client/renderables/map.h"
@@ -38,6 +39,7 @@ private:
     MapDto map_dto;
 
     std::unordered_map<uint8_t, std::unique_ptr<RenderableDuck>> ducks_renderables;
+    std::unordered_map<uint32_t, std::unique_ptr<RenderableBox>> boxes_renderables;
     std::unordered_map<uint32_t, std::unique_ptr<RenderableCollectable>> collectables_renderables;
     std::unordered_map<uint32_t, std::unique_ptr<RenderableBullet>> bullets_renderables;
 

@@ -24,19 +24,21 @@ void ClientProtocol::recv_vector(std::vector<T>& v, bool& was_closed) {
         throw SocketWasClosed();
 }
 
-bool ClientProtocol::recv_match_finished(bool& was_closed) {
-    bool match_finished;
-    socket.recvall(&match_finished, sizeof(match_finished), &was_closed);
+bool ClientProtocol::recv_bool(bool& was_closed) {
+    bool b;
+    socket.recvall(&b, sizeof(b), &was_closed);
     if (was_closed)
         throw SocketWasClosed();
-    return match_finished;
+    return b;
 }
 
 Snapshot ClientProtocol::recv_snapshot() {
     bool was_closed = false;
     Snapshot snapshot;
 
-    snapshot.match_finished = recv_match_finished(was_closed);
+    snapshot.round_finished = recv_bool(was_closed);
+    snapshot.show_stats = recv_bool(was_closed);
+    snapshot.game_finished = recv_bool(was_closed);
     recv_vector<Duck>(snapshot.ducks, was_closed);
     recv_vector<Gun>(snapshot.guns, was_closed);
     recv_vector<Bullet>(snapshot.bullets, was_closed);
@@ -75,6 +77,7 @@ void ClientProtocol::deserialize_snapshot(Snapshot& snapshot) {
     int boxes_quantity = snapshot.boxes.size();
     for (int i = 0; i < boxes_quantity; i++) {
         Box& box = snapshot.boxes[i];
+        box.box_id = ntohl(box.box_id);
         box.x = ntohs(box.x);
         box.y = ntohs(box.y);
     }

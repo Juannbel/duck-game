@@ -5,11 +5,11 @@
 #include <vector>
 
 #include "common/snapshot.h"
+#include "server/game/bullet_entity.h"
 #include "server/game/collisions.h"
 
 #include "duck_player.h"
 
-const uint8_t bullet_updates_per_it = 3;
 
 BulletManager::BulletManager(CollisionChecks& collisions,
                              std::unordered_map<uint8_t, DuckPlayer>& ducks):
@@ -20,46 +20,25 @@ void BulletManager::clear_bullets() {
     bullets.clear();
 }
 
-void BulletManager::add_bullet(BulletInfo& bullet) {
+void BulletManager::add_bullet(const Duck& info, int16_t angle, GunType type, uint16_t range) {
     ++bullet_id;
-    bullet.status.bullet_id = bullet_id;
-    bullets[bullet_id] = bullet;
+    bullets.emplace(bullet_id,
+                    BulletEntity(info, collisions, ducks, angle, type, bullet_id, range));
 }
 
-bool BulletManager::check_collision_with_ducks(Rectangle& bullet, uint8_t damage) {
-    for (auto& [id, duck]: ducks) {
-        if (duck.get_hit(bullet, damage)) {
-            return true;
-        }
-    }
-    return false;
+void BulletManager::add_bullet(const Rectangle& info, int16_t angle, GunType type, uint16_t range) {
+    ++bullet_id;
+    bullets.emplace(bullet_id,
+                    BulletEntity(info, collisions, ducks, angle, type, bullet_id, range));
 }
 
 void BulletManager::update_bullets() {
     std::vector<uint32_t> id_to_eliminate;
     for (auto& [id, bullet]: bullets) {
-        Rectangle& hitbox = bullet.hitbox;
-        float angle = static_cast<float>(bullet.status.angle);
-        for (int i = 0; i < bullet_updates_per_it; i++) {
-            float new_x = hitbox.coords.x + (bullet.speed / bullet_updates_per_it) *
-                                                    std::cos(angle * (std::numbers::pi / 180));
-            float new_y = hitbox.coords.y - (bullet.speed / bullet_updates_per_it) *
-                                                    std::sin(angle * (std::numbers::pi / 180));
-            Collision collision = collisions.check_near_blocks_collision(hitbox, new_x, new_y);
-            if (collision.vertical_collision || collision.horizontal_collision ||
-                collisions.out_of_map(new_x, new_y)) {
-                bullet.is_alive = false;
-            }
-            hitbox.coords.x = new_x;
-            hitbox.coords.y = new_y;
-            bool hit = check_collision_with_ducks(hitbox, bullet.damage);
-            if (hit || !bullet.is_alive) {
-                id_to_eliminate.push_back(id);
-                break;
-            }
+        bullet.update_status();
+        if (!bullet.still_alive()) {
+            id_to_eliminate.push_back(id);
         }
-        bullet.status.x = static_cast<int16_t>(hitbox.coords.x);
-        bullet.status.y = static_cast<int16_t>(hitbox.coords.y);
     }
     for (uint32_t id: id_to_eliminate) {
         bullets.erase(id);
@@ -68,6 +47,6 @@ void BulletManager::update_bullets() {
 
 void BulletManager::add_bullets_to_snapshot(Snapshot& snaphot) {
     for (auto& [id, bullet]: bullets) {
-        snaphot.bullets.push_back(bullet.status);
+        snaphot.bullets.push_back(bullet.get_status());
     }
 }

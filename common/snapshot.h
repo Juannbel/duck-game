@@ -81,6 +81,7 @@ struct Bullet {
 enum BoxStatus { NoDamage, LittleDamage, MediumDamage, HeavyDamage };
 
 struct Box {
+    uint32_t box_id;
     int16_t x;
     int16_t y;
     BoxStatus status;
@@ -88,7 +89,9 @@ struct Box {
 
 struct Snapshot {
     // cppcheck-suppress unusedStructMember
-    bool match_finished = true;  // each match has five rounds.
+    bool round_finished = true;  // each match has five rounds.
+    bool show_stats = false;
+    bool game_finished = false;
     std::vector<Duck> ducks;
     std::vector<Gun> guns;
     std::vector<Bullet> bullets;

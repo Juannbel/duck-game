@@ -15,6 +15,7 @@ target_sources(taller_client
     renderables/map.cpp
     renderables/bullet.cpp
     renderables/feathers.cpp
+    renderables/box.cpp
     camera.cpp
     client_protocol.cpp
     client.cpp
@@ -39,6 +40,7 @@ target_sources(taller_client
     renderables/map.h
     renderables/bullet.h
     renderables/feathers.h
+    renderables/box.h
     client_protocol.h
     client.h
     client_receiver.h
