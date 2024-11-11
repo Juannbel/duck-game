@@ -8,8 +8,6 @@
 
 #include "bullets_manager.h"
 
-class DuckPlayer;  // Forward declaration para evitar dependencia circular
-
 class GunEntity {
 protected:
     uint32_t id;
@@ -34,10 +32,11 @@ protected:
     CollisionChecks& collisions;
 
     int16_t get_rand_angle();
-    Rectangle get_bullet_hitbox(Duck& status);
-    void add_bullet(DuckPlayer& player);
-    void explode_grenade();
+    void add_bullet(const Rectangle& player_hb, bool facing_right, bool facing_up);
     void check_movement();
+protected:
+    virtual void explode_grenade() {};
+
 public:
     GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);
 
@@ -51,14 +50,15 @@ public:
         it_since_shoot = it_to_shoot;
     }
 
-    virtual void update_bullets(DuckPlayer& player) = 0;
-    void update_status();
-    
-    void trhow(bool facing_right);
+    virtual bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) = 0;
+    virtual void update_status();
+
+    virtual void trhow(bool facing_right);
     void destroy();
     void set_new_coords(float x, float y);
     Gun get_gun_info();
     const Rectangle& get_hitbox();
+    bool empty() { return ammo == 0; }
 
     GunEntity(const GunEntity&) = delete;
     GunEntity& operator=(const GunEntity&) = delete;

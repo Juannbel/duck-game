@@ -8,7 +8,6 @@
 #include "server/game/bullet_entity.h"
 #include "server/game/collisions.h"
 
-
 #include "duck_player.h"
 
 
@@ -23,13 +22,14 @@ void BulletManager::clear_bullets() {
 
 void BulletManager::add_bullet(const Duck& info, int16_t angle, GunType type, uint16_t range) {
     ++bullet_id;
-    bullets.emplace(bullet_id, BulletEntity(info, collisions, ducks, angle, type, bullet_id, range));
+    bullets.emplace(bullet_id,
+                    BulletEntity(info, collisions, ducks, angle, type, bullet_id, range));
 }
 
 void BulletManager::add_bullet(const Rectangle& info, int16_t angle, GunType type, uint16_t range) {
     ++bullet_id;
-    bullets.emplace(bullet_id, BulletEntity(info, collisions, ducks, angle, type, bullet_id, range));
-
+    bullets.emplace(bullet_id,
+                    BulletEntity(info, collisions, ducks, angle, type, bullet_id, range));
 }
 
 void BulletManager::update_bullets() {

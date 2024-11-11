@@ -4,6 +4,7 @@
 #include <cstring>
 #include <memory>
 #include <string>
+
 #include <sys/types.h>
 
 #include "common/snapshot.h"
@@ -81,7 +82,7 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
 Collision DuckPlayer::move_sliding() {
     float new_x = hitbox.coords.x;
     float new_y = hitbox.coords.y;
-    new_x = status.facing_right ? new_x + DUCK_SPEED*1.5 : new_x - DUCK_SPEED*1.5;
+    new_x = status.facing_right ? new_x + DUCK_SPEED * 1.5 : new_x - DUCK_SPEED * 1.5;
     if (status.is_falling) {
         float move_y = FALL_SPEED;
         new_y += move_y;
@@ -127,7 +128,6 @@ Collision DuckPlayer::normal_duck_move() {
         new_y -= move_y;
     }
     return collisions.check_near_blocks_collision(hitbox, new_x, new_y);
-
 }
 
 void DuckPlayer::move_duck() {
@@ -137,8 +137,7 @@ void DuckPlayer::move_duck() {
     Collision collision{};
     if (it_sliding) {
         collision = move_sliding();
-    }
-    else {
+    } else {
         collision = normal_duck_move();
     }
 
@@ -174,7 +173,23 @@ void DuckPlayer::stop_shooting() {
 void DuckPlayer::update_gun_status() {
     if (!equipped_gun)
         return;
-    equipped_gun->update_bullets(*this);
+    if (equipped_gun->update_bullets(hitbox, status.facing_right, status.facing_up)) {
+        GunType g_type = equipped_gun->get_gun_info().type;
+        switch (g_type) {
+            case Armor:
+                equip_armor();
+                break;
+            case Helmet:
+                equip_helmet();
+                break;
+            default:
+                knockback();
+                break;
+        }
+    }
+    if(equipped_gun && equipped_gun->empty()) {
+        drop_collectable();
+    }
 }
 
 void DuckPlayer::equip_armor() {
@@ -216,9 +231,7 @@ void DuckPlayer::face_up() {
     status.facing_up = true;
 }
 
-void DuckPlayer::stop_face_up() {
-    status.facing_up = false;
-}
+void DuckPlayer::stop_face_up() { status.facing_up = false; }
 
 void DuckPlayer::jump() {
     if (!ready_to_jump || status.is_jumping || status.is_laying) {
@@ -268,6 +281,8 @@ void DuckPlayer::slide() {
     status.is_flapping = false;
 }
 
+void DuckPlayer::knockback() {}
+
 uint32_t DuckPlayer::drop_and_pickup() {
     stop_shooting();
     std::shared_ptr<GunEntity> new_gun = collectables.pickup(hitbox);
@@ -297,9 +312,12 @@ void DuckPlayer::drop_collectable() {
 Duck DuckPlayer::get_status() {
     Duck status_copy = this->status;
     status.is_damaged = false;
+    if (equipped_gun) 
+        status.gun = equipped_gun->get_gun_info().type;
+    else 
+        status.gun = None;
+
     return status_copy;
 }
 
-const Coordenades& DuckPlayer::get_coords() {
-    return hitbox.coords;
-}
+const Coordenades& DuckPlayer::get_coords() { return hitbox.coords; }

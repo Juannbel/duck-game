@@ -24,7 +24,7 @@ void GameOperator::load_map(const Map& map_info) {
         Spawn act_spawn{static_cast<int16_t>(coords.first * BLOCK_SIZE),
                         static_cast<int16_t>(coords.second * BLOCK_SIZE),
                         0,
-                        100,
+                        0,
                         true,
                         0};
         spawns.push_back(act_spawn);
@@ -38,8 +38,6 @@ void GameOperator::initialize_players(
     for (auto& duck: ducks_info) {
         DuckPlayer player(collectables, collisions, spawn_points[duck.first].first * BLOCK_SIZE,
                           spawn_points[duck.first].second * BLOCK_SIZE, duck.first, duck.second);
-        // player.set_coordenades_and_id(spawn_points[duck.first].first,
-        // spawn_points[duck.first].second, duck.first); player.set_player_name(duck.second);
         players.emplace(duck.first, std::move(player));
     }
 }
@@ -98,15 +96,16 @@ void GameOperator::process_action(action& action) {
 }
 
 void GameOperator::check_spawn_picked(uint32_t id) {
-    if (id > 0) {
-        for (auto& spawn: spawns) {
-            if (spawn.collectable_id == id) {
-                spawn.picked = true;
-                spawn.collectable_id = 0;
-                spawn.it_since_picked = 0;
-                spawn.it_to_spawn = COLLECTABLE_SPAWN_IT + rand() % COLLECTABLE_EXTRA_SPAWN_TIME;
-            }
-        }
+    if (id == 0) 
+        return;
+    for (auto& spawn: spawns) {
+        if (spawn.collectable_id != id) 
+            continue;
+        spawn.picked = true;
+        spawn.collectable_id = 0;
+        spawn.it_since_picked = 0;
+        spawn.it_to_spawn = COLLECTABLE_SPAWN_IT + rand() % COLLECTABLE_EXTRA_SPAWN_TIME;
+        
     }
 }
 
@@ -115,7 +114,6 @@ void GameOperator::update_game_status() {
         duck.move_duck();
         duck.update_gun_status();
     }
-    // Actualizar la posicion de las balas y vida de los patos si les pegan
     verify_spawn();
     collectables.update_guns_and_bullets();
 }

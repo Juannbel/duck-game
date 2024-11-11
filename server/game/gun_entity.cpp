@@ -7,6 +7,7 @@
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
+
 #include "ticks.h"
 
 const float GUN_FALL_SPEED = 120.0f / TICKS;
@@ -34,13 +35,12 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
         it_to_reload(),
         it_reloading(),
         bullets(bullets),
-        collisions(collisions) 
-        {
-            hitbox.coords.x = gun.x;
-            hitbox.coords.y = gun.y;
-            hitbox.height = COLLECTABLE_HITBOX_HEIGHT;
-            hitbox.width = COLLECTABLE_HITBOX_WIDTH;
-        }
+        collisions(collisions) {
+    hitbox.coords.x = gun.x;
+    hitbox.coords.y = gun.y;
+    hitbox.height = COLLECTABLE_HITBOX_HEIGHT;
+    hitbox.width = COLLECTABLE_HITBOX_WIDTH;
+}
 
 int16_t GunEntity::get_rand_angle() {
     if (inaccuracy == 0)
@@ -51,14 +51,20 @@ int16_t GunEntity::get_rand_angle() {
     return static_cast<int16_t>(dis(gen));
 }
 
-void GunEntity::add_bullet(DuckPlayer& player) {
+void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if ((trigger_pulled && it_since_shoot > it_to_shoot) ||
         (bullets_to_shoot > shooted_bullets && shooted_bullets > 0)) {
-        const Duck& status = player.get_status();
-        int16_t angle = status.facing_right ? 0 : 180;
-        angle = status.facing_up ? 90 : angle;
+        int16_t angle = facing_right ? 0 : 180;
+        angle = facing_up ? 90 : angle;
         angle += get_rand_angle();
-        bullets->add_bullet(status, angle, type, range);
+        Rectangle b_hb{};
+        b_hb.coords.x =
+            facing_right ? player_hb.coords.x + DUCK_HITBOX_WIDTH + 1 : player_hb.coords.x - BULLET_HITBOX_WIDTH - 1;
+        b_hb.coords.y =
+                facing_up ? player_hb.coords.y - BULLET_HITBOX_HEIGHT - 1 : player_hb.coords.y + DUCK_LAYED_HITBOX_HEIGHT;
+        hitbox.height = BULLET_HITBOX_HEIGHT;
+        hitbox.width = BULLET_HITBOX_WIDTH;
+        bullets->add_bullet(b_hb, angle, type, range);
         it_since_shoot = 0;
         it_reloading = 0;
         ++shooted_bullets;
@@ -80,50 +86,33 @@ void GunEntity::add_bullet(DuckPlayer& player) {
 void GunEntity::check_movement() {
     float new_x = hitbox.coords.x;
     if (it_mooving) {
-        float move_x = GUN_THROW_SPEED * (static_cast<float>(it_mooving) / (static_cast<float>(TICKS)/2));
+        float move_x = GUN_THROW_SPEED *
+                       (static_cast<float>(it_mooving) / (static_cast<float>(TICKS) / 2));
         new_x = facing_right ? new_x + move_x : new_x - move_x;
         --it_mooving;
     }
     float new_y = hitbox.coords.y + GUN_FALL_SPEED;
-    hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position;
-    hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, hitbox.coords.y).last_valid_position;
-}
-
-void GunEntity::explode_grenade() {
-    Rectangle hb = hitbox;
-    hb.height = BULLET_HITBOX_HEIGHT;
-    hb.width = BULLET_HITBOX_WIDTH;
-    for (int i = 0; i < 30; ++i) {
-        int16_t angle = 0;
-        angle += get_rand_angle();
-        bullets->add_bullet(hb, angle, type, range);
+    Coordenades new_coords =
+            collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position;
+    if (new_coords.y >= hitbox.coords.y) {
+        hitbox.coords = new_coords;
+        hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, hitbox.coords.y)
+                                .last_valid_position;
+    } else if (it_mooving) {  // Si fue lanzada adentro de una pared la saco 1/3 de su ancho para
+                              // ver si se desbuggea
+        hitbox.coords.x = new_x > hitbox.coords.x ? hitbox.coords.x - hitbox.width / 3 :
+                                                    hitbox.coords.x + hitbox.width / 3;
+        it_mooving = 0;
     }
-    destroy();
 }
 
 void GunEntity::update_status() {
     check_movement();
-    if (type == Grenade) {
-        if (it_since_shoot == it_to_shoot) {
-            explode_grenade();
-        } else if(trigger_pulled) {
-            ++it_since_shoot;
-        }
-    }
 }
 
 void GunEntity::trhow(bool facing_right) {
     this->facing_right = facing_right;
     it_mooving = TICKS / 2;
-    if (it_since_shoot > 0 && type == Banana) {
-        Rectangle b_hitbox = hitbox;
-        b_hitbox.height = BULLET_HITBOX_HEIGHT;
-        b_hitbox.width = BULLET_HITBOX_WIDTH;
-        b_hitbox.coords.x = facing_right ? b_hitbox.coords.x + DUCK_HITBOX_WIDTH + 2 : b_hitbox.coords.x - BULLET_HITBOX_WIDTH - 2;
-        int16_t angle = facing_right ? 0 : 180;
-        bullets->add_bullet(b_hitbox, angle, type, range);
-        destroy();
-    }
 }
 
 void GunEntity::destroy() {
@@ -137,16 +126,12 @@ void GunEntity::destroy() {
 void GunEntity::set_new_coords(float x, float y) {
     hitbox.coords.x = x;
     hitbox.coords.y = y;
-    if (type == Banana && it_since_shoot > 0) {
-        hitbox.coords.x = facing_right ? hitbox.coords.x + DUCK_HITBOX_WIDTH + 1 : hitbox.coords.x - BULLET_HITBOX_WIDTH - 1;
-    }
 }
 
 Gun GunEntity::get_gun_info() {
-    Gun gun_info = {id, type, static_cast<int16_t>(hitbox.coords.x), static_cast<int16_t>(hitbox.coords.y)};
+    Gun gun_info = {id, type, static_cast<int16_t>(hitbox.coords.x),
+                    static_cast<int16_t>(hitbox.coords.y)};
     return gun_info;
 }
 
-const Rectangle& GunEntity::get_hitbox() {
-    return hitbox;
-}
+const Rectangle& GunEntity::get_hitbox() { return hitbox; }

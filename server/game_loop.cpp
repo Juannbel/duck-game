@@ -3,7 +3,6 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
-#include <iostream>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -29,7 +28,7 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         curr_map(),
         ducks_info() {}
 
-std::string get_rand_string(std::vector<std::string>& v_strings) {
+std::string get_rand_string(const std::vector<std::string>& v_strings) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, v_strings.size() - 1);  // 0 es None
@@ -133,7 +132,7 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
     }
     uint8_t winner_id;
     uint8_t players_alive = 0;
-    for (auto& duck: actual_status.ducks) {
+    for (auto const& duck: actual_status.ducks) {
         if (!duck.is_dead) {
             winner_id = duck.duck_id;
             ++players_alive;
@@ -149,7 +148,7 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
         --round_number;
     }
     if (round_number == 0) {
-        for (auto& [id, count] : winners_id_count) {
+        for (auto& [id, count]: winners_id_count) {
             uint8_t max_winner = 10;
             if (count >= max_winner) {
                 if (game_finished && count == max_winner) {
