@@ -26,9 +26,12 @@
 
 const int TILE_SIZE = 16;
 const int BOX_SIZE = 16;
+const int BOX_SPAWN_INDEX = 14;
 const int DUCK_SIZE = 32;
+const int DUCK_SPAWN_INDEX = 12;
 const int GUN_SIZE = 32;
-const int GUN_INDEX = 4;
+const int COLLECTABLE_SPAWN_INDEX = 13;
+const int AK47_POSITION = 4;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -44,38 +47,43 @@ public:
     ~MainWindow();
 
 private slots:
-    void onItemSelected(int index);
     void onGridClicked(QPoint pos);
-    void on_save_mapButton_clicked();
-    void on_load_mapButton_clicked();
+    void on_saveMapButton_clicked();
+    void on_loadMapButton_clicked();
     void onGridRightClicked(QPoint pos);
-    void on_clear_mapButton_clicked();
+    void on_clearMapButton_clicked();
+    void on_tileSelector_currentIndexChanged(int index);
+    void on_themeSelector_currentIndexChanged(int themeIndex);
 
 private:
     Ui::MainWindow* ui;
-    QGraphicsScene* scene;
+    QGraphicsScene* scene; 
+    Map map;
+    MapLoader loader;
+    
     QVector<QPixmap> grassTextures;
     int selectedItemIndex = 0;
     QMap<int, QVector<QIcon>> themeTiles;
-    Map map;
+    static std::unordered_map<BlockType, QString> blockToString;
+   
     QPoint lastProcessedTile = QPoint(-1, -1);
-    MapLoader loader;
+    
     QPixmap currentBackground;
     QPixmap duckTexture;
     QPixmap gunTexture;
     QPixmap boxTexture;
 
     void loadBoxTexture();
-    void saveToYaml();
     void loadDuckTexture();
-    void loadGunTexture();
-    void updateThemeSelector(int themeIndex);
-    void loadThemeTiles(uint8_t theme);
+    void loadGunTexture();    
     void loadTiles();
+    void loadThemeTiles(uint8_t theme);
+
+    void updateThemeSelected(int theme);
     void renderGrid();
-    void placeTile(int x, int y, BlockType block_type, bool solid);
+    void placeTile(int x, int y, BlockType blockType, bool solid);
     bool eventFilter(QObject* watched, QEvent* event) override;
-    bool validatePosition(std::pair<int16_t, int16_t> pos, bool check_blocks);
+    bool validatePosition(std::pair<int16_t, int16_t> pos, bool checkBlocks);
 };
 
 #endif  // MAINWINDOW_H

@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-
 #include <QInputDialog>
 #include <iostream>
 
@@ -23,11 +22,10 @@ MainWindow::MainWindow(QWidget* parent):
     loadGunTexture();
     loadBoxTexture();
     renderGrid();
-    updateThemeSelector(map.map_dto.theme);
-
-    connect(ui->tileSelector, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-            &MainWindow::onItemSelected);
-
+    updateThemeSelected(map.map_dto.theme);
+    ui->saveMapButton->setIcon(QIcon::fromTheme("document-save"));
+    ui->loadMapButton->setIcon(QIcon::fromTheme("document-open"));
+    ui->clearMapButton->setIcon(QIcon::fromTheme("edit-delete"));
     ui->graphicsView->setMouseTracking(true);
     ui->graphicsView->viewport()->installEventFilter(this);
     ui->graphicsView->setRenderHint(QPainter::Antialiasing, true);
@@ -47,8 +45,6 @@ void MainWindow::loadTiles() {
         loadThemeTiles(i);
     }
 
-    connect(ui->themeSelector, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-            &MainWindow::updateThemeSelector);
 }
 
 void MainWindow::loadThemeTiles(uint8_t theme) {
@@ -74,7 +70,7 @@ void MainWindow::loadDuckTexture(){
 void MainWindow::loadGunTexture(){
     QPixmap gunSprite(":/images/guns.png");
     gunTexture =
-                gunSprite.copy(GUN_SIZE * GUN_INDEX , 0, GUN_SIZE, GUN_SIZE);
+                gunSprite.copy(GUN_SIZE * AK47_POSITION , 0, GUN_SIZE, GUN_SIZE);
 }
 
 void MainWindow::loadBoxTexture(){
@@ -83,29 +79,27 @@ void MainWindow::loadBoxTexture(){
                 boxSprite.copy(0, 0, BOX_SIZE, BOX_SIZE);
 }
 
-void MainWindow::updateThemeSelector(int themeIndex) {
-    ui->tileSelector->clear();
+std::unordered_map<BlockType, QString> MainWindow::blockToString = {
+        {Empty, "empty"},          {Floor1, "floor_1"},       {Floor2, "floor_2"},
+        {Floor3, "floor_3"},       {Base1, "base_1"},         {Base2, "base_2"},
+        {Base3, "base_3"},         {Platform1, "platform_1"}, {Platform2, "platform_2"},
+        {Platform3, "platform_3"}, {Platform4, "platform_4"}, {Wall, "wall"},
+        {HalfFloor, "half_floor"}};
 
-    // cambiar
-    std::unordered_map<BlockType, QString> block_to_string = {
-            {Empty, "empty"},          {Floor1, "floor_1"},       {Floor2, "floor_2"},
-            {Floor3, "floor_3"},       {Base1, "base_1"},         {Base2, "base_2"},
-            {Base3, "base_3"},         {Platform1, "platform_1"}, {Platform2, "platform_2"},
-            {Platform3, "platform_3"}, {Platform4, "platform_4"}, {Wall, "wall"},
-            {HalfFloor, "half_floor"}};
+void MainWindow::updateThemeSelected(int themeIndex) {
+    ui->tileSelector->clear();
 
     if (themeTiles.contains(themeIndex)) {
         auto& tiles = themeTiles[themeIndex];
         for (int i = 0; i < static_cast<int>(HalfFloor); i++) {
-            ui->tileSelector->addItem(tiles[i], block_to_string[static_cast<BlockType>(i+1)]);
+            ui->tileSelector->addItem(tiles[i], blockToString[static_cast<BlockType>(i+1)]);
         }
-        map.map_dto.theme = themeIndex;
     }
 
     ui->tileSelector->addItem(QIcon(duckTexture), "duck_spawn");
     ui->tileSelector->addItem(QIcon(gunTexture), "collectable_spawn");
     ui->tileSelector->addItem(QIcon(boxTexture), "collectable_box");
-    
+
     QPixmap backgroundPixmap;
     backgroundPixmap.load(":/images/background_" + QString::number(themeIndex) + ".png");
 
@@ -179,18 +173,6 @@ void MainWindow::renderGrid() {
     }
 }
 
-
-void MainWindow::onItemSelected(int index) {
-    // if (index <= static_cast<int>(HalfFloor)) {
-    //     selectedItemIndex = static_cast<BlockType>(index);
-    // } else i (index == static_cast<int>(HalfFloor) + 1) {
-    //     selectedItemIndex = index;
-    // } else if (index == static_cast<int>(HalfFloor) + 2) {
-    //     selectedItemIndex = index;
-    // }
-    selectedItemIndex = index;
-}
-
 bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
     if (watched == ui->graphicsView->viewport()) {
         if (event->type() == QEvent::Wheel) {
@@ -238,7 +220,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
     return QMainWindow::eventFilter(watched, event);
 }
 
-void MainWindow::on_clear_mapButton_clicked() {
+void MainWindow::on_clearMapButton_clicked() {
     map.duck_spawns.clear();
     map.collectables_spawns.clear();
     map.boxes_spawns.clear();
@@ -276,7 +258,7 @@ void MainWindow::onGridClicked(QPoint pos) {
     if (gridX >= 0 && gridX < MAP_WIDTH_BLOCKS && gridY >= 0 && gridY < MAP_HEIGHT_BLOCKS) {
         std::pair<int16_t, int16_t> gridPos = std::pair<int16_t, int16_t>(gridX, gridY);
 
-        if(selectedItemIndex == static_cast<int>(HalfFloor)){ //pato
+        if(selectedItemIndex == DUCK_SPAWN_INDEX){
             if(map.duck_spawns.size() >= 4){
                 QMessageBox::warning(this, "Error", "Ya hay 4 spawns de patos.");
                 return;
@@ -287,14 +269,14 @@ void MainWindow::onGridClicked(QPoint pos) {
             map.duck_spawns.push_back(gridPos);
             renderGrid();
             return;
-        } else if(selectedItemIndex == static_cast<int>(HalfFloor) + 1){
+        } else if(selectedItemIndex == COLLECTABLE_SPAWN_INDEX){
             bool check_blocks = true;
             if(!validatePosition(gridPos, check_blocks))
                 return;
             map.collectables_spawns.push_back(gridPos);
             renderGrid();
             return;
-        } else if(selectedItemIndex == static_cast<int>(HalfFloor) + 2){
+        } else if(selectedItemIndex == BOX_SPAWN_INDEX){
             bool check_blocks = true;
             if(!validatePosition(gridPos, check_blocks))
                 return;
@@ -362,9 +344,7 @@ void MainWindow::placeTile(int x, int y, BlockType blockType, bool solid) {
     
 }
 
-void MainWindow::on_save_mapButton_clicked() { saveToYaml(); }
-
-void MainWindow::saveToYaml() {
+void MainWindow::on_saveMapButton_clicked() {
 
     if(map.duck_spawns.size() != 4 ){
         QMessageBox::warning(this, "Error", "Debe haber 4 spawns de patos.");
@@ -405,7 +385,7 @@ void MainWindow::saveToYaml() {
 }
 
 
-void MainWindow::on_load_mapButton_clicked() {
+void MainWindow::on_loadMapButton_clicked() {
     QDialog dialog(this);
     dialog.setWindowTitle("Select map to load");
 
@@ -442,10 +422,25 @@ void MainWindow::on_load_mapButton_clicked() {
             loaded_map.duck_spawns[i].second += 1;
         }
         this->map = loaded_map;
-        updateThemeSelector(map.map_dto.theme);
+        updateThemeSelected(map.map_dto.theme);
         renderGrid();
         dialog.accept();
     });
 
     dialog.exec();
 }
+
+void MainWindow::on_tileSelector_currentIndexChanged(int index)
+{
+    selectedItemIndex = index;
+}
+
+
+void MainWindow::on_themeSelector_currentIndexChanged(int themeIndex)
+{
+    if (themeTiles.contains(themeIndex)) {
+        map.map_dto.theme = themeIndex;
+    }
+    updateThemeSelected(map.map_dto.theme);
+}
+
