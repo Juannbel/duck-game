@@ -31,7 +31,7 @@ void ServerReceiver::run() {
     // Ya tengo todo, lanzo thread sender
     sender.start();
 
-    while (_keep_running) {
+    while (_keep_running && is_alive) {
         action action;
         try {
             action = protocol.recv_player_action();
@@ -41,7 +41,9 @@ void ServerReceiver::run() {
             break;
         } catch (const SocketWasClosed& e) {
             // TODO: Ver donde va ubicado esto (remove_player)
-            games_monitor.remove_player(gameId, playerId);
+            if (is_alive) {
+                games_monitor.remove_player(gameId, playerId);
+            }
             std::cout << "Client dissconected" << std::endl;
             break;
         }
