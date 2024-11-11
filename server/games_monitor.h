@@ -33,6 +33,8 @@ public:
 
     std::vector<LobbyInfo> list_lobbies();
 
+    LobbyInfo get_lobby_info(int id_game);
+
     Queue<action>* get_gameloop_q(int id_game);
 
     void remove_player(int id_game, int id_player);

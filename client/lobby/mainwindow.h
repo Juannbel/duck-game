@@ -18,7 +18,7 @@ class MainWindow: public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids);
+    MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids, bool& ready_to_play);
     ~MainWindow();
 
 private slots:
@@ -29,6 +29,8 @@ private slots:
     void onStartGameClicked();
     void onCreateGameConfirmed();
     void onJoinGameConfirmed();
+    void onRefreshConnectedClicked();
+    void onRefreshLobbiesClicked();
 
 private:
     Ui::MainWindow* ui;
@@ -36,8 +38,8 @@ private:
     std::pair<uint8_t, uint8_t>& duck_ids;
     std::vector<LobbyInfo> lobbies_info;
     int selected_lobby_row = -1;
-
-    void updateLobbyList();
+    int32_t game_id = -1;
+    bool& ready_to_play;
 };
 
 #endif  // MAINWINDOW_H

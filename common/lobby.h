@@ -10,6 +10,8 @@
 #define LIST_GAMES 1
 #define CREATE_GAME 2
 #define JOIN_GAME 3
+#define START_GAME 4
+#define GET_INFO 5
 
 struct GameInfo {
     int32_t game_id;

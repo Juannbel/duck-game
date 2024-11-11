@@ -9,7 +9,7 @@
 #include "map_dto.h"
 
 #define MAX_DUCKS 4
-#define MAX_PLAYER_NAME 32
+#define MAX_PLAYER_NAME 16
 #define MAX_GUNS 32
 #define MAX_BULLETS 128
 
