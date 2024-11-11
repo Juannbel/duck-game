@@ -51,14 +51,20 @@ int16_t GunEntity::get_rand_angle() {
     return static_cast<int16_t>(dis(gen));
 }
 
-void GunEntity::add_bullet(DuckPlayer& player) {
+void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if ((trigger_pulled && it_since_shoot > it_to_shoot) ||
         (bullets_to_shoot > shooted_bullets && shooted_bullets > 0)) {
-        const Duck& status = player.get_status();
-        int16_t angle = status.facing_right ? 0 : 180;
-        angle = status.facing_up ? 90 : angle;
+        int16_t angle = facing_right ? 0 : 180;
+        angle = facing_up ? 90 : angle;
         angle += get_rand_angle();
-        bullets->add_bullet(status, angle, type, range);
+        Rectangle b_hb{};
+        b_hb.coords.x =
+            facing_right ? player_hb.coords.x + DUCK_HITBOX_WIDTH + 1 : player_hb.coords.x - BULLET_HITBOX_WIDTH - 1;
+        b_hb.coords.y =
+                facing_up ? player_hb.coords.y - BULLET_HITBOX_HEIGHT - 1 : player_hb.coords.y + DUCK_LAYED_HITBOX_HEIGHT;
+        hitbox.height = BULLET_HITBOX_HEIGHT;
+        hitbox.width = BULLET_HITBOX_WIDTH;
+        bullets->add_bullet(b_hb, angle, type, range);
         it_since_shoot = 0;
         it_reloading = 0;
         ++shooted_bullets;
@@ -107,16 +113,6 @@ void GunEntity::update_status() {
 void GunEntity::trhow(bool facing_right) {
     this->facing_right = facing_right;
     it_mooving = TICKS / 2;
-    if (it_since_shoot > 0 && type == Banana) {
-        Rectangle b_hitbox = hitbox;
-        b_hitbox.height = BULLET_HITBOX_HEIGHT;
-        b_hitbox.width = BULLET_HITBOX_WIDTH;
-        b_hitbox.coords.x = facing_right ? b_hitbox.coords.x + DUCK_HITBOX_WIDTH + 2 :
-                                           b_hitbox.coords.x - BULLET_HITBOX_WIDTH - 2;
-        int16_t angle = facing_right ? 0 : 180;
-        bullets->add_bullet(b_hitbox, angle, type, range);
-        destroy();
-    }
 }
 
 void GunEntity::destroy() {

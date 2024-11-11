@@ -42,7 +42,7 @@ BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_cke
                            GunType type, uint32_t id, uint16_t range):
         status(),
         hitbox(info),
-        speed(9),
+        speed(12),
         damage(50),
         range(range),
         is_alive(true),

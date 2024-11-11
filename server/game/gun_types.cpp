@@ -4,7 +4,6 @@
 
 #include "common/shared_constants.h"
 
-#include "duck_player.h"
 #include "ticks.h"
 
 const uint8_t AK_CD = TICKS / 6;
@@ -18,15 +17,17 @@ GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions
 }
 
 void GrenadeG::stop_shooting() {}
-void GrenadeG::update_bullets(DuckPlayer& player) {
-    hitbox.coords = player.get_coords();
+bool GrenadeG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    (void) facing_right;
+    (void) facing_up;
+    hitbox.coords = player_hb.coords;
     if (it_since_shoot == it_to_shoot) {
         explode_grenade();
-        player.drop_collectable();
     }
     if (trigger_pulled && it_since_shoot < it_to_shoot) {
         ++it_since_shoot;
     }
+    return false;
 }
 void GrenadeG::update_status() {
     check_movement();
@@ -59,7 +60,12 @@ BananaG::BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 }
 
 // void BananaG::start_shooting() {}
-void BananaG::update_bullets(DuckPlayer& player) { hitbox.coords = player.get_coords(); }
+bool BananaG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) { 
+    (void) facing_right;
+    (void) facing_up;
+    hitbox.coords = player_hb.coords;
+    return false; 
+}
 
 void BananaG::trhow(bool facing_right) {
     this->facing_right = facing_right;
@@ -91,12 +97,11 @@ PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& co
 
 // void PewPewLaserG::start_shooting() { trigger_pulled = true; }
 // void PewPewLaserG::stop_shooting() { trigger_pulled = false; }
-void PewPewLaserG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) {
-        player.drop_collectable();
-        return;
+bool PewPewLaserG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    if (ammo > 0) {
+        add_bullet(player_hb, facing_right, facing_up);
     }
-    add_bullet(player);
+    return false;
 }
 
 
@@ -114,12 +119,11 @@ LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets, CollisionChecks& coll
 
 
 // void LaserRifleG::start_shooting() {}
-void LaserRifleG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) {
-        player.drop_collectable();
-        return;
+bool LaserRifleG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    if (ammo > 0) {
+        add_bullet(player_hb, facing_right,facing_up);
     }
-    add_bullet(player);
+    return false;
 }
 // void LaserRifleG::stop_shooting() {}
 
@@ -144,12 +148,11 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 //     trigger_pulled = false;
 // }
 
-void Ak47G::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) {
-        player.drop_collectable();
-        return;
+bool Ak47G::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    if (ammo > 0) {
+        add_bullet(player_hb, facing_right,facing_up);
     }
-    add_bullet(player);
+    return false;
 }
 
 
@@ -166,12 +169,11 @@ DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets, CollisionChecks
 
 // void DuelingPistolG::start_shooting() {}
 // void DuelingPistolG::stop_shooting() {}
-void DuelingPistolG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) {
-        player.drop_collectable();
-        return;
+bool DuelingPistolG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    if (ammo > 0) {
+        add_bullet(player_hb, facing_right,facing_up);
     }
-    add_bullet(player);
+    return false;
 }
 
 
@@ -188,12 +190,11 @@ CowboyPistolG::CowboyPistolG(Gun& gun, BulletManager* bullets, CollisionChecks& 
 
 // void CowboyPistolG::start_shooting() {}
 // void CowboyPistolG::stop_shooting() {}
-void CowboyPistolG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) {
-        player.drop_collectable();
-        return;
+bool CowboyPistolG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    if (ammo > 0) {
+        add_bullet(player_hb, facing_right,facing_up);
     }
-    add_bullet(player);
+    return false;
 }
 
 MagnumG::MagnumG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
@@ -209,12 +210,11 @@ MagnumG::MagnumG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 
 // void MagnumG::start_shooting() {}
 // void MagnumG::stop_shooting() {}
-void MagnumG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) {
-        player.drop_collectable();
-        return;
+bool MagnumG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    if (ammo > 0) {
+        add_bullet(player_hb, facing_right,facing_up);
     }
-    add_bullet(player);
+    return false;
 }
 
 ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
@@ -231,14 +231,13 @@ ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
 
 // void ShootgunG::start_shooting() {}
 // void ShootgunG::stop_shooting() {}
-void ShootgunG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) {
-        player.drop_collectable();
-        return;
+bool ShootgunG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    if (ammo > 0) {
+        for (int i = 0; i < 6; ++i) {
+            add_bullet(player_hb, facing_right,facing_up);
+        }
     }
-    for (int i = 0; i < 6; ++i) {
-        add_bullet(player);
-    }
+    return false;
 }
 
 SniperG::SniperG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
@@ -252,12 +251,11 @@ SniperG::SniperG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 
 // void SniperG::start_shooting() {}
 // void SniperG::stop_shooting() {}
-void SniperG::update_bullets(DuckPlayer& player) {
-    if (ammo == 0) {
-        player.drop_collectable();
-        return;
+bool SniperG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    if (ammo > 0) {
+        add_bullet(player_hb, facing_right,facing_up);
     }
-    add_bullet(player);
+    return false;
 }
 
 HelmetG::HelmetG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
@@ -267,10 +265,14 @@ HelmetG::HelmetG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 
 // void HelmetG::start_shooting() {}
 // void HelmetG::stop_shooting() {}
-void HelmetG::update_bullets(DuckPlayer& player) {
+bool HelmetG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    (void) player_hb;
+    (void) facing_right;
+    (void) facing_up;
     if (trigger_pulled && ammo == 1) {
-        player.equip_helmet();
+        return true;
     }
+    return false; 
 }
 
 ArmorG::ArmorG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
@@ -280,8 +282,12 @@ ArmorG::ArmorG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 
 // void ArmorG::start_shooting() {}
 // void ArmorG::stop_shooting() {}
-void ArmorG::update_bullets(DuckPlayer& player) {
+bool ArmorG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    (void) player_hb;
+    (void) facing_right;
+    (void) facing_up;
     if (trigger_pulled && ammo == 1) {
-        player.equip_armor();
+        return true;
     }
+    return false; 
 }

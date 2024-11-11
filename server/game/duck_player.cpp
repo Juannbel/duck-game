@@ -172,7 +172,23 @@ void DuckPlayer::stop_shooting() {
 void DuckPlayer::update_gun_status() {
     if (!equipped_gun)
         return;
-    equipped_gun->update_bullets(*this);
+    if (equipped_gun->update_bullets(hitbox, status.facing_right, status.facing_up)) {
+        GunType g_type = equipped_gun->get_gun_info().type;
+        switch (g_type) {
+            case Armor:
+                equip_armor();
+                break;
+            case Helmet:
+                equip_helmet();
+                break;
+            default:
+                knockback();
+                break;
+        }
+    }
+    if(equipped_gun && equipped_gun->empty()) {
+        drop_collectable();
+    }
 }
 
 void DuckPlayer::equip_armor() {
@@ -264,6 +280,8 @@ void DuckPlayer::slide() {
     status.is_flapping = false;
 }
 
+void DuckPlayer::knockback() {}
+
 uint32_t DuckPlayer::drop_and_pickup() {
     stop_shooting();
     std::shared_ptr<GunEntity> new_gun = collectables.pickup(hitbox);
@@ -293,6 +311,11 @@ void DuckPlayer::drop_collectable() {
 Duck DuckPlayer::get_status() {
     Duck status_copy = this->status;
     status.is_damaged = false;
+    if (equipped_gun) 
+        status.gun = equipped_gun->get_gun_info().type;
+    else 
+        status.gun = None;
+
     return status_copy;
 }
 
