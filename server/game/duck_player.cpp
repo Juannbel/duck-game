@@ -18,7 +18,7 @@ const uint8_t DECREACENT_JUMP_SPEED = TICKS / 3;
 const uint8_t FLAPPING_TIME = TICKS / 3;
 const uint8_t IT_TO_GET_HIT_AGAIN = TICKS / 10;
 const uint8_t SLIDING_ITS = TICKS / 2;
-const float DUCK_SPEED = 120.0f / TICKS;
+const float DUCK_SPEED = 150.0f / TICKS;
 const float FALL_SPEED = 120.0f / TICKS;
 const float JUMP_SPEED = FALL_SPEED * 4;
 const float KNOCKBACK_MOVE = 4;
@@ -321,9 +321,9 @@ void DuckPlayer::drop_collectable() {
 Duck DuckPlayer::get_status() {
     Duck status_copy = this->status;
     status.is_damaged = false;
-    if (equipped_gun) 
+    if (equipped_gun)
         status.gun = equipped_gun->get_gun_info().type;
-    else 
+    else
         status.gun = None;
 
     return status_copy;
