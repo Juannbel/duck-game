@@ -11,6 +11,9 @@
 
 #include "ticks.h"
 
+#define SPEED_PER_TICK(x) (x / TICKS)
+
+const int PARTIAL_MOVE = 4;
 const int SPEED_PER_IT = TICKS / 30;
 const float GUN_FALL_SPEED = 120.0f / TICKS;
 const float GUN_THROW_SPEED = 120.0f / TICKS;
@@ -20,7 +23,7 @@ BulletEntity::BulletEntity(const Duck& info, CollisionChecks& collision_ckecker,
                            GunType type, uint32_t id, uint16_t range):
         status(),
         hitbox(),
-        speed(12),
+        speed(SPEED_PER_TICK(360.0f)),
         damage(50),
         range(range),
         is_alive(true),
@@ -42,7 +45,7 @@ BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_cke
                            GunType type, uint32_t id, uint16_t range):
         status(),
         hitbox(info),
-        speed(12),
+        speed(SPEED_PER_TICK(480.0f)),
         damage(50),
         range(range),
         is_alive(true),
@@ -124,15 +127,15 @@ void BulletEntity::update_status() {
         status.y = static_cast<int16_t>(hitbox.coords.y);
         return;
     }
-    for (int i = 0; i < speed / SPEED_PER_IT; i++) {
+    for (int i = 0; i < speed / PARTIAL_MOVE; i++) {
         float angle = static_cast<float>(status.angle);
-        float new_x = hitbox.coords.x + (SPEED_PER_IT)*std::cos(angle * (std::numbers::pi / 180));
-        float new_y = hitbox.coords.y - (SPEED_PER_IT)*std::sin(angle * (std::numbers::pi / 180));
+        float new_x = hitbox.coords.x + (PARTIAL_MOVE)*std::cos(angle * (std::numbers::pi / 180));
+        float new_y = hitbox.coords.y - (PARTIAL_MOVE)*std::sin(angle * (std::numbers::pi / 180));
         check_collision_and_change_angle(new_x, new_y);
         if (collisions.out_of_map(new_x, new_y)) {
             is_alive = false;
         }
-        range = range > SPEED_PER_IT ? range - SPEED_PER_IT : 0;
+        range = range > PARTIAL_MOVE ? range - PARTIAL_MOVE : 0;
         bool hit = check_collision_with_ducks();
         if (hit || !is_alive || range == 0) {
             is_alive = false;

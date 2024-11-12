@@ -5,7 +5,7 @@
 
 #include "client/duck_controller.h"
 
-#define FPS 60
+#define FPS 120
 #define RATE 1000 / FPS
 #define WIN_WIDTH 1200
 #define WIN_HEIGHT 690
