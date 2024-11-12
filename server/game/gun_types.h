@@ -10,7 +10,7 @@
 class GrenadeG: public GunEntity {
 public:
     GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions, bool explode);
-    // void start_shooting() override;
+    void start_shooting() override;
     void stop_shooting() override;
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
     void update_status() override;
@@ -24,6 +24,7 @@ class BananaG: public GunEntity {
 public:
     BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);
     void throw_gun(bool facing_right) override;
+    void start_shooting() override;
     void stop_shooting() override;
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
 };

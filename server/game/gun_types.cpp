@@ -3,6 +3,8 @@
 #include <cstdint>
 
 #include "common/shared_constants.h"
+#include "common/snapshot.h"
+#include "server/game/gun_entity.h"
 
 #include "ticks.h"
 
@@ -11,7 +13,7 @@ const uint8_t AK_CD = TICKS / 6;
 GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions, bool explode):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = GRENADE_HITBOX_HEIGHT;
-    hitbox.height = GRENADE_HITBOX_WIDTH;
+    hitbox.width = GRENADE_HITBOX_WIDTH;
     ammo = 30;
     it_to_shoot = TICKS * 4;
     inaccuracy = 360;
@@ -21,7 +23,13 @@ GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions
     }
 }
 
+void GrenadeG::start_shooting() {
+    GunEntity::start_shooting();
+    type = ActiveGrenade;
+}
+
 void GrenadeG::stop_shooting() {}
+
 bool GrenadeG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     (void) facing_right;
     (void) facing_up;
@@ -34,9 +42,10 @@ bool GrenadeG::update_bullets(const Rectangle& player_hb, bool facing_right, boo
     }
     return false;
 }
+
 void GrenadeG::update_status() {
     check_movement();
-    if (type == Grenade) {
+    if (type == ActiveGrenade) {
         if (it_since_shoot == it_to_shoot) {
             explode_grenade();
         } else if (trigger_pulled) {
@@ -49,10 +58,12 @@ void GrenadeG::explode_grenade() {
     Rectangle hb = hitbox;
     hb.height = BULLET_HITBOX_HEIGHT;
     hb.width = BULLET_HITBOX_WIDTH;
-    for (int i = 0; i < 30; ++i) {
+    type = Grenade;
+    while (ammo > 0) {
         int16_t angle = 0;
         angle += get_rand_angle();
         bullets->add_bullet(hb, angle, type, range);
+        --ammo;
     }
     destroy();
 }
@@ -60,13 +71,19 @@ void GrenadeG::explode_grenade() {
 BananaG::BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = BANANA_HITBOX_HEIGHT;
-    hitbox.height = BANANA_HITBOX_WIDTH;
+    hitbox.width = BANANA_HITBOX_WIDTH;
     ammo = 1;
     it_to_shoot = 0;
     range = TICKS;
 }
 
-// void BananaG::start_shooting() {}
+void BananaG::start_shooting() {
+    GunEntity::start_shooting();
+    type = ActiveBanana;
+}
+
+void BananaG::stop_shooting() {}
+
 bool BananaG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) { 
     (void) facing_right;
     (void) facing_up;
@@ -77,23 +94,23 @@ bool BananaG::update_bullets(const Rectangle& player_hb, bool facing_right, bool
 void BananaG::throw_gun(bool facing_right) {
     this->facing_right = facing_right;
     it_mooving = TICKS / 2;
-    if (it_since_shoot > 0 && type == Banana) {
+    if (type == ActiveBanana) {
         Rectangle b_hitbox = hitbox;
         b_hitbox.height = BULLET_HITBOX_HEIGHT;
         b_hitbox.width = BULLET_HITBOX_WIDTH;
         b_hitbox.coords.x = facing_right ? b_hitbox.coords.x + DUCK_HITBOX_WIDTH + 2 :
                                            b_hitbox.coords.x - BULLET_HITBOX_WIDTH - 2;
         int16_t angle = facing_right ? 0 : 180;
+        type = Banana;
         bullets->add_bullet(b_hitbox, angle, type, range);
         destroy();
     }
 }
-void BananaG::stop_shooting() {}
 
 PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = PEWPEW_LASER_HITBOX_HEIGHT;
-    hitbox.height = PEWPEW_LASER_HITBOX_WIDTH;
+    hitbox.width = PEWPEW_LASER_HITBOX_WIDTH;
     ammo = 12 * 3;
     it_to_shoot = 0;
     initial_angle = 0;
@@ -115,7 +132,7 @@ bool PewPewLaserG::update_bullets(const Rectangle& player_hb, bool facing_right,
 LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = LASER_RIFLE_HITBOX_HEIGHT;
-    hitbox.height = LASER_RIFLE_HITBOX_WIDTH;
+    hitbox.width = LASER_RIFLE_HITBOX_WIDTH;
     ammo = 10;
     it_to_shoot = 10;
     it_since_shoot = it_to_shoot;
@@ -138,7 +155,7 @@ bool LaserRifleG::update_bullets(const Rectangle& player_hb, bool facing_right, 
 Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = AK47_HITBOX_HEIGHT;
-    hitbox.height = AK47_HITBOX_WIDTH;
+    hitbox.width = AK47_HITBOX_WIDTH;
     ammo = 30;
     it_to_shoot = 8;
     it_since_shoot = it_to_shoot;
@@ -168,7 +185,7 @@ bool Ak47G::update_bullets(const Rectangle& player_hb, bool facing_right, bool f
 DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = DUELING_PISTOL_HITBOX_HEIGHT;
-    hitbox.height = DUELING_PISTOL_HITBOX_WIDTH;
+    hitbox.width = DUELING_PISTOL_HITBOX_WIDTH;
     ammo = 1;
     it_to_shoot = 0;
     initial_angle = 0;
@@ -189,7 +206,7 @@ bool DuelingPistolG::update_bullets(const Rectangle& player_hb, bool facing_righ
 CowboyPistolG::CowboyPistolG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = COWBOY_PISTOL_HITBOX_HEIGHT;
-    hitbox.height = COWBOY_PISTOL_HITBOX_WIDTH;
+    hitbox.width = COWBOY_PISTOL_HITBOX_WIDTH;
     ammo = 6;
     it_to_shoot = 0;
     initial_angle = 0;
@@ -209,7 +226,7 @@ bool CowboyPistolG::update_bullets(const Rectangle& player_hb, bool facing_right
 MagnumG::MagnumG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = MAGNUM_HITBOX_HEIGHT;
-    hitbox.height = MAGNUM_HITBOX_WIDTH;
+    hitbox.width = MAGNUM_HITBOX_WIDTH;
     ammo = 6;
     it_to_shoot = 0;
     initial_angle = 0;
@@ -231,7 +248,7 @@ bool MagnumG::update_bullets(const Rectangle& player_hb, bool facing_right, bool
 ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = SHOTGUN_HITBOX_HEIGHT;
-    hitbox.height = SHOTGUN_HITBOX_WIDTH;
+    hitbox.width = SHOTGUN_HITBOX_WIDTH;
     ammo = 2 * 6;
     it_to_shoot = 0;
     initial_angle = 0;
@@ -266,7 +283,7 @@ bool ShootgunG::update_bullets(const Rectangle& player_hb, bool facing_right, bo
 SniperG::SniperG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = SNIPER_HITBOX_HEIGHT;
-    hitbox.height = SNIPER_HITBOX_WIDTH;
+    hitbox.width = SNIPER_HITBOX_WIDTH;
     ammo = 3;
     inaccuracy = 0;
     it_reloading = 0;
@@ -291,7 +308,7 @@ bool SniperG::update_bullets(const Rectangle& player_hb, bool facing_right, bool
 HelmetG::HelmetG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = HELMET_HITBOX_HEIGHT;
-    hitbox.height = HELMET_HITBOX_WIDTH;
+    hitbox.width = HELMET_HITBOX_WIDTH;
     ammo = 1;
 }
 
@@ -310,7 +327,7 @@ bool HelmetG::update_bullets(const Rectangle& player_hb, bool facing_right, bool
 ArmorG::ArmorG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = HELMET_HITBOX_HEIGHT;
-    hitbox.height = HELMET_HITBOX_WIDTH;
+    hitbox.width = HELMET_HITBOX_WIDTH;
     ammo = 1;
 }
 
