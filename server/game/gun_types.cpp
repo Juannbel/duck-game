@@ -88,7 +88,7 @@ bool BananaG::update_bullets(const Rectangle& player_hb, bool facing_right, bool
     (void) facing_right;
     (void) facing_up;
     hitbox.coords = player_hb.coords;
-    return false; 
+    return false;
 }
 
 void BananaG::throw_gun(bool facing_right) {
@@ -336,7 +336,7 @@ bool HelmetG::update_bullets(const Rectangle& player_hb, bool facing_right, bool
     if (shooted_bullets) {
         return true;
     }
-    return false; 
+    return false;
 }
 
 ArmorG::ArmorG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
@@ -356,5 +356,5 @@ bool ArmorG::update_bullets(const Rectangle& player_hb, bool facing_right, bool 
     if (shooted_bullets) {
         return true;
     }
-    return false; 
+    return false;
 }
