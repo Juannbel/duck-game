@@ -4,8 +4,8 @@
 #include "gun_entity.h"
 #include "ticks.h"
 
-#define GRENADE_HITBOX_WIDTH 16
-#define GRENADE_HITBOX_HEIGHT 16
+#define GRENADE_HITBOX_WIDTH 12
+#define GRENADE_HITBOX_HEIGHT 12
 
 class GrenadeG: public GunEntity {
 public:
@@ -17,7 +17,7 @@ public:
     void explode_grenade() override;
 };
 
-#define BANANA_HITBOX_WIDTH 16
+#define BANANA_HITBOX_WIDTH 12
 #define BANANA_HITBOX_HEIGHT 16
 
 class BananaG: public GunEntity {
@@ -28,8 +28,8 @@ public:
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
 };
 
-#define PEWPEW_LASER_HITBOX_WIDTH 16
-#define PEWPEW_LASER_HITBOX_HEIGHT 16
+#define PEWPEW_LASER_HITBOX_WIDTH 28
+#define PEWPEW_LASER_HITBOX_HEIGHT 13
 
 class PewPewLaserG: public GunEntity {
 public:
@@ -39,8 +39,8 @@ public:
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
 };
 
-#define LASER_RIFLE_HITBOX_WIDTH 16
-#define LASER_RIFLE_HITBOX_HEIGHT 16
+#define LASER_RIFLE_HITBOX_WIDTH 25
+#define LASER_RIFLE_HITBOX_HEIGHT 15
 
 class LaserRifleG: public GunEntity {
 public:
@@ -50,8 +50,8 @@ public:
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
 };
 
-#define AK47_HITBOX_WIDTH 16
-#define AK47_HITBOX_HEIGHT 16
+#define AK47_HITBOX_WIDTH 32
+#define AK47_HITBOX_HEIGHT 14
 
 class Ak47G: public GunEntity {
 public:
@@ -61,8 +61,8 @@ public:
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
 };
 
-#define DUELING_PISTOL_HITBOX_WIDTH 16
-#define DUELING_PISTOL_HITBOX_HEIGHT 16
+#define DUELING_PISTOL_HITBOX_WIDTH 15
+#define DUELING_PISTOL_HITBOX_HEIGHT 12
 
 class DuelingPistolG: public GunEntity {
 public:
@@ -72,8 +72,8 @@ public:
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
 };
 
-#define COWBOY_PISTOL_HITBOX_WIDTH 16
-#define COWBOY_PISTOL_HITBOX_HEIGHT 16
+#define COWBOY_PISTOL_HITBOX_WIDTH 26
+#define COWBOY_PISTOL_HITBOX_HEIGHT 14
 
 class CowboyPistolG: public GunEntity {
 public:
@@ -83,8 +83,8 @@ public:
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
 };
 
-#define MAGNUM_HITBOX_WIDTH 16
-#define MAGNUM_HITBOX_HEIGHT 16
+#define MAGNUM_HITBOX_WIDTH 24
+#define MAGNUM_HITBOX_HEIGHT 14
 
 class MagnumG: public GunEntity {
 public:
@@ -94,8 +94,8 @@ public:
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
 };
 
-#define SHOTGUN_HITBOX_WIDTH 16
-#define SHOTGUN_HITBOX_HEIGHT 16
+#define SHOTGUN_HITBOX_WIDTH 30
+#define SHOTGUN_HITBOX_HEIGHT 13
 
 class ShootgunG: public GunEntity {
 public:
@@ -105,8 +105,8 @@ public:
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
 };
 
-#define SNIPER_HITBOX_WIDTH 16
-#define SNIPER_HITBOX_HEIGHT 16
+#define SNIPER_HITBOX_WIDTH 32
+#define SNIPER_HITBOX_HEIGHT 12
 
 class SniperG: public GunEntity {
 public:
@@ -117,8 +117,8 @@ public:
 };
 
 
-#define HELMET_HITBOX_WIDTH 16
-#define HELMET_HITBOX_HEIGHT 16
+#define HELMET_HITBOX_WIDTH 15
+#define HELMET_HITBOX_HEIGHT 12
 
 class HelmetG: public GunEntity {
 public:
@@ -128,8 +128,8 @@ public:
     bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) override;
 };
 
-#define ARMOR_HITBOX_WIDTH 16
-#define ARMOR_HITBOX_HEIGHT 16
+#define ARMOR_HITBOX_WIDTH 15
+#define ARMOR_HITBOX_HEIGHT 12
 
 class ArmorG: public GunEntity {
 public:
