@@ -6,14 +6,11 @@
 
 MainWindow::MainWindow(QWidget* parent):
         QMainWindow(parent), ui(new Ui::MainWindow), scene(new QGraphicsScene(this)) {
-    map.map_dto.theme = 0;
-    for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
-        for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
-            map.map_dto.blocks[i][j] = {Empty, false};
-        }
-    }
+
     ui->setupUi(this);
     ui->graphicsView->setScene(scene);
+    map.map_dto.theme = 0;
+    initialize_blocks();
 
     grassTextures.resize(MAP_THEMES * (static_cast<int>(HalfFloor)));
 
@@ -22,7 +19,8 @@ MainWindow::MainWindow(QWidget* parent):
     loadGunTexture();
     loadBoxTexture();
     renderGrid();
-    updateThemeSelected(map.map_dto.theme);
+    updateThemeSelected();
+
     ui->saveMapButton->setIcon(QIcon::fromTheme("document-save"));
     ui->loadMapButton->setIcon(QIcon::fromTheme("document-open"));
     ui->clearMapButton->setIcon(QIcon::fromTheme("edit-delete"));
@@ -32,12 +30,20 @@ MainWindow::MainWindow(QWidget* parent):
     ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 }
 
+void MainWindow::initialize_blocks(){
+    for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
+        for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
+            map.map_dto.blocks[i][j] = {Empty, false};
+        }
+    }
+}
+
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::loadTiles() {
 
     ui->themeSelector->clear();
-    ui->tileSelector->clear();
+    ui->itemSelector->clear();
 
     for (int i = 0; i < MAP_THEMES; i++) {
         QString themeName = "Theme " + QString::number(i + 1);
@@ -49,9 +55,9 @@ void MainWindow::loadTiles() {
 
 void MainWindow::loadThemeTiles(uint8_t theme) {
     QPixmap tileSet(":/images/blocks.png");
-    int offset = ((static_cast<int>(HalfFloor)) * theme);
+    int offset = BLOCKS_PER_THEME * theme;
     QVector<QIcon> iconsForTheme;
-    for (int i = 0; i < static_cast<int>(HalfFloor); i++) {
+    for (int i = 0; i < BLOCKS_PER_THEME; i++) {
         grassTextures[i + offset] =
                 tileSet.copy(TILE_SIZE * i, theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         iconsForTheme.push_back(QIcon(grassTextures[i + offset]));
@@ -86,21 +92,38 @@ std::unordered_map<BlockType, QString> MainWindow::blockToString = {
         {Platform3, "platform_3"}, {Platform4, "platform_4"}, {Wall, "wall"},
         {HalfFloor, "half_floor"}};
 
-void MainWindow::updateThemeSelected(int themeIndex) {
-    ui->tileSelector->clear();
+void MainWindow::updateThemeSelected() {
+    
+    ui->itemSelector->clear();
 
+    updateItemSelector();
+    updateBackground();
+
+    renderGrid();
+}
+
+void MainWindow::updateItemSelector() {
+
+    updateTilesItems();
+
+    ui->itemSelector->addItem(QIcon(duckTexture), "duck_spawn");
+    ui->itemSelector->addItem(QIcon(gunTexture), "collectable_spawn");
+    ui->itemSelector->addItem(QIcon(boxTexture), "collectable_box");
+}
+
+void MainWindow::updateTilesItems(){
+    int themeIndex = map.map_dto.theme;
     if (themeTiles.contains(themeIndex)) {
         auto& tiles = themeTiles[themeIndex];
         for (int i = 0; i < static_cast<int>(HalfFloor); i++) {
-            ui->tileSelector->addItem(tiles[i], blockToString[static_cast<BlockType>(i+1)]);
+            ui->itemSelector->addItem(tiles[i], blockToString[static_cast<BlockType>(i+1)]);
         }
     }
+}
 
-    ui->tileSelector->addItem(QIcon(duckTexture), "duck_spawn");
-    ui->tileSelector->addItem(QIcon(gunTexture), "collectable_spawn");
-    ui->tileSelector->addItem(QIcon(boxTexture), "collectable_box");
-
+void MainWindow::updateBackground(){
     QPixmap backgroundPixmap;
+    int themeIndex = map.map_dto.theme;
     backgroundPixmap.load(":/images/background_" + QString::number(themeIndex) + ".png");
 
     if (!backgroundPixmap.isNull()) {
@@ -108,13 +131,9 @@ void MainWindow::updateThemeSelected(int themeIndex) {
     } else {
         std::cerr << "No se pudo cargar el fondo para el tema " << themeIndex << std::endl;
     }
-    renderGrid();
 }
 
-
-void MainWindow::renderGrid() {
-    scene->clear();
-
+void MainWindow::renderBackground(){
     if (!currentBackground.isNull()) {
 
         QSize gridSize = QSize(MAP_WIDTH_BLOCKS * TILE_SIZE, MAP_HEIGHT_BLOCKS * TILE_SIZE);
@@ -123,8 +142,10 @@ void MainWindow::renderGrid() {
         QGraphicsPixmapItem *backgroundItem = scene->addPixmap(scaledBackground);
         backgroundItem->setZValue(-1);
         backgroundItem->setPos(0, 0);
-    }
+    }    
+}
 
+void MainWindow::renderGridLines(){
     for (int x = 0; x <= MAP_WIDTH_BLOCKS; ++x) {
         scene->addLine(x * TILE_SIZE, 0, x * TILE_SIZE, MAP_HEIGHT_BLOCKS * TILE_SIZE,
                        QPen(Qt::black, 1));  
@@ -133,7 +154,11 @@ void MainWindow::renderGrid() {
         scene->addLine(0, y * TILE_SIZE, MAP_WIDTH_BLOCKS * TILE_SIZE, y * TILE_SIZE,
                        QPen(Qt::black, 1)); 
     }
+}
 
+
+
+void MainWindow::renderGridTiles(){
     for (int y = 0; y < MAP_HEIGHT_BLOCKS; ++y) {
         for (int x = 0; x < MAP_WIDTH_BLOCKS; ++x) {
             Block block = map.map_dto.blocks[y][x];
@@ -152,20 +177,27 @@ void MainWindow::renderGrid() {
             }
         }
     }
+}
 
+void MainWindow::renderDucksSpawns(){
     for (const std::pair<int16_t, int16_t>& duckPos : map.duck_spawns) {
         QPoint pos(duckPos.first, duckPos.second); 
         QGraphicsPixmapItem* duckItem = scene->addPixmap(duckTexture);
         duckItem->setPos(pos.x() * TILE_SIZE, pos.y() * TILE_SIZE);
         duckItem->setScale(0.5); 
     }
+}
 
+void MainWindow::renderCollectablesSpawns(){
     for (const std::pair<int16_t, int16_t>& gunPos : map.collectables_spawns) {
         QPoint pos(gunPos.first, gunPos.second); 
         QGraphicsPixmapItem* gunItem = scene->addPixmap(gunTexture);
         gunItem->setPos(pos.x() * TILE_SIZE, pos.y() * TILE_SIZE);
         gunItem->setScale(0.5); 
     }
+}
+
+void MainWindow::renderBoxesSpawns(){
     for(const std::pair<int16_t, int16_t>& boxPos : map.boxes_spawns){
         QPoint pos(boxPos.first, boxPos.second);
         QGraphicsPixmapItem* boxItem = scene->addPixmap(boxTexture);
@@ -173,46 +205,76 @@ void MainWindow::renderGrid() {
     }
 }
 
+void MainWindow::renderGrid() {
+    scene->clear();
+
+    renderBackground();
+    renderGridLines();
+    renderGridTiles();
+
+    renderDucksSpawns();
+    renderCollectablesSpawns();
+    renderBoxesSpawns();
+
+}
+
+
+bool MainWindow::handlerWheelEvent(QEvent* event) {
+    QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(event);
+    if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
+        const double scaleFactor = 1.15;
+        const double minScale = 0.7;
+        const double maxScale = 4.0;
+        
+        if (wheelEvent->angleDelta().y() > 0) {
+            if (ui->graphicsView->transform().m11() < maxScale) {
+                ui->graphicsView->scale(scaleFactor, scaleFactor);
+            }
+        } else {
+            if (ui->graphicsView->transform().m11() > minScale) {
+                ui->graphicsView->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+bool MainWindow::handlerClickType(QPointF scenePos,Qt::MouseButton button) {
+    QPoint currentTile(scenePos.x() / TILE_SIZE, scenePos.y() / TILE_SIZE);
+    if (currentTile != lastProcessedTile) {
+        lastProcessedTile = currentTile;
+        if(button == Qt::LeftButton){
+            onGridClicked(scenePos.toPoint());
+        }   
+        else if(button == Qt::RightButton){
+            onGridRightClicked(scenePos.toPoint());
+        }
+    }
+    return true;
+
+}
+
+bool MainWindow::handlerMouseEvents(QEvent* event) {
+    QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+    QPoint pos = ui->graphicsView->mapFromGlobal(mouseEvent->globalPos());
+    QPointF scenePos = ui->graphicsView->mapToScene(pos).toPoint();
+    if (mouseEvent->buttons() & Qt::LeftButton) {
+        return handlerClickType(scenePos, Qt::LeftButton);
+    }else if (mouseEvent->buttons() & Qt::RightButton) {
+        return handlerClickType(scenePos, Qt::RightButton);
+    }
+    return false;
+}
+
+
 bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
     if (watched == ui->graphicsView->viewport()) {
         if (event->type() == QEvent::Wheel) {
-            QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(event);
-            if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
-                const double scaleFactor = 1.15;
-                const double minScale = 0.7;
-                const double maxScale = 4.0;
-               
-                if (wheelEvent->angleDelta().y() > 0) {
-                    if (ui->graphicsView->transform().m11() < maxScale) {
-                        ui->graphicsView->scale(scaleFactor, scaleFactor);
-                    }
-                } else {
-                    if (ui->graphicsView->transform().m11() > minScale) {
-                        ui->graphicsView->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
-                    }
-                }
-                return true;
-            }
+            if(handlerWheelEvent(event)) return true;
         } else if (event->type() == QEvent::MouseButtonPress ||
                    event->type() == QEvent::MouseMove) {
-            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
-            QPoint pos = ui->graphicsView->mapFromGlobal(mouseEvent->globalPos());
-            QPointF scenePos = ui->graphicsView->mapToScene(pos).toPoint();
-            if (mouseEvent->buttons() & Qt::LeftButton) {
-                QPoint currentTile(scenePos.x() / TILE_SIZE, scenePos.y() / TILE_SIZE);
-                if (currentTile != lastProcessedTile) {
-                    lastProcessedTile = currentTile;
-                    onGridClicked(scenePos.toPoint());
-                }
-                return true;
-            }else if (mouseEvent->buttons() & Qt::RightButton) {
-                QPoint currentTile(scenePos.x() / TILE_SIZE, scenePos.y() / TILE_SIZE);
-                if (currentTile != lastProcessedTile) {
-                    lastProcessedTile = currentTile;
-                    onGridRightClicked(scenePos.toPoint());
-                }
-                return true;
-            }
+            if (handlerMouseEvents(event)) return true;
         } else if (event->type() == QEvent::MouseButtonRelease) {
             lastProcessedTile = QPoint(-1, -1);
         }
@@ -234,21 +296,69 @@ void MainWindow::on_clearMapButton_clicked() {
 
 
 bool MainWindow::validatePosition(std::pair<int16_t, int16_t> pos, bool check_blocks){
-    auto it = std::find(map.duck_spawns.begin(), map.duck_spawns.end(), pos);
-    if(it != map.duck_spawns.end())
-        return false;
-    it = std::find(map.collectables_spawns.begin(), map.collectables_spawns.end(), pos);
-    if(it != map.collectables_spawns.end())
-        return false;
-    it = std::find(map.boxes_spawns.begin(), map.boxes_spawns.end(), pos);
-    if(it != map.boxes_spawns.end())
-        return false;
-    if(check_blocks){
+    if (isPositionOccupied(pos)) return false;
+    if (!check_blocks)
+        return true; 
+    return !isBlockOccupied(pos);
+}
+
+bool MainWindow::isPositionOccupied(std::pair<int16_t, int16_t> pos) {
+    if (std::find(map.duck_spawns.begin(), map.duck_spawns.end(), pos) != map.duck_spawns.end()) return true;
+    if (std::find(map.collectables_spawns.begin(), map.collectables_spawns.end(), pos) != map.collectables_spawns.end()) return true;
+    if (std::find(map.boxes_spawns.begin(), map.boxes_spawns.end(), pos) != map.boxes_spawns.end()) return true;
+    return false;
+}
+
+bool MainWindow::isBlockOccupied(std::pair<int16_t, int16_t> pos) {
     Block block = map.map_dto.blocks[pos.second][pos.first];
-    if (block.type != Empty) 
-        return false;   
+    return block.type != Empty;
+}
+
+void MainWindow::addDuckSpawn(std::pair<int16_t, int16_t> gridPos) {
+    if(map.duck_spawns.size() >= 4){
+        QMessageBox::warning(this, "Error", "Ya hay 4 spawns de patos.");
+        return;
     }
-    return true;
+    bool check_blocks = true;
+    if(!validatePosition(gridPos, check_blocks))
+        return;
+    map.duck_spawns.push_back(gridPos);
+    renderGrid();
+}
+
+void MainWindow::addCollectableSpawn(std::pair<int16_t, int16_t> gridPos) {
+    bool check_blocks = true;
+    if(!validatePosition(gridPos, check_blocks))
+        return;
+    map.collectables_spawns.push_back(gridPos);
+    renderGrid();
+}
+
+void MainWindow::addBoxSpawn(std::pair<int16_t, int16_t> gridPos) {
+    bool check_blocks = true;
+    if(!validatePosition(gridPos, check_blocks))
+        return;
+    map.boxes_spawns.push_back(gridPos);
+    renderGrid();
+}
+
+void MainWindow::addTile(std::pair<int16_t, int16_t> gridPos) {
+    bool check_blocks = false;
+    if(!validatePosition(gridPos, check_blocks))
+        return;
+    Block& block = map.map_dto.blocks[gridPos.second][gridPos.first];
+    if (block.type == (selectedItemIndex+1)) {
+        block.solid = !block.solid;
+    } else {
+        placeTile(gridPos.first, gridPos.second, static_cast<BlockType>(selectedItemIndex), true);
+    }
+    renderGrid();
+}
+
+void MainWindow::placeTile(int x, int y, BlockType blockType, bool solid) {
+    if(blockType < static_cast<int>(HalfFloor))
+        map.map_dto.blocks[y][x] = {static_cast<BlockType>(blockType+1), solid};
+    
 }
 
 void MainWindow::onGridClicked(QPoint pos) {
@@ -259,44 +369,18 @@ void MainWindow::onGridClicked(QPoint pos) {
         std::pair<int16_t, int16_t> gridPos = std::pair<int16_t, int16_t>(gridX, gridY);
 
         if(selectedItemIndex == DUCK_SPAWN_INDEX){
-            if(map.duck_spawns.size() >= 4){
-                QMessageBox::warning(this, "Error", "Ya hay 4 spawns de patos.");
-                return;
-            }
-            bool check_blocks = true;
-            if(!validatePosition(gridPos, check_blocks))
-                return;
-            map.duck_spawns.push_back(gridPos);
-            renderGrid();
+            addDuckSpawn(gridPos);
             return;
         } else if(selectedItemIndex == COLLECTABLE_SPAWN_INDEX){
-            bool check_blocks = true;
-            if(!validatePosition(gridPos, check_blocks))
-                return;
-            map.collectables_spawns.push_back(gridPos);
-            renderGrid();
+            addCollectableSpawn(gridPos);
             return;
         } else if(selectedItemIndex == BOX_SPAWN_INDEX){
-            bool check_blocks = true;
-            if(!validatePosition(gridPos, check_blocks))
-                return;
-            map.boxes_spawns.push_back(gridPos);
-            renderGrid();
+            addBoxSpawn(gridPos);
+            return;
+        }else if(selectedItemIndex < DUCK_SPAWN_INDEX){
+            addTile(gridPos);
             return;
         }
-        bool check_blocks = false;
-        if(!validatePosition(gridPos, check_blocks))
-            return;
-        Block& block = map.map_dto.blocks[gridY][gridX];
-        if (block.type == Empty) {
-            placeTile(gridX, gridY, static_cast<BlockType>(selectedItemIndex), true);
-        } else if (block.type == (selectedItemIndex+1)) {
-            block.solid = !block.solid;
-        } else {
-            placeTile(gridX, gridY, static_cast<BlockType>(selectedItemIndex), true);
-        }
-
-        renderGrid();
     }
 }
 
@@ -332,33 +416,29 @@ void MainWindow::onGridRightClicked(QPoint pos) {
         if (block.type != Empty) {
             block.type = Empty;
             renderGrid();
+            return;
         }
     }
 }
 
 
-
-void MainWindow::placeTile(int x, int y, BlockType blockType, bool solid) {
-    if(blockType < static_cast<int>(HalfFloor))
-        map.map_dto.blocks[y][x] = {static_cast<BlockType>(blockType+1), solid};
-    
-}
-
-void MainWindow::on_saveMapButton_clicked() {
-
+bool MainWindow::isMapValid() {
     if(map.duck_spawns.size() != 4 ){
         QMessageBox::warning(this, "Error", "Debe haber 4 spawns de patos.");
-        return;
+        return false;
     }
     if(map.collectables_spawns.size() < 2 ){
         QMessageBox::warning(this, "Error", "Debe haber al menos 2 spawns de armas (collectables).");
-        return;
+        return false;
     }
     if(map.boxes_spawns.size() < 2 ){
         QMessageBox::warning(this, "Error", "Debe haber al menos 2 spawns de cajas.");
-        return;
+        return false;
     }
+    return true;
+}
 
+QString MainWindow::requestFileName() {
     bool ok;
     QString fileName = QInputDialog::getText(
             nullptr, "Save MapDto", "Insert filename (without extension):", QLineEdit::Normal, "",
@@ -366,26 +446,41 @@ void MainWindow::on_saveMapButton_clicked() {
 
     if (!ok || fileName.isEmpty()) {
         std::cerr << "No se ingresó ningún nombre de archivo." << std::endl;
-        return;
+        return NULL;
     }
 
     if (!fileName.endsWith(".yaml", Qt::CaseInsensitive)) {
         fileName += ".yaml";
     }
-    
-    Map saveMap = map;
-    int quantity_duck_spawns = static_cast<int>(saveMap.duck_spawns.size());
+    return fileName;
+}
+
+void MainWindow::serializeDuckSpawns(Map& mapToSave){
+    int quantity_duck_spawns = static_cast<int>(mapToSave.duck_spawns.size());
     for(int i = 0; i < quantity_duck_spawns ; i++ ){
-        saveMap.duck_spawns[i].second -= 1;
+        mapToSave.duck_spawns[i].second -= 1;
     }
+}
+
+void MainWindow::on_saveMapButton_clicked() {
+
+    if(!isMapValid())
+        return;
+
+    QString fileName = requestFileName();
+    if (fileName.isNull()) return;
+
+    Map mapToSave = map;
+    serializeDuckSpawns(mapToSave);
 
     QString filePath = SERVER_DATA_PATH + static_cast<QString>("/") + fileName;
 
-    loader.save_map(filePath.toStdString(), saveMap);
+    loader.save_map(filePath.toStdString(), mapToSave);
 }
 
 
 void MainWindow::on_loadMapButton_clicked() {
+
     QDialog dialog(this);
     dialog.setWindowTitle("Select map to load");
 
@@ -422,7 +517,7 @@ void MainWindow::on_loadMapButton_clicked() {
             loaded_map.duck_spawns[i].second += 1;
         }
         this->map = loaded_map;
-        updateThemeSelected(map.map_dto.theme);
+        updateThemeSelected();
         renderGrid();
         dialog.accept();
     });
@@ -430,7 +525,7 @@ void MainWindow::on_loadMapButton_clicked() {
     dialog.exec();
 }
 
-void MainWindow::on_tileSelector_currentIndexChanged(int index)
+void MainWindow::on_itemSelector_currentIndexChanged(int index)
 {
     selectedItemIndex = index;
 }
@@ -441,6 +536,6 @@ void MainWindow::on_themeSelector_currentIndexChanged(int themeIndex)
     if (themeTiles.contains(themeIndex)) {
         map.map_dto.theme = themeIndex;
     }
-    updateThemeSelected(map.map_dto.theme);
+    updateThemeSelected();
 }
 

@@ -25,6 +25,7 @@
 #include "ui_mainwindow.h"
 
 const int TILE_SIZE = 16;
+const int BLOCKS_PER_THEME = 12;
 const int BOX_SIZE = 16;
 const int BOX_SPAWN_INDEX = 14;
 const int DUCK_SIZE = 32;
@@ -47,12 +48,10 @@ public:
     ~MainWindow();
 
 private slots:
-    void onGridClicked(QPoint pos);
     void on_saveMapButton_clicked();
     void on_loadMapButton_clicked();
-    void onGridRightClicked(QPoint pos);
     void on_clearMapButton_clicked();
-    void on_tileSelector_currentIndexChanged(int index);
+    void on_itemSelector_currentIndexChanged(int index);
     void on_themeSelector_currentIndexChanged(int themeIndex);
 
 private:
@@ -73,17 +72,49 @@ private:
     QPixmap gunTexture;
     QPixmap boxTexture;
 
+    void initialize_blocks();
+
     void loadBoxTexture();
     void loadDuckTexture();
     void loadGunTexture();    
     void loadTiles();
     void loadThemeTiles(uint8_t theme);
+    
+    void updateThemeSelected();
+    void updateItemSelector();
+    void updateBackground();
+    void updateTilesItems();
 
-    void updateThemeSelected(int theme);
     void renderGrid();
+    void renderBackground();
+    void renderGridLines();
+    void renderGridTiles();
+    void renderDucksSpawns();
+    void renderCollectablesSpawns();
+    void renderBoxesSpawns();
+
+    bool handlerWheelEvent(QEvent* event);
+    bool handlerMouseEvents(QEvent* event);
+    bool handlerClickType(QPointF scenePos, Qt::MouseButton button);
+
+    bool isPositionOccupied(std::pair<int16_t, int16_t> pos);
+    bool isBlockOccupied(std::pair<int16_t, int16_t> pos);
+    bool validatePosition(std::pair<int16_t, int16_t> pos, bool checkBlocks);
+    
+    void addDuckSpawn(std::pair<int16_t, int16_t> gridPos);
+    void addCollectableSpawn(std::pair<int16_t, int16_t> gridPos);
+    void addBoxSpawn(std::pair<int16_t, int16_t> gridPos);
+    void addTile(std::pair<int16_t, int16_t> gridPos);
+    void onGridClicked(QPoint pos);
+
+    bool isMapValid();
+    QString requestFileName();
+    void onGridRightClicked(QPoint pos);
+    void serializeDuckSpawns(Map& mapToSave);
+
     void placeTile(int x, int y, BlockType blockType, bool solid);
     bool eventFilter(QObject* watched, QEvent* event) override;
-    bool validatePosition(std::pair<int16_t, int16_t> pos, bool checkBlocks);
+    
 };
 
 #endif  // MAINWINDOW_H
