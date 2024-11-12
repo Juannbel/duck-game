@@ -51,11 +51,14 @@ int16_t GunEntity::get_rand_angle() {
     return static_cast<int16_t>(dis(gen));
 }
 
-void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+int16_t GunEntity::calculate_initial_angle(bool facing_right, bool facing_up) {
+    int16_t angle = facing_right ? 0 : 180;
+    angle = !facing_up ? angle : facing_right ? 70 : 110;
+    return angle;
+}
+
+void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facing_up) {
     if (!it_since_shoot && shooted_bullets && ammo) {
-        int16_t angle = facing_right ? 0 : 180;
-        angle = !facing_up ? angle : facing_right ? 70 : 110;
-        angle += get_rand_angle();
         Rectangle b_hb{};
         b_hb.coords.x =
             facing_right ? player_hb.coords.x + DUCK_HITBOX_WIDTH + 1 : player_hb.coords.x - BULLET_HITBOX_WIDTH - 1;

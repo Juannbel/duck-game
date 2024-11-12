@@ -47,15 +47,12 @@ void GameOperator::initialize_players(
     }
 }
 
-void GameOperator::initialize_boxes(Map& map_info) {
+void GameOperator::initialize_boxes(const Map& map_info) {
     uint32_t id = 0;
     for (auto &box : map_info.boxes_spawns) {
         ++id;
         boxes.emplace(id, BoxEntity(box.first * BLOCK_SIZE, box.second * BLOCK_SIZE, id, collisions));
     }
-    ++id;
-    boxes.emplace(id, BoxEntity(10 * BLOCK_SIZE, 10 * BLOCK_SIZE, id, collisions));
-
 }
 
 void GameOperator::delete_duck_player(uint8_t id_duck) { players.erase(id_duck); }

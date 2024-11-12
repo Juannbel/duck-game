@@ -3,6 +3,9 @@
 
 #include "server/game/gun_entity.h"
 
+#define ARMOR_HITBOX_WIDTH 15
+#define ARMOR_HITBOX_HEIGHT 12
+
 class ArmorG: public GunEntity {
 public:
     ArmorG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);

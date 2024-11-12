@@ -263,7 +263,6 @@ bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
             return true;
         }
         uint8_t taken_dmg = damage;
-        status.is_damaged = true;
         if (status.duck_hp < taken_dmg) {
             die();
         } else {
@@ -323,7 +322,6 @@ void DuckPlayer::drop_collectable() {
 
 Duck DuckPlayer::get_status() {
     Duck status_copy = this->status;
-    status.is_damaged = false;
     if (equipped_gun) 
         status.gun = equipped_gun->get_gun_info().type;
     else 
