@@ -62,8 +62,8 @@ void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool f
             facing_right ? player_hb.coords.x + DUCK_HITBOX_WIDTH + 1 : player_hb.coords.x - BULLET_HITBOX_WIDTH - 1;
         b_hb.coords.y =
                 facing_up ? player_hb.coords.y - BULLET_HITBOX_HEIGHT - 1 : player_hb.coords.y + DUCK_LAYED_HITBOX_HEIGHT;
-        hitbox.height = BULLET_HITBOX_HEIGHT;
-        hitbox.width = BULLET_HITBOX_WIDTH;
+        b_hb.height = BULLET_HITBOX_HEIGHT;
+        b_hb.width = BULLET_HITBOX_WIDTH;
         bullets->add_bullet(b_hb, angle, type, range);
         it_since_shoot = 0;
         ++shooted_bullets;

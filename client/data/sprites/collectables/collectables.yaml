@@ -57,10 +57,10 @@ collectables:
     iter_per_frame: 15
     loops: true
     frames:
-      - { x: 160, y: 0, x_offset_right: 9, x_offset_left: 0, y_offset: 11 }
-      - { x: 160, y: 0, x_offset_right: 9, x_offset_left: 0, y_offset: 10 }
-      - { x: 160, y: 0, x_offset_right: 9, x_offset_left: 0, y_offset: 9 }
-      - { x: 160, y: 0, x_offset_right: 9, x_offset_left: 0, y_offset: 10 }
+      - { x: 160, y: 0, x_offset_right: 10, x_offset_left: 0, y_offset: 11 }
+      - { x: 160, y: 0, x_offset_right: 10, x_offset_left: 0, y_offset: 10 }
+      - { x: 160, y: 0, x_offset_right: 10, x_offset_left: 0, y_offset: 9 }
+      - { x: 160, y: 0, x_offset_right: 10, x_offset_left: 0, y_offset: 10 }
 
   cowboy_pistol:
     iter_per_frame: 15
@@ -120,8 +120,8 @@ collectables:
     iter_per_frame: 10
     loops: true
     frames:
-      - { x: 384, y: 0, x_offset_right: 5, x_offset_left: 0, y_offset: 10 }
-      - { x: 416, y: 0, x_offset_right: 5, x_offset_left: 0, y_offset: 10 }
+      - { x: 384, y: 0, x_offset_right: 9, x_offset_left: 0, y_offset: 10 }
+      - { x: 416, y: 0, x_offset_right: 9, x_offset_left: 0, y_offset: 10 }
 
   active_banana:
     iter_per_frame: 1

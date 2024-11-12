@@ -3,6 +3,8 @@
 #include <cstdint>
 
 #include "common/shared_constants.h"
+#include "common/snapshot.h"
+#include "server/game/gun_entity.h"
 
 #include "ticks.h"
 
@@ -21,7 +23,13 @@ GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions
     }
 }
 
+void GrenadeG::start_shooting() {
+    GunEntity::start_shooting();
+    type = ActiveGrenade;
+}
+
 void GrenadeG::stop_shooting() {}
+
 bool GrenadeG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     (void) facing_right;
     (void) facing_up;
@@ -34,9 +42,10 @@ bool GrenadeG::update_bullets(const Rectangle& player_hb, bool facing_right, boo
     }
     return false;
 }
+
 void GrenadeG::update_status() {
     check_movement();
-    if (type == Grenade) {
+    if (type == ActiveGrenade) {
         if (it_since_shoot == it_to_shoot) {
             explode_grenade();
         } else if (trigger_pulled) {
@@ -49,10 +58,12 @@ void GrenadeG::explode_grenade() {
     Rectangle hb = hitbox;
     hb.height = BULLET_HITBOX_HEIGHT;
     hb.width = BULLET_HITBOX_WIDTH;
-    for (int i = 0; i < 30; ++i) {
+    type = Grenade;
+    while (ammo > 0) {
         int16_t angle = 0;
         angle += get_rand_angle();
         bullets->add_bullet(hb, angle, type, range);
+        --ammo;
     }
     destroy();
 }
@@ -66,8 +77,14 @@ BananaG::BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     range = TICKS;
 }
 
-// void BananaG::start_shooting() {}
-bool BananaG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+void BananaG::start_shooting() {
+    GunEntity::start_shooting();
+    type = ActiveBanana;
+}
+
+void BananaG::stop_shooting() {}
+
+bool BananaG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) { 
     (void) facing_right;
     (void) facing_up;
     hitbox.coords = player_hb.coords;
@@ -77,18 +94,18 @@ bool BananaG::update_bullets(const Rectangle& player_hb, bool facing_right, bool
 void BananaG::throw_gun(bool facing_right) {
     this->facing_right = facing_right;
     it_mooving = TICKS / 2;
-    if (it_since_shoot > 0 && type == Banana) {
+    if (type == ActiveBanana) {
         Rectangle b_hitbox = hitbox;
         b_hitbox.height = BULLET_HITBOX_HEIGHT;
         b_hitbox.width = BULLET_HITBOX_WIDTH;
         b_hitbox.coords.x = facing_right ? b_hitbox.coords.x + DUCK_HITBOX_WIDTH + 2 :
                                            b_hitbox.coords.x - BULLET_HITBOX_WIDTH - 2;
         int16_t angle = facing_right ? 0 : 180;
+        type = Banana;
         bullets->add_bullet(b_hitbox, angle, type, range);
         destroy();
     }
 }
-void BananaG::stop_shooting() {}
 
 PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
