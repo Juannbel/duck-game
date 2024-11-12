@@ -52,4 +52,6 @@ std::unordered_map<GunType, std::string> RenderableBullet::gun_to_string{
         {Shootgun, "shootgun"},
         {Sniper, "sniper"},
         {Helmet, "helmet"},
-        {Armor, "armor"}};
+        {Armor, "armor"},
+        {ActiveGrenade, "active_grenade"},
+        {ActiveBanana, "active_banana"},};

@@ -9,7 +9,20 @@ bullets:
       - { x: 0, y: 0, x_offset_right: 7, x_offset_left: 6, y_offset: 6 }
       - { x: 16, y: 0, x_offset_right: 7, x_offset_left: 6, y_offset: 6 }
 
+  active_grenade:
+    iter_per_frame: 2
+    loops: false
+    frames:
+      - { x: 0, y: 0, x_offset_right: 7, x_offset_left: 6, y_offset: 6 }
+      - { x: 16, y: 0, x_offset_right: 7, x_offset_left: 6, y_offset: 6 }
+
   banana:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 0, y: 16, x_offset_right: 8, x_offset_left: 5, y_offset: 10 }
+
+  active_banana:
     iter_per_frame: 1
     loops: false
     frames:
