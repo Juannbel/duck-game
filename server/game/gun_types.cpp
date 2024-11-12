@@ -112,7 +112,7 @@ PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& co
     hitbox.height = PEWPEW_LASER_HITBOX_HEIGHT;
     hitbox.width = PEWPEW_LASER_HITBOX_WIDTH;
     ammo = 12 * 3;
-    it_to_shoot = 0;
+    it_to_shoot = TICKS/20;
     initial_angle = 0;
     inaccuracy = 10;
     bullets_to_shoot = 3;

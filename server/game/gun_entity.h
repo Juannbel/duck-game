@@ -2,6 +2,7 @@
 #define GUN_ENTITY_H
 
 #include <cstdint>
+#include <iostream>
 
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
@@ -42,7 +43,7 @@ public:
 
     virtual void start_shooting() {
         it_since_shoot = trigger_pulled ? it_since_shoot : 0;
-        shooted_bullets = trigger_pulled ? !shooted_bullets ? bullets_to_shoot : shooted_bullets : bullets_to_shoot;
+        shooted_bullets = trigger_pulled ? shooted_bullets : bullets_to_shoot;
         trigger_pulled = true;
     }
 

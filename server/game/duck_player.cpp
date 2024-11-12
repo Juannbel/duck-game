@@ -4,7 +4,6 @@
 #include <cstring>
 #include <memory>
 #include <string>
-#include <iostream>
 
 #include <sys/types.h>
 
@@ -159,7 +158,7 @@ void DuckPlayer::run(bool right) {
 void DuckPlayer::stop_running() { status.is_running = false; }
 
 void DuckPlayer::shoot() {
-    if (!equipped_gun)
+    if (equipped_gun == nullptr)
         return;
     equipped_gun->start_shooting();
     status.is_shooting = true;
@@ -293,18 +292,20 @@ void DuckPlayer::knockback(GunType type) {
 }
 
 uint32_t DuckPlayer::drop_and_pickup() {
+    if (status.is_dead) return 0;
+    
     stop_shooting();
-    std::shared_ptr<GunEntity> new_gun = collectables.pickup(hitbox);
-    if (equipped_gun)
-        equipped_gun->throw_gun(status.facing_right);
-    collectables.drop_gun(equipped_gun, hitbox);
-    equipped_gun = new_gun;
+    std::shared_ptr<GunEntity> old_gun = equipped_gun;
+    equipped_gun = collectables.pickup(hitbox);
+    if (old_gun != nullptr) {
+        old_gun->throw_gun(status.facing_right);
+        collectables.drop_gun(old_gun, hitbox);
+    }
 
     Gun gun_info = {};
-    if (new_gun) {
-        gun_info = new_gun->get_gun_info();
+    if (equipped_gun) {
+        gun_info = equipped_gun->get_gun_info();
     }
-    status.gun = gun_info.type;
     return gun_info.gun_id;
 }
 
@@ -313,6 +314,7 @@ void DuckPlayer::drop_collectable() {
         return;
     if (!status.is_dead)
         equipped_gun->destroy();
+    stop_shooting();
     collectables.drop_gun(equipped_gun, hitbox);
     status.gun = None;
     equipped_gun = nullptr;
