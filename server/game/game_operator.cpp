@@ -110,12 +110,12 @@ void GameOperator::check_spawn_picked(uint32_t id) {
 }
 
 void GameOperator::update_game_status() {
+    collectables.update_guns_and_bullets();
     for (auto& [id, duck]: players) {
         duck.move_duck();
         duck.update_gun_status();
     }
     verify_spawn();
-    collectables.update_guns_and_bullets();
 }
 
 GunType GameOperator::get_random_guntype() {

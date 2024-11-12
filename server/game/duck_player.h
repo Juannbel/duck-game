@@ -28,6 +28,9 @@ private:
     Collision move_sliding();
     Collision normal_duck_move();
     void die();
+    void equip_armor();
+    void equip_helmet();
+    void knockback();
 
 public:
     DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x, int16_t y,
@@ -40,8 +43,6 @@ public:
     void shoot();
     void stop_shooting();
     void update_gun_status();
-    void equip_armor();
-    void equip_helmet();
     void lay_down();
     void stand_up();
     void face_up();
@@ -52,7 +53,6 @@ public:
     void drop_collectable();
     bool get_hit(const Rectangle& bullet, uint8_t damage);
     void slide();
-    void knockback();
     Duck get_status();
     const Coordenades& get_coords();
 };

@@ -15,6 +15,7 @@ protected:
 
     Rectangle hitbox;
     bool facing_right;
+    bool stuck;
     uint8_t it_mooving;
     uint8_t ammo;
     uint16_t range;
@@ -55,7 +56,7 @@ public:
 
     virtual void trhow(bool facing_right);
     void destroy();
-    void set_new_coords(float x, float y);
+    void drop_gun(float x, float y);
     Gun get_gun_info();
     const Rectangle& get_hitbox();
     bool empty() { return ammo == 0; }

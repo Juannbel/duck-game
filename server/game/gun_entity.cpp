@@ -21,6 +21,7 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
         type(gun.type),
         hitbox(),
         facing_right(),
+        stuck(),
         it_mooving(),
         ammo(),
         range(),
@@ -84,6 +85,9 @@ void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool f
 }
 
 void GunEntity::check_movement() {
+    if (stuck) {
+        return;
+    }
     float new_x = hitbox.coords.x;
     if (it_mooving) {
         float move_x = GUN_THROW_SPEED *
@@ -92,18 +96,10 @@ void GunEntity::check_movement() {
         --it_mooving;
     }
     float new_y = hitbox.coords.y + GUN_FALL_SPEED;
-    Coordenades new_coords =
-            collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position;
-    if (new_coords.y >= hitbox.coords.y) {
-        hitbox.coords = new_coords;
-        hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, hitbox.coords.y)
-                                .last_valid_position;
-    } else if (it_mooving) {  // Si fue lanzada adentro de una pared la saco 1/3 de su ancho para
-                              // ver si se desbuggea
-        hitbox.coords.x = new_x > hitbox.coords.x ? hitbox.coords.x - hitbox.width / 3 :
-                                                    hitbox.coords.x + hitbox.width / 3;
-        it_mooving = 0;
-    }
+    hitbox.coords =
+            collisions.check_near_blocks_collision(hitbox, new_x, hitbox.coords.y).last_valid_position; 
+    hitbox.coords = collisions.check_near_blocks_collision(hitbox, hitbox.coords.x, new_y)
+                            .last_valid_position;
 }
 
 void GunEntity::update_status() {
@@ -123,9 +119,24 @@ void GunEntity::destroy() {
     trigger_pulled = false;
 }
 
-void GunEntity::set_new_coords(float x, float y) {
-    hitbox.coords.x = x;
+void GunEntity::drop_gun(float x, float y) {
+    stuck = false;
+    float new_x = x;
+    new_x -= (static_cast<float>(DUCK_HITBOX_WIDTH) / 2);
+    y -= hitbox.height;
     hitbox.coords.y = y;
+    hitbox.coords.x = new_x;
+    Collision coll = collisions.check_near_blocks_collision(hitbox, new_x, y);
+    if (coll.vertical_collision && coll.horizontal_collision) {
+        new_x = x + DUCK_HITBOX_WIDTH - hitbox.width - 1;
+        coll = collisions.check_near_blocks_collision(hitbox, new_x, y);
+        if (coll.vertical_collision && coll.horizontal_collision) {
+            new_x = x + 1;
+            coll = collisions.check_near_blocks_collision(hitbox, new_x, y);
+            stuck = true;
+        }
+    }
+    hitbox.coords.x = new_x;
 }
 
 Gun GunEntity::get_gun_info() {
