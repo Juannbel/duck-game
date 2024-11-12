@@ -95,6 +95,8 @@ void ConstantLooper::run() try {
 
         render(camera, map);
 
+        sound_manager.update();
+
         sleep_or_catch_up(t1);
     }
 } catch (const ClosedQueue& e) {
@@ -132,6 +134,12 @@ void ConstantLooper::process_snapshot() {
     std::unordered_set<uint8_t> ducks_in_snapshot;
     for (auto& duck: last_snapshot.ducks) {
         ducks_in_snapshot.insert(duck.duck_id);
+        if (ducks_renderables.find(duck.duck_id) != ducks_renderables.end()) {
+            if (!ducks_renderables[duck.duck_id]->is_dead() && duck.is_dead)
+                sound_manager.dead_sound();
+            if (duck.gun == ActiveGrenade)
+                sound_manager.active_grenade_sound();
+        }
         ducks_renderables.try_emplace(duck.duck_id, std::make_unique<RenderableDuck>(duck.duck_id));
         ducks_renderables[duck.duck_id]->update(duck);
     }
@@ -164,6 +172,8 @@ void ConstantLooper::process_snapshot() {
         collectables_in_snapshot.insert(gun.gun_id);
         collectables_renderables.try_emplace(
                 gun.gun_id, std::make_unique<RenderableCollectable>(gun.gun_id, gun.type));
+        if (gun.type == ActiveGrenade)
+            sound_manager.active_grenade_sound();
         collectables_renderables[gun.gun_id]->update(gun);
     }
 
