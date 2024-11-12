@@ -41,13 +41,13 @@ public:
     GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);
 
     virtual void start_shooting() {
-        it_since_shoot = trigger_pulled ? it_since_shoot : 1;
+        it_since_shoot = trigger_pulled ? it_since_shoot : 0;
+        shooted_bullets = trigger_pulled ? !shooted_bullets ? bullets_to_shoot : shooted_bullets : bullets_to_shoot;
         trigger_pulled = true;
     }
 
     virtual void stop_shooting() {
         trigger_pulled = false;
-        it_since_shoot = it_to_shoot;
     }
 
     virtual bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) = 0;

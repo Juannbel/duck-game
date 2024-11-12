@@ -134,6 +134,7 @@ LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets, CollisionChecks& coll
     hitbox.height = LASER_RIFLE_HITBOX_HEIGHT;
     hitbox.width = LASER_RIFLE_HITBOX_WIDTH;
     ammo = 10;
+    bullets_to_shoot = 1;
     it_to_shoot = 10;
     it_since_shoot = it_to_shoot;
     initial_angle = 0;
@@ -145,6 +146,9 @@ LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets, CollisionChecks& coll
 // void LaserRifleG::start_shooting() {}
 bool LaserRifleG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
+        if (trigger_pulled && !it_since_shoot) {
+            shooted_bullets = bullets_to_shoot;
+        }
         add_bullet(player_hb, facing_right,facing_up);
     }
     return false;
@@ -157,7 +161,8 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     hitbox.height = AK47_HITBOX_HEIGHT;
     hitbox.width = AK47_HITBOX_WIDTH;
     ammo = 30;
-    it_to_shoot = 8;
+    bullets_to_shoot = 1;
+    it_to_shoot = TICKS/15;
     it_since_shoot = it_to_shoot;
     initial_angle = 0;
     inaccuracy = 15;
@@ -175,6 +180,9 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 bool Ak47G::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
         uint8_t aux = ammo;
+        if (trigger_pulled && !it_since_shoot) {
+            shooted_bullets = bullets_to_shoot;
+        }
         add_bullet(player_hb, facing_right,facing_up);
         return aux > ammo;
     }
@@ -187,6 +195,7 @@ DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets, CollisionChecks
     hitbox.height = DUELING_PISTOL_HITBOX_HEIGHT;
     hitbox.width = DUELING_PISTOL_HITBOX_WIDTH;
     ammo = 1;
+    bullets_to_shoot = 1;
     it_to_shoot = 0;
     initial_angle = 0;
     inaccuracy = 8;
@@ -208,6 +217,7 @@ CowboyPistolG::CowboyPistolG(Gun& gun, BulletManager* bullets, CollisionChecks& 
     hitbox.height = COWBOY_PISTOL_HITBOX_HEIGHT;
     hitbox.width = COWBOY_PISTOL_HITBOX_WIDTH;
     ammo = 6;
+    bullets_to_shoot = 1;
     it_to_shoot = 0;
     initial_angle = 0;
     inaccuracy = 0;
@@ -228,6 +238,7 @@ MagnumG::MagnumG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     hitbox.height = MAGNUM_HITBOX_HEIGHT;
     hitbox.width = MAGNUM_HITBOX_WIDTH;
     ammo = 6;
+    bullets_to_shoot = 1;
     it_to_shoot = 0;
     initial_angle = 0;
     inaccuracy = 10;
@@ -262,9 +273,10 @@ ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
 // void ShootgunG::stop_shooting() {}
 bool ShootgunG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
-        if (!it_reloading && trigger_pulled) {
+        if (!it_reloading && shooted_bullets) {
             it_reloading = 1;
             trigger_pulled = false;
+            shooted_bullets = 0;
             return false;
         }
         uint8_t aux = ammo;
@@ -285,6 +297,7 @@ SniperG::SniperG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     hitbox.height = SNIPER_HITBOX_HEIGHT;
     hitbox.width = SNIPER_HITBOX_WIDTH;
     ammo = 3;
+    bullets_to_shoot = 1;
     inaccuracy = 0;
     it_reloading = 0;
     range = 64 * BLOCK_SIZE;
@@ -294,12 +307,13 @@ SniperG::SniperG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 // void SniperG::stop_shooting() {}
 bool SniperG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
-        if (!it_reloading && trigger_pulled) {
+        if (!it_reloading && shooted_bullets) {
             add_bullet(player_hb, facing_right,facing_up);
             it_reloading = TICKS/2;
             trigger_pulled = false;
         } else {
             it_reloading = !it_reloading ? 0 : it_reloading-1;
+            shooted_bullets = 0;
         }
     }
     return false;
@@ -310,6 +324,7 @@ HelmetG::HelmetG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     hitbox.height = HELMET_HITBOX_HEIGHT;
     hitbox.width = HELMET_HITBOX_WIDTH;
     ammo = 1;
+    bullets_to_shoot = 1;
 }
 
 // void HelmetG::start_shooting() {}
@@ -318,7 +333,7 @@ bool HelmetG::update_bullets(const Rectangle& player_hb, bool facing_right, bool
     (void) player_hb;
     (void) facing_right;
     (void) facing_up;
-    if (trigger_pulled && ammo == 1) {
+    if (shooted_bullets) {
         return true;
     }
     return false; 
@@ -329,6 +344,7 @@ ArmorG::ArmorG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     hitbox.height = HELMET_HITBOX_HEIGHT;
     hitbox.width = HELMET_HITBOX_WIDTH;
     ammo = 1;
+    bullets_to_shoot = 1;
 }
 
 // void ArmorG::start_shooting() {}
@@ -337,7 +353,7 @@ bool ArmorG::update_bullets(const Rectangle& player_hb, bool facing_right, bool 
     (void) player_hb;
     (void) facing_right;
     (void) facing_up;
-    if (trigger_pulled && ammo == 1) {
+    if (shooted_bullets) {
         return true;
     }
     return false; 
