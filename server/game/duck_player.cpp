@@ -158,7 +158,7 @@ void DuckPlayer::run(bool right) {
 void DuckPlayer::stop_running() { status.is_running = false; }
 
 void DuckPlayer::shoot() {
-    if (equipped_gun == nullptr)
+    if (!equipped_gun || status.is_laying)
         return;
     equipped_gun->start_shooting();
     status.is_shooting = true;
@@ -213,6 +213,7 @@ void DuckPlayer::lay_down() {
     if (status.is_laying || it_sliding) {
         hitbox.coords.y += DUCK_LAYED_HITBOX_HEIGHT;
         hitbox.height = DUCK_LAYED_HITBOX_HEIGHT;
+        stop_shooting();
     }
 }
 

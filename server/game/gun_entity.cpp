@@ -72,7 +72,7 @@ void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool f
             --ammo;
         }
     }
-    if (trigger_pulled && it_to_shoot && it_since_shoot) {
+    if (it_to_shoot && it_since_shoot) {
         --it_since_shoot;
     }
 }
