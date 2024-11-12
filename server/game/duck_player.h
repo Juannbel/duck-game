@@ -30,7 +30,7 @@ private:
     void die();
     void equip_armor();
     void equip_helmet();
-    void knockback();
+    void knockback(GunType gun);
 
 public:
     DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x, int16_t y,

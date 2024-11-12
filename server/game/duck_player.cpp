@@ -20,6 +20,7 @@ const uint8_t SLIDING_ITS = TICKS / 2;
 const float DUCK_SPEED = 120.0f / TICKS;
 const float FALL_SPEED = 120.0f / TICKS;
 const float JUMP_SPEED = FALL_SPEED * 4;
+const float KNOCKBACK_MOVE = 4;
 
 DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x,
                        int16_t y, uint8_t id, const std::string& name):
@@ -183,7 +184,7 @@ void DuckPlayer::update_gun_status() {
                 equip_helmet();
                 break;
             default:
-                knockback();
+                knockback(g_type);
                 break;
         }
     }
@@ -281,7 +282,14 @@ void DuckPlayer::slide() {
     status.is_flapping = false;
 }
 
-void DuckPlayer::knockback() {}
+void DuckPlayer::knockback(GunType type) {
+    float new_x = 0;
+    float move = type == Shootgun ? KNOCKBACK_MOVE * 3 : KNOCKBACK_MOVE;
+    if (!status.facing_up)
+        new_x = status.facing_right ? hitbox.coords.x - move : hitbox.coords.x + move;
+    float new_y = status.facing_up ? hitbox.coords.y + move : hitbox.coords.y;
+    hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position;
+}
 
 uint32_t DuckPlayer::drop_and_pickup() {
     stop_shooting();

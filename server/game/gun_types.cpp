@@ -150,7 +150,9 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 
 bool Ak47G::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
+        uint8_t aux = ammo;
         add_bullet(player_hb, facing_right,facing_up);
+        return aux > ammo;
     }
     return false;
 }
@@ -212,7 +214,9 @@ MagnumG::MagnumG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 // void MagnumG::stop_shooting() {}
 bool MagnumG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
+        uint8_t aux = ammo;
         add_bullet(player_hb, facing_right,facing_up);
+        return aux > ammo;
     }
     return false;
 }
@@ -233,9 +237,11 @@ ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
 // void ShootgunG::stop_shooting() {}
 bool ShootgunG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
+        uint8_t aux = ammo;
         for (int i = 0; i < 6; ++i) {
             add_bullet(player_hb, facing_right,facing_up);
         }
+        return aux > ammo;
     }
     return false;
 }
