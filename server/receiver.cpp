@@ -26,12 +26,22 @@ ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_mon
 
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
 void ServerReceiver::run() {
-    setup_game();
+    try {
+        setup_game();
+    } catch (const SocketWasClosed& se) {
+        is_alive = false;
+        std::cout << "Client disconnected when setuping game" << std::endl;
+        return;
+    } catch (const LibError& le) {
+        std::cout << "LibError when setuping game" << std::endl;
+        is_alive = false;
+        return;
+    }
 
     // Ya tengo todo, lanzo thread sender
     sender.start();
 
-    while (_keep_running) {
+    while (_keep_running && is_alive) {
         action action;
         try {
             action = protocol.recv_player_action();
@@ -41,7 +51,9 @@ void ServerReceiver::run() {
             break;
         } catch (const SocketWasClosed& e) {
             // TODO: Ver donde va ubicado esto (remove_player)
-            games_monitor.remove_player(gameId, playerId);
+            if (is_alive) {
+                games_monitor.remove_player(gameId, playerId);
+            }
             std::cout << "Client dissconected" << std::endl;
             break;
         }
@@ -74,8 +86,18 @@ void ServerReceiver::setup_game() {
                 continue;
             }
             gameId = game_info.game_id;
-            // esperamos comando para iniciar juego
-            protocol.receive_cmd();
+
+            while (true) {
+                int32_t cmd = protocol.receive_cmd();
+                if (cmd == START_GAME) {
+                    break;
+                } else if (cmd == GET_INFO) {
+                    std::vector<LobbyInfo> lobbies(1);
+                    lobbies[0] = games_monitor.get_lobby_info(gameId);
+                    protocol.send_lobbies_info(lobbies);
+                }
+            }
+
             games_monitor.start_game(gameId);
             break;
         } else if (cmd == LIST_GAMES) {

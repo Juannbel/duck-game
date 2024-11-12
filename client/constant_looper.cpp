@@ -178,6 +178,9 @@ void ConstantLooper::process_snapshot() {
     std::unordered_set<uint32_t> bullets_in_snapshot;
     for (const Bullet& bullet: last_snapshot.bullets) {
         bullets_in_snapshot.insert(bullet.bullet_id);
+        if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end())
+            sound_manager.shoot_sound(bullet.type);
+
         bullets_renderables.try_emplace(bullet.bullet_id, std::make_unique<RenderableBullet>(
                                                                   bullet.bullet_id, bullet.type));
         bullets_renderables[bullet.bullet_id]->update(bullet);

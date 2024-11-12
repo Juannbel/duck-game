@@ -85,3 +85,15 @@ duck_3:
           x_offset_left: 10,
           y_offset: 9,
         }
+
+  facing_up:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - {
+          x: 352,
+          y: *y_row,
+          x_offset_right: 10,
+          x_offset_left: 10,
+          y_offset: 9,
+        }

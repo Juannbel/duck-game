@@ -25,8 +25,7 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         round_finished(),
         game_finished(),
         paths_to_maps(map_loader.list_maps(SERVER_DATA_PATH)),
-        curr_map(),
-        ducks_info() {}
+        curr_map() {}
 
 std::string get_rand_string(const std::vector<std::string>& v_strings) {
     std::random_device rd;
@@ -72,6 +71,12 @@ void GameLoop::run() {
     }
 
     _is_alive = false;
+
+    // Caso en el que se cierra el gameloop, si hay algun cliente se le avisa que termino el juego
+    Snapshot actual_status = {};
+    game_operator.get_snapshot(actual_status);
+    actual_status.game_finished = true;
+    push_responce(actual_status);
 }
 
 void GameLoop::initial_snapshot() {
@@ -84,7 +89,7 @@ void GameLoop::initial_snapshot() {
 }
 
 void GameLoop::pop_and_process_all() {
-    struct action action;
+    action action{};
     while (actions_queue.try_pop(action)) {
         game_operator.process_action(action);
     }
@@ -106,7 +111,7 @@ void GameLoop::create_and_push_snapshot(auto& t1, uint& its_since_finish) {
         initialice_new_round();
         initial_snapshot();
         t1 = high_resolution_clock::now();
-        struct action action;
+        action action{};
         while (actions_queue.try_pop(action)) {}
         round_number = !round_number && !game_finished ? 5 : round_number;
         its_since_finish = its_after_round;
@@ -162,7 +167,6 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
     }
 }
 
-// uint8_t GameLoop::add_player() {
 uint8_t GameLoop::add_player(const std::string& player_name) {
     if (ducks_info.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
@@ -181,9 +185,19 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
     }
 
     if (ducks_info.size() <= 1) {
-        // TODO: ver como borrar el game
+        _keep_running = false;
+        if (on_game_end_callback) {
+            std::cout << "Game ended" << std::endl;
+            on_game_end_callback();
+        }
     }
 }
 
+void GameLoop::set_on_game_end_callback(std::function<void()> callback) {
+    on_game_end_callback = std::move(callback);
+}
 
-GameLoop::~GameLoop() {}
+GameLoop::~GameLoop() {
+    _keep_running = false;
+    actions_queue.close();
+}

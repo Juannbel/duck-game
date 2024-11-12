@@ -36,6 +36,7 @@ void RenderableDuck::load_animations() {
     load_animation("laying");
     load_animation("standing");
     load_animation("walking");
+    load_animation("facing_up");
 }
 
 void RenderableDuck::update(const Duck& duck) {
@@ -57,6 +58,8 @@ void RenderableDuck::update(const Duck& duck) {
         curr_animation = animations["walking"];
     } else if (duck.is_laying) {
         curr_animation = animations["laying"];
+    } else if (duck.facing_up) {
+        curr_animation = animations["facing_up"];
     } else {
         curr_animation = animations["standing"];
     }

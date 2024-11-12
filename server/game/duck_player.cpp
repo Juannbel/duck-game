@@ -26,6 +26,7 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& colli
         status(),
         it_jumping(),
         it_flapping(),
+        it_sliding(),
         ready_to_jump(true),
         hitbox(),
         collisions(collisions),
