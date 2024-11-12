@@ -52,8 +52,7 @@ int16_t GunEntity::get_rand_angle() {
 }
 
 void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool facing_up) {
-    if ((trigger_pulled && it_since_shoot > it_to_shoot) ||
-        (bullets_to_shoot > shooted_bullets && shooted_bullets > 0)) {
+    if (!it_since_shoot && shooted_bullets && ammo) {
         int16_t angle = facing_right ? 0 : 180;
         angle = !facing_up ? angle : facing_right ? 70 : 110;
         angle += get_rand_angle();
@@ -65,17 +64,16 @@ void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool f
         b_hb.height = BULLET_HITBOX_HEIGHT;
         b_hb.width = BULLET_HITBOX_WIDTH;
         bullets->add_bullet(b_hb, angle, type, range);
-        it_since_shoot = 0;
-        ++shooted_bullets;
-        if (ammo > 0) {
+        it_since_shoot = it_to_shoot;
+        if (shooted_bullets) {
+            --shooted_bullets;
+        }
+        if (ammo) {
             --ammo;
         }
     }
-    if (bullets_to_shoot == shooted_bullets) {
-        shooted_bullets = 0;
-    }
-    if (it_to_shoot > 0) {
-        ++it_since_shoot;
+    if (trigger_pulled && it_to_shoot && it_since_shoot) {
+        --it_since_shoot;
     }
 }
 
