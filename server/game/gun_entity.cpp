@@ -67,7 +67,6 @@ void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool f
         hitbox.width = BULLET_HITBOX_WIDTH;
         bullets->add_bullet(b_hb, angle, type, range);
         it_since_shoot = 0;
-        it_reloading = 0;
         ++shooted_bullets;
         if (ammo > 0) {
             --ammo;
@@ -78,9 +77,6 @@ void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool f
     }
     if (it_to_shoot > 0) {
         ++it_since_shoot;
-    }
-    if (it_reloading < it_to_reload) {
-        ++it_reloading;
     }
 }
 
