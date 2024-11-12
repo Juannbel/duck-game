@@ -16,8 +16,10 @@ class BoxEntity {
     CollisionChecks& collisions;
     public:
     BoxEntity(float x, float y, uint32_t id, CollisionChecks& collisions);
-    void get_hit(const Rectangle& b_rect, uint8_t damage);
+    bool get_hit(const Rectangle& b_rect, uint8_t damage);
     bool destroyed();
+    Coordenades& get_coords();
+    Box get_info();
 };
 
 #endif

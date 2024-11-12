@@ -9,6 +9,7 @@
 
 #include "common/snapshot.h"
 #include "server/game/bullet_entity.h"
+#include "server/game/boxes.h"
 
 #include "collisions.h"
 class DuckPlayer;
@@ -19,11 +20,11 @@ private:
     std::map<uint32_t, BulletEntity> bullets;
     CollisionChecks& collisions;
     std::unordered_map<uint8_t, DuckPlayer>& ducks;
+    std::unordered_map<uint32_t, BoxEntity>& boxes;
 
 public:
-    explicit BulletManager(CollisionChecks&, std::unordered_map<uint8_t, DuckPlayer>& ducks);
+    explicit BulletManager(CollisionChecks&, std::unordered_map<uint8_t, DuckPlayer>& ducks, std::unordered_map<uint32_t, BoxEntity>& boxes);
     void clear_bullets();
-    void add_bullet(const Duck& info, int16_t angle, GunType type, uint16_t range);
     void add_bullet(const Rectangle& hb, int16_t angle, GunType type, uint16_t range);
     void update_bullets();
     void add_bullets_to_snapshot(Snapshot&);

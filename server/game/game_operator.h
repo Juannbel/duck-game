@@ -32,15 +32,17 @@ private:
     CollisionChecks collisions;
     CollectablesManager collectables;
     std::vector<Spawn> spawns;
-    std::vector<BoxEntity> boxes;
+    std::unordered_map<uint32_t, BoxEntity> boxes;
 
     void verify_spawn();
+    void check_broken_boxes();
     void check_spawn_picked(uint32_t id);
-    GunType get_random_guntype();
+    GunType get_random_guntype(bool with_exploded_grenade);
 
     void load_map(const Map& map_dto);
     void initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info,
                             const Map& map_info);
+    void initialize_boxes(Map& map_info);
 
 public:
     GameOperator();

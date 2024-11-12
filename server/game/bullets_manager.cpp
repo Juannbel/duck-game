@@ -12,24 +12,19 @@
 
 
 BulletManager::BulletManager(CollisionChecks& collisions,
-                             std::unordered_map<uint8_t, DuckPlayer>& ducks):
-        bullet_id(), collisions(collisions), ducks(ducks) {}
+                             std::unordered_map<uint8_t, DuckPlayer>& ducks,
+                             std::unordered_map<uint32_t, BoxEntity>& boxes):
+        bullet_id(), collisions(collisions), ducks(ducks), boxes(boxes) {}
 
 void BulletManager::clear_bullets() {
     bullet_id = 0;
     bullets.clear();
 }
 
-void BulletManager::add_bullet(const Duck& info, int16_t angle, GunType type, uint16_t range) {
-    ++bullet_id;
-    bullets.emplace(bullet_id,
-                    BulletEntity(info, collisions, ducks, angle, type, bullet_id, range));
-}
-
 void BulletManager::add_bullet(const Rectangle& info, int16_t angle, GunType type, uint16_t range) {
     ++bullet_id;
     bullets.emplace(bullet_id,
-                    BulletEntity(info, collisions, ducks, angle, type, bullet_id, range));
+                    BulletEntity(info, collisions, ducks, boxes, angle, type, bullet_id, range));
 }
 
 void BulletManager::update_bullets() {

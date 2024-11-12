@@ -6,6 +6,7 @@
 #include <sys/types.h>
 
 #include "common/snapshot.h"
+#include "server/game/boxes.h"
 #include "server/game/collisions.h"
 #include "server/game/duck_player.h"
 
@@ -18,30 +19,9 @@ const int SPEED_PER_IT = TICKS / 30;
 const float GUN_FALL_SPEED = 120.0f / TICKS;
 const float GUN_THROW_SPEED = 120.0f / TICKS;
 
-BulletEntity::BulletEntity(const Duck& info, CollisionChecks& collision_ckecker,
-                           std::unordered_map<uint8_t, DuckPlayer>& ducks, int16_t angle,
-                           GunType type, uint32_t id, uint16_t range):
-        status(),
-        hitbox(),
-        speed(SPEED_PER_TICK(360.0f)),
-        damage(50),
-        range(range),
-        is_alive(true),
-        collisions(collision_ckecker),
-        ducks(ducks) {
-    int16_t x =
-            info.facing_right ? info.x + DUCK_HITBOX_WIDTH + 1 : info.x - BULLET_HITBOX_WIDTH - 1;
-    int16_t y =
-            info.facing_up ? info.y - BULLET_HITBOX_HEIGHT - 1 : info.y + DUCK_LAYED_HITBOX_HEIGHT;
-    hitbox.coords.x = x;
-    hitbox.coords.y = y;
-    hitbox.height = BULLET_HITBOX_HEIGHT;
-    hitbox.width = BULLET_HITBOX_WIDTH;
-    status = {id, x, y, static_cast<uint16_t>(angle % 360), type};
-}
-
 BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_ckecker,
-                           std::unordered_map<uint8_t, DuckPlayer>& ducks, int16_t angle,
+                           std::unordered_map<uint8_t, DuckPlayer>& ducks, 
+                           std::unordered_map<uint32_t, BoxEntity>& boxes, int16_t angle,
                            GunType type, uint32_t id, uint16_t range):
         status(),
         hitbox(info),
@@ -50,17 +30,23 @@ BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_cke
         range(range),
         is_alive(true),
         collisions(collision_ckecker),
-        ducks(ducks) {
+        ducks(ducks),
+        boxes(boxes) {
     status = {id, static_cast<int16_t>(info.coords.x), static_cast<int16_t>(info.coords.y),
               static_cast<uint16_t>(angle % 360), type};
 }
 
-bool BulletEntity::check_collision_with_ducks() {
+bool BulletEntity::check_collision_with_boxes_ducks() {
     for (auto& [id, duck]: ducks) {
         if (duck.get_hit(hitbox, damage)) {
             if (status.type == Banana) {
                 duck.slide();
             }
+            return true;
+        }
+    }
+    for (auto& [id, box] : boxes) {
+        if (box.get_hit(hitbox, damage)) {
             return true;
         }
     }
@@ -120,7 +106,7 @@ void BulletEntity::move_banana() {
 void BulletEntity::update_status() {
     if (status.type == Banana) {
         move_banana();
-        if (check_collision_with_ducks()) {
+        if (check_collision_with_boxes_ducks()) {
             is_alive = false;
         }
         status.x = static_cast<int16_t>(hitbox.coords.x);
@@ -136,7 +122,7 @@ void BulletEntity::update_status() {
             is_alive = false;
         }
         range = range > PARTIAL_MOVE ? range - PARTIAL_MOVE : 0;
-        bool hit = check_collision_with_ducks();
+        bool hit = check_collision_with_boxes_ducks();
         if (hit || !is_alive || range == 0) {
             is_alive = false;
             break;

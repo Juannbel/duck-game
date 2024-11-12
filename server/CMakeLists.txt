@@ -18,6 +18,7 @@ target_sources(taller_server
     game/collectables_manager.cpp
     game/bullets_manager.cpp
     game/bullet_entity.cpp
+    game/boxes.cpp
     game.cpp
     games_monitor.cpp
     PUBLIC
@@ -38,6 +39,7 @@ target_sources(taller_server
     game/collectables_manager.h
     game/bullets_manager.h
     game/bullet_entity.h
+    game/boxes.h
     game/ticks.h
     game.h
     games_monitor.h

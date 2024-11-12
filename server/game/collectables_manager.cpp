@@ -1,5 +1,6 @@
 #include "collectables_manager.h"
 
+#include <cstdint>
 #include <unordered_map>
 #include <vector>
 
@@ -13,8 +14,9 @@
 
 
 CollectablesManager::CollectablesManager(CollisionChecks& collision,
-                                         std::unordered_map<uint8_t, DuckPlayer>& ducks):
-        collisions(collision), bullets(collision, ducks), collectable_id() {}
+                                         std::unordered_map<uint8_t, DuckPlayer>& ducks,
+                                         std::unordered_map<uint32_t, BoxEntity>& boxes):
+        collisions(collision), bullets(collision, ducks, boxes), collectable_id() {}
 
 void CollectablesManager::reset_collectables() {
     collectable_id = 0;
@@ -33,7 +35,11 @@ void CollectablesManager::new_gun(Gun& gun) {
     uint32_t id = gun.gun_id;
     switch (gun.type) {
         case Grenade:
-            guns.emplace(id, new GrenadeG(gun, &bullets, collisions));
+            guns.emplace(id, new GrenadeG(gun, &bullets, collisions, false));
+            break;
+        case GunTypeCount:
+            gun.type = Grenade;
+            guns.emplace(id, new GrenadeG(gun, &bullets, collisions, true));
             break;
         case Banana:
             guns.emplace(id, new BananaG(gun, &bullets, collisions));
@@ -76,6 +82,9 @@ void CollectablesManager::new_gun(Gun& gun) {
 void CollectablesManager::add_gun(Gun& gun) {
     if (gun.type == None) {
         return;
+    }
+    if (gun.gun_id == 0) {
+        gun.gun_id = ++collectable_id;
     }
     new_gun(gun);
 }

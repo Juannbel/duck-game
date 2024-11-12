@@ -13,7 +13,7 @@ BoxEntity::BoxEntity(float x, float y, uint32_t id, CollisionChecks& collisions)
     hitbox.width = BOX_HITBOX_WIDTH;
 }
 
-void BoxEntity::get_hit(const Rectangle& b_rec, uint8_t damage) {
+bool BoxEntity::get_hit(const Rectangle& b_rec, uint8_t damage) {
     Collision coll = collisions.rectangles_collision(hitbox, b_rec);
     if (coll.horizontal_collision || coll.vertical_collision) {
         if (damage > health) {
@@ -30,9 +30,15 @@ void BoxEntity::get_hit(const Rectangle& b_rec, uint8_t damage) {
         } else if (health >= 0) {
             info.status = HeavyDamage;
         }
+        return true;
     }
+    return false;
 }
 
-bool BoxEntity::destoyed() {
+bool BoxEntity::destroyed() {
     return health == 0;
 }
+
+Coordenades& BoxEntity::get_coords() { return hitbox.coords; }
+
+Box BoxEntity::get_info() { return info; }

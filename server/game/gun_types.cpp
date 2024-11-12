@@ -8,12 +8,15 @@
 
 const uint8_t AK_CD = TICKS / 6;
 
-GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
+GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions, bool explode):
         GunEntity(gun, bullets, collisions) {
     ammo = 30;
     it_to_shoot = TICKS * 4;
     inaccuracy = 360;
     range = 5 * BLOCK_SIZE;
+    if (explode) {
+        explode_grenade();
+    }
 }
 
 void GrenadeG::stop_shooting() {}
