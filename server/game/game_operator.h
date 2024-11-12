@@ -10,6 +10,7 @@
 #include "common/commands.h"
 #include "common/map.h"
 #include "common/snapshot.h"
+#include "server/game/boxes.h"
 
 #include "collectables_manager.h"
 #include "collisions.h"
@@ -31,6 +32,7 @@ private:
     CollisionChecks collisions;
     CollectablesManager collectables;
     std::vector<Spawn> spawns;
+    std::vector<BoxEntity> boxes;
 
     void verify_spawn();
     void check_spawn_picked(uint32_t id);

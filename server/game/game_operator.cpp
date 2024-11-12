@@ -29,6 +29,10 @@ void GameOperator::load_map(const Map& map_info) {
                         0};
         spawns.push_back(act_spawn);
     }
+    //boxes.clear();
+    //for (const auto& ; condition; inc-expression) {
+    //
+    //}
 }
 
 void GameOperator::initialize_players(

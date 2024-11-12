@@ -4,6 +4,7 @@
 #include <cstring>
 #include <memory>
 #include <string>
+#include <iostream>
 
 #include <sys/types.h>
 
@@ -283,10 +284,10 @@ void DuckPlayer::slide() {
 }
 
 void DuckPlayer::knockback(GunType type) {
-    float new_x = 0;
+    float new_x = hitbox.coords.x;
     float move = type == Shootgun ? KNOCKBACK_MOVE * 3 : KNOCKBACK_MOVE;
     if (!status.facing_up)
-        new_x = status.facing_right ? hitbox.coords.x - move : hitbox.coords.x + move;
+        new_x = status.facing_right ? new_x - move : new_x + move;
     float new_y = status.facing_up ? hitbox.coords.y + move : hitbox.coords.y;
     hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position;
 }
@@ -295,7 +296,7 @@ uint32_t DuckPlayer::drop_and_pickup() {
     stop_shooting();
     std::shared_ptr<GunEntity> new_gun = collectables.pickup(hitbox);
     if (equipped_gun)
-        equipped_gun->trhow(status.facing_right);
+        equipped_gun->throw_gun(status.facing_right);
     collectables.drop_gun(equipped_gun, hitbox);
     equipped_gun = new_gun;
 

@@ -33,7 +33,6 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
         ready_to_shoot(),
         it_since_shoot(),
         it_to_shoot(),
-        it_to_reload(),
         it_reloading(),
         bullets(bullets),
         collisions(collisions) {
@@ -56,7 +55,7 @@ void GunEntity::add_bullet(const Rectangle& player_hb, bool facing_right, bool f
     if ((trigger_pulled && it_since_shoot > it_to_shoot) ||
         (bullets_to_shoot > shooted_bullets && shooted_bullets > 0)) {
         int16_t angle = facing_right ? 0 : 180;
-        angle = facing_up ? 90 : angle;
+        angle = !facing_up ? angle : facing_right ? 70 : 110;
         angle += get_rand_angle();
         Rectangle b_hb{};
         b_hb.coords.x =
@@ -102,7 +101,7 @@ void GunEntity::update_status() {
     check_movement();
 }
 
-void GunEntity::trhow(bool facing_right) {
+void GunEntity::throw_gun(bool facing_right) {
     this->facing_right = facing_right;
     it_mooving = TICKS / 2;
 }
@@ -119,7 +118,7 @@ void GunEntity::drop_gun(float x, float y) {
     stuck = false;
     float new_x = x;
     new_x -= (static_cast<float>(DUCK_HITBOX_WIDTH) / 2);
-    y -= hitbox.height;
+    y -= (hitbox.height);
     hitbox.coords.y = y;
     hitbox.coords.x = new_x;
     Collision coll = collisions.check_near_blocks_collision(hitbox, new_x, y);
@@ -129,7 +128,7 @@ void GunEntity::drop_gun(float x, float y) {
         if (coll.vertical_collision && coll.horizontal_collision) {
             new_x = x + 1;
             coll = collisions.check_near_blocks_collision(hitbox, new_x, y);
-            stuck = true;
+            stuck = coll.vertical_collision && coll.horizontal_collision;
         }
     }
     hitbox.coords.x = new_x;

@@ -27,7 +27,6 @@ protected:
     bool ready_to_shoot;
     uint16_t it_since_shoot;
     uint16_t it_to_shoot;
-    uint16_t it_to_reload;
     uint16_t it_reloading;
     BulletManager* bullets;
     CollisionChecks& collisions;
@@ -54,7 +53,7 @@ public:
     virtual bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) = 0;
     virtual void update_status();
 
-    virtual void trhow(bool facing_right);
+    virtual void throw_gun(bool facing_right);
     void destroy();
     void drop_gun(float x, float y);
     Gun get_gun_info();

@@ -67,7 +67,7 @@ bool BananaG::update_bullets(const Rectangle& player_hb, bool facing_right, bool
     return false; 
 }
 
-void BananaG::trhow(bool facing_right) {
+void BananaG::throw_gun(bool facing_right) {
     this->facing_right = facing_right;
     it_mooving = TICKS / 2;
     if (it_since_shoot > 0 && type == Banana) {
@@ -90,8 +90,6 @@ PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& co
     initial_angle = 0;
     inaccuracy = 10;
     bullets_to_shoot = 3;
-    it_to_reload = TICKS / 2;
-    it_reloading = it_to_reload;
     range = 35 * BLOCK_SIZE;
 }
 
@@ -112,8 +110,6 @@ LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets, CollisionChecks& coll
     it_since_shoot = it_to_shoot;
     initial_angle = 0;
     inaccuracy = 10;
-    it_to_reload = TICKS / 2;
-    it_reloading = it_to_reload;
     range = 30 * BLOCK_SIZE;
 }
 
@@ -135,8 +131,6 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     it_since_shoot = it_to_shoot;
     initial_angle = 0;
     inaccuracy = 15;
-    it_to_reload = TICKS / 2;
-    it_reloading = it_to_reload;
     range = 13 * BLOCK_SIZE;
 }
 
@@ -164,8 +158,6 @@ DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets, CollisionChecks
     it_to_shoot = 0;
     initial_angle = 0;
     inaccuracy = 8;
-    it_to_reload = 0;
-    it_reloading = it_to_reload;
     range = 5 * BLOCK_SIZE;
 }
 
@@ -185,8 +177,6 @@ CowboyPistolG::CowboyPistolG(Gun& gun, BulletManager* bullets, CollisionChecks& 
     it_to_shoot = 0;
     initial_angle = 0;
     inaccuracy = 0;
-    it_to_reload = 0;
-    it_reloading = it_to_reload;
     range = 20 * BLOCK_SIZE;
 }
 
@@ -205,8 +195,6 @@ MagnumG::MagnumG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     it_to_shoot = 0;
     initial_angle = 0;
     inaccuracy = 10;
-    it_to_reload = 0;
-    it_reloading = it_to_reload;
     range = 20 * BLOCK_SIZE;
 }
 
