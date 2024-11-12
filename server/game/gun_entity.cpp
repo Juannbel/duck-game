@@ -92,7 +92,7 @@ void GunEntity::check_movement() {
     }
     float new_y = hitbox.coords.y + GUN_FALL_SPEED;
     hitbox.coords =
-            collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position; 
+            collisions.check_near_blocks_collision(hitbox, hitbox.coords.x, new_y).last_valid_position;
     hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, hitbox.coords.y)
                             .last_valid_position;
 

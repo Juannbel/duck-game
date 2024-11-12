@@ -21,6 +21,7 @@ uint32_t RenderableCollectable::get_id() { return id; }
 
 void RenderableCollectable::update(const Gun& snapshot) {
     assert(snapshot.gun_id == id);
+    animation.update();
     position.x = snapshot.x;
     position.y = snapshot.y;
 }
@@ -48,4 +49,6 @@ std::unordered_map<GunType, std::string> RenderableCollectable::collectable_to_s
         {Shootgun, "shootgun"},
         {Sniper, "sniper"},
         {Helmet, "helmet"},
-        {Armor, "armor"}};
+        {Armor, "armor"},
+        {ActiveGrenade, "active_grenade"},
+        {ActiveBanana, "active_banana"}};
