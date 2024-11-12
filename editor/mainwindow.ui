@@ -528,7 +528,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="tileSelector">
+       <widget class="QComboBox" name="itemSelector">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -538,7 +538,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="save_mapButton">
+       <widget class="QPushButton" name="saveMapButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -554,7 +554,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="load_mapButton">
+       <widget class="QPushButton" name="loadMapButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -570,7 +570,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="clear_mapButton">
+       <widget class="QPushButton" name="clearMapButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
