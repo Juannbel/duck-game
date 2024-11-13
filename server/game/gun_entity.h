@@ -32,7 +32,7 @@ protected:
     CollisionChecks& collisions;
 
     int16_t get_rand_angle();
-    void add_bullet(const Rectangle& player_hb, int16_t angle, bool facing_up);
+    void add_bullet(const Rectangle& player_hb, int16_t angle, bool facing_right, bool facing_up);
     void check_movement();
     int16_t calculate_initial_angle(bool facing_right, bool facing_up);
 protected:

@@ -23,10 +23,12 @@ bool Ak47G::update_bullets(const Rectangle& player_hb, bool facing_right, bool f
         uint8_t aux = ammo;
         if (trigger_pulled && !it_since_shoot) {
             shooted_bullets = bullets_to_shoot;
+        }
+        int16_t angle = calculate_initial_angle(facing_right, facing_up) + 360 + get_rand_angle();
+        add_bullet(player_hb, angle % 360, facing_right, facing_up);
+        if (aux > ammo) {
             ++inaccuracy;
         }
-        int16_t angle = calculate_initial_angle(facing_right, facing_up) + get_rand_angle();
-        add_bullet(player_hb, angle, facing_up);
         return aux > ammo;
     }
     return false;

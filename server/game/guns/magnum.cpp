@@ -17,8 +17,8 @@ MagnumG::MagnumG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 bool MagnumG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
         uint8_t aux = ammo;
-        int16_t angle = calculate_initial_angle(facing_right, facing_up) + get_rand_angle();
-        add_bullet(player_hb, angle, facing_up);
+        int16_t angle = calculate_initial_angle(facing_right, facing_up) + 360 + get_rand_angle();
+        add_bullet(player_hb, angle % 360, facing_right, facing_up);
         return aux > ammo;
     }
     return false;

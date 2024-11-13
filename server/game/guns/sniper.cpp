@@ -16,7 +16,7 @@ SniperG::SniperG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 bool SniperG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
         if (!it_reloading && shooted_bullets) {
-            add_bullet(player_hb, calculate_initial_angle(facing_right, facing_up), facing_up);
+            add_bullet(player_hb, calculate_initial_angle(facing_right, facing_up), facing_right, facing_up);
             it_reloading = TICKS/2;
             trigger_pulled = false;
         } else {

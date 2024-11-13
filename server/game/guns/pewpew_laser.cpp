@@ -19,13 +19,13 @@ PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& co
 bool PewPewLaserG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
         int16_t angle = calculate_initial_angle(facing_right, facing_up);
-        if (bullets_to_shoot < 3) {
-            int16_t calc_dispersion = bullets_to_shoot == 1 ? get_rand_angle() + DISPERSION : get_rand_angle() - DISPERSION;
+        if (shooted_bullets < 3) {
+            int16_t calc_dispersion = shooted_bullets == 1 ? get_rand_angle() + DISPERSION : get_rand_angle() - DISPERSION;
             angle+=360;
             angle+=calc_dispersion;
             angle%=360;
         }
-        add_bullet(player_hb, angle, facing_up);
+        add_bullet(player_hb, angle, facing_right, facing_up);
     }
     return false;
 }

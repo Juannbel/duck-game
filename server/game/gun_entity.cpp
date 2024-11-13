@@ -47,7 +47,7 @@ int16_t GunEntity::get_rand_angle() {
         return 0;
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(-inaccuracy, inaccuracy);  // 0 es None
+    std::uniform_int_distribution<> dis(-inaccuracy, inaccuracy);
     return static_cast<int16_t>(dis(gen));
 }
 
@@ -57,7 +57,7 @@ int16_t GunEntity::calculate_initial_angle(bool facing_right, bool facing_up) {
     return angle;
 }
 
-void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facing_up) {
+void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facing_right, bool facing_up) {
     if (!it_since_shoot && shooted_bullets && ammo) {
         Rectangle b_hb{};
         b_hb.coords.x =

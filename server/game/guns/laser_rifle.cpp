@@ -29,7 +29,7 @@ bool LaserRifleG::update_bullets(const Rectangle& player_hb, bool facing_right, 
             angle+=initial_angle;
         }
         angle+=get_rand_angle();
-        add_bullet(player_hb, angle%360, facing_up);
+        add_bullet(player_hb, angle%360, facing_right, facing_up);
         if (trigger_pulled) {
             ++inaccuracy;
         }

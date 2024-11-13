@@ -17,7 +17,7 @@ GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions
 
 void GrenadeG::throw_gun(bool facing_right) {
     GunEntity::throw_gun(facing_right);
-    it_mooving*=2;
+    it_mooving+= TICKS/3;
 }
 
 void GrenadeG::start_shooting() {
@@ -57,9 +57,9 @@ void GrenadeG::explode_grenade() {
     hb.width = BULLET_HITBOX_WIDTH;
     type = Grenade;
     while (ammo > 0) {
-        int16_t angle = 0;
+        int16_t angle = 360;
         angle += get_rand_angle();
-        bullets->add_bullet(hb, angle, type, range);
+        bullets->add_bullet(hb, angle % 360, type, range);
         --ammo;
     }
     destroy();
