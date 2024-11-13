@@ -15,6 +15,10 @@ const ControlScheme P1_CONTROLS = {
         .pick_up = SDLK_c,
         .shoot = SDLK_v,
         .look_up = SDLK_e,
+        .fly_mode = SDLK_F1,
+        .infinite_ammo = SDLK_F2,
+        .kill_everyone = SDLK_F3,
+        .infinite_hp = SDLK_F4,
 };
 
 const ControlScheme P2_CONTROLS = {
@@ -25,6 +29,10 @@ const ControlScheme P2_CONTROLS = {
         .pick_up = SDLK_i,
         .shoot = SDLK_o,
         .look_up = SDLK_p,
+        .fly_mode = SDLK_F9,
+        .infinite_ammo = SDLK_F10,
+        .kill_everyone = SDLK_F11,
+        .infinite_hp = SDLK_F12,
 };
 
 #endif
