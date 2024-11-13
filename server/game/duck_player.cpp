@@ -58,7 +58,15 @@ void DuckPlayer::die() {
 
 void DuckPlayer::infinite_hp() { cheats_on.infiniteHP = !cheats_on.infiniteHP; }
 
-void DuckPlayer::fly_mode() { cheats_on.flying = !cheats_on.flying; }
+void DuckPlayer::fly_mode() { 
+    if(!cheats_on.flying) {
+        status.is_falling = false;
+        status.is_jumping = false;
+        status.is_falling = false;
+        it_flapping = 0;
+    }
+    cheats_on.flying = !cheats_on.flying; 
+}
 
 void DuckPlayer::status_after_move(struct Collision& collision) {
     if (collision.vertical_collision && status.is_falling) {
