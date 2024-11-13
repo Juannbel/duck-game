@@ -33,6 +33,8 @@ public:
 
     void run() override;
 
+    void join_sender();
+
     ~ServerReceiver();
 };
 

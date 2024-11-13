@@ -38,7 +38,6 @@ void ServerReceiver::run() {
         return;
     }
 
-    // Ya tengo todo, lanzo thread sender
     sender.start();
 
     while (_keep_running && is_alive) {
@@ -125,7 +124,9 @@ void ServerReceiver::setup_game() {
     gameloop_q = games_monitor.get_gameloop_q(gameId);
 }
 
-ServerReceiver::~ServerReceiver() {
+void ServerReceiver::join_sender() {
     is_alive = false;
     sender.join();
 }
+
+ServerReceiver::~ServerReceiver() {}

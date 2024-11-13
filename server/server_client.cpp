@@ -22,6 +22,7 @@ void ServerClient::start() {
 void ServerClient::join() {
     // Cierro los threads
     receiver.join();
+    receiver.join_sender();
     is_alive = false;
 }
 

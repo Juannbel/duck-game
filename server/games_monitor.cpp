@@ -85,9 +85,12 @@ void GamesMonitor::remove_player(const int id_game, const int id_player) {
     }
 }
 
-GamesMonitor::~GamesMonitor() {
+void GamesMonitor::delete_games() {
     std::lock_guard<std::mutex> lck(m);
     for (auto& game: map_games) {
         delete game.second;
     }
+    map_games.clear();
 }
+
+GamesMonitor::~GamesMonitor() {}

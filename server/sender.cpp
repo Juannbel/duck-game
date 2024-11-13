@@ -18,14 +18,18 @@ void ServerSender::run() {
         try {
             msg = sender_q.pop();  // bloqueante, espera a que haya algo
         } catch (const ClosedQueue&) {
-            std::cout << "Closed queue en sender player id: " << playerId << std::endl;
+            // Se cierra la queue cuando: 1. Se cierra el socket, 2. El cliente se desconecto
+            // std::cout << "Closed queue en sender player id: " << playerId << std::endl;
             break;
         }
 
         try {
             // Envio el msg recibido en la queue
             protocol.send_snapshot(msg);
-        } catch (const LibError& le) {  // Catchear excepcion de socket cerrado
+        } catch (const SocketWasClosed& e) {
+            // Se cierra el socket cuando el cliente se desconecta
+            break;
+        } catch (const LibError& le) {
             std::cout << "LibError en sender player id: " << playerId << " " << le.what()
                       << std::endl;
             break;
@@ -34,4 +38,6 @@ void ServerSender::run() {
     is_alive = false;
 }
 
-ServerSender::~ServerSender() { is_alive = false; }
+ServerSender::~ServerSender() {
+    is_alive = false;
+}
