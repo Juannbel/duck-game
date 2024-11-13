@@ -60,7 +60,7 @@ void GrenadeG::explode_grenade() {
     while (ammo > 0) {
         int16_t angle = 360;
         angle += get_rand_angle();
-        bullets->add_bullet(hb, angle % 360, type, range);
+        bullets->add_bullet(hb, angle % 360, type, range, damage);
         --ammo;
     }
     destroy();

@@ -36,7 +36,7 @@ void BananaG::throw_gun(bool facing_right) {
                                            b_hitbox.coords.x - BULLET_HITBOX_WIDTH - 2;
         int16_t angle = facing_right ? 0 : 180;
         type = Banana;
-        bullets->add_bullet(b_hitbox, angle, type, range);
+        bullets->add_bullet(b_hitbox, angle, type, range, damage);
         destroy();
     }
 }
