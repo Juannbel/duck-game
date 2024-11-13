@@ -27,6 +27,7 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
         stuck(),
         it_mooving(),
         ammo(config.get_gun_ammo(type)),
+        knockback(config.get_gun_knockback(type) * BLOCK_SIZE),
         bullets_to_shoot(),
         shooted_bullets(),
         initial_angle(),
@@ -45,6 +46,14 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
 }
 
 void GunEntity::infinite_ammo() { infinite_ammo_activated = !infinite_ammo_activated; }
+
+void GunEntity::start_shooting() {
+    it_since_shoot = trigger_pulled ? it_since_shoot : 0;
+    shooted_bullets = trigger_pulled ? shooted_bullets : bullets_to_shoot;
+    trigger_pulled = true;
+}
+
+void GunEntity::stop_shooting() { trigger_pulled = false; }
 
 int16_t GunEntity::get_rand_angle() {
     if (inaccuracy == 0)
@@ -141,6 +150,8 @@ void GunEntity::drop_gun(float x, float y) {
     hitbox.coords.x = new_x;
 }
 
+float GunEntity::get_knockback() { return knockback; }
+
 Gun GunEntity::get_gun_info() {
     Gun gun_info = {id, type, static_cast<int16_t>(hitbox.coords.x),
                     static_cast<int16_t>(hitbox.coords.y)};
@@ -148,3 +159,5 @@ Gun GunEntity::get_gun_info() {
 }
 
 const Rectangle& GunEntity::get_hitbox() { return hitbox; }
+
+bool GunEntity::empty() { return ammo == 0; }

@@ -45,6 +45,7 @@ private:
 
     std::map<GunType, uint8_t> gun_ammo;
     std::map<GunType, uint16_t> gun_recoil;
+    std::map<GunType, float> gun_knockback;
     std::map<GunType, uint8_t> bullet_range;
     std::map<GunType, uint8_t> bullet_damage;
     std::map<GunType, float> bullet_speed;
@@ -74,6 +75,7 @@ public:
     float get_bullet_speed(GunType gun);
     uint8_t get_gun_ammo(GunType gun);
     uint16_t get_gun_recoil(GunType gun);
+    float get_gun_knockback(GunType gun);
 
 };
 

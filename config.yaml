@@ -12,6 +12,7 @@ initial_duck_hp: 100
 duck_speed: 9.5
 fall_speed: 7.5
 
+# Solo el ak, magnum y shotgun tienen efecto modificar el knockback, el resto por mas que lo agregue no modifica el juego
 initial_box_hp: 100
 guns:
   grenade:
@@ -48,6 +49,7 @@ guns:
     speed: 30
     ammo: 30
     recoil: 10
+    knockback: 0.25
 
   dueling_pistol:
     damage: 95
@@ -69,6 +71,7 @@ guns:
     speed: 30
     ammo: 6
     recoil: 8
+    knockback: 0.25
 
   shootgun:
     damage: 30
@@ -76,6 +79,7 @@ guns:
     speed: 30
     ammo: 12  # 6 x disparo 
     recoil: 30
+    knockback: 0.5
 
   sniper:
     damage: 85

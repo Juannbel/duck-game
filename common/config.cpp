@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include <yaml-cpp/yaml.h>
+#include "common/snapshot.h"
 
 void Config::load_config() try {
     YAML::Node config = YAML::LoadFile(CONFIG_PATH);
@@ -24,6 +25,9 @@ void Config::load_config() try {
         GunType type = string_to_gun[gun.first.as<std::string>()];
         gun_ammo[type] = gun.second["ammo"].as<int>();
         gun_recoil[type] = gun.second["recoil"].as<int>();
+        try{
+            gun_knockback[type] = gun.second["knockback"].as<float>();
+        }catch(YAML::Exception& e) {}
         bullet_damage[type] = gun.second["damage"].as<int>();
         bullet_range[type] = gun.second["range"].as<int>();
         bullet_speed[type] = gun.second["speed"].as<float>();
@@ -65,6 +69,12 @@ uint16_t Config::get_gun_recoil(GunType type) {
     return gun_recoil[type];
 }
 
+float Config::get_gun_knockback(GunType type) {
+    if (!gun_knockback.count(type)) {
+        return 0;
+    }
+    return gun_knockback[type];
+}
 uint8_t Config::get_bullet_damage(GunType type) {
     if (!bullet_damage.count(type)) {
         return 0;

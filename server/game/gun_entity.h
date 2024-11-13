@@ -23,6 +23,7 @@ protected:
     bool stuck;
     uint8_t it_mooving;
     uint8_t ammo;
+    float knockback;
     uint8_t bullets_to_shoot;
     uint8_t shooted_bullets;
     int16_t initial_angle;
@@ -44,13 +45,9 @@ protected:
 public:
     GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);
 
-    virtual void start_shooting() {
-        it_since_shoot = trigger_pulled ? it_since_shoot : 0;
-        shooted_bullets = trigger_pulled ? shooted_bullets : bullets_to_shoot;
-        trigger_pulled = true;
-    }
+    virtual void start_shooting();
 
-    virtual void stop_shooting() { trigger_pulled = false; }
+    virtual void stop_shooting();
 
     virtual bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) = 0;
     virtual void update_status();
@@ -58,9 +55,10 @@ public:
     virtual void throw_gun(bool facing_right);
     void destroy();
     void drop_gun(float x, float y);
+    float get_knockback();
     Gun get_gun_info();
     const Rectangle& get_hitbox();
-    bool empty() { return ammo == 0; }
+    bool empty();
 
     friend class GameOperator;        
 

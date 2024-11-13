@@ -43,7 +43,7 @@ private:
     void equip_helmet();
     float calculate_move_y_jumping();
     float calculate_move_y_flying();
-    void knockback(GunType gun);
+    void knockback();
 
 public:
     DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x, int16_t y,

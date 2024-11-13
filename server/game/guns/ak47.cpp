@@ -6,7 +6,8 @@
 #include "common/config.h"
 
 static Config& config = Config::get_instance();
-const int16_t INITIAL_INNACURACY = 10;
+
+const int16_t MAX_INNACURACY = 30;
 
 Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
@@ -16,7 +17,6 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     it_to_shoot = config.get_server_ticks() / 15;
     it_since_shoot = it_to_shoot;
     initial_angle = 0;
-    inaccuracy = INITIAL_INNACURACY;
 }
 
 bool Ak47G::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
@@ -28,7 +28,7 @@ bool Ak47G::update_bullets(const Rectangle& player_hb, bool facing_right, bool f
         int16_t angle = calculate_initial_angle(facing_right, facing_up) + 360 + get_rand_angle();
         add_bullet(player_hb, angle % 360, facing_right, facing_up);
         if (aux > ammo) {
-            ++inaccuracy;
+            inaccuracy = inaccuracy > MAX_INNACURACY ? inaccuracy : inaccuracy + 2;
         }
         return aux > ammo;
     }
@@ -37,5 +37,5 @@ bool Ak47G::update_bullets(const Rectangle& player_hb, bool facing_right, bool f
 
 void Ak47G::stop_shooting() {
     GunEntity::stop_shooting();
-    inaccuracy = INITIAL_INNACURACY;
+    inaccuracy = config.get_gun_recoil(type);
 }
