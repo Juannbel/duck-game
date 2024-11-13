@@ -8,7 +8,9 @@ Explicacion general de la arquitectura del proyecto, como se manejan las partida
 ---
 
 ### Estructura para manejar partidas
-Para manejar múltiples partidas se utiliza el objeto `GamesMonitor`.
+El server lanza un hilo aceptador encargado de aceptar clientes y crear dos hilos de comunicación por cada cliente (Receiver y Sender).
+
+Para manejar múltiples partidas se utiliza el objeto `GamesMonitor` que tiene una referencia a cada partida en curso.
 La clase `Game` contiene toda la información de la partida, como los IDs de jugadores, el mapa, y lo necesario para realizar la comuncacion con los ServerClient.
 
 ![arquitectura server](images/arquitectura_server.png)
@@ -33,10 +35,16 @@ Se muestra la secuencia de inicio de una partida, donde se crea una nueva partid
 ---
 
 ### Estructura de cliente
-Se muestra la estructura de cliente, donde se maneja la comunicación con el servidor y la interfaz gráfica.
+La estructura del cliente se divide en dos partes, el constant looper y el cliente.
 El constant looper se encarga de procesar las acciones del jugador y de recibir los snapshots del estado del juego para mostrarlo por pantalla.
+El cliente cuanta con una arquitectura basada en hilos, se tiene in hilo receiver y otro sender que se encargan de la comunicacion, hasta que el cliente o el server se cierre.
 
 ![arq cliente](images/estructura_cliente.png)
+
+### Secuencia de accion hacia servidor
+Caso de uso de la secuencia de acción hacia el servidor, donde el cliente envía una acción al servidor.
+
+![secuencia hacia server](images/cliente-accion.png)
 
 ## Comunicación
 
