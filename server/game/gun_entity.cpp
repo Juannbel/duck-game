@@ -58,23 +58,20 @@ int16_t GunEntity::calculate_initial_angle(bool facing_right, bool facing_up) {
     return angle;
 }
 
-void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facing_right, bool facing_up) {
+void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facing_right,
+                           bool facing_up) {
     if (!it_since_shoot && shooted_bullets && ammo) {
         Rectangle b_hb{};
-        b_hb.coords.x =
-            facing_right ? player_hb.coords.x + DUCK_HITBOX_WIDTH + 1 : player_hb.coords.x - BULLET_HITBOX_WIDTH - 1;
-        b_hb.coords.y =
-                facing_up ? player_hb.coords.y - BULLET_HITBOX_HEIGHT - 1 : player_hb.coords.y + DUCK_LAYED_HITBOX_HEIGHT;
+        b_hb.coords.x = facing_right ? player_hb.coords.x + DUCK_HITBOX_WIDTH + 1 :
+                                       player_hb.coords.x - BULLET_HITBOX_WIDTH - 1;
+        b_hb.coords.y = facing_up ? player_hb.coords.y - BULLET_HITBOX_HEIGHT - 1 :
+                                    player_hb.coords.y + DUCK_LAYED_HITBOX_HEIGHT;
         b_hb.height = BULLET_HITBOX_HEIGHT;
         b_hb.width = BULLET_HITBOX_WIDTH;
         bullets->add_bullet(b_hb, angle, type, range, damage);
         it_since_shoot = it_to_shoot;
-        if (shooted_bullets) {
-            --shooted_bullets;
-        }
-        if (ammo) {
-            --ammo;
-        }
+        --shooted_bullets;
+        --ammo;
     }
     if (it_to_shoot && it_since_shoot) {
         --it_since_shoot;
@@ -93,8 +90,8 @@ void GunEntity::check_movement() {
         --it_mooving;
     }
     float new_y = hitbox.coords.y + GUN_FALL_SPEED;
-    hitbox.coords =
-            collisions.check_near_blocks_collision(hitbox, hitbox.coords.x, new_y).last_valid_position;
+    hitbox.coords = collisions.check_near_blocks_collision(hitbox, hitbox.coords.x, new_y)
+                            .last_valid_position;
     hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, hitbox.coords.y)
                             .last_valid_position;
 
@@ -103,9 +100,7 @@ void GunEntity::check_movement() {
     }
 }
 
-void GunEntity::update_status() {
-    check_movement();
-}
+void GunEntity::update_status() { check_movement(); }
 
 void GunEntity::throw_gun(bool facing_right) {
     this->facing_right = facing_right;

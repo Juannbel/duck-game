@@ -9,9 +9,9 @@ HelmetG::HelmetG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
 }
 
 bool HelmetG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
-    (void) player_hb;
-    (void) facing_right;
-    (void) facing_up;
+    (void)player_hb;
+    (void)facing_right;
+    (void)facing_up;
     if (shooted_bullets) {
         return true;
     }

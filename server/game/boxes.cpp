@@ -1,9 +1,12 @@
 #include "boxes.h"
+
 #include <cstdint>
+
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
 
-BoxEntity::BoxEntity(float x, float y, uint32_t id, CollisionChecks& collisions) : info(), hitbox(), health(MAX_BOX_HP), collisions(collisions) {
+BoxEntity::BoxEntity(float x, float y, uint32_t id, CollisionChecks& collisions):
+        info(), hitbox(), health(MAX_BOX_HP), collisions(collisions) {
     info.box_id = id;
     info.status = NoDamage;
     info.x = static_cast<int16_t>(x);
@@ -19,13 +22,13 @@ bool BoxEntity::get_hit(const Rectangle& b_rec, uint8_t damage) {
         if (damage > health) {
             health = 0;
         } else {
-            health-=damage;
+            health -= damage;
         }
-        if (health > MAX_BOX_HP*.75) {
+        if (health > MAX_BOX_HP * .75) {
             info.status = NoDamage;
-        } else if (health > MAX_BOX_HP*.5) {
+        } else if (health > MAX_BOX_HP * .5) {
             info.status = LittleDamage;
-        } else if (health > MAX_BOX_HP*.25) {
+        } else if (health > MAX_BOX_HP * .25) {
             info.status = MediumDamage;
         } else if (health >= 0) {
             info.status = HeavyDamage;
@@ -35,9 +38,7 @@ bool BoxEntity::get_hit(const Rectangle& b_rec, uint8_t damage) {
     return false;
 }
 
-bool BoxEntity::destroyed() {
-    return health == 0;
-}
+bool BoxEntity::destroyed() { return health == 0; }
 
 Coordenades& BoxEntity::get_coords() { return hitbox.coords; }
 

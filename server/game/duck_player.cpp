@@ -188,7 +188,7 @@ void DuckPlayer::update_gun_status() {
                 break;
         }
     }
-    if(equipped_gun && equipped_gun->empty()) {
+    if (equipped_gun && equipped_gun->empty()) {
         drop_collectable();
     }
 }
@@ -288,12 +288,14 @@ void DuckPlayer::knockback(GunType type) {
     if (!status.facing_up)
         new_x = status.facing_right ? new_x - move : new_x + move;
     float new_y = status.facing_up ? hitbox.coords.y + move : hitbox.coords.y;
-    hitbox.coords = collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position;
+    hitbox.coords =
+            collisions.check_near_blocks_collision(hitbox, new_x, new_y).last_valid_position;
 }
 
 uint32_t DuckPlayer::drop_and_pickup() {
-    if (status.is_dead) return 0;
-    
+    if (status.is_dead)
+        return 0;
+
     stop_shooting();
     std::shared_ptr<GunEntity> old_gun = equipped_gun;
     equipped_gun = collectables.pickup(hitbox);
@@ -322,7 +324,7 @@ void DuckPlayer::drop_collectable() {
 
 Duck DuckPlayer::get_status() {
     Duck status_copy = this->status;
-    if (equipped_gun) 
+    if (equipped_gun)
         status.gun = equipped_gun->get_gun_info().type;
     else
         status.gun = None;

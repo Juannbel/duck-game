@@ -1,4 +1,6 @@
 #include "grenade.h"
+
+#include "common/snapshot.h"
 #include "server/game/gun_entity.h"
 #include "server/game/ticks.h"
 
@@ -12,13 +14,15 @@ GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions
     inaccuracy = 360;
     range = 5 * BLOCK_SIZE;
     if (explode) {
-        explode_grenade();
+        it_since_shoot = it_to_shoot;
+        trigger_pulled = true;
+        type = ActiveGrenade;
     }
 }
 
 void GrenadeG::throw_gun(bool facing_right) {
     GunEntity::throw_gun(facing_right);
-    it_mooving+= TICKS/3;
+    it_mooving += TICKS / 3;
 }
 
 void GrenadeG::start_shooting() {
@@ -29,8 +33,8 @@ void GrenadeG::start_shooting() {
 void GrenadeG::stop_shooting() {}
 
 bool GrenadeG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
-    (void) facing_right;
-    (void) facing_up;
+    (void)facing_right;
+    (void)facing_up;
     hitbox.coords = player_hb.coords;
     if (it_since_shoot == it_to_shoot) {
         explode_grenade();

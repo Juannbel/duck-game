@@ -66,9 +66,7 @@ void Game::delete_player(const int id_player) {
 }
 
 void Game::set_on_game_end_callback(const std::function<void(int)>& callback) {
-    gameloop.set_on_game_end_callback([this, callback]() {
-        callback(id);
-});
+    gameloop.set_on_game_end_callback([this, callback]() { callback(id); });
 }
 
 Game::~Game() {

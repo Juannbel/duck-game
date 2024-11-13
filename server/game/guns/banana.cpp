@@ -19,9 +19,9 @@ void BananaG::start_shooting() {
 
 void BananaG::stop_shooting() {}
 
-bool BananaG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) { 
-    (void) facing_right;
-    (void) facing_up;
+bool BananaG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
+    (void)facing_right;
+    (void)facing_up;
     hitbox.coords = player_hb.coords;
     return false;
 }

@@ -1,4 +1,5 @@
 #include "shotgun.h"
+
 #include <cstdint>
 
 ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
@@ -25,7 +26,8 @@ bool ShootgunG::update_bullets(const Rectangle& player_hb, bool facing_right, bo
         }
         uint8_t aux = ammo;
         for (int i = 0; i < 6; ++i) {
-            int16_t angle = calculate_initial_angle(facing_right, facing_up) + 360 + get_rand_angle();
+            int16_t angle =
+                    calculate_initial_angle(facing_right, facing_up) + 360 + get_rand_angle();
             add_bullet(player_hb, angle % 360, facing_right, facing_up);
         }
         if (aux > ammo) {

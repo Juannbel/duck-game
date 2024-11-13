@@ -16,7 +16,8 @@ CowboyPistolG::CowboyPistolG(Gun& gun, BulletManager* bullets, CollisionChecks& 
 
 bool CowboyPistolG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
-        add_bullet(player_hb, calculate_initial_angle(facing_right, facing_up), facing_right, facing_up);
+        add_bullet(player_hb, calculate_initial_angle(facing_right, facing_up), facing_right,
+                   facing_up);
     }
     return false;
 }

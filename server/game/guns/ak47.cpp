@@ -1,5 +1,7 @@
 #include "ak47.h"
+
 #include <cstdint>
+
 #include "server/game/gun_entity.h"
 #include "server/game/ticks.h"
 
@@ -12,7 +14,7 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     damage = 40;
     ammo = 30;
     bullets_to_shoot = 1;
-    it_to_shoot = TICKS/15;
+    it_to_shoot = TICKS / 15;
     it_since_shoot = it_to_shoot;
     initial_angle = 0;
     inaccuracy = INITIAL_INNACURACY;

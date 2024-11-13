@@ -20,7 +20,7 @@ const float GUN_FALL_SPEED = 120.0f / TICKS;
 const float GUN_THROW_SPEED = 120.0f / TICKS;
 
 BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_ckecker,
-                           std::unordered_map<uint8_t, DuckPlayer>& ducks, 
+                           std::unordered_map<uint8_t, DuckPlayer>& ducks,
                            std::unordered_map<uint32_t, BoxEntity>& boxes, int16_t angle,
                            GunType type, uint32_t id, uint16_t range, uint8_t damage):
         status(),
@@ -45,7 +45,7 @@ bool BulletEntity::check_collision_with_boxes_ducks() {
             return true;
         }
     }
-    for (auto& [id, box] : boxes) {
+    for (auto& [id, box]: boxes) {
         if (box.get_hit(hitbox, damage)) {
             return true;
         }

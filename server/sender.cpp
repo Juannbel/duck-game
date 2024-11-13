@@ -34,6 +34,4 @@ void ServerSender::run() {
     is_alive = false;
 }
 
-ServerSender::~ServerSender() {
-    is_alive = false;
-}
+ServerSender::~ServerSender() { is_alive = false; }

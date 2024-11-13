@@ -2,11 +2,11 @@
 #define GAME_LOOP_H
 
 #include <cstdint>
+#include <functional>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
-#include <functional>
 
 #include <sys/types.h>
 

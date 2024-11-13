@@ -1,4 +1,5 @@
 #include "dueling_pistol.h"
+
 #include <cstdint>
 
 DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):

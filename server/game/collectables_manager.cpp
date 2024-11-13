@@ -29,8 +29,6 @@ void CollectablesManager::reset_collectables() {
 }
 
 
-uint32_t CollectablesManager::get_and_inc_collectable_id() { return ++collectable_id; }
-
 void CollectablesManager::new_gun(Gun& gun) {
     uint32_t id = gun.gun_id;
     switch (gun.type) {
@@ -79,14 +77,15 @@ void CollectablesManager::new_gun(Gun& gun) {
     }
 }
 
-void CollectablesManager::add_gun(Gun& gun) {
+uint32_t CollectablesManager::add_gun(Gun& gun) {
     if (gun.type == None) {
-        return;
+        return 0;
     }
     if (gun.gun_id == 0) {
         gun.gun_id = ++collectable_id;
     }
     new_gun(gun);
+    return collectable_id;
 }
 
 std::shared_ptr<GunEntity> CollectablesManager::pickup(const Rectangle& duck) {

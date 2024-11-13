@@ -4,6 +4,7 @@
 #include <random>
 #include <utility>
 #include <vector>
+
 #include <sys/types.h>
 
 #include "common/commands.h"
@@ -49,9 +50,10 @@ void GameOperator::initialize_players(
 
 void GameOperator::initialize_boxes(const Map& map_info) {
     uint32_t id = 0;
-    for (auto &box : map_info.boxes_spawns) {
+    for (auto& box: map_info.boxes_spawns) {
         ++id;
-        boxes.emplace(id, BoxEntity(box.first * BLOCK_SIZE, box.second * BLOCK_SIZE, id, collisions));
+        boxes.emplace(id,
+                      BoxEntity(box.first * BLOCK_SIZE, box.second * BLOCK_SIZE, id, collisions));
     }
 }
 
@@ -110,33 +112,31 @@ void GameOperator::process_action(action& action) {
 }
 
 void GameOperator::check_spawn_picked(uint32_t id) {
-    if (id == 0) 
+    if (id == 0)
         return;
     for (auto& spawn: spawns) {
-        if (spawn.collectable_id != id) 
+        if (spawn.collectable_id != id)
             continue;
         spawn.picked = true;
         spawn.collectable_id = 0;
         spawn.it_since_picked = 0;
         spawn.it_to_spawn = COLLECTABLE_SPAWN_IT + rand() % COLLECTABLE_EXTRA_SPAWN_TIME;
-        
     }
 }
 
 void GameOperator::check_broken_boxes() {
     std::vector<uint32_t> id_to_eliminate;
-    for (auto &[id, box] : boxes) {
+    for (auto& [id, box]: boxes) {
         if (box.destroyed()) {
             GunType n_gun = get_random_guntype(true);
-            if (n_gun == None) 
-                continue;
             Coordenades coords = box.get_coords();
-            Gun new_gun = {0, n_gun, static_cast<int16_t>(coords.x), static_cast<int16_t>(coords.y)};
+            Gun new_gun = {0, n_gun, static_cast<int16_t>(coords.x),
+                           static_cast<int16_t>(coords.y)};
             collectables.add_gun(new_gun);
             id_to_eliminate.push_back(id);
         }
     }
-    for (uint32_t pos : id_to_eliminate) {
+    for (uint32_t pos: id_to_eliminate) {
         boxes.erase(pos);
     }
 }
@@ -166,11 +166,8 @@ void GameOperator::verify_spawn() {
             continue;
 
         if (spawn.it_since_picked > spawn.it_to_spawn) {
-            uint32_t collectable_id = collectables.get_and_inc_collectable_id();
-
-            Gun new_gun = {collectable_id, get_random_guntype(false), spawn.x, spawn.y};
-            collectables.add_gun(new_gun);
-            spawn.collectable_id = collectable_id;
+            Gun new_gun = {0, get_random_guntype(false), spawn.x, spawn.y};
+            spawn.collectable_id = collectables.add_gun(new_gun);
             spawn.it_since_picked = 0;
             spawn.picked = false;
         } else {
@@ -183,7 +180,7 @@ void GameOperator::get_snapshot(Snapshot& snapshot) {
     for (auto& [id, duck]: players) {
         snapshot.ducks.push_back(duck.get_status());
     }
-    for (auto& [id, box] : boxes) {
+    for (auto& [id, box]: boxes) {
         snapshot.boxes.push_back(box.get_info());
     }
     collectables.add_guns_to_snapshot(snapshot);

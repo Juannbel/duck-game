@@ -36,8 +36,9 @@ protected:
     void add_bullet(const Rectangle& player_hb, int16_t angle, bool facing_right, bool facing_up);
     void check_movement();
     int16_t calculate_initial_angle(bool facing_right, bool facing_up);
+
 protected:
-    virtual void explode_grenade() {};
+    virtual void explode_grenade() {}
 
 public:
     GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisions);
@@ -48,9 +49,7 @@ public:
         trigger_pulled = true;
     }
 
-    virtual void stop_shooting() {
-        trigger_pulled = false;
-    }
+    virtual void stop_shooting() { trigger_pulled = false; }
 
     virtual bool update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) = 0;
     virtual void update_status();

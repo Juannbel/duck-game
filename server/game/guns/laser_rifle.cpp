@@ -1,5 +1,7 @@
 #include "laser_rifle.h"
+
 #include <cstdint>
+
 #include "server/game/gun_entity.h"
 
 LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
@@ -23,14 +25,14 @@ bool LaserRifleG::update_bullets(const Rectangle& player_hb, bool facing_right, 
         if (trigger_pulled && !it_since_shoot) {
             shooted_bullets = bullets_to_shoot;
         }
-        int16_t angle = calculate_initial_angle(facing_right, facing_up)+360;
-        if (angle%360 == 0) {
-            angle-=initial_angle;
+        int16_t angle = calculate_initial_angle(facing_right, facing_up) + 360;
+        if (angle % 360 == 0) {
+            angle -= initial_angle;
         } else {
-            angle+=initial_angle;
+            angle += initial_angle;
         }
-        angle+=get_rand_angle();
-        add_bullet(player_hb, angle%360, facing_right, facing_up);
+        angle += get_rand_angle();
+        add_bullet(player_hb, angle % 360, facing_right, facing_up);
         if (trigger_pulled) {
             ++inaccuracy;
         }
