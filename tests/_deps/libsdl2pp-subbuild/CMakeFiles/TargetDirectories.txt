@@ -1,3 +1,0 @@
-/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/CMakeFiles/libsdl2pp-populate.dir
-/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/CMakeFiles/edit_cache.dir
-/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/CMakeFiles/rebuild_cache.dir

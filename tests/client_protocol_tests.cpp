@@ -8,7 +8,6 @@ using ::testing::AllOf;
 using ::testing::HasSubstr;
 using ::testing::ThrowsMessage;
 
-namespace {
 TEST(CreateGameTests, Check) {
     Socket socket("localhost","8080");
     ClientProtocol protocol(std::move(socket));
@@ -22,7 +21,6 @@ TEST(CreateGameTests, Check) {
     EXPECT_NO_THROW(protocol.send_option(0)) << "send_option should not throw any exception";
     EXPECT_NO_THROW(protocol.shutdown()) << "shutdown should not throw any exception";
 }
-}  // namespace
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
