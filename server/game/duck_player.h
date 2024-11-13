@@ -23,6 +23,7 @@ class Cheats {
 class DuckPlayer {
 private:
     Duck status;
+    Cheats cheats_on;
     uint8_t it_jumping;
     uint8_t it_flapping;
     uint8_t it_sliding;
@@ -36,8 +37,12 @@ private:
     Collision move_sliding();
     Collision normal_duck_move();
     void die();
+    void infinite_hp();
+    void fly_mode();
     void equip_armor();
     void equip_helmet();
+    float calculate_move_y_jumping();
+    float calculate_move_y_flying();
     void knockback(GunType gun);
 
 public:
@@ -62,7 +67,7 @@ public:
     Duck get_status();
     const Coordenades& get_coords();
 
-    
+
     friend class GameOperator;
 };
 

@@ -43,7 +43,7 @@ private:
     void initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info,
                             const Map& map_info);
     void initialize_boxes(const Map& map_info);
-    void handle_cheat(uint8_t id, Command command);
+    void handle_cheat(DuckPlayer& duck, Command command);
 
 public:
     GameOperator();

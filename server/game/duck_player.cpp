@@ -28,6 +28,7 @@ const static float KNOCKBACK_MOVE = 4;
 DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x,
                        int16_t y, uint8_t id, const std::string& name):
         status(),
+        cheats_on(),
         it_jumping(),
         it_flapping(),
         it_sliding(),
@@ -56,6 +57,10 @@ void DuckPlayer::die() {
     drop_collectable();
 }
 
+void DuckPlayer::infinite_hp() { cheats_on.infiniteHP = !cheats_on.infiniteHP; }
+
+void DuckPlayer::fly_mode() { cheats_on.flying = !cheats_on.flying; }
+
 void DuckPlayer::status_after_move(struct Collision& collision) {
     if (collision.vertical_collision && status.is_falling) {
         status.is_falling = false;
@@ -83,6 +88,27 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
     status.y = static_cast<int16_t>(collision.last_valid_position.y);
 }
 
+float DuckPlayer::calculate_move_y_jumping() {
+    float move_y = 0;
+    if (status.is_jumping) {
+        move_y =
+                JUMP_SPEED - (static_cast<float>(FALL_SPEED * it_jumping) / DECREACENT_JUMP_SPEED);
+        it_jumping += 2;
+        return move_y;
+    }
+    return move_y;
+}
+
+float DuckPlayer::calculate_move_y_flying() {
+    float move_y = 0;
+    if(status.is_jumping)
+        move_y = -DUCK_SPEED;
+    else if (status.is_falling)
+        move_y = DUCK_SPEED;
+    
+    return move_y;
+}
+
 Collision DuckPlayer::move_sliding() {
     float new_x = hitbox.coords.x;
     float new_y = hitbox.coords.y;
@@ -91,12 +117,7 @@ Collision DuckPlayer::move_sliding() {
         float move_y = FALL_SPEED;
         new_y += move_y;
     }
-    if (status.is_jumping) {
-        float move_y =
-                JUMP_SPEED - (static_cast<float>(FALL_SPEED * it_jumping) / DECREACENT_JUMP_SPEED);
-        it_jumping += 2;
-        new_y -= move_y;
-    }
+    new_y-= calculate_move_y_jumping();
     --it_sliding;
     if (!it_sliding)
         stand_up();
@@ -117,7 +138,7 @@ Collision DuckPlayer::normal_duck_move() {
         }
         new_x = (status.facing_right) ? new_x + move_x : new_x - move_x;
     }
-    if (status.is_falling) {
+    if (status.is_falling && !cheats_on.flying) {
         float move_y = FALL_SPEED;
         if (status.is_flapping) {
             move_y /= 5;
@@ -125,11 +146,14 @@ Collision DuckPlayer::normal_duck_move() {
         }
         new_y += move_y;
     }
-    if (status.is_jumping) {
-        float move_y =
-                JUMP_SPEED - (static_cast<float>(FALL_SPEED * it_jumping) / DECREACENT_JUMP_SPEED);
-        it_jumping += 2;
-        new_y -= move_y;
+    if (cheats_on.flying) {
+        new_y+=calculate_move_y_flying();
+        hitbox.coords = {new_x, new_y};
+        status.x = static_cast<int16_t>(hitbox.coords.x);
+        status.y = static_cast<int16_t>(hitbox.coords.y);
+    }
+    else {
+        new_y-= calculate_move_y_jumping();
     }
     return collisions.check_near_blocks_collision(hitbox, new_x, new_y);
 }
@@ -144,7 +168,7 @@ void DuckPlayer::move_duck() {
     } else {
         collision = normal_duck_move();
     }
-
+    if (cheats_on.flying) return;
     hitbox.coords.x = collision.last_valid_position.x;
     hitbox.coords.y = collision.last_valid_position.y;
     status_after_move(collision);
@@ -211,6 +235,11 @@ void DuckPlayer::equip_helmet() {
 void DuckPlayer::lay_down() {
     if (status.is_laying)
         return;
+    if (cheats_on.flying) {
+        status.is_falling = true;
+        return;
+    }
+
     status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
     status.is_running = status.is_laying ? false : status.is_running;
     if (status.is_laying || it_sliding) {
@@ -221,6 +250,10 @@ void DuckPlayer::lay_down() {
 }
 
 void DuckPlayer::stand_up() {
+     if (cheats_on.flying) {
+        status.is_falling = false;
+        return;
+    }
     if (!status.is_laying || it_sliding) {
         return;
     }
@@ -239,6 +272,10 @@ void DuckPlayer::face_up() {
 void DuckPlayer::stop_face_up() { status.facing_up = false; }
 
 void DuckPlayer::jump() {
+    if (cheats_on.flying){
+        status.is_jumping = true;
+        return;
+    }
     if (!ready_to_jump || status.is_jumping || status.is_laying) {
         return;
     }
@@ -252,7 +289,11 @@ void DuckPlayer::jump() {
     status.is_jumping = true;
 }
 
-void DuckPlayer::stop_jump() { ready_to_jump = true; }
+void DuckPlayer::stop_jump() { 
+    if (cheats_on.flying)
+        status.is_jumping = false;
+    ready_to_jump = true; 
+}
 
 bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
     if (status.is_dead)
@@ -265,7 +306,7 @@ bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
             status.helmet_equiped = false;
             return true;
         }
-        uint8_t taken_dmg = damage;
+        uint8_t taken_dmg = cheats_on.infiniteHP ? 0 : damage;
         if (status.duck_hp < taken_dmg) {
             die();
         } else {
@@ -277,6 +318,8 @@ bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
 }
 
 void DuckPlayer::slide() {
+    if (cheats_on.infiniteHP || cheats_on.flying) 
+        return;
     stop_running();
     it_sliding = SLIDING_ITS;
     lay_down();

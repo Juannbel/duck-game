@@ -19,8 +19,9 @@ static Config& config = Config::get_instance();
 
 const int16_t NEAR_CELLS = 3;
 const static int TICKS = config.get_server_ticks();
-const int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
-const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
+const static int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
+const static int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
+const static bool CHEATS = config.get_cheats_on();
 
 
 GameOperator::GameOperator(): collisions(), collectables(collisions, players, boxes) {}
@@ -109,8 +110,29 @@ void GameOperator::process_action(action& action) {
             check_spawn_picked(player.drop_and_pickup());
             break;
         default:
-            
+            handle_cheat(player, action.command);
             break;
+    }
+}
+
+void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
+    if (!CHEATS) 
+        return;
+    if (command == KillEveryone) {
+        for (auto &[id, other_duck] : players) {
+            if (other_duck.status.duck_id == duck.status.duck_id) {
+                continue;
+            }
+            other_duck.die();
+        }
+    } else if (command == InfiniteAmmo) {
+        if (!duck.equipped_gun)
+            return;
+        duck.equipped_gun->infinite_ammo();
+    } else if (command == InfiniteHP) {
+        duck.infinite_hp();
+    } else {
+        duck.fly_mode();
     }
 }
 

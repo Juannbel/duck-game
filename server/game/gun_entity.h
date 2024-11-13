@@ -5,11 +5,16 @@
 
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
-
 #include "bullets_manager.h"
 
+class GameOperator; 
+
 class GunEntity {
+private:
+    bool infinite_ammo_activated;
+    void infinite_ammo();
 protected:
+
     uint32_t id;
     GunType type;
 
@@ -34,8 +39,6 @@ protected:
     void add_bullet(const Rectangle& player_hb, int16_t angle, bool facing_right, bool facing_up);
     void check_movement();
     int16_t calculate_initial_angle(bool facing_right, bool facing_up);
-
-protected:
     virtual void explode_grenade() {}
 
 public:
@@ -58,6 +61,8 @@ public:
     Gun get_gun_info();
     const Rectangle& get_hitbox();
     bool empty() { return ammo == 0; }
+
+    friend class GameOperator;        
 
     GunEntity(const GunEntity&) = delete;
     GunEntity& operator=(const GunEntity&) = delete;

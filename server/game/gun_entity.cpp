@@ -19,6 +19,7 @@ const float GUN_THROW_SPEED = (config.get_fall_speed() * BLOCK_SIZE) * 2 / TICKS
 #include "duck_player.h"
 
 GunEntity::GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
+        infinite_ammo_activated(),
         id(gun.gun_id),
         type(gun.type),
         hitbox(),
@@ -42,6 +43,8 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
     hitbox.height = COLLECTABLE_HITBOX_HEIGHT;
     hitbox.width = COLLECTABLE_HITBOX_WIDTH;
 }
+
+void GunEntity::infinite_ammo() { infinite_ammo_activated = !infinite_ammo_activated; }
 
 int16_t GunEntity::get_rand_angle() {
     if (inaccuracy == 0)
@@ -71,7 +74,9 @@ void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facin
         bullets->add_bullet(b_hb, angle, type);
         it_since_shoot = it_to_shoot;
         --shooted_bullets;
-        --ammo;
+        if (!infinite_ammo_activated) {
+           --ammo;
+        }
     }
     if (it_to_shoot && it_since_shoot) {
         --it_since_shoot;
@@ -116,6 +121,7 @@ void GunEntity::destroy() {
 }
 
 void GunEntity::drop_gun(float x, float y) {
+    infinite_ammo_activated = false;
     stuck = false;
     float new_x = x;
     new_x -= (static_cast<float>(DUCK_HITBOX_WIDTH) / 2);
