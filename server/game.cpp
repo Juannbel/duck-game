@@ -24,7 +24,7 @@ GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
     }
 
     game_info.game_id = id;
-    sv_msg_queues.add_element(&player_sender_queue, id);
+    sv_msg_queues.add_element(&player_sender_queue, player_id);
 
     std::pair<uint8_t, uint8_t> duck_ids = {INVALID_DUCK_ID, INVALID_DUCK_ID};
     duck_ids.first = gameloop.add_player(players_names[0]);
@@ -52,12 +52,21 @@ void Game::start() {
 }
 
 void Game::delete_player(const int id_player) {
-    sv_msg_queues.remove_element(id_player);
+    Queue<Snapshot>* player_sender_q = sv_msg_queues.remove_element(id_player);
+    if (player_sender_q) {
+        player_sender_q->close();
+    }
     const std::pair<uint8_t, uint8_t> duck_ids = player_to_duck_ids[id_player];
     gameloop.delete_duck(duck_ids.first);
     if (duck_ids.second != INVALID_DUCK_ID) {
-        gameloop.delete_duck(duck_ids.second);
+        if (gameloop.is_alive()) {
+            gameloop.delete_duck(duck_ids.second);
+        }
     }
+}
+
+void Game::set_on_game_end_callback(const std::function<void(int)>& callback) {
+    gameloop.set_on_game_end_callback([this, callback]() { callback(id); });
 }
 
 Game::~Game() {

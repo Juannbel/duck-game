@@ -16,6 +16,13 @@ struct ControlScheme {
     SDL_Keycode pick_up;
     SDL_Keycode shoot;
     SDL_Keycode look_up;
+
+    // cheats
+    SDL_KeyCode fly_mode;
+    SDL_KeyCode infinite_ammo;
+    SDL_KeyCode kill_everyone;
+    SDL_KeyCode infinite_hp;
+    SDL_KeyCode get_death_laser;
 };
 
 class DuckController {

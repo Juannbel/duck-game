@@ -15,6 +15,8 @@ private:
     Animation animation;
 
     SDL2pp::Point position;
+    int16_t hitbox_width;
+    int16_t hitbox_height;
     static std::unordered_map<GunType, std::string> collectable_to_string;
 
 public:

@@ -6,7 +6,8 @@
 #include "common/shared_constants.h"
 
 const int16_t NEAR_CELLS = 4;
-const float MAP_EDGE = 100;
+const float MAP_EDGE_Y = 100;
+const float MAP_EDGE_X = 200;
 
 void CollisionChecks::add_block(float x, float y, bool half, bool solid) {
     float heigh = half ? static_cast<float>(BLOCK_SIZE) / 2 : BLOCK_SIZE;
@@ -28,7 +29,7 @@ void CollisionChecks::load_map(const MapDto& map_dto) {
 }
 
 bool CollisionChecks::out_of_map(float x, float y) {
-    return x < -MAP_EDGE || x > MAP_WIDTH_PIXELS + MAP_EDGE || y > MAP_HEIGHT_PIXELS + MAP_EDGE;
+    return x < -MAP_EDGE_X || x > MAP_WIDTH_PIXELS + MAP_EDGE_X || y > MAP_HEIGHT_PIXELS + MAP_EDGE_Y;
 }
 
 bool check_collision_with_no_solid(float new_y, const Rectangle& entity,

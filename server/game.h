@@ -49,6 +49,8 @@ public:
         return info;
     }
 
+    void set_on_game_end_callback(const std::function<void(int)>& callback);
+
     ~Game();
 };
 

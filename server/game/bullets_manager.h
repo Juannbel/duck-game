@@ -8,35 +8,25 @@
 #include <sys/types.h>
 
 #include "common/snapshot.h"
+#include "server/game/boxes.h"
+#include "server/game/bullet_entity.h"
 
 #include "collisions.h"
 class DuckPlayer;
 
-struct BulletInfo {
-    Bullet status;
-    Rectangle hitbox;
-    // cppcheck-suppress unusedStructMember
-    float speed;
-    // cppcheck-suppress unusedStructMember
-    uint8_t damage;
-    // cppcheck-suppress unusedStructMember
-    bool is_alive;
-};
-
-
 class BulletManager {
 private:
     uint32_t bullet_id;
-    std::map<uint32_t, BulletInfo> bullets;
+    std::map<uint32_t, BulletEntity> bullets;
     CollisionChecks& collisions;
     std::unordered_map<uint8_t, DuckPlayer>& ducks;
-
-    bool check_collision_with_ducks(Rectangle& bullet, uint8_t damage);
+    std::unordered_map<uint32_t, BoxEntity>& boxes;
 
 public:
-    explicit BulletManager(CollisionChecks&, std::unordered_map<uint8_t, DuckPlayer>& ducks);
+    explicit BulletManager(CollisionChecks&, std::unordered_map<uint8_t, DuckPlayer>& ducks,
+                           std::unordered_map<uint32_t, BoxEntity>& boxes);
     void clear_bullets();
-    void add_bullet(BulletInfo&);
+    void add_bullet(const Rectangle& hb, int16_t angle, GunType type);
     void update_bullets();
     void add_bullets_to_snapshot(Snapshot&);
 };

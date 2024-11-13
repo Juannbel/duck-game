@@ -3,31 +3,35 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <ostream>
 #include <random>
 #include <stdexcept>
 #include <string>
 #include <thread>
 #include <vector>
 
+#include "common/config.h"
 #include "common/snapshot.h"
-#include "game/ticks.h"
 
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 
+static Config& config = Config::get_instance();
+
+const static int TICKS = config.get_server_ticks();
 const milliseconds RATE(1000 / TICKS);
 const uint its_after_round = 3000 / (1000 / TICKS);
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
         snaps_queue_list(queue_list),
-        match_number(10),
+        round_number(5),
         round_finished(),
+        game_finished(),
         paths_to_maps(map_loader.list_maps(SERVER_DATA_PATH)),
-        curr_map(),
-        ducks_info() {}
+        curr_map() {}
 
-std::string get_rand_string(std::vector<std::string>& v_strings) {
+std::string get_rand_string(const std::vector<std::string>& v_strings) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, v_strings.size() - 1);  // 0 es None
@@ -49,8 +53,10 @@ void GameLoop::run() {
 
     uint it = its_after_round;
     auto t1 = high_resolution_clock::now();
+    // uint its_ticks = 0;
+    // auto time_ticks = high_resolution_clock::now();
     initial_snapshot();
-    while (_keep_running) {
+    while (_keep_running && (!game_finished || it)) {
         pop_and_process_all();
         create_and_push_snapshot(t1, it);
         auto t2 = high_resolution_clock::now();
@@ -65,20 +71,38 @@ void GameLoop::run() {
             std::this_thread::sleep_for(rest);
         }
         t1 += RATE;
+        //++its_ticks;
+        // auto time_ticks_act = high_resolution_clock::now();
+        // milliseconds dur = duration_cast<milliseconds>(time_ticks - time_ticks_act);
+        // if (its_ticks % TICKS == 0) {
+        //    std::cout << dur << std::endl;
+        //    time_ticks = high_resolution_clock::now();
+        //}
     }
+    if (game_finished) {
+        create_and_push_snapshot(t1, it);
+    }
+
+    _is_alive = false;
+
+    // Caso en el que se cierra el gameloop, si hay algun cliente se le avisa que termino el juego
+    Snapshot actual_status = {};
+    game_operator.get_snapshot(actual_status);
+    actual_status.game_finished = true;
+    push_responce(actual_status);
 }
 
 void GameLoop::initial_snapshot() {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
     actual_status.maps.push_back(curr_map.map_dto);
-    actual_status.match_finished = false;
+    actual_status.round_finished = false;
     add_rounds_won(actual_status);
     push_responce(actual_status);
 }
 
 void GameLoop::pop_and_process_all() {
-    struct action action;
+    action action{};
     while (actions_queue.try_pop(action)) {
         game_operator.process_action(action);
     }
@@ -90,16 +114,23 @@ void GameLoop::create_and_push_snapshot(auto& t1, uint& its_since_finish) {
     game_operator.get_snapshot(actual_status);
     check_for_winner(actual_status);
 
-    actual_status.match_finished = its_since_finish == 0 ? round_finished : false;
+    actual_status.round_finished = its_since_finish == 0 ? round_finished : false;
+    actual_status.show_stats = its_since_finish == 0 ? round_number == 0 : false;
+    actual_status.game_finished = its_since_finish == 0 ? game_finished : false;
     add_rounds_won(actual_status);
     push_responce(actual_status);
     if (!its_since_finish) {
-        std::this_thread::sleep_for(milliseconds(3000));
+        if (!round_number)
+            std::this_thread::sleep_for(milliseconds(3000));
+        else  // Sleep chico para asegurarnos que lea el round finished
+            std::this_thread::sleep_for(milliseconds(200));
+
         initialice_new_round();
         initial_snapshot();
         t1 = high_resolution_clock::now();
-        struct action action;
+        action action{};
         while (actions_queue.try_pop(action)) {}
+        round_number = !round_number && !game_finished ? 5 : round_number;
         its_since_finish = its_after_round;
         round_finished = false;
     } else if (round_finished) {
@@ -123,19 +154,36 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
     }
     uint8_t winner_id;
     uint8_t players_alive = 0;
-    for (auto& duck: actual_status.ducks) {
+    for (auto const& duck: actual_status.ducks) {
         if (!duck.is_dead) {
             winner_id = duck.duck_id;
             ++players_alive;
         }
     }
+    if (!players_alive) {
+        round_finished = true;
+        --round_number;
+    }
     if (players_alive == 1 && !round_finished) {
         winners_id_count[winner_id]++;
         round_finished = true;
+        --round_number;
+    }
+    if (round_number == 0) {
+        uint8_t max_winner = 10;
+        for (auto& [id, count]: winners_id_count) {
+            if (count >= max_winner) {
+                if (game_finished && count == max_winner) {
+                    game_finished = false;
+                } else {
+                    game_finished = true;
+                    max_winner = count;
+                }
+            }
+        }
     }
 }
 
-// uint8_t GameLoop::add_player() {
 uint8_t GameLoop::add_player(const std::string& player_name) {
     if (ducks_info.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
@@ -154,9 +202,21 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
     }
 
     if (ducks_info.size() <= 1) {
-        // TODO: ver como borrar el game
+        _keep_running = false;
+        if (on_game_end_callback) {
+            std::cout << "Game ended" << std::endl;
+            on_game_end_callback();
+        }
     }
 }
 
+void GameLoop::set_on_game_end_callback(std::function<void()> callback) {
+    on_game_end_callback = std::move(callback);
+}
+
+void GameLoop::stop() {
+    _keep_running = false;
+    actions_queue.close();
+}
 
 GameLoop::~GameLoop() {}

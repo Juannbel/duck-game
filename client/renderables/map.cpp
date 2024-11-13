@@ -53,13 +53,6 @@ void RenderableMap::render(SDL2pp::Renderer& renderer, Camera& camera) {
     }
 }
 
-std::unordered_map<BlockType, std::string> RenderableMap::block_to_string = {
-        {Empty, "empty"},          {Floor1, "floor_1"},       {Floor2, "floor_2"},
-        {Floor3, "floor_3"},       {Base1, "base_1"},         {Base2, "base_2"},
-        {Base3, "base_3"},         {Platform1, "platform_1"}, {Platform2, "platform_2"},
-        {Platform3, "platform_3"}, {Platform4, "platform_4"}, {Wall, "wall"},
-        {HalfFloor, "half_floor"}};
-
 void RenderableMap::update(const MapDto& new_map_dto) {
     map.clear();
     background_texture =
@@ -74,7 +67,7 @@ void RenderableMap::update(const MapDto& new_map_dto) {
 
             AnimationData animation_data(AnimationDataProvider::get_animation_data(
                     "blocks_" + std::to_string(new_map_dto.theme) + "_" +
-                    block_to_string[block.type]));
+                    std::to_string(static_cast<int>(block.type))));
             // BLOCK_SIZE + 1 para que no haya espacio entre bloques por redondeo
             SDL2pp::Rect dst_rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE + 1, BLOCK_SIZE);
 

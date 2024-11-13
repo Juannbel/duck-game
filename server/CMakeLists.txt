@@ -1,42 +1,16 @@
+file(GLOB CPP_SOURCES
+    "*.cpp"
+    "game/*.cpp"
+    "game/guns/*.cpp"
+    )
+
+file(GLOB H_SOURCES
+    "*.h"
+    "game/*.h"
+    "game/guns/*.h"
+    )
+
 target_sources(taller_server
-    PRIVATE
-    # .cpp files
-    main.cpp
-    acceptor.cpp
-    receiver.cpp
-    sender.cpp
-    server.cpp
-    server_client.cpp
-    list_monitor.cpp
-    game_loop.cpp
-    server_protocol.cpp
-    game/game_operator.cpp
-    game/duck_player.cpp
-    game/gun_entity.cpp
-    game/gun_types.cpp
-    game/collisions.cpp
-    game/collectables_manager.cpp
-    game/bullets_manager.cpp
-    game.cpp
-    games_monitor.cpp
-    PUBLIC
-    # .h files
-    acceptor.h
-    receiver.h
-    sender.h
-    server.h
-    server_client.h
-    list_monitor.h
-    game_loop.h
-    server_protocol.h
-    game/game_operator.h
-    game/duck_player.h
-    game/gun_entity.h
-    game/gun_types.h
-    game/collisions.h
-    game/collectables_manager.h
-    game/bullets_manager.h
-    game/ticks.h
-    game.h
-    games_monitor.h
+    PRIVATE ${CPP_SOURCES}
+    PUBLIC ${H_SOURCES}
     )

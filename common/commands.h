@@ -15,6 +15,11 @@ enum Command {
     StopJump,
     LayDown,
     StandUp,
+    FlyMode,
+    InfiniteAmmo,
+    KillEveryone,
+    InfiniteHP,
+    GetDeathLaser
 };
 
 struct action {

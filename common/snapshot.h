@@ -9,7 +9,7 @@
 #include "map_dto.h"
 
 #define MAX_DUCKS 4
-#define MAX_PLAYER_NAME 32
+#define MAX_PLAYER_NAME 16
 #define MAX_GUNS 32
 #define MAX_BULLETS 128
 
@@ -27,7 +27,10 @@ enum GunType {
     Sniper,
     Helmet,
     Armor,
-    GunTypeCount
+    GunTypeCount,
+    ActiveGrenade,
+    ActiveBanana,
+    DeathLaser,
 };
 
 struct Duck {
@@ -48,7 +51,6 @@ struct Duck {
     bool facing_up;
     bool is_laying;  // se esta haciendo el muerto
     bool is_dead;
-    bool is_damaged;  // recibio un disparo
 
     bool helmet_equiped;
     bool armor_equiped;
@@ -89,7 +91,9 @@ struct Box {
 
 struct Snapshot {
     // cppcheck-suppress unusedStructMember
-    bool match_finished = true;  // each match has five rounds.
+    bool round_finished = true;  // each match has five rounds.
+    bool show_stats = false;
+    bool game_finished = false;
     std::vector<Duck> ducks;
     std::vector<Gun> guns;
     std::vector<Bullet> bullets;

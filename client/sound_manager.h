@@ -13,6 +13,8 @@ class SoundManager {
 private:
     SDL2pp::Mixer mixer;
     std::unordered_map<GunType, SDL2pp::Chunk*> gun_sounds;
+    std::unordered_map<std::string, SDL2pp::Chunk*> other_sounds;
+    uint it_since_last_beep;
     SDL2pp::Music background_music;
 
 public:
@@ -20,7 +22,13 @@ public:
 
     void shoot_sound(GunType gun);
 
+    void active_grenade_sound();
+
+    void dead_sound();
+
     void toggle_mute();
+
+    void update();
 
     ~SoundManager();
 };

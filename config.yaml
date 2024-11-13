@@ -1,0 +1,97 @@
+# Client side
+client_fps: 120
+window_title: Duck Game
+window_width: 1200
+window_height: 690
+
+# Server side
+server_ticks: 120
+cheats: true
+
+# Todos los rangos y velocidades se expresan en bloques por segundo
+initial_duck_hp: 100
+duck_speed: 9.5
+fall_speed: 7.5
+
+# Solo el ak, magnum y shotgun tienen efecto modificar el knockback, el resto por mas que lo agregue no modifica el juego
+initial_box_hp: 100
+guns:
+  grenade:
+    damage: 60
+    range: 5
+    speed: 30
+    ammo: 30
+    recoil: 360 # Para que salgan fragmentos en todas las direcciones
+
+  banana:
+    damage: 0
+    range: 8
+    speed: 30
+    ammo: 1
+    recoil: 0
+
+  pew_pew_laser:
+    damage: 30
+    range: 35
+    speed: 30
+    ammo: 36 # 3 x disparo (rafagas)
+    recoil: 6
+
+  laser_rifle:
+    damage: 25
+    range: 30
+    speed: 30
+    ammo: 10
+    recoil: 0
+
+  ak47:
+    damage: 40
+    range: 13
+    speed: 30
+    ammo: 30
+    recoil: 10
+    knockback: 0.25
+
+  dueling_pistol:
+    damage: 95
+    range: 5
+    speed: 30
+    ammo: 1
+    recoil: 8
+
+  cowboy_pistol:
+    damage: 35
+    range: 20
+    speed: 30
+    ammo: 6
+    recoil: 0
+
+  magnum:
+    damage: 55
+    range: 20
+    speed: 30
+    ammo: 6
+    recoil: 8
+    knockback: 0.25
+
+  shootgun:
+    damage: 30
+    range: 8
+    speed: 30
+    ammo: 12 # 6 x disparo
+    recoil: 30
+    knockback: 0.5
+
+  sniper:
+    damage: 85
+    range: 64
+    speed: 30
+    ammo: 3
+    recoil: 0
+
+  death_laser:
+    damage: 100
+    range: 100
+    speed: 30
+    ammo: 10
+    recoil: 0

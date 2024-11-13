@@ -3,18 +3,28 @@
 #include <cstdint>
 #include <random>
 #include <utility>
+#include <vector>
 
+#include <sys/types.h>
+
+#include "common/commands.h"
 #include "common/map.h"
 #include "common/shared_constants.h"
+#include "common/snapshot.h"
+#include "common/config.h"
+#include "server/game/boxes.h"
+#include "server/game/collisions.h"
 
-#include "ticks.h"
+static Config& config = Config::get_instance();
 
 const int16_t NEAR_CELLS = 3;
-const int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
-const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
+const static int TICKS = config.get_server_ticks();
+const static int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
+const static int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
+const static bool CHEATS = config.get_cheats_on();
 
 
-GameOperator::GameOperator(): collisions(), collectables(collisions, players) {}
+GameOperator::GameOperator(): collisions(), collectables(collisions, players, boxes) {}
 
 void GameOperator::load_map(const Map& map_info) {
     collisions.load_map(map_info.map_dto);
@@ -23,7 +33,7 @@ void GameOperator::load_map(const Map& map_info) {
         Spawn act_spawn{static_cast<int16_t>(coords.first * BLOCK_SIZE),
                         static_cast<int16_t>(coords.second * BLOCK_SIZE),
                         0,
-                        100,
+                        0,
                         true,
                         0};
         spawns.push_back(act_spawn);
@@ -37,9 +47,16 @@ void GameOperator::initialize_players(
     for (auto& duck: ducks_info) {
         DuckPlayer player(collectables, collisions, spawn_points[duck.first].first * BLOCK_SIZE,
                           spawn_points[duck.first].second * BLOCK_SIZE, duck.first, duck.second);
-        // player.set_coordenades_and_id(spawn_points[duck.first].first,
-        // spawn_points[duck.first].second, duck.first); player.set_player_name(duck.second);
         players.emplace(duck.first, std::move(player));
+    }
+}
+
+void GameOperator::initialize_boxes(const Map& map_info) {
+    uint32_t id = 0;
+    for (auto& box: map_info.boxes_spawns) {
+        ++id;
+        boxes.emplace(id,
+                      BoxEntity(box.first * BLOCK_SIZE, box.second * BLOCK_SIZE, id, collisions));
     }
 }
 
@@ -49,6 +66,7 @@ void GameOperator::initialize_game(Map& map_info,
                                    const std::vector<std::pair<uint8_t, std::string>>& ducks_info) {
     load_map(map_info);
     initialize_players(ducks_info, map_info);
+    initialize_boxes(map_info);
     collectables.reset_collectables();
 }
 
@@ -76,6 +94,12 @@ void GameOperator::process_action(action& action) {
         case StandUp:
             player.stand_up();
             break;
+        case StartLookup:
+            player.face_up();
+            break;
+        case StopLookup:
+            player.stop_face_up();
+            break;
         case Jump:
             player.jump();
             break;
@@ -86,37 +110,78 @@ void GameOperator::process_action(action& action) {
             check_spawn_picked(player.drop_and_pickup());
             break;
         default:
+            handle_cheat(player, action.command);
             break;
     }
 }
 
-void GameOperator::check_spawn_picked(uint32_t id) {
-    if (id > 0) {
-        for (auto& spawn: spawns) {
-            if (spawn.collectable_id == id) {
-                spawn.picked = true;
-                spawn.collectable_id = 0;
-                spawn.it_since_picked = 0;
-                spawn.it_to_spawn = COLLECTABLE_SPAWN_IT + rand() % COLLECTABLE_EXTRA_SPAWN_TIME;
+void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
+    if (!CHEATS) 
+        return;
+    if (command == KillEveryone) {
+        for (auto &[id, other_duck] : players) {
+            if (other_duck.status.duck_id == duck.status.duck_id) {
+                continue;
             }
+            other_duck.die();
         }
+    } else if (command == InfiniteAmmo) {
+        if (!duck.equipped_gun)
+            return;
+        duck.equipped_gun->infinite_ammo();
+    } else if (command == InfiniteHP) {
+        duck.infinite_hp();
+    } else {
+        duck.fly_mode();
+    }
+}
+
+void GameOperator::check_spawn_picked(uint32_t id) {
+    if (id == 0)
+        return;
+    for (auto& spawn: spawns) {
+        if (spawn.collectable_id != id)
+            continue;
+        spawn.picked = true;
+        spawn.collectable_id = 0;
+        spawn.it_since_picked = 0;
+        spawn.it_to_spawn = COLLECTABLE_SPAWN_IT + rand() % COLLECTABLE_EXTRA_SPAWN_TIME;
+    }
+}
+
+void GameOperator::check_broken_boxes() {
+    std::vector<uint32_t> id_to_eliminate;
+    for (auto& [id, box]: boxes) {
+        if (box.destroyed()) {
+            GunType n_gun = get_random_guntype(true);
+            Coordenades coords = box.get_coords();
+            Gun new_gun = {0, n_gun, static_cast<int16_t>(coords.x),
+                           static_cast<int16_t>(coords.y)};
+            collectables.add_gun(new_gun);
+            id_to_eliminate.push_back(id);
+        }
+    }
+    for (uint32_t pos: id_to_eliminate) {
+        boxes.erase(pos);
     }
 }
 
 void GameOperator::update_game_status() {
+    collectables.update_guns_and_bullets();
     for (auto& [id, duck]: players) {
         duck.move_duck();
         duck.update_gun_status();
     }
-    // Actualizar la posicion de las balas y vida de los patos si les pegan
     verify_spawn();
-    collectables.move_guns_falling();
+    check_broken_boxes();
 }
 
-GunType GameOperator::get_random_guntype() {
+GunType GameOperator::get_random_guntype(bool with_exploded_grenade) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1, GunTypeCount - 1);  // 0 es None
+    int max = with_exploded_grenade ? GunTypeCount : GunTypeCount - 1;
+    int min = with_exploded_grenade ? 0 : 1;
+    std::uniform_int_distribution<> dis(min, max);  // 0 es None
     return static_cast<GunType>(dis(gen));
 }
 
@@ -126,11 +191,8 @@ void GameOperator::verify_spawn() {
             continue;
 
         if (spawn.it_since_picked > spawn.it_to_spawn) {
-            uint32_t collectable_id = collectables.get_and_inc_collectable_id();
-
-            Gun new_gun = {collectable_id, get_random_guntype(), spawn.x, spawn.y};
-            collectables.add_gun(new_gun);
-            spawn.collectable_id = collectable_id;
+            Gun new_gun = {0, get_random_guntype(false), spawn.x, spawn.y};
+            spawn.collectable_id = collectables.add_gun(new_gun);
             spawn.it_since_picked = 0;
             spawn.picked = false;
         } else {
@@ -142,6 +204,9 @@ void GameOperator::verify_spawn() {
 void GameOperator::get_snapshot(Snapshot& snapshot) {
     for (auto& [id, duck]: players) {
         snapshot.ducks.push_back(duck.get_status());
+    }
+    for (auto& [id, box]: boxes) {
+        snapshot.boxes.push_back(box.get_info());
     }
     collectables.add_guns_to_snapshot(snapshot);
 }

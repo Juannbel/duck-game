@@ -28,14 +28,18 @@ public:
     void start_game(int id);
 
     Game* create_game(const std::string& creator_name);
-    // TODO: caso que se desconecte uno o termina la partida
-    // void delete_game(int id);
+
+    void delete_game(int id);
 
     std::vector<LobbyInfo> list_lobbies();
+
+    LobbyInfo get_lobby_info(int id_game);
 
     Queue<action>* get_gameloop_q(int id_game);
 
     void remove_player(int id_game, int id_player);
+
+    void delete_games();
 
     ~GamesMonitor();
 };

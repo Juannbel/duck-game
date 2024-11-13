@@ -28,13 +28,15 @@ void Acceptor::run() {
             break;
         }
     }
+    games_monitor.delete_games();
     kill_all();
 }
 
 void Acceptor::reap_dead() {
-    players.remove_if([](ServerClient* c) {
-        if (c->is_dead()) {
-            c->join();
+    players.remove_if([](ServerClient* player) {
+        if (player->is_dead()) {
+            player->join();
+            delete player;
             return true;
         }
         return false;
@@ -42,12 +44,10 @@ void Acceptor::reap_dead() {
 }
 
 void Acceptor::kill_all() {
-    for (auto& c: players) {
-        c->kill();
-        c->join();
-        delete c;
+    for (auto& player: players) {
+        player->kill();
+        player->join();
+        delete player;
     }
     players.clear();
 }
-
-int Acceptor::get_clients_count() { return players.size(); }

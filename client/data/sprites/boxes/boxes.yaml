@@ -1,0 +1,27 @@
+width: 16
+height: 16
+
+box:
+  no_damage:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 0, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  little_damage:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 16, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  medium_damage:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 32, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
+
+  heavy_damage:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 48, y: 0, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }

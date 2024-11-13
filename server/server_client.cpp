@@ -22,6 +22,7 @@ void ServerClient::start() {
 void ServerClient::join() {
     // Cierro los threads
     receiver.join();
+    receiver.join_sender();
     is_alive = false;
 }
 
@@ -30,7 +31,7 @@ bool ServerClient::is_dead() { return not is_alive; }
 Queue<Snapshot>* ServerClient::get_sender_queue() { return &sender_q; }
 
 void ServerClient::kill() {
-    sender_q.close();
+    try { sender_q.close(); } catch(...) {}
     sk.shutdown(2);
     sk.close();
 }

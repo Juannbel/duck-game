@@ -24,14 +24,22 @@
 #include "client/screen_manager.h"
 #include "client/textures_provider.h"
 #include "common/blocking_queue.h"
+#include "common/config.h"
 #include "common/lobby.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
 
 #include "animation_data_provider.h"
-#include "config.h"
+#include "controls_config.h"
 
 #define USE_CAMERA true
+
+static Config &config = Config::get_instance();
+
+const static int RATE = 1000 / config.get_client_fps();
+const static std::string WIN_TITLE = config.get_window_title();
+const static int WIN_WIDTH = config.get_window_width();
+const static int WIN_HEIGHT = config.get_window_height();
 
 ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
@@ -72,11 +80,11 @@ void ConstantLooper::run() try {
 
         while (snapshot_q.try_pop(last_snapshot)) {}
 
-        if (last_snapshot.match_finished) {
+        if (last_snapshot.round_finished) {
             keep_running =
                     screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
             if (!keep_running)
-                break;
+                continue;
             clear_renderables();
             process_snapshot();
             map.update(map_dto);
@@ -95,6 +103,8 @@ void ConstantLooper::run() try {
 
         render(camera, map);
 
+        sound_manager.update();
+
         sleep_or_catch_up(t1);
     }
 } catch (const ClosedQueue& e) {
@@ -107,7 +117,7 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
     int rest = RATE - (t2 - t1);
     if (rest < 0) {
         int behind = -rest;
-        int lost = behind - behind % int(RATE);
+        int lost = behind - behind % RATE;
 
         // recuperamos los frames perdidos
         uint8_t frames_to_skip = int(lost / RATE);
@@ -121,7 +131,7 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
         SDL_Delay(rest);
     }
 
-    t1 += RATE;
+    t1 = SDL_GetTicks();
 }
 
 void ConstantLooper::process_snapshot() {
@@ -132,6 +142,12 @@ void ConstantLooper::process_snapshot() {
     std::unordered_set<uint8_t> ducks_in_snapshot;
     for (auto& duck: last_snapshot.ducks) {
         ducks_in_snapshot.insert(duck.duck_id);
+        if (ducks_renderables.find(duck.duck_id) != ducks_renderables.end()) {
+            if (!ducks_renderables[duck.duck_id]->is_dead() && duck.is_dead)
+                sound_manager.dead_sound();
+            if (duck.gun == ActiveGrenade)
+                sound_manager.active_grenade_sound();
+        }
         ducks_renderables.try_emplace(duck.duck_id, std::make_unique<RenderableDuck>(duck.duck_id));
         ducks_renderables[duck.duck_id]->update(duck);
     }
@@ -144,17 +160,34 @@ void ConstantLooper::process_snapshot() {
         }
     }
 
+    std::unordered_set<uint32_t> boxes_in_snapshot;
+    for (const Box& box: last_snapshot.boxes) {
+        boxes_in_snapshot.insert(box.box_id);
+        boxes_renderables.try_emplace(box.box_id, std::make_unique<RenderableBox>(box.box_id));
+        boxes_renderables[box.box_id]->update(box);
+    }
+
+    for (auto it = boxes_renderables.begin(); it != boxes_renderables.end();) {
+        if (boxes_in_snapshot.find(it->first) == boxes_in_snapshot.end()) {
+            it = boxes_renderables.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
     std::unordered_set<uint32_t> collectables_in_snapshot;
     for (const Gun& gun: last_snapshot.guns) {
         collectables_in_snapshot.insert(gun.gun_id);
         collectables_renderables.try_emplace(
                 gun.gun_id, std::make_unique<RenderableCollectable>(gun.gun_id, gun.type));
+        if (gun.type == ActiveGrenade)
+            sound_manager.active_grenade_sound();
         collectables_renderables[gun.gun_id]->update(gun);
     }
 
     for (auto it = collectables_renderables.begin(); it != collectables_renderables.end();) {
         if (collectables_in_snapshot.find(it->first) == collectables_in_snapshot.end()) {
-            it = collectables_renderables.erase(it);  // al ser smart pointers se libera la memoria
+            it = collectables_renderables.erase(it);
         } else {
             ++it;
         }
@@ -162,9 +195,10 @@ void ConstantLooper::process_snapshot() {
 
     std::unordered_set<uint32_t> bullets_in_snapshot;
     for (const Bullet& bullet: last_snapshot.bullets) {
-        if (bullet.type == Helmet || bullet.type == Armor)
-            continue;
         bullets_in_snapshot.insert(bullet.bullet_id);
+        if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end())
+            sound_manager.shoot_sound(bullet.type);
+
         bullets_renderables.try_emplace(bullet.bullet_id, std::make_unique<RenderableBullet>(
                                                                   bullet.bullet_id, bullet.type));
         bullets_renderables[bullet.bullet_id]->update(bullet);
@@ -183,6 +217,10 @@ void ConstantLooper::render(Camera& camera, RenderableMap& map) {
     renderer.Clear();
 
     map.render(renderer, camera);
+
+    for (auto& box: boxes_renderables) {
+        box.second->render(renderer, camera);
+    }
 
     for (auto& bullet: bullets_renderables) {
         bullet.second->render(renderer, camera);
@@ -243,6 +281,7 @@ void ConstantLooper::clear_renderables() {
     ducks_renderables.clear();
     collectables_renderables.clear();
     bullets_renderables.clear();
+    boxes_renderables.clear();
 }
 
 ConstantLooper::~ConstantLooper() { clear_renderables(); }

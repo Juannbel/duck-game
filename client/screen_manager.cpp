@@ -10,10 +10,15 @@
 #include "client/animation_data_provider.h"
 #include "client/renderables/map.h"
 #include "client/textures_provider.h"
+#include "common/config.h"
 #include "common/lobby.h"
 #include "common/snapshot.h"
 
-#include "config.h"
+#define END_GAME_DELAY 1000
+
+static Config &config = Config::get_instance();
+
+const static int RATE = 1000 / config.get_client_fps();
 
 ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, std::pair<uint8_t, uint8_t>& duck_ids):
         duck_ids(duck_ids), renderer(renderer), primary_font(DATA_PATH "/fonts/primary.ttf", 30) {}
@@ -191,21 +196,11 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
 
 bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
                                           RenderableMap& map, Camera& camera) {
-    std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
-    std::vector<AnimationData> animations(MAX_DUCKS);
-
-    std::vector<Duck> ducks;
-    for (auto& duck: last_snapshot.ducks) {
-        animations[duck.duck_id] = AnimationDataProvider::get_animation_data(
-                "duck_" + std::to_string(duck.duck_id) + "_standing");
-        ducks.push_back(duck);
+    if (last_snapshot.game_finished) {
+        return end_game_screen(last_snapshot, map, camera);
+    } else if (last_snapshot.show_stats) {
+        return stats_screen(snapshot_q, last_snapshot, map, camera);
     }
-
-    std::sort(ducks.begin(), ducks.end(),
-              [](const Duck& a, const Duck& b) { return a.rounds_won > b.rounds_won; });
-
-    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Round finished",
-                                                                 SDL_Color{255, 255, 255, 255}));
 
     while (!snapshot_q.try_pop(last_snapshot)) {
         SDL_Event event;
@@ -216,36 +211,17 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot&
         }
 
         renderer.Clear();
-
         map.render(renderer, camera);
-
-        int rect_width = renderer.GetOutputWidth() * 0.8;
-        int rect_height = 80;
-        int start_x = (renderer.GetOutputWidth() - rect_width) / 2;
-        int start_y = renderer.GetOutputHeight() / 4;
-
-        renderer.Copy(
-                info, SDL2pp::NullOpt,
-                SDL2pp::Rect(SDL2pp::Point(renderer.GetOutputWidth() / 2 - info.GetSize().x / 2,
-                                           start_y - 50),
-                             info.GetSize()));
-
-        for (size_t i = 0; i < ducks.size(); ++i) {
-            SDL2pp::Rect duck_rect(start_x, start_y + i * (rect_height + 10), rect_width,
-                                   rect_height);
-            render_duck_stat(ducks[i], duck_rect, duck_texture, animations[ducks[i].duck_id]);
-        }
-
         renderer.Present();
         SDL_Delay(RATE);
     }
-
     return true;
 }
 
 void ScreenManager::render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
                                      std::shared_ptr<SDL2pp::Texture> ducks_texture,
                                      AnimationData& animation_data) {
+
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     renderer.SetDrawColor(0, 0, 0, 160);
     renderer.FillRect(rect);
@@ -275,4 +251,128 @@ void ScreenManager::render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
             SDL2pp::Rect(SDL2pp::Point(rect.x + rect.w - rounds_won_texture.GetSize().x - 10,
                                        rect.y + (rect.h - rounds_won_texture.GetSize().y) / 2),
                          rounds_won_texture.GetSize()));
+}
+
+bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
+                                          RenderableMap& map, Camera& camera) {
+    std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
+    std::vector<AnimationData> animations(MAX_DUCKS);
+
+    std::vector<Duck> ducks;
+    for (auto& duck: last_snapshot.ducks) {
+        animations[duck.duck_id] = AnimationDataProvider::get_animation_data(
+                "duck_" + std::to_string(duck.duck_id) + "_standing");
+        ducks.push_back(duck);
+    }
+
+    std::sort(ducks.begin(), ducks.end(),
+            [](const Duck& a, const Duck& b) { return a.rounds_won > b.rounds_won; });
+
+    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Round finished",
+                                                                SDL_Color{255, 255, 255, 255}));
+
+    while (!snapshot_q.try_pop(last_snapshot)) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                return false;
+            }
+        }
+
+        renderer.Clear();
+
+        map.render(renderer, camera);
+
+        int rect_width = renderer.GetOutputWidth() * 0.8;
+        int rect_height = 80;
+        int start_x = (renderer.GetOutputWidth() - rect_width) / 2;
+        int start_y = renderer.GetOutputHeight() / 4;
+
+        renderer.Copy(
+                info, SDL2pp::NullOpt,
+                SDL2pp::Rect(SDL2pp::Point(renderer.GetOutputWidth() / 2 - info.GetSize().x / 2,
+                                            start_y - 50),
+                            info.GetSize()));
+
+        for (size_t i = 0; i < ducks.size(); ++i) {
+            SDL2pp::Rect duck_rect(start_x, start_y + i * (rect_height + 10), rect_width,
+                                    rect_height);
+            render_duck_stat(ducks[i], duck_rect, duck_texture, animations[ducks[i].duck_id]);
+        }
+
+        renderer.Present();
+        SDL_Delay(RATE);
+    }
+
+    return true;
+}
+
+bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map, Camera& camera) {
+    std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
+    std::vector<AnimationData> animations(MAX_DUCKS);
+    std::vector<Duck> ducks;
+    for (auto& duck: last_snapshot.ducks) {
+        animations[duck.duck_id] = AnimationDataProvider::get_animation_data(
+                "duck_" + std::to_string(duck.duck_id) + "_standing");
+        ducks.push_back(duck);
+    }
+    std::sort(ducks.begin(), ducks.end(),
+              [](const Duck& a, const Duck& b) { return a.rounds_won > b.rounds_won; });
+
+    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Game Over",
+                                                                 SDL_Color{255, 255, 255, 255}));
+
+    std::string winner_name = ducks[0].player_name;
+    SDL2pp::Texture winner_text(renderer, primary_font.RenderText_Solid(winner_name + " wins!",
+                                                                 SDL_Color{255, 255, 255, 255}));
+
+    SDL2pp::Texture exit_text(renderer, primary_font.RenderText_Solid("Press ESC to exit",
+                                             SDL_Color{255, 255, 255, 255}));
+
+    while (true) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+                return false;
+            }
+        }
+
+        renderer.Clear();
+        map.render(renderer, camera);
+
+        int rect_width = renderer.GetOutputWidth() * 0.8;
+        int rect_height = 80;
+        int start_x = (renderer.GetOutputWidth() - rect_width) / 2;
+        int start_y = renderer.GetOutputHeight() * 0.3;
+        int winner_text_y = start_y - 120;
+
+        renderer.Copy(
+                info, SDL2pp::NullOpt,
+                SDL2pp::Rect(SDL2pp::Point(renderer.GetOutputWidth() / 2 - info.GetSize().x / 2,
+                                           start_y - 50),
+                             info.GetSize()));
+
+        renderer.Copy(
+                winner_text, SDL2pp::NullOpt,
+                SDL2pp::Rect(SDL2pp::Point(renderer.GetOutputWidth() / 2 - winner_text.GetSize().x / 2,
+                                           winner_text_y),
+                             winner_text.GetSize()));
+
+        renderer.Copy(
+                exit_text, SDL2pp::NullOpt,
+                SDL2pp::Rect(SDL2pp::Point(renderer.GetOutputWidth() / 2 - exit_text.GetSize().x / 2,
+                                            renderer.GetOutputHeight() - exit_text.GetSize().y - 30),
+                                exit_text.GetSize()));
+
+        for (size_t i = 0; i < ducks.size(); ++i) {
+            SDL2pp::Rect duck_rect(start_x, start_y + i * (rect_height + 10), rect_width,
+                                   rect_height);
+            render_duck_stat(ducks[i], duck_rect, duck_texture, animations[ducks[i].duck_id]);
+        }
+
+        renderer.Present();
+
+        SDL_Delay(RATE);
+    }
+    return false;
 }

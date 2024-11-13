@@ -9,7 +9,8 @@ class RenderableFeathers {
 private:
     Animation animation;
     SDL2pp::Point position;
-    bool never_damaged;
+    uint8_t last_hp;
+    uint8_t iterations_left;
 
 public:
     explicit RenderableFeathers(uint8_t duck_id);

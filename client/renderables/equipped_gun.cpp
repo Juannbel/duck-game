@@ -36,7 +36,10 @@ std::unordered_map<GunType, std::string> RenderableEquippedGun::gun_to_string{
         {Shootgun, "shootgun"},
         {Sniper, "sniper"},
         {Helmet, "helmet"},
-        {Armor, "armor"}};
+        {Armor, "armor"},
+        {ActiveGrenade, "active_grenade"},
+        {ActiveBanana, "active_banana"},
+        {DeathLaser, "death_laser"}};
 
 void RenderableEquippedGun::update(const Duck& duck) {
     facing_right = duck.facing_right;

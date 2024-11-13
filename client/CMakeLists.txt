@@ -1,51 +1,16 @@
 add_subdirectory(lobby)
 
+file(GLOB CPP_SOURCES
+    "*.cpp"
+    "renderables/*.cpp"
+    )
+
+file(GLOB H_SOURCES
+    "*.h"
+    "renderables/*.h"
+    )
+
 target_sources(taller_client
-    PRIVATE
-    # .cpp files
-    main.cpp
-    constant_looper.cpp
-    renderables/animation.cpp
-    renderables/duck.cpp
-    renderables/equipped_gun.cpp
-    renderables/collectable.cpp
-    renderables/wings.cpp
-    renderables/helmet.cpp
-    renderables/armor.cpp
-    renderables/map.cpp
-    renderables/bullet.cpp
-    renderables/feathers.cpp
-    camera.cpp
-    client_protocol.cpp
-    client.cpp
-    client_receiver.cpp
-    client_sender.cpp
-    textures_provider.cpp
-    animation_data_provider.cpp
-    duck_controller.cpp
-    sound_manager.cpp
-    screen_manager.cpp
-    PUBLIC
-    # .h files
-    constant_looper.h
-    camera.h
-    renderables/animation.h
-    renderables/duck.h
-    renderables/equipped_gun.h
-    renderables/collectable.h
-    renderables/wings.h
-    renderables/helmet.h
-    renderables/armor.h
-    renderables/map.h
-    renderables/bullet.h
-    renderables/feathers.h
-    client_protocol.h
-    client.h
-    client_receiver.h
-    client_sender.h
-    textures_provider.h
-    animation_data_provider.h
-    duck_controller.h
-    sound_manager.h
-    screen_manager.cpp
+    PRIVATE ${CPP_SOURCES}
+    PUBLIC ${H_SOURCES}
     )

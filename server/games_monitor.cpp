@@ -36,19 +36,40 @@ std::vector<LobbyInfo> GamesMonitor::list_lobbies() {
     std::lock_guard<std::mutex> lck(m);
     std::vector<LobbyInfo> lobbies;
     for (auto& game: map_games) {
-        if (game.second->is_open()) {
+        Game* game_ptr = game.second;
+        if (game_ptr && game_ptr->is_open()) {
             lobbies.push_back(game.second->get_info());
         }
     }
     return lobbies;
 }
 
+LobbyInfo GamesMonitor::get_lobby_info(int32_t id_game) {
+    if (map_games.find(id_game) == map_games.end()) {
+        return LobbyInfo{};
+    }
+    std::lock_guard<std::mutex> lck(m);
+    Game* game = map_games[id_game];
+    return game->get_info();
+}
+
 Game* GamesMonitor::create_game(const std::string& creator_name) {
     Game* game = new Game(id, creator_name);
+    game->set_on_game_end_callback([this](int id_game) { delete_game(id_game); });
     std::lock_guard<std::mutex> lck(m);
     map_games.emplace(id, game);
     id++;
     return game;
+}
+
+void GamesMonitor::delete_game(int id_game) {
+    // En remove player se agarra el lock, en caso que el gameloop lo necesite llama a esta funcion
+    // (ya se tiene el lock)
+    auto it = map_games.find(id_game);
+    if (it != map_games.end()) {
+        delete it->second;
+        map_games.erase(it);
+    }
 }
 
 Queue<action>* GamesMonitor::get_gameloop_q(const int id_game) {
@@ -59,13 +80,17 @@ Queue<action>* GamesMonitor::get_gameloop_q(const int id_game) {
 
 void GamesMonitor::remove_player(const int id_game, const int id_player) {
     std::lock_guard<std::mutex> lck(m);
-    Game* game = map_games[id_game];
-    game->delete_player(id_player);
+    if (Game* game = map_games[id_game]) {
+        game->delete_player(id_player);
+    }
 }
 
-GamesMonitor::~GamesMonitor() {
+void GamesMonitor::delete_games() {
     std::lock_guard<std::mutex> lck(m);
     for (auto& game: map_games) {
         delete game.second;
     }
+    map_games.clear();
 }
+
+GamesMonitor::~GamesMonitor() {}

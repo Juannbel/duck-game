@@ -2,6 +2,7 @@
 #define GAME_LOOP_H
 
 #include <cstdint>
+#include <functional>
 #include <map>
 #include <string>
 #include <utility>
@@ -24,13 +25,15 @@ private:
     Queue<struct action>& actions_queue;
     QueueListMonitor& snaps_queue_list;
     GameOperator game_operator;
-    uint8_t match_number;
+    uint8_t round_number;
     bool round_finished;
+    bool game_finished;
     std::map<uint8_t, uint8_t> winners_id_count;
     MapLoader map_loader;
     std::vector<std::string> paths_to_maps;
     Map curr_map;
     std::vector<std::pair<uint8_t, std::string>> ducks_info;
+    std::function<void()> on_game_end_callback;
 
     void initialice_new_round();
 
@@ -55,10 +58,13 @@ public:
      */
     virtual void run() override;
 
+    void stop() override;
+
     uint8_t add_player(const std::string& player_name);
-    // uint8_t add_player();
 
     void delete_duck(uint8_t duck_id);
+
+    void set_on_game_end_callback(std::function<void()> callback);
 
     ~GameLoop();
 

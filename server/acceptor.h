@@ -18,7 +18,6 @@ public:
     void run() override;
     void reap_dead();
     void kill_all();
-    int get_clients_count();
 };
 
 #endif
