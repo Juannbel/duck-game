@@ -5,8 +5,6 @@
 
 #include <arpa/inet.h>
 
-#include "common/commands.h"
-#include "common/lobby.h"
 
 ServerProtocol::ServerProtocol(Socket& socket): socket(socket) {}
 

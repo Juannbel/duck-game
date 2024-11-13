@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
-#include "common/commands.h"
-#include "common/lobby.h"
-#include "common/snapshot.h"
-#include "common/socket.h"
+#include "../common/commands.h"
+#include "../common/lobby.h"
+#include "../common/snapshot.h"
+#include "../common/socket.h"
 
 class ServerProtocol {
 private:

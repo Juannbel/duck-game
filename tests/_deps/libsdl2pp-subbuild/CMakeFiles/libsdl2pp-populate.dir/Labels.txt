@@ -1,0 +1,14 @@
+# Target labels
+ libsdl2pp-populate
+# Source files and their labels
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/CMakeFiles/libsdl2pp-populate
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/CMakeFiles/libsdl2pp-populate.rule
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/CMakeFiles/libsdl2pp-populate-complete.rule
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/libsdl2pp-populate-prefix/src/libsdl2pp-populate-stamp/libsdl2pp-populate-build.rule
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/libsdl2pp-populate-prefix/src/libsdl2pp-populate-stamp/libsdl2pp-populate-configure.rule
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/libsdl2pp-populate-prefix/src/libsdl2pp-populate-stamp/libsdl2pp-populate-download.rule
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/libsdl2pp-populate-prefix/src/libsdl2pp-populate-stamp/libsdl2pp-populate-install.rule
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/libsdl2pp-populate-prefix/src/libsdl2pp-populate-stamp/libsdl2pp-populate-mkdir.rule
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/libsdl2pp-populate-prefix/src/libsdl2pp-populate-stamp/libsdl2pp-populate-patch.rule
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/libsdl2pp-populate-prefix/src/libsdl2pp-populate-stamp/libsdl2pp-populate-test.rule
+/home/facundo/taller/tp-grupal/duck-game/tests/_deps/libsdl2pp-subbuild/libsdl2pp-populate-prefix/src/libsdl2pp-populate-stamp/libsdl2pp-populate-update.rule
