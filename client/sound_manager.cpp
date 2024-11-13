@@ -1,12 +1,15 @@
 #include "sound_manager.h"
-#include "config.h"
+#include "common/config.h"
 
 #define CHANNELS 8
-#define IT_BETWEEN_BEEPS (FPS / 2)
 
 #define BULLETS_GROUP 1
 #define QUACK_GROUP 2
 #define GRENADE_GROUP 3
+
+static Config& config = Config::get_instance();
+
+const static uint BEEP_INTERVAL = config.get_client_fps() / 2;
 
 SoundManager::SoundManager():
         mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, CHANNELS, 4096),
@@ -55,7 +58,7 @@ void SoundManager::update() {
 }
 
 void SoundManager::active_grenade_sound() {
-    if (it_since_last_beep < IT_BETWEEN_BEEPS)
+    if (it_since_last_beep < BEEP_INTERVAL)
         return;
     try {
         int channel = mixer.GetGroupAvailableChannel(GRENADE_GROUP);

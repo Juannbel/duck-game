@@ -24,6 +24,7 @@
 #include "client/screen_manager.h"
 #include "client/textures_provider.h"
 #include "common/blocking_queue.h"
+#include "common/config.h"
 #include "common/lobby.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
@@ -32,6 +33,12 @@
 #include "config.h"
 
 #define USE_CAMERA true
+
+static Config &config = Config::get_instance();
+
+const static int RATE = 1000 / config.get_client_fps();
+const static int WIN_WIDTH = config.get_window_width();
+const static int WIN_HEIGHT = config.get_window_height();
 
 ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
@@ -109,7 +116,7 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
     int rest = RATE - (t2 - t1);
     if (rest < 0) {
         int behind = -rest;
-        int lost = behind - behind % int(RATE);
+        int lost = behind - behind % RATE;
 
         // recuperamos los frames perdidos
         uint8_t frames_to_skip = int(lost / RATE);
@@ -123,7 +130,7 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
         SDL_Delay(rest);
     }
 
-    t1 += RATE;
+    t1 = SDL_GetTicks();
 }
 
 void ConstantLooper::process_snapshot() {

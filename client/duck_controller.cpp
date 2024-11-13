@@ -1,7 +1,6 @@
 #include "duck_controller.h"
 
 #include <algorithm>
-#include <iostream>
 
 #include "common/lobby.h"
 

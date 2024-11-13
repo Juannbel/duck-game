@@ -10,12 +10,15 @@
 #include "client/animation_data_provider.h"
 #include "client/renderables/map.h"
 #include "client/textures_provider.h"
+#include "common/config.h"
 #include "common/lobby.h"
 #include "common/snapshot.h"
 
-#include "config.h"
-
 #define END_GAME_DELAY 1000
+
+static Config &config = Config::get_instance();
+
+const static int RATE = 1000 / config.get_client_fps();
 
 ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, std::pair<uint8_t, uint8_t>& duck_ids):
         duck_ids(duck_ids), renderer(renderer), primary_font(DATA_PATH "/fonts/primary.ttf", 30) {}
