@@ -58,6 +58,8 @@ public:
      */
     virtual void run() override;
 
+    void stop() override;
+
     uint8_t add_player(const std::string& player_name);
 
     void delete_duck(uint8_t duck_id);

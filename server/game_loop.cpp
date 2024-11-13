@@ -211,7 +211,9 @@ void GameLoop::set_on_game_end_callback(std::function<void()> callback) {
     on_game_end_callback = std::move(callback);
 }
 
-GameLoop::~GameLoop() {
+void GameLoop::stop() {
     _keep_running = false;
     actions_queue.close();
 }
+
+GameLoop::~GameLoop() {}

@@ -39,6 +39,8 @@ public:
 
     void remove_player(int id_game, int id_player);
 
+    void delete_games();
+
     ~GamesMonitor();
 };
 
