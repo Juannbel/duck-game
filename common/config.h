@@ -9,46 +9,69 @@
 
 class Config {
 private:
-    static int client_fps;
-    static int window_width;
-    static int window_height;
+    Config() { load_config(); };
 
-    static int server_ticks;
-    static uint8_t initial_duck_hp;
-    static float duck_speed;
-    static float fall_spped;
+    int client_fps;
+    int window_width;
+    int window_height;
 
-    static int initial_box_hp;
+    int server_ticks;
+    uint8_t initial_duck_hp;
+    float duck_speed;
+    float fall_spped;
 
-    static std::map<std::string, GunType> string_to_gun;
+    int initial_box_hp;
 
-    static std::map<GunType, uint8_t> gun_ammo;
-    static std::map<GunType, uint16_t> gun_recoil;
-    static std::map<GunType, uint8_t> bullet_range;
-    static std::map<GunType, uint8_t> bullet_damage;
-    static std::map<GunType, float> bullet_speed;
 
-    Config() {};
+    std::map<std::string, GunType> string_to_gun {
+        {"none", None},
+        {"grenade", Grenade},
+        {"banana", Banana},
+        {"pew_pew_laser", PewPewLaser},
+        {"laser_rifle", LaserRifle},
+        {"ak47", Ak47},
+        {"dueling_pistol", DuelingPistol},
+        {"cowboy_pistol", CowboyPistol},
+        {"magnum", Magnum},
+        {"shootgun", Shootgun},
+        {"sniper", Sniper},
+        {"helmet", Helmet},
+        {"armor", Armor},
+        {"active_grenade", ActiveGrenade},
+        {"active_banana", ActiveBanana}
+    };
+
+
+    std::map<GunType, uint8_t> gun_ammo;
+    std::map<GunType, uint16_t> gun_recoil;
+    std::map<GunType, uint8_t> bullet_range;
+    std::map<GunType, uint8_t> bullet_damage;
+    std::map<GunType, float> bullet_speed;
 
 public:
-    static void load_config();
+    static Config& get_instance() {
+        static Config instance;
+        return instance;
+    }
+
+    void load_config();
 
     // Client
-    static int get_window_width();
-    static int get_window_height();
-    static int get_client_fps();
+    int get_window_width();
+    int get_window_height();
+    int get_client_fps();
 
     // Server
-    static int get_server_ticks();
-    static uint8_t get_initial_duck_hp();
-    static float get_duck_speed();
-    static float get_fall_speed();
-    static int get_initial_box_hp();
-    static uint8_t get_bullet_damage(GunType gun);
-    static uint8_t get_bullet_range(GunType gun);
-    static float get_bullet_speed(GunType gun);
-    static uint8_t get_gun_ammo(GunType gun);
-    static uint16_t get_gun_recoil(GunType gun);
+    int get_server_ticks();
+    uint8_t get_initial_duck_hp();
+    float get_duck_speed();
+    float get_fall_speed();
+    int get_initial_box_hp();
+    uint8_t get_bullet_damage(GunType gun);
+    uint8_t get_bullet_range(GunType gun);
+    float get_bullet_speed(GunType gun);
+    uint8_t get_gun_ammo(GunType gun);
+    uint16_t get_gun_recoil(GunType gun);
 
 };
 

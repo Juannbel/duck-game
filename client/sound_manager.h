@@ -14,7 +14,6 @@ private:
     SDL2pp::Mixer mixer;
     std::unordered_map<GunType, SDL2pp::Chunk*> gun_sounds;
     std::unordered_map<std::string, SDL2pp::Chunk*> other_sounds;
-    const uint beep_interval;
     uint it_since_last_beep;
     SDL2pp::Music background_music;
 

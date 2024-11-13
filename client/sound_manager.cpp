@@ -7,9 +7,12 @@
 #define QUACK_GROUP 2
 #define GRENADE_GROUP 3
 
+static Config& config = Config::get_instance();
+
+const static uint BEEP_INTERVAL = config.get_client_fps() / 2;
+
 SoundManager::SoundManager():
         mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, CHANNELS, 4096),
-        beep_interval(Config::get_client_fps() / 2),
         background_music(DATA_PATH "/sounds/background.mp3") {
 
     mixer.GroupChannels(1, 2, QUACK_GROUP);
@@ -55,7 +58,7 @@ void SoundManager::update() {
 }
 
 void SoundManager::active_grenade_sound() {
-    if (it_since_last_beep < beep_interval)
+    if (it_since_last_beep < BEEP_INTERVAL)
         return;
     try {
         int channel = mixer.GetGroupAvailableChannel(GRENADE_GROUP);

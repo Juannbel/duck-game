@@ -7,7 +7,6 @@
 
 class RenderableFeathers {
 private:
-    const int render_iterations;
     Animation animation;
     SDL2pp::Point position;
     uint8_t last_hp;

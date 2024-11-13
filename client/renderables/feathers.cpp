@@ -5,13 +5,16 @@
 #include "client/textures_provider.h"
 #include "common/config.h"
 
+static Config& config = Config::get_instance();
+const static int INIT_DUCK_HP = config.get_initial_duck_hp();
+const static int RENDER_ITERATIONS = config.get_client_fps();
+
 RenderableFeathers::RenderableFeathers(uint8_t duck_id):
-        render_iterations(Config::get_client_fps()),
         animation(*TexturesProvider::get_texture("feathers"),
                   AnimationDataProvider::get_animation_data("feathers_" + std::to_string(duck_id) +
                                                             "_damaged")),
         position(0, 0),
-        last_hp(Config::get_initial_duck_hp()),
+        last_hp(INIT_DUCK_HP),
         iterations_left(0) {}
 
 void RenderableFeathers::update(const Duck& duck) {
@@ -19,7 +22,7 @@ void RenderableFeathers::update(const Duck& duck) {
         last_hp = duck.duck_hp;
         position.x = duck.x;
         position.y = duck.y;
-        iterations_left = render_iterations;
+        iterations_left = RENDER_ITERATIONS;
         animation.restart();
     }
 

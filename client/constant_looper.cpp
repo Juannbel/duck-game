@@ -34,12 +34,17 @@
 
 #define USE_CAMERA true
 
+static Config &config = Config::get_instance();
+
+const static int RATE = 1000 / config.get_client_fps();
+const static int WIN_WIDTH = config.get_window_width();
+const static int WIN_HEIGHT = config.get_window_height();
+
 ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
-        rate(1000 / Config::get_client_fps()),
         duck_ids(duck_ids),
         sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
-        window(WIN_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Config::get_window_width(), Config::get_window_height(),
+        window(WIN_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_WIDTH, WIN_HEIGHT,
                SDL_WINDOW_RESIZABLE),
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
         screen_manager(renderer, duck_ids),
@@ -108,13 +113,13 @@ void ConstantLooper::run() try {
 void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
     uint32_t t2 = SDL_GetTicks();
 
-    int rest = rate - (t2 - t1);
+    int rest = RATE - (t2 - t1);
     if (rest < 0) {
         int behind = -rest;
-        int lost = behind - behind % rate;
+        int lost = behind - behind % RATE;
 
         // recuperamos los frames perdidos
-        uint8_t frames_to_skip = int(lost / rate);
+        uint8_t frames_to_skip = int(lost / RATE);
 
         for (auto& duck: ducks_renderables) {
             duck.second->skip_frames(frames_to_skip);

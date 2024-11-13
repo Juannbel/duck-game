@@ -16,8 +16,12 @@
 
 #define END_GAME_DELAY 1000
 
+static Config &config = Config::get_instance();
+
+const static int RATE = 1000 / config.get_client_fps();
+
 ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, std::pair<uint8_t, uint8_t>& duck_ids):
-        rate(1000 / Config::get_client_fps()), duck_ids(duck_ids), renderer(renderer), primary_font(DATA_PATH "/fonts/primary.ttf", 30) {}
+        duck_ids(duck_ids), renderer(renderer), primary_font(DATA_PATH "/fonts/primary.ttf", 30) {}
 
 bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
@@ -110,7 +114,7 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
             it_since_change = 0;
         }
 
-        SDL_Delay(rate);
+        SDL_Delay(RATE);
     }
 
     return true;
@@ -185,7 +189,7 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
         }
 
         renderer.Present();
-        SDL_Delay(rate);
+        SDL_Delay(RATE);
     }
     return true;
 }
@@ -209,7 +213,7 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot&
         renderer.Clear();
         map.render(renderer, camera);
         renderer.Present();
-        SDL_Delay(rate);
+        SDL_Delay(RATE);
     }
     return true;
 }
@@ -297,7 +301,7 @@ bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_sna
         }
 
         renderer.Present();
-        SDL_Delay(rate);
+        SDL_Delay(RATE);
     }
 
     return true;
@@ -368,7 +372,7 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map,
 
         renderer.Present();
 
-        SDL_Delay(rate);
+        SDL_Delay(RATE);
     }
     return false;
 }

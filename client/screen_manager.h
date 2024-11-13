@@ -15,7 +15,6 @@
 
 class ScreenManager {
 private:
-    const int rate;
     std::pair<uint8_t, uint8_t>& duck_ids;
     SDL2pp::Renderer& renderer;
     SDL2pp::SDLTTF sdl_ttf;

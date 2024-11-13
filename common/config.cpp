@@ -3,20 +3,6 @@
 
 #include <yaml-cpp/yaml.h>
 
-int Config::client_fps;
-int Config::window_width;
-int Config::window_height;
-int Config::server_ticks;
-uint8_t Config::initial_duck_hp;
-float Config::duck_speed;
-float Config::fall_spped;
-int Config::initial_box_hp;
-std::map<GunType, uint8_t> Config::gun_ammo;
-std::map<GunType, uint16_t> Config::gun_recoil;
-std::map<GunType, uint8_t> Config::bullet_damage;
-std::map<GunType, uint8_t> Config::bullet_range;
-std::map<GunType, float> Config::bullet_speed;
-
 void Config::load_config() try {
     YAML::Node config = YAML::LoadFile(CONFIG_PATH);
     std::cout << "Loaded config file: " << CONFIG_PATH << std::endl;
@@ -124,21 +110,3 @@ uint8_t Config::get_bullet_range(GunType type) {
 }
 
 float Config::get_bullet_speed(GunType type) { return bullet_speed[type]; }
-
-std::map<std::string, GunType> Config::string_to_gun {
-    {"none", None},
-    {"grenade", Grenade},
-    {"banana", Banana},
-    {"pew_pew_laser", PewPewLaser},
-    {"laser_rifle", LaserRifle},
-    {"ak47", Ak47},
-    {"dueling_pistol", DuelingPistol},
-    {"cowboy_pistol", CowboyPistol},
-    {"magnum", Magnum},
-    {"shootgun", Shootgun},
-    {"sniper", Sniper},
-    {"helmet", Helmet},
-    {"armor", Armor},
-    {"active_grenade", ActiveGrenade},
-    {"active_banana", ActiveBanana}
-};

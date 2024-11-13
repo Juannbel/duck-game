@@ -4,7 +4,6 @@
 #include <utility>
 
 #include "common/blocking_queue.h"
-#include "common/config.h"
 #include "common/lobby.h"
 #include "lobby/lobby.h"
 
@@ -24,7 +23,6 @@ void Client::run() {
 
     receiver.start();
     sender.start();
-    Config::load_config();
 
     if (!ready_to_play)
         return;
