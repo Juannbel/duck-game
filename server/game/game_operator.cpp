@@ -128,6 +128,8 @@ void GameOperator::check_broken_boxes() {
     for (auto &[id, box] : boxes) {
         if (box.destroyed()) {
             GunType n_gun = get_random_guntype(true);
+            if (n_gun == None) 
+                continue;
             Coordenades coords = box.get_coords();
             Gun new_gun = {0, n_gun, static_cast<int16_t>(coords.x), static_cast<int16_t>(coords.y)};
             collectables.add_gun(new_gun);
@@ -153,7 +155,8 @@ GunType GameOperator::get_random_guntype(bool with_exploded_grenade) {
     std::random_device rd;
     std::mt19937 gen(rd());
     int max = with_exploded_grenade ? GunTypeCount : GunTypeCount - 1;
-    std::uniform_int_distribution<> dis(1, max);  // 0 es None
+    int min = with_exploded_grenade ? 0 : 1;
+    std::uniform_int_distribution<> dis(min, max);  // 0 es None
     return static_cast<GunType>(dis(gen));
 }
 
