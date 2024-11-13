@@ -12,6 +12,14 @@
 #include "collisions.h"
 #include "gun_entity.h"
 
+class GameOperator;
+
+class Cheats {
+    public:
+    bool flying;
+    bool infiniteHP;
+};
+
 class DuckPlayer {
 private:
     Duck status;
@@ -35,8 +43,6 @@ private:
 public:
     DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x, int16_t y,
                uint8_t id, const std::string& name);
-    // void set_coordenades_and_id(int16_t x, int16_t y, uint8_t id);
-    // void set_player_name(const std::string& name);
     void move_duck();
     void run(bool right);
     void stop_running();
@@ -55,6 +61,9 @@ public:
     void slide();
     Duck get_status();
     const Coordenades& get_coords();
+
+    
+    friend class GameOperator;
 };
 
 #endif

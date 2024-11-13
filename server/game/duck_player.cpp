@@ -8,19 +8,22 @@
 #include <sys/types.h>
 
 #include "common/snapshot.h"
+#include "common/config.h"
+#include "server/game/boxes.h"
 #include "server/game/collisions.h"
 
-#include "ticks.h"
+static Config& config = Config::get_instance();
 
-const uint8_t JUMP_IT = TICKS;
-const uint8_t DECREACENT_JUMP_SPEED = TICKS / 3;
-const uint8_t FLAPPING_TIME = TICKS / 3;
-const uint8_t IT_TO_GET_HIT_AGAIN = TICKS / 10;
-const uint8_t SLIDING_ITS = TICKS / 2;
-const float DUCK_SPEED = 150.0f / TICKS;
-const float FALL_SPEED = 120.0f / TICKS;
-const float JUMP_SPEED = FALL_SPEED * 4;
-const float KNOCKBACK_MOVE = 4;
+const static int TICKS = config.get_server_ticks();
+const static uint8_t JUMP_IT = TICKS;
+const static uint8_t DECREACENT_JUMP_SPEED = TICKS / 3;
+const static uint8_t FLAPPING_TIME = TICKS / 3;
+const static uint8_t IT_TO_GET_HIT_AGAIN = TICKS / 10;
+const static uint8_t SLIDING_ITS = TICKS / 2;
+const static float DUCK_SPEED = (config.get_duck_speed() * BLOCK_SIZE)/ TICKS;
+const static float FALL_SPEED = (config.get_fall_speed() * BLOCK_SIZE) / TICKS;
+const static float JUMP_SPEED = FALL_SPEED * 4;
+const static float KNOCKBACK_MOVE = 4;
 
 DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& collisions, int16_t x,
                        int16_t y, uint8_t id, const std::string& name):
@@ -33,7 +36,7 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& colli
         collisions(collisions),
         collectables(collectables),
         equipped_gun(nullptr) {
-    status.duck_hp = 100;
+    status.duck_hp = config.get_initial_duck_hp();
     status.is_dead = false;
     hitbox.coords.x = static_cast<float>(x);
     hitbox.coords.y = static_cast<float>(y);

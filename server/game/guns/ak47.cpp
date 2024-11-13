@@ -3,22 +3,20 @@
 #include <cstdint>
 
 #include "server/game/gun_entity.h"
-#include "server/game/ticks.h"
+#include "common/config.h"
 
+static Config& config = Config::get_instance();
 const int16_t INITIAL_INNACURACY = 10;
 
 Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = AK47_HITBOX_HEIGHT;
     hitbox.width = AK47_HITBOX_WIDTH;
-    damage = 40;
-    ammo = 30;
     bullets_to_shoot = 1;
-    it_to_shoot = TICKS / 15;
+    it_to_shoot = config.get_server_ticks() / 15;
     it_since_shoot = it_to_shoot;
     initial_angle = 0;
     inaccuracy = INITIAL_INNACURACY;
-    range = 13 * BLOCK_SIZE;
 }
 
 bool Ak47G::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {

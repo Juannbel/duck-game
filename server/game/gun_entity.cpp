@@ -6,12 +6,14 @@
 
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
+#include "common/config.h"
 #include "server/game/collisions.h"
 
-#include "ticks.h"
+static Config& config = Config::get_instance();
 
-const float GUN_FALL_SPEED = 120.0f / TICKS;
-const float GUN_THROW_SPEED = 240.0f / TICKS;
+const static int TICKS = config.get_server_ticks();
+const float GUN_FALL_SPEED = (config.get_fall_speed() * BLOCK_SIZE) / TICKS;
+const float GUN_THROW_SPEED = (config.get_fall_speed() * BLOCK_SIZE) * 2 / TICKS;
 
 
 #include "duck_player.h"
@@ -22,14 +24,12 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
         hitbox(),
         facing_right(),
         stuck(),
-        damage(),
         it_mooving(),
-        ammo(),
-        range(),
+        ammo(config.get_gun_ammo(type)),
         bullets_to_shoot(),
         shooted_bullets(),
         initial_angle(),
-        inaccuracy(),
+        inaccuracy(config.get_gun_recoil(type)),
         trigger_pulled(),
         ready_to_shoot(),
         it_since_shoot(),
@@ -68,7 +68,7 @@ void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facin
                                     player_hb.coords.y + DUCK_LAYED_HITBOX_HEIGHT;
         b_hb.height = BULLET_HITBOX_HEIGHT;
         b_hb.width = BULLET_HITBOX_WIDTH;
-        bullets->add_bullet(b_hb, angle, type, range, damage);
+        bullets->add_bullet(b_hb, angle, type);
         it_since_shoot = it_to_shoot;
         --shooted_bullets;
         --ammo;

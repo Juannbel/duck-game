@@ -16,6 +16,7 @@ private:
     int window_height;
 
     int server_ticks;
+    bool cheats;
     uint8_t initial_duck_hp;
     float duck_speed;
     float fall_spped;
@@ -63,6 +64,7 @@ public:
 
     // Server
     int get_server_ticks();
+    bool get_cheats_on();
     uint8_t get_initial_duck_hp();
     float get_duck_speed();
     float get_fall_speed();

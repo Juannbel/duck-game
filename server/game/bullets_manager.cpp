@@ -21,11 +21,9 @@ void BulletManager::clear_bullets() {
     bullets.clear();
 }
 
-void BulletManager::add_bullet(const Rectangle& info, int16_t angle, GunType type, uint16_t range,
-                               uint8_t damage) {
+void BulletManager::add_bullet(const Rectangle& info, int16_t angle, GunType type) {
     ++bullet_id;
-    bullets.emplace(bullet_id, BulletEntity(info, collisions, ducks, boxes, angle, type, bullet_id,
-                                            range, damage));
+    bullets.emplace(bullet_id, BulletEntity(info, collisions, ducks, boxes, angle, type, bullet_id));
 }
 
 void BulletManager::update_bullets() {

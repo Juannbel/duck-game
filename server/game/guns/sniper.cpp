@@ -7,12 +7,10 @@ SniperG::SniperG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = SNIPER_HITBOX_HEIGHT;
     hitbox.width = SNIPER_HITBOX_WIDTH;
-    damage = 85;
     ammo = 3;
     bullets_to_shoot = 1;
     inaccuracy = 0;
     it_reloading = 0;
-    range = 64 * BLOCK_SIZE;
 }
 
 bool SniperG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {

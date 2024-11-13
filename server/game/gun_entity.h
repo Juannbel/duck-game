@@ -16,10 +16,8 @@ protected:
     Rectangle hitbox;
     bool facing_right;
     bool stuck;
-    uint8_t damage;
     uint8_t it_mooving;
     uint8_t ammo;
-    uint16_t range;
     uint8_t bullets_to_shoot;
     uint8_t shooted_bullets;
     int16_t initial_angle;

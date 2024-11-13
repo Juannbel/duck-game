@@ -10,12 +10,15 @@
 #include <thread>
 #include <vector>
 
+#include "common/config.h"
 #include "common/snapshot.h"
-#include "game/ticks.h"
 
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 
+static Config& config = Config::get_instance();
+
+const static int TICKS = config.get_server_ticks();
 const milliseconds RATE(1000 / TICKS);
 const uint its_after_round = 3000 / (1000 / TICKS);
 

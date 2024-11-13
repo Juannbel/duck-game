@@ -10,24 +10,26 @@
 #include "server/game/collisions.h"
 #include "server/game/duck_player.h"
 
-#include "ticks.h"
+#include "common/config.h"
+
+static Config& config = Config::get_instance();
+
+const static int TICKS = config.get_server_ticks();
+const int PARTIAL_MOVE = 4;
+const static float GUN_FALL_SPEED = (config.get_fall_speed() * BLOCK_SIZE) / TICKS;
+const static float GUN_THROW_SPEED = (config.get_fall_speed() * BLOCK_SIZE) / TICKS;
 
 #define SPEED_PER_TICK(x) (x / TICKS)
-
-const int PARTIAL_MOVE = 4;
-const int SPEED_PER_IT = TICKS / 30;
-const float GUN_FALL_SPEED = 120.0f / TICKS;
-const float GUN_THROW_SPEED = 120.0f / TICKS;
 
 BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_ckecker,
                            std::unordered_map<uint8_t, DuckPlayer>& ducks,
                            std::unordered_map<uint32_t, BoxEntity>& boxes, int16_t angle,
-                           GunType type, uint32_t id, uint16_t range, uint8_t damage):
+                           GunType type, uint32_t id):
         status(),
         hitbox(info),
-        speed(SPEED_PER_TICK(480.0f)),
-        damage(damage),
-        range(range),
+        speed(SPEED_PER_TICK(config.get_bullet_speed(type) * BLOCK_SIZE)),
+        damage(config.get_bullet_damage(type)),
+        range(config.get_bullet_range(type) * BLOCK_SIZE),
         is_alive(true),
         collisions(collision_ckecker),
         ducks(ducks),

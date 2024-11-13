@@ -8,14 +8,12 @@ LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets, CollisionChecks& coll
         GunEntity(gun, bullets, collisions) {
     hitbox.height = LASER_RIFLE_HITBOX_HEIGHT;
     hitbox.width = LASER_RIFLE_HITBOX_WIDTH;
-    damage = 25;
     ammo = 10;
     bullets_to_shoot = 1;
     it_to_shoot = 10;
     it_since_shoot = it_to_shoot;
     initial_angle = 45;
     inaccuracy = 0;
-    range = 30 * BLOCK_SIZE;
 }
 
 

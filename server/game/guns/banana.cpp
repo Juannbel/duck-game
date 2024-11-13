@@ -9,7 +9,6 @@ BananaG::BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
     hitbox.width = BANANA_HITBOX_WIDTH;
     ammo = 1;
     it_to_shoot = 0;
-    range = TICKS;
 }
 
 void BananaG::start_shooting() {
@@ -36,7 +35,7 @@ void BananaG::throw_gun(bool facing_right) {
                                            b_hitbox.coords.x - BULLET_HITBOX_WIDTH - 2;
         int16_t angle = facing_right ? 0 : 180;
         type = Banana;
-        bullets->add_bullet(b_hitbox, angle, type, range, damage);
+        bullets->add_bullet(b_hitbox, angle, type);
         destroy();
     }
 }

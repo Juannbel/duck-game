@@ -2,17 +2,17 @@
 
 #include "common/snapshot.h"
 #include "server/game/gun_entity.h"
-#include "server/game/ticks.h"
+#include "common/config.h"
+
+static Config& config = Config::get_instance();
 
 GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions, bool explode):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = GRENADE_HITBOX_HEIGHT;
     hitbox.width = GRENADE_HITBOX_WIDTH;
-    damage = 60;
     ammo = 30;
-    it_to_shoot = TICKS * 4;
+    it_to_shoot = config.get_server_ticks() * 4;
     inaccuracy = 360;
-    range = 5 * BLOCK_SIZE;
     if (explode) {
         it_since_shoot = it_to_shoot;
         trigger_pulled = true;
@@ -22,7 +22,7 @@ GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions
 
 void GrenadeG::throw_gun(bool facing_right) {
     GunEntity::throw_gun(facing_right);
-    it_mooving += TICKS / 3;
+    it_mooving += config.get_server_ticks() / 3;
 }
 
 void GrenadeG::start_shooting() {
@@ -64,7 +64,7 @@ void GrenadeG::explode_grenade() {
     while (ammo > 0) {
         int16_t angle = 360;
         angle += get_rand_angle();
-        bullets->add_bullet(hb, angle % 360, type, range, damage);
+        bullets->add_bullet(hb, angle % 360, type);
         --ammo;
     }
     destroy();

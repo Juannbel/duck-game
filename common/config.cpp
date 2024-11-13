@@ -5,13 +5,13 @@
 
 void Config::load_config() try {
     YAML::Node config = YAML::LoadFile(CONFIG_PATH);
-    std::cout << "Loaded config file: " << CONFIG_PATH << std::endl;
 
     client_fps = config["client_fps"].as<int>();
     window_width = config["window_width"].as<int>();
     window_height = config["window_height"].as<int>();
 
     server_ticks = config["server_ticks"].as<int>();
+    cheats = config["cheats"].as<bool>();
     initial_duck_hp = config["initial_duck_hp"].as<int>();
     duck_speed = config["duck_speed"].as<float>();
     fall_spped = config["fall_speed"].as<float>();
@@ -41,6 +41,8 @@ int Config::get_window_height() { return window_height; }
 
 int Config::get_server_ticks() { return server_ticks; }
 
+bool Config::get_cheats_on() { return cheats; }
+
 uint8_t Config::get_initial_duck_hp() { return initial_duck_hp; }
 
 float Config::get_duck_speed() { return duck_speed; }
@@ -51,14 +53,6 @@ int Config::get_initial_box_hp() { return initial_box_hp; }
 
 uint8_t Config::get_gun_ammo(GunType type) {
     if (!gun_ammo.count(type)) {
-        std::string gun_name;
-        for (auto it = string_to_gun.begin(); it != string_to_gun.end(); ++it) {
-            if (it->second == type) {
-                gun_name = it->first;
-                break;
-            }
-        }
-        std::cout << "No gun_ammo config for " << gun_name << std::endl;
         return 0;
     }
     return gun_ammo[type];
@@ -66,14 +60,6 @@ uint8_t Config::get_gun_ammo(GunType type) {
 
 uint16_t Config::get_gun_recoil(GunType type) {
     if (!gun_recoil.count(type)) {
-        std::string gun_name;
-        for (auto it = string_to_gun.begin(); it != string_to_gun.end(); ++it) {
-            if (it->second == type) {
-                gun_name = it->first;
-                break;
-            }
-        }
-        std::cout << "No gun_recoil config for " << gun_name << std::endl;
         return 0;
     }
     return gun_recoil[type];
@@ -81,14 +67,6 @@ uint16_t Config::get_gun_recoil(GunType type) {
 
 uint8_t Config::get_bullet_damage(GunType type) {
     if (!bullet_damage.count(type)) {
-        std::string gun_name;
-        for (auto it = string_to_gun.begin(); it != string_to_gun.end(); ++it) {
-            if (it->second == type) {
-                gun_name = it->first;
-                break;
-            }
-        }
-        std::cout << "No bullet_damage config for " << gun_name << std::endl;
         return 0;
     }
     return bullet_damage[type];
@@ -96,14 +74,6 @@ uint8_t Config::get_bullet_damage(GunType type) {
 
 uint8_t Config::get_bullet_range(GunType type) {
     if (!bullet_range.count(type)) {
-        std::string gun_name;
-        for (auto it = string_to_gun.begin(); it != string_to_gun.end(); ++it) {
-            if (it->second == type) {
-                gun_name = it->first;
-                break;
-            }
-        }
-        std::cout << "No bullet_range config for " << gun_name << std::endl;
         return 0;
     }
     return bullet_range[type];

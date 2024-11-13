@@ -10,13 +10,11 @@ PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& co
         GunEntity(gun, bullets, collisions) {
     hitbox.height = PEWPEW_LASER_HITBOX_HEIGHT;
     hitbox.width = PEWPEW_LASER_HITBOX_WIDTH;
-    damage = 30;
     ammo = 12 * 3;
     it_to_shoot = TICKS / 20;
     initial_angle = 0;
     inaccuracy = DISPERSION;
     bullets_to_shoot = 3;
-    range = 35 * BLOCK_SIZE;
 }
 
 bool PewPewLaserG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {

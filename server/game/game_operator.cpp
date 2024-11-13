@@ -11,12 +11,14 @@
 #include "common/map.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
+#include "common/config.h"
 #include "server/game/boxes.h"
 #include "server/game/collisions.h"
 
-#include "ticks.h"
+static Config& config = Config::get_instance();
 
 const int16_t NEAR_CELLS = 3;
+const static int TICKS = config.get_server_ticks();
 const int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
 const int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 
@@ -107,6 +109,7 @@ void GameOperator::process_action(action& action) {
             check_spawn_picked(player.drop_and_pickup());
             break;
         default:
+            
             break;
     }
 }
