@@ -24,6 +24,7 @@
 #include "client/screen_manager.h"
 #include "client/textures_provider.h"
 #include "common/blocking_queue.h"
+#include "common/config.h"
 #include "common/lobby.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
@@ -35,9 +36,10 @@
 
 ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
+        rate(1000 / Config::get_client_fps()),
         duck_ids(duck_ids),
         sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
-        window(WIN_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_WIDTH, WIN_HEIGHT,
+        window(WIN_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Config::get_window_width(), Config::get_window_height(),
                SDL_WINDOW_RESIZABLE),
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
         screen_manager(renderer, duck_ids),
@@ -106,13 +108,13 @@ void ConstantLooper::run() try {
 void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
     uint32_t t2 = SDL_GetTicks();
 
-    int rest = RATE - (t2 - t1);
+    int rest = rate - (t2 - t1);
     if (rest < 0) {
         int behind = -rest;
-        int lost = behind - behind % int(RATE);
+        int lost = behind - behind % rate;
 
         // recuperamos los frames perdidos
-        uint8_t frames_to_skip = int(lost / RATE);
+        uint8_t frames_to_skip = int(lost / rate);
 
         for (auto& duck: ducks_renderables) {
             duck.second->skip_frames(frames_to_skip);
@@ -123,7 +125,7 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
         SDL_Delay(rest);
     }
 
-    t1 += RATE;
+    t1 = SDL_GetTicks();
 }
 
 void ConstantLooper::process_snapshot() {

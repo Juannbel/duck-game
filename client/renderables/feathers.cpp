@@ -3,17 +3,15 @@
 
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
-#include "client/config.h"
-
-#define INITIAL_HP 100
-#define ITERATIONS (FPS)
+#include "common/config.h"
 
 RenderableFeathers::RenderableFeathers(uint8_t duck_id):
+        render_iterations(Config::get_client_fps()),
         animation(*TexturesProvider::get_texture("feathers"),
                   AnimationDataProvider::get_animation_data("feathers_" + std::to_string(duck_id) +
                                                             "_damaged")),
         position(0, 0),
-        last_hp(INITIAL_HP),
+        last_hp(Config::get_initial_duck_hp()),
         iterations_left(0) {}
 
 void RenderableFeathers::update(const Duck& duck) {
@@ -21,7 +19,7 @@ void RenderableFeathers::update(const Duck& duck) {
         last_hp = duck.duck_hp;
         position.x = duck.x;
         position.y = duck.y;
-        iterations_left = ITERATIONS;
+        iterations_left = render_iterations;
         animation.restart();
     }
 

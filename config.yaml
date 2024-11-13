@@ -1,0 +1,84 @@
+# Client side
+client_fps: 120
+window_width: 1200
+window_height: 690
+
+# Server side
+server_ticks: 120
+
+initial_duck_hp: 100
+duck_speed: 150
+fall_speed: 120
+
+initial_box_hp: 100
+
+guns:
+  grenade:
+    damage: 10
+    range: 100
+    speed: 200
+    ammo: 5
+    recoil: 10
+
+  banana:
+    damage: 10
+    range: 100
+    speed: 200
+    ammo: 5
+    recoil: 10
+
+  pew_pew_laser:
+    damage: 10
+    range: 100
+    speed: 200
+    ammo: 5
+    recoil: 10
+
+  laser_rifle:
+    damage: 10
+    range: 100
+    speed: 200
+    ammo: 5
+    recoil: 10
+
+  ak47:
+    damage: 10
+    range: 100
+    speed: 200
+    ammo: 5
+    recoil: 10
+
+  dueling_pistol:
+    damage: 10
+    range: 100
+    speed: 200
+    ammo: 5
+    recoil: 10
+
+  cowboy_pistol:
+    damage: 10
+    range: 100
+    speed: 200
+    ammo: 5
+    recoil: 10
+
+  magnum:
+    damage: 10
+    range: 100
+    speed: 200
+    ammo: 5
+    recoil: 10
+
+  shootgun:
+    damage: 10
+    range: 100
+    speed: 200
+    ammo: 5
+    recoil: 10
+
+  sniper:
+    damage: 10
+    range: 100
+    speed: 200
+    ammo: 5
+    recoil: 10

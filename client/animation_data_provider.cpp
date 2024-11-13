@@ -5,10 +5,9 @@
 #include <yaml-cpp/yaml.h>
 
 #include "client/renderables/animation.h"
+#include "common/config.h"
 #include "common/map_dto.h"
 #include "common/snapshot.h"
-
-#include "config.h"
 
 #define FPS_BASE 60  // para cuantos fps fueron diseñadas las animaciones
 
@@ -70,7 +69,7 @@ void AnimationDataProvider::load_from_yaml(const std::string& name, const std::s
         uint8_t iter_per_frame = obj.second["iter_per_frame"].as<uint8_t>();
 
         if (iter_per_frame != 1) {
-            float fps_ratio = static_cast<float>(FPS) / FPS_BASE;
+            float fps_ratio = static_cast<float>(Config::get_client_fps()) / FPS_BASE;
             iter_per_frame = static_cast<uint8_t>(iter_per_frame * fps_ratio);
         }
 

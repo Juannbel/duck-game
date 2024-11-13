@@ -49,6 +49,7 @@ set_project_warnings(taller_common ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 # location (so our dependants will not have to explicitly request this)
 target_include_directories(taller_common PUBLIC .)
 
+add_definitions(-DCONFIG_PATH="${PROJECT_SOURCE_DIR}/config.yaml")
 add_definitions(-DDATA_PATH="${PROJECT_SOURCE_DIR}/client/data")
 add_definitions(-DSERVER_DATA_PATH="${PROJECT_SOURCE_DIR}/server/maps")
 
