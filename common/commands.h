@@ -18,7 +18,8 @@ enum Command {
     FlyMode,
     InfiniteAmmo,
     KillEveryone,
-    InfiniteHP
+    InfiniteHP,
+    GetDeathLaser
 };
 
 struct action {

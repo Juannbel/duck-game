@@ -92,3 +92,9 @@ guns:
     loops: false
     frames:
       - { x: 448, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }
+
+  death_laser:
+    iter_per_frame: 1
+    loops: false
+    frames:
+      - { x: 480, y: 0, x_offset_right: 5, x_offset_left: 15, y_offset: 3 }

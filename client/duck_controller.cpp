@@ -68,6 +68,8 @@ void DuckController::handle_key_down(const SDL_Event& event) {
         actions_q.push({duck_id, KillEveryone});
     } else if (key == controls.infinite_hp) {
         actions_q.push({duck_id, InfiniteHP});
+    } else if (key == controls.get_death_laser) {
+        actions_q.push({duck_id, GetDeathLaser});
     }
 }
 

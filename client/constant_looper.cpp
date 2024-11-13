@@ -30,13 +30,14 @@
 #include "common/snapshot.h"
 
 #include "animation_data_provider.h"
-#include "config.h"
+#include "controls_config.h"
 
 #define USE_CAMERA true
 
 static Config &config = Config::get_instance();
 
 const static int RATE = 1000 / config.get_client_fps();
+const static std::string WIN_TITLE = config.get_window_title();
 const static int WIN_WIDTH = config.get_window_width();
 const static int WIN_HEIGHT = config.get_window_height();
 

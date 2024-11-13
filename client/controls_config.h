@@ -1,11 +1,9 @@
-#ifndef CLIENT_CONFIG_H
-#define CLIENT_CONFIG_H
+#ifndef CONTROLS_CONFIG_H
+#define CONTROLS_CONFIG_H
 
 #include <SDL_keycode.h>
 
 #include "client/duck_controller.h"
-
-#define WIN_TITLE "Duck game"
 
 const ControlScheme P1_CONTROLS = {
         .move_right = SDLK_d,
@@ -19,6 +17,7 @@ const ControlScheme P1_CONTROLS = {
         .infinite_ammo = SDLK_F2,
         .kill_everyone = SDLK_F3,
         .infinite_hp = SDLK_F4,
+        .get_death_laser = SDLK_F5
 };
 
 const ControlScheme P2_CONTROLS = {
@@ -29,10 +28,11 @@ const ControlScheme P2_CONTROLS = {
         .pick_up = SDLK_i,
         .shoot = SDLK_o,
         .look_up = SDLK_p,
-        .fly_mode = SDLK_F9,
-        .infinite_ammo = SDLK_F10,
-        .kill_everyone = SDLK_F11,
-        .infinite_hp = SDLK_F12,
+        .fly_mode = SDLK_F8,
+        .infinite_ammo = SDLK_F9,
+        .kill_everyone = SDLK_F10,
+        .infinite_hp = SDLK_F11,
+        .get_death_laser = SDLK_F12,
 };
 
 #endif

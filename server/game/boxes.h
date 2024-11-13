@@ -7,8 +7,6 @@
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
 
-const float MAX_BOX_HP = 100;
-
 class BoxEntity {
 private:
     Box info;

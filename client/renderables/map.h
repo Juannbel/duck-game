@@ -20,8 +20,6 @@ private:
     // representación del mapa
     std::vector<RenderableBlock> map;
 
-    static std::unordered_map<BlockType, std::string> block_to_string;
-
 public:
     explicit RenderableMap(const MapDto& map_dto);
 

@@ -13,6 +13,7 @@
 #include "guns/pewpew_laser.h"
 #include "guns/shotgun.h"
 #include "guns/sniper.h"
+#include "guns/death_laser.h"
 
 #include "gun_entity.h"
 

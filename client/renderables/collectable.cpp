@@ -74,6 +74,10 @@ RenderableCollectable::RenderableCollectable(uint32_t id, GunType type):
                     hitbox_width = BANANA_HITBOX_WIDTH;
                     hitbox_height = BANANA_HITBOX_HEIGHT;
                     break;
+                case DeathLaser:
+                    hitbox_width = DEATH_LASER_HITBOX_WIDTH;
+                    hitbox_height = DEATH_LASER_HITBOX_HEIGHT;
+                    break;
                 default:
                     hitbox_width = 0;
                     hitbox_height = 0;
@@ -117,4 +121,5 @@ std::unordered_map<GunType, std::string> RenderableCollectable::collectable_to_s
         {Helmet, "helmet"},
         {Armor, "armor"},
         {ActiveGrenade, "active_grenade"},
-        {ActiveBanana, "active_banana"}};
+        {ActiveBanana, "active_banana"},
+        {DeathLaser, "death_laser"}};

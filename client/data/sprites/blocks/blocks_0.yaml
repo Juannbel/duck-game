@@ -3,79 +3,79 @@ width: 16
 height: 16
 
 blocks_0:
-  empty:
+  0: # empty
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 0, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  floor_1:
+  1: # floor_1
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 0, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  floor_2:
+  2: # floor_2
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 16, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  floor_3:
+  3: # floor_3
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 32, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  base_1:
+  4: # base_1
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 48, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  base_2:
+  5: # base_2
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 64, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  base_3:
+  6: # base_3
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 80, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  platform_1:
+  7: # platform_1
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 96, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  platform_2:
+  8: # platform_2
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 112, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  platform_3:
+  9: # platform_3
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 128, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  platform_4:
+  10: # platform_4
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 144, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  wall:
+  11: # wall
     iter_per_frame: 1
     loops: false
     frames:
       - { x: 160, y: *y_row, x_offset_right: 0, x_offset_left: 0, y_offset: 0 }
 
-  half_floor:
+  12: # half_floor
     iter_per_frame: 1
     loops: false
     frames:

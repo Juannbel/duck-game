@@ -2,8 +2,13 @@
 
 #include <cstdint>
 
+#include "common/config.h"
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
+
+static Config& config = Config::get_instance();
+
+const float MAX_BOX_HP = config.get_initial_box_hp();
 
 BoxEntity::BoxEntity(float x, float y, uint32_t id, CollisionChecks& collisions):
         info(), hitbox(), health(MAX_BOX_HP), collisions(collisions) {

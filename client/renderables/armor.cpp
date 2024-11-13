@@ -22,10 +22,7 @@ void RenderableArmor::update(const Duck& duck) {
     position.x = duck.x;
     position.y = duck.y;
 
-    if (duck.is_dead)
-        return;
-
-    if (!duck.armor_equiped) {
+    if (!duck.armor_equiped || duck.is_dead) {
         curr_animation = nullptr;
         return;
     } else if (duck.is_jumping || duck.is_falling) {

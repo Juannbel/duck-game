@@ -8,6 +8,7 @@ void Config::load_config() try {
     YAML::Node config = YAML::LoadFile(CONFIG_PATH);
 
     client_fps = config["client_fps"].as<int>();
+    window_title = config["window_title"].as<std::string>();
     window_width = config["window_width"].as<int>();
     window_height = config["window_height"].as<int>();
 
@@ -38,6 +39,8 @@ void Config::load_config() try {
 }
 
 int Config::get_client_fps() { return client_fps; }
+
+std::string Config::get_window_title() { return window_title; }
 
 int Config::get_window_width() { return window_width; }
 

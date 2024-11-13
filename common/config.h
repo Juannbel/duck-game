@@ -12,6 +12,7 @@ private:
     Config() { load_config(); };
 
     int client_fps;
+    std::string window_title;
     int window_width;
     int window_height;
 
@@ -59,6 +60,7 @@ public:
     void load_config();
 
     // Client
+    std::string get_window_title();
     int get_window_width();
     int get_window_height();
     int get_client_fps();

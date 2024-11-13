@@ -22,6 +22,7 @@ struct ControlScheme {
     SDL_KeyCode infinite_ammo;
     SDL_KeyCode kill_everyone;
     SDL_KeyCode infinite_hp;
+    SDL_KeyCode get_death_laser;
 };
 
 class DuckController {

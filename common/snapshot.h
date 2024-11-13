@@ -29,7 +29,8 @@ enum GunType {
     Armor,
     GunTypeCount,
     ActiveGrenade,
-    ActiveBanana
+    ActiveBanana,
+    DeathLaser,
 };
 
 struct Duck {

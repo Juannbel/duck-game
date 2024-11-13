@@ -34,6 +34,7 @@ bullets:
     frames:
       - { x: 0, y: 32, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
       - { x: 16, y: 32, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
+      - { x: 32, y: 32, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
 
   laser_rifle:
     iter_per_frame: 2
@@ -41,6 +42,7 @@ bullets:
     frames:
       - { x: 0, y: 48, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
       - { x: 16, y: 48, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
+      - { x: 32, y: 48, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
 
   ak47:
     iter_per_frame: 2
@@ -83,3 +85,11 @@ bullets:
     frames:
       - { x: 0, y: 144, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
       - { x: 16, y: 144, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
+
+  death_laser:
+    iter_per_frame: 2
+    loops: false
+    frames:
+      - { x: 0, y: 32, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
+      - { x: 16, y: 32, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
+      - { x: 32, y: 32, x_offset_right: 8, x_offset_left: 5, y_offset: 7 }
