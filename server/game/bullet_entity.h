@@ -29,7 +29,7 @@ private:
 public:
     BulletEntity(const Rectangle& info, CollisionChecks& collision_ckecker,
                  std::unordered_map<uint8_t, DuckPlayer>& ducks, std::unordered_map<uint32_t, BoxEntity>& boxes, 
-                 int16_t angle, GunType type, uint32_t id, uint16_t range);
+                 int16_t angle, GunType type, uint32_t id, uint16_t range, uint8_t damage);
     void update_status();
     Bullet& get_status();
     bool still_alive();

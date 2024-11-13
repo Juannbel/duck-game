@@ -5,6 +5,7 @@ DuelingPistolG::DuelingPistolG(Gun& gun, BulletManager* bullets, CollisionChecks
         GunEntity(gun, bullets, collisions) {
     hitbox.height = DUELING_PISTOL_HITBOX_HEIGHT;
     hitbox.width = DUELING_PISTOL_HITBOX_WIDTH;
+    damage = 95;
     ammo = 1;
     bullets_to_shoot = 1;
     it_to_shoot = 0;

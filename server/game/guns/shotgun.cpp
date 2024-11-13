@@ -5,6 +5,7 @@ ShootgunG::ShootgunG(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
         GunEntity(gun, bullets, collisions) {
     hitbox.height = SHOTGUN_HITBOX_HEIGHT;
     hitbox.width = SHOTGUN_HITBOX_WIDTH;
+    damage = 50;
     ammo = 2 * 6;
     it_to_shoot = 0;
     initial_angle = 0;

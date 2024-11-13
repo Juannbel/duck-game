@@ -9,6 +9,7 @@ Ak47G::Ak47G(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = AK47_HITBOX_HEIGHT;
     hitbox.width = AK47_HITBOX_WIDTH;
+    damage = 40;
     ammo = 30;
     bullets_to_shoot = 1;
     it_to_shoot = TICKS/15;

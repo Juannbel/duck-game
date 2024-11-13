@@ -4,6 +4,7 @@ MagnumG::MagnumG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = MAGNUM_HITBOX_HEIGHT;
     hitbox.width = MAGNUM_HITBOX_WIDTH;
+    damage = 55;
     ammo = 6;
     bullets_to_shoot = 1;
     it_to_shoot = 0;

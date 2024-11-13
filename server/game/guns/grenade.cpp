@@ -6,6 +6,7 @@ GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions
         GunEntity(gun, bullets, collisions) {
     hitbox.height = GRENADE_HITBOX_HEIGHT;
     hitbox.width = GRENADE_HITBOX_WIDTH;
+    damage = 60;
     ammo = 30;
     it_to_shoot = TICKS * 4;
     inaccuracy = 360;

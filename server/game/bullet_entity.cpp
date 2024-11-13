@@ -22,11 +22,11 @@ const float GUN_THROW_SPEED = 120.0f / TICKS;
 BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_ckecker,
                            std::unordered_map<uint8_t, DuckPlayer>& ducks, 
                            std::unordered_map<uint32_t, BoxEntity>& boxes, int16_t angle,
-                           GunType type, uint32_t id, uint16_t range):
+                           GunType type, uint32_t id, uint16_t range, uint8_t damage):
         status(),
         hitbox(info),
         speed(SPEED_PER_TICK(480.0f)),
-        damage(50),
+        damage(damage),
         range(range),
         is_alive(true),
         collisions(collision_ckecker),

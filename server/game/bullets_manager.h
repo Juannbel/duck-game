@@ -25,7 +25,7 @@ private:
 public:
     explicit BulletManager(CollisionChecks&, std::unordered_map<uint8_t, DuckPlayer>& ducks, std::unordered_map<uint32_t, BoxEntity>& boxes);
     void clear_bullets();
-    void add_bullet(const Rectangle& hb, int16_t angle, GunType type, uint16_t range);
+    void add_bullet(const Rectangle& hb, int16_t angle, GunType type, uint16_t range, uint8_t damage);
     void update_bullets();
     void add_bullets_to_snapshot(Snapshot&);
 };

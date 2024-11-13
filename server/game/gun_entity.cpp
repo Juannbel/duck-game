@@ -22,6 +22,7 @@ GunEntity::GunEntity(Gun& gun, BulletManager* bullets, CollisionChecks& collisio
         hitbox(),
         facing_right(),
         stuck(),
+        damage(),
         it_mooving(),
         ammo(),
         range(),
@@ -66,7 +67,7 @@ void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facin
                 facing_up ? player_hb.coords.y - BULLET_HITBOX_HEIGHT - 1 : player_hb.coords.y + DUCK_LAYED_HITBOX_HEIGHT;
         b_hb.height = BULLET_HITBOX_HEIGHT;
         b_hb.width = BULLET_HITBOX_WIDTH;
-        bullets->add_bullet(b_hb, angle, type, range);
+        bullets->add_bullet(b_hb, angle, type, range, damage);
         it_since_shoot = it_to_shoot;
         if (shooted_bullets) {
             --shooted_bullets;
