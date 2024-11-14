@@ -1,23 +1,19 @@
-target_sources(taller_client_tests
+target_sources(duck_game_client_tests
     PRIVATE
-    # .cpp files
     client_protocol_tests.cpp
     ../client/client_protocol.cpp
     utils.cpp
     PUBLIC
     ../client/client_protocol.h
     utils.h
-    # .h files
     )
 
-target_sources(taller_server_tests
+target_sources(duck_game_server_tests
     PRIVATE
-    # .cpp files
     server_protocol_tests.cpp
     ../server/server_protocol.cpp
     utils.cpp
     PUBLIC
     ../server/server_protocol.h
     utils.h
-    # .h files
     )

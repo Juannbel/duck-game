@@ -301,6 +301,8 @@ int Socket::sendsome(const void* data, unsigned int sz, bool* was_closed) {
          * Jamas debería pasar.
          * */
         assert(false);
+        // para evitar warning
+        return 0;
     } else {
         return s;
     }

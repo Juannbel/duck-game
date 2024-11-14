@@ -10,7 +10,7 @@ file(GLOB H_SOURCES
     "game/guns/*.h"
     )
 
-target_sources(taller_server
+target_sources(duck_game_server
     PRIVATE ${CPP_SOURCES}
     PUBLIC ${H_SOURCES}
     )

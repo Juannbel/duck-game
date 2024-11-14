@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "../common/snapshot.h"
+#include "common/snapshot.h"
 
 #define INVALID_GAME_ID -1
 #define INVALID_DUCK_ID 255

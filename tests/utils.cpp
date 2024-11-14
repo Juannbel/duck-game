@@ -68,7 +68,7 @@ Snapshot initialize_snapshot(){
     snapshot.show_stats = false;
     snapshot.game_finished = false;
 
-    std::vector<Duck> ducks;    
+    std::vector<Duck> ducks;
     Duck duck = initialize_duck();
     ducks.push_back(duck);
     snapshot.ducks = ducks;
@@ -84,7 +84,7 @@ Snapshot initialize_snapshot(){
     snapshot.bullets = bullets;
 
     std::vector<Box> boxes;
-    Box box = initialize_box(); 
+    Box box = initialize_box();
     boxes.push_back(box);
     snapshot.boxes = boxes;
 
