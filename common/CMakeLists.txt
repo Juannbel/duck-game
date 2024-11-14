@@ -6,7 +6,7 @@ file(GLOB H_SOURCES
     "*.h"
     )
 
-target_sources(taller_common
+target_sources(duck_game_common
     PRIVATE ${CPP_SOURCES}
     PUBLIC ${H_SOURCES}
     )

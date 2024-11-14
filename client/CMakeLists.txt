@@ -10,7 +10,7 @@ file(GLOB H_SOURCES
     "renderables/*.h"
     )
 
-target_sources(taller_client
+target_sources(duck_game_client
     PRIVATE ${CPP_SOURCES}
     PUBLIC ${H_SOURCES}
     )

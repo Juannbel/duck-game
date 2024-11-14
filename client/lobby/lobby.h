@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <utility>
 
-#include "../client_protocol.h"
+#include "client/client_protocol.h"
 
 #include "mainwindow.h"
 

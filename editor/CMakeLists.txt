@@ -1,4 +1,4 @@
-target_sources(taller_editor
+target_sources(duck_game_editor
    PUBLIC
    main.cpp
    mainwindow.cpp

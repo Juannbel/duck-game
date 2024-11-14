@@ -23,13 +23,13 @@ dependencies:
 	sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
 
 install-no-deps: CMAKE_OPTIONS := -DCUSTOM_CONFIG_PATH=$(CONFIG_DIR_INSTALL)/config.yaml -DCUSTOM_DATA_PATH=$(ASSETS_DIR_INSTALL)/data -DCUSTOM_SERVER_DATA_PATH=$(ASSETS_DIR_INSTALL)/maps
-install-no-deps: compile-release
+install-no-deps: compile-release run-tests
 	@echo "Copying binaries to $(BIN_DIR)/$(NAME)_client, $(BIN_DIR)/$(NAME)_server, $(BIN_DIR)/$(NAME)_editor"
 	@sudo mkdir -p $(CONFIG_DIR_INSTALL) $(ASSETS_DIR_INSTALL)
 
-	@sudo cp ./build/taller_client $(BIN_DIR)/$(NAME)_client
-	@sudo cp ./build/taller_server $(BIN_DIR)/$(NAME)_server
-	@sudo cp ./build/taller_editor $(BIN_DIR)/$(NAME)_editor
+	@sudo cp ./build/$(NAME)_client $(BIN_DIR)/$(NAME)_client
+	@sudo cp ./build/$(NAME)_server $(BIN_DIR)/$(NAME)_server
+	@sudo cp ./build/$(NAME)_editor $(BIN_DIR)/$(NAME)_editor
 
 	@echo "Copying assets to $(ASSETS_DIR_INSTALL)"
 	@sudo cp -r ./client/data $(ASSETS_DIR_INSTALL)
@@ -49,11 +49,11 @@ uninstall:
 	@sudo rm -rf $(CONFIG_DIR_INSTALL)
 	@sudo rm -rf $(ASSETS_DIR_INSTALL)
 
-run-tests: compile-debug
-	./build/taller_server_tests &
-	./build/taller_client_tests
+run-tests:
+	./build/$(NAME)_server_tests &
+	./build/$(NAME)_client_tests
 
-all: clean run-tests
+all: clean install
 
 clean:
-	rm -Rf build-*/
+	rm -Rf ./build

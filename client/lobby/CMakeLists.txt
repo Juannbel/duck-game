@@ -19,5 +19,5 @@ target_include_directories(lobby
 target_link_libraries(lobby
     PUBLIC
     Qt${QT_VERSION_MAJOR}::Widgets
-    taller_common
+    duck_game_common
 )
