@@ -306,7 +306,7 @@ bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
     if (status.is_dead)
         return false;
     if (collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
-        if (damage == 255) {
+        if (damage == 255 && !cheats_on.infiniteHP) {
             die();
             return true;
         }

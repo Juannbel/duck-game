@@ -31,7 +31,8 @@ void CollectablesManager::reset_collectables() {
 }
 
 std::shared_ptr<GunEntity> CollectablesManager::add_death_laser(Gun& gun) {
-    guns.emplace(++collectable_id, new DeathLaserG(gun, &bullets, collisions));
+    gun.gun_id = ++collectable_id;
+    guns.emplace(collectable_id, new DeathLaserG(gun, &bullets, collisions));
     picked_up_guns.insert(collectable_id);
     return guns[collectable_id];
 }
