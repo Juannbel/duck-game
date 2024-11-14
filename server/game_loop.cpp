@@ -53,12 +53,10 @@ void GameLoop::run() {
 
     uint it = its_after_round;
     auto t1 = high_resolution_clock::now();
-    // uint its_ticks = 0;
-    // auto time_ticks = high_resolution_clock::now();
     initial_snapshot();
     while (_keep_running && (!game_finished || it)) {
         pop_and_process_all();
-        create_and_push_snapshot(t1, it);
+        send_game_status(t1, it);
         auto t2 = high_resolution_clock::now();
         milliseconds duration = duration_cast<milliseconds>(t2 - t1);
         milliseconds rest = RATE - duration;
@@ -71,25 +69,15 @@ void GameLoop::run() {
             std::this_thread::sleep_for(rest);
         }
         t1 += RATE;
-        //++its_ticks;
-        // auto time_ticks_act = high_resolution_clock::now();
-        // milliseconds dur = duration_cast<milliseconds>(time_ticks - time_ticks_act);
-        // if (its_ticks % TICKS == 0) {
-        //    std::cout << dur << std::endl;
-        //    time_ticks = high_resolution_clock::now();
-        //}
     }
-    if (game_finished) {
-        create_and_push_snapshot(t1, it);
-    }
+    
+    round_finished = true;
+    game_finished = true;
+    it = 0;
+    round_number = 0;
+    create_and_push_snapshot(it);
 
     _is_alive = false;
-
-    // Caso en el que se cierra el gameloop, si hay algun cliente se le avisa que termino el juego
-    Snapshot actual_status = {};
-    game_operator.get_snapshot(actual_status);
-    actual_status.game_finished = true;
-    push_responce(actual_status);
 }
 
 void GameLoop::initial_snapshot() {
@@ -109,7 +97,7 @@ void GameLoop::pop_and_process_all() {
     game_operator.update_game_status();
 }
 
-void GameLoop::create_and_push_snapshot(auto& t1, uint& its_since_finish) {
+void GameLoop::create_and_push_snapshot(uint& its_since_finish) {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
     check_for_winner(actual_status);
@@ -119,6 +107,10 @@ void GameLoop::create_and_push_snapshot(auto& t1, uint& its_since_finish) {
     actual_status.game_finished = its_since_finish == 0 ? game_finished : false;
     add_rounds_won(actual_status);
     push_responce(actual_status);
+}
+
+void GameLoop::send_game_status(auto& t1, uint& its_since_finish) {
+    create_and_push_snapshot(its_since_finish);
     if (!its_since_finish) {
         if (!round_number)
             std::this_thread::sleep_for(milliseconds(3000));
