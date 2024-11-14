@@ -147,6 +147,9 @@ endif()
 # ---------------
 
 if(TALLER_TESTS)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    set(CMAKE_AUTOUIC ON)
     # Let's use google test
     include(FetchContent)
     FetchContent_Declare(
@@ -162,25 +165,35 @@ if(TALLER_TESTS)
 
     # target for testing
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
-    add_executable(taller_tests)
+    add_executable(taller_client_tests)
+    add_executable(taller_server_tests)
 
     # HEY!! TODO XXX: I'm assuming that the code under testing is in taller_common
     # Change this if you have to.
-    add_dependencies(taller_tests taller_common)
+    add_dependencies(taller_client_tests taller_common)
+    add_dependencies(taller_server_tests taller_common)
 
     # Say where to find the xoz headers
     # HEY!! TODO XXX: add more subfolders here
-    target_include_directories(taller_tests PUBLIC .)
+    target_include_directories(taller_client_tests PUBLIC .)
+    target_include_directories(taller_server_tests PUBLIC .)
 
     # Add the source files to the taller_tests target
     # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(tests/)
 
     # Set the compiler warnings to the tests target (but be a little lesser strict)
-    set_project_warnings(taller_tests ${TALLER_MAKE_WARNINGS_AS_ERRORS} TRUE)
+    set_project_warnings(taller_client_tests ${TALLER_MAKE_WARNINGS_AS_ERRORS} TRUE)
+    set_project_warnings(taller_server_tests ${TALLER_MAKE_WARNINGS_AS_ERRORS} TRUE)
 
     # Say where googletest headers can be found
-    target_include_directories(taller_tests
+    target_include_directories(taller_client_tests
+        PUBLIC
+        ${gtest_SOURCE_DIR}/include
+        ${gmock_SOURCE_DIR}/include
+        )
+
+    target_include_directories(taller_server_tests
         PUBLIC
         ${gtest_SOURCE_DIR}/include
         ${gmock_SOURCE_DIR}/include
@@ -188,7 +201,12 @@ if(TALLER_TESTS)
 
     # HEY!! TODO XXX: I'm assuming that the code under testing is in taller_common
     # Change this if you have to.
-    target_link_libraries(taller_tests
+    target_link_libraries(taller_client_tests
+        taller_common
+        GTest::gtest_main
+    )
+
+    target_link_libraries(taller_server_tests
         taller_common
         GTest::gtest_main
     )

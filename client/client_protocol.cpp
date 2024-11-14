@@ -7,7 +7,6 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#include "common/lobby.h"
 
 ClientProtocol::ClientProtocol(Socket&& socket): socket(std::move(socket)) {}
 
