@@ -16,8 +16,6 @@ private:
 public:
     explicit ServerProtocol(Socket& socket);
 
-    void send_duck_id(const uint8_t& duck_id);
-
     void send_snapshot(Snapshot& snapshot);
 
     int32_t receive_cmd();

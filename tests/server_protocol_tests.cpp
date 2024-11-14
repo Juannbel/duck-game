@@ -4,6 +4,7 @@
 #include "../common/socket.h"
 #include "../common/lobby.h"
 #include <cstring>
+#include "utils.h"
 
 using ::testing::AllOf;
 using ::testing::HasSubstr;
@@ -23,10 +24,6 @@ TEST(SERVER_PROTOCOL,_CREATE_GAME) {
     GameInfo game_info = {0, 0, INVALID_DUCK_ID};
     EXPECT_NO_THROW(protocol.send_game_info(game_info)) << "send_game_info should not throw any exception";
     EXPECT_EQ(protocol.receive_cmd(),0)<< "cmd should be equal to the expected cmd";
-    
-    protocol.shutdown();
-    socket.shutdown(2);
-    socket.close();
     
 }
 
@@ -55,11 +52,16 @@ TEST(SERVER_PROTOCOL,_LIST_GAMES_AND_JOIN_GAME) {
     GameInfo game_info = {0, 0, INVALID_DUCK_ID};
     EXPECT_NO_THROW(protocol.send_game_info(game_info)) << "send_game_info should not throw any exception";
 
-    protocol.shutdown();
-    socket.shutdown(2);
-    socket.close();
 }
 
+TEST(SERVER_PROTOCOL,SEND_INITIAL_SNAPSHOT){
+    Socket socket("8080");
+    Socket peer(socket.accept());
+    ServerProtocol protocol(peer);
+    Snapshot snapshot = initialize_snapshot();
+    EXPECT_NO_THROW(protocol.send_snapshot(snapshot)) << "send_snapshot should not throw any exception";
+
+}
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

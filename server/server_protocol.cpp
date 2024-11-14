@@ -37,12 +37,6 @@ void ServerProtocol::send_snapshot(Snapshot& snapshot) {
     send_snapshot_vector(snapshot.maps, was_closed);
 }
 
-void ServerProtocol::send_duck_id(const uint8_t& duck_id) {
-    bool was_closed = false;
-    socket.sendall(&duck_id, sizeof(duck_id), &was_closed);
-    if (was_closed)
-        throw SocketWasClosed();
-}
 
 void ServerProtocol::serializeSnapshot(Snapshot& snapshot) {
     int players_quantity = snapshot.ducks.size();
