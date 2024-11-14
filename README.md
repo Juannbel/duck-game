@@ -12,8 +12,8 @@ make dependencies
 ```
 
 ## Instalación
-### Con instalación dependencias (para sistemas basados en Debian)
-Para instalar el juego estando en un sistema operativo basado en distribuciones basadas en Debian, como Ubuntu, ejecutar el siguiente comando:
+### Instalación con dependencias (para sistemas basados en Debian)
+Para instalar el juego estando en una distribución de linux basada en Debian, como Ubuntu, ejecutar el siguiente comando:
 
 ```bash
 make install
@@ -67,7 +67,7 @@ duck_game_client <ip> <puerto>
 ```
 Donde `ip` es la dirección IP del servidor y `puerto` es el puerto en el que se está ejecutando el servidor.
 
-En caso de no haber realizado la instalación se debe correr ./build/duck_game_server y ./build/duck_game_client en lugar de duck_game_server y duck_game_client.
+En caso de no haber realizado la instalación se debe usar `./build/duck_game_server` y `./build/duck_game_client` en lugar de `duck_game_server` y `duck_game_client`.
 Pues los binarios no se instalan en el PATH del sistema.
 
 ### Editor de niveles
