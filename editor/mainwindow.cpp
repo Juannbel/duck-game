@@ -58,9 +58,9 @@ void MainWindow::loadTiles() {
 }
 
 void MainWindow::loadThemeTiles(uint8_t theme) {
-    QPixmap tileSet(":/images/blocks.png");
+    QPixmap tileSet(DATA_PATH "/sprites/blocks/blocks.png");
     int offset = BLOCKS_PER_THEME * theme;
-    QVector<QIcon> iconsForTheme;
+    std::vector<QIcon> iconsForTheme;
     for (int i = 0; i < BLOCKS_PER_THEME; i++) {
         grassTextures[i + offset] =
                 tileSet.copy(TILE_SIZE * i, theme * TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -70,20 +70,20 @@ void MainWindow::loadThemeTiles(uint8_t theme) {
 }
 
 void MainWindow::loadDuckTexture() {
-    QPixmap duckSprite(":/images/duck_sprite.png");
+    QPixmap duckSprite(DATA_PATH "/sprites/duck/duck_sprite.png");
     duckTexture =
                 duckSprite.copy(0, 0, DUCK_SIZE, DUCK_SIZE);
-    
-}   
+
+}
 
 void MainWindow::loadGunTexture(){
-    QPixmap gunSprite(":/images/guns.png");
+    QPixmap gunSprite(DATA_PATH "/sprites/guns/guns.png");
     gunTexture =
                 gunSprite.copy(GUN_SIZE * AK47_POSITION , 0, GUN_SIZE, GUN_SIZE);
 }
 
 void MainWindow::loadBoxTexture(){
-    QPixmap boxSprite(":/images/boxes.png");
+    QPixmap boxSprite(DATA_PATH "/sprites/boxes/boxes.png");
     boxTexture =
                 boxSprite.copy(0, 0, BOX_SIZE, BOX_SIZE);
 }
@@ -96,7 +96,7 @@ std::unordered_map<BlockType, QString> MainWindow::blockToString = {
         {HalfFloor, "half_floor"}};
 
 void MainWindow::updateThemeSelected() {
-    
+
     ui->itemSelector->clear();
 
     updateItemSelector();
@@ -127,7 +127,7 @@ void MainWindow::updateTilesItems(){
 void MainWindow::updateBackground(){
     QPixmap backgroundPixmap;
     int themeIndex = map.map_dto.theme;
-    backgroundPixmap.load(":/images/background_" + QString::number(themeIndex) + ".png");
+    backgroundPixmap.load(DATA_PATH "/backgrounds/background_" + QString::number(themeIndex) + ".png");
 
     if (!backgroundPixmap.isNull()) {
         currentBackground = backgroundPixmap;
@@ -146,7 +146,7 @@ void MainWindow::renderBackground(){
         QGraphicsPixmapItem* backgroundItem = scene->addPixmap(scaledBackground);
         backgroundItem->setZValue(-1);
         backgroundItem->setPos(0, 0);
-    }    
+    }
 }
 
 void MainWindow::renderGridLines(){
@@ -185,16 +185,16 @@ void MainWindow::renderGridTiles(){
 
 void MainWindow::renderDucksSpawns(){
     for (const std::pair<int16_t, int16_t>& duckPos : map.duck_spawns) {
-        QPoint pos(duckPos.first, duckPos.second); 
+        QPoint pos(duckPos.first, duckPos.second);
         QGraphicsPixmapItem* duckItem = scene->addPixmap(duckTexture);
         duckItem->setPos(pos.x() * TILE_SIZE, pos.y() * TILE_SIZE);
-        duckItem->setScale(0.5); 
+        duckItem->setScale(0.5);
     }
 }
 
 void MainWindow::renderCollectablesSpawns(){
     for (const std::pair<int16_t, int16_t>& gunPos : map.collectables_spawns) {
-        QPoint pos(gunPos.first, gunPos.second); 
+        QPoint pos(gunPos.first, gunPos.second);
         QGraphicsPixmapItem* gunItem = scene->addPixmap(gunTexture);
         gunItem->setPos(pos.x() * TILE_SIZE, pos.y() * TILE_SIZE);
         gunItem->setScale(0.5);
@@ -229,7 +229,7 @@ bool MainWindow::handlerWheelEvent(QEvent* event) {
         const double scaleFactor = 1.15;
         const double minScale = 0.7;
         const double maxScale = 4.0;
-        
+
         if (wheelEvent->angleDelta().y() > 0) {
             if (ui->graphicsView->transform().m11() < maxScale) {
                 ui->graphicsView->scale(scaleFactor, scaleFactor);
@@ -250,7 +250,7 @@ bool MainWindow::handlerClickType(QPointF scenePos,Qt::MouseButton button) {
         lastProcessedTile = currentTile;
         if(button == Qt::LeftButton){
             onGridClicked(scenePos.toPoint());
-        }   
+        }
         else if(button == Qt::RightButton){
             onGridRightClicked(scenePos.toPoint());
         }
@@ -302,7 +302,7 @@ void MainWindow::on_clearMapButton_clicked() {
 bool MainWindow::validatePosition(std::pair<int16_t, int16_t> pos, bool check_blocks){
     if (isPositionOccupied(pos)) return false;
     if (!check_blocks)
-        return true; 
+        return true;
     return !isBlockOccupied(pos);
 }
 
@@ -362,7 +362,7 @@ void MainWindow::addTile(std::pair<int16_t, int16_t> gridPos) {
 void MainWindow::placeTile(int x, int y, BlockType blockType, bool solid) {
     if(blockType < static_cast<int>(HalfFloor))
         map.map_dto.blocks[y][x] = {static_cast<BlockType>(blockType+1), solid};
-    
+
 }
 
 void MainWindow::onGridClicked(QPoint pos) {
@@ -542,4 +542,3 @@ void MainWindow::on_themeSelector_currentIndexChanged(int themeIndex)
     }
     updateThemeSelected();
 }
-

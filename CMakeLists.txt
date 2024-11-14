@@ -49,9 +49,25 @@ set_project_warnings(taller_common ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 # location (so our dependants will not have to explicitly request this)
 target_include_directories(taller_common PUBLIC .)
 
-add_definitions(-DCONFIG_PATH="${PROJECT_SOURCE_DIR}/config.yaml")
-add_definitions(-DDATA_PATH="${PROJECT_SOURCE_DIR}/client/data")
-add_definitions(-DSERVER_DATA_PATH="${PROJECT_SOURCE_DIR}/server/maps")
+set(CONFIG_PATH "${PROJECT_SOURCE_DIR}/config.yaml")
+set(DATA_PATH "${PROJECT_SOURCE_DIR}/client/data")
+set(SERVER_DATA_PATH "${PROJECT_SOURCE_DIR}/server/maps")
+
+if(DEFINED CUSTOM_CONFIG_PATH)
+    set(CONFIG_PATH "${CUSTOM_CONFIG_PATH}")
+endif()
+
+if(DEFINED CUSTOM_DATA_PATH)
+    set(DATA_PATH "${CUSTOM_DATA_PATH}")
+endif()
+
+if(DEFINED CUSTOM_SERVER_DATA_PATH)
+    set(SERVER_DATA_PATH "${CUSTOM_SERVER_DATA_PATH}")
+endif()
+
+add_definitions(-DCONFIG_PATH="${CONFIG_PATH}")
+add_definitions(-DDATA_PATH="${DATA_PATH}")
+add_definitions(-DSERVER_DATA_PATH="${SERVER_DATA_PATH}")
 
 # Install libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)

@@ -17,6 +17,8 @@
 #include <QTextStream>
 #include <QVector>
 #include <utility>
+#include <vector>
+#include <unordered_map>
 
 #include <qpoint.h>
 #include <yaml-cpp/yaml.h>
@@ -57,17 +59,17 @@ private slots:
 
 private:
     Ui::MainWindow* ui;
-    QGraphicsScene* scene; 
+    QGraphicsScene* scene;
     Map map;
     MapLoader loader;
-    
-    QVector<QPixmap> grassTextures;
+
+    std::vector<QPixmap> grassTextures;
     int selectedItemIndex = 0;
-    QMap<int, QVector<QIcon>> themeTiles;
+    QMap<int, std::vector<QIcon>> themeTiles;
     static std::unordered_map<BlockType, QString> blockToString;
-   
+
     QPoint lastProcessedTile = QPoint(-1, -1);
-    
+
     QPixmap currentBackground;
     QPixmap duckTexture;
     QPixmap gunTexture;
@@ -77,10 +79,10 @@ private:
 
     void loadBoxTexture();
     void loadDuckTexture();
-    void loadGunTexture();    
+    void loadGunTexture();
     void loadTiles();
     void loadThemeTiles(uint8_t theme);
-    
+
     void updateThemeSelected();
     void updateItemSelector();
     void updateBackground();
@@ -101,7 +103,7 @@ private:
     bool isPositionOccupied(std::pair<int16_t, int16_t> pos);
     bool isBlockOccupied(std::pair<int16_t, int16_t> pos);
     bool validatePosition(std::pair<int16_t, int16_t> pos, bool checkBlocks);
-    
+
     void addDuckSpawn(std::pair<int16_t, int16_t> gridPos);
     void addCollectableSpawn(std::pair<int16_t, int16_t> gridPos);
     void addBoxSpawn(std::pair<int16_t, int16_t> gridPos);
@@ -115,7 +117,7 @@ private:
 
     void placeTile(int x, int y, BlockType blockType, bool solid);
     bool eventFilter(QObject* watched, QEvent* event) override;
-    
+
 };
 
 #endif  // MAINWINDOW_H
