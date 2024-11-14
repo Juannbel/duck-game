@@ -63,6 +63,38 @@ TEST(SERVER_PROTOCOL,SEND_INITIAL_SNAPSHOT){
 
 }
 
+TEST(SERVER_PROTOCOL,RECV_COMMANDS){
+    Socket socket("8080");
+    Socket peer(socket.accept());
+    ServerProtocol protocol(peer);
+    action action_check;
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StartMovingRight);
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StartMovingLeft);
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StopMoving);
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StartShooting);
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StopShooting);
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StartLookup);
+    action_check = protocol.recv_player_action();   
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StopLookup);
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == PickUp);
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == Jump);
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StopJump);
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == LayDown);
+    action_check = protocol.recv_player_action();
+    ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StandUp);
+
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

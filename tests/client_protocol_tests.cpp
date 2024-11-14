@@ -69,6 +69,36 @@ TEST(CLIENT_PROTOCOL,_RECV_INITIAL_SNAPSHOT) {
     
 }
 
+
+TEST(CLIENT_PROTOCOL,_SEND_COMMANDS) {
+    Socket socket("localhost","8080");
+    ClientProtocol protocol(std::move(socket));
+    action action0 = {0, StartMovingRight};
+    EXPECT_NO_THROW(protocol.send_player_action(action0));
+    action action1 = {0, StartMovingLeft};
+    EXPECT_NO_THROW(protocol.send_player_action(action1));
+    action action2 = {0, StopMoving};
+    EXPECT_NO_THROW(protocol.send_player_action(action2));
+    action action3 = {0, StartShooting};
+    EXPECT_NO_THROW(protocol.send_player_action(action3));  
+    action action4 = {0, StopShooting};
+    EXPECT_NO_THROW(protocol.send_player_action(action4));
+    action action5 = {0, StartLookup};
+    EXPECT_NO_THROW(protocol.send_player_action(action5));
+    action action6 = {0, StopLookup};
+    EXPECT_NO_THROW(protocol.send_player_action(action6));
+    action action7 = {0, PickUp};
+    EXPECT_NO_THROW(protocol.send_player_action(action7));
+    action action8 = {0, Jump};
+    EXPECT_NO_THROW(protocol.send_player_action(action8));
+    action action9 = {0, StopJump};
+    EXPECT_NO_THROW(protocol.send_player_action(action9));
+    action action10 = {0, LayDown};
+    EXPECT_NO_THROW(protocol.send_player_action(action10));
+    action action11 = {0, StandUp};
+    EXPECT_NO_THROW(protocol.send_player_action(action11));
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
