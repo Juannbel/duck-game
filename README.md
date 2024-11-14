@@ -12,7 +12,7 @@ make dependencies
 ```
 
 ## Instalación
-### Con instalación dependencias (para sistemas basados en Debian)
+### Instalación con dependencias (para sistemas basados en Debian)
 Para instalar el juego estando en un sistema operativo basado en distribuciones basadas en Debian, como Ubuntu, ejecutar el siguiente comando:
 
 ```bash
