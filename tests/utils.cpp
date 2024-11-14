@@ -15,7 +15,6 @@ bool check_ducks(const std::vector<Duck>& duck){
     if(duck[duck_index].facing_up != false) return false;
     if(duck[duck_index].is_laying != false) return false;
     if(duck[duck_index].is_dead != false) return false;
-    if(duck[duck_index].is_damaged != false) return false;
     if(duck[duck_index].helmet_equiped != false) return false;
     if(duck[duck_index].armor_equiped != false) return false;
     if(duck[duck_index].x != 1) return false;
@@ -65,7 +64,9 @@ bool check_maps(const std::vector<MapDto>& maps){
 
 Snapshot initialize_snapshot(){
     Snapshot snapshot;
-    snapshot.match_finished = false;
+    snapshot.round_finished = false;
+    snapshot.show_stats = false;
+    snapshot.game_finished = false;
 
     std::vector<Duck> ducks;    
     Duck duck = initialize_duck();
@@ -110,7 +111,6 @@ Duck initialize_duck(){
     duck.facing_up = false;
     duck.is_laying = false;
     duck.is_dead = false;
-    duck.is_damaged = false;
     duck.helmet_equiped = false;
     duck.armor_equiped = false;
     duck.x = 1;

@@ -52,7 +52,10 @@ TEST(CLIENT_PROTOCOL,_RECV_INITIAL_SNAPSHOT) {
     Socket socket("localhost","8080");
     ClientProtocol protocol(std::move(socket));
     Snapshot snapshot = protocol.recv_snapshot();
-    EXPECT_EQ(snapshot.match_finished, false) << "match_finished should be equal to the expected match_finished";
+
+    EXPECT_EQ(snapshot.round_finished, false) << "round_finished should be equal to the expected match_finished";
+    EXPECT_EQ(snapshot.show_stats, false) << "show_stats should be equal to the expected match_finished";
+    EXPECT_EQ(snapshot.game_finished, false) << "game_finished should be equal to the expected match_finished";
     
     EXPECT_EQ(snapshot.ducks.size(), 1) << "ducks size should be equal to the expected size";
     ASSERT_TRUE(check_ducks(snapshot.ducks));
