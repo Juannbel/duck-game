@@ -4,6 +4,7 @@
 #include "../common/socket.h"
 #include "../common/lobby.h"
 #include "utils.h"
+#include <bits/this_thread_sleep.h>
 
 using ::testing::AllOf;
 using ::testing::HasSubstr;
@@ -24,6 +25,7 @@ TEST(CLIENT_PROTOCOL,_CREATE_GAME_AND_START_GAME) {
 }
 
 TEST(CLIENT_PROTOCOL,_LIST_GAMES_AND_JOIN_GAME) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     Socket socket("localhost","8080");
     ClientProtocol protocol(std::move(socket));
     EXPECT_NO_THROW(protocol.send_option(LIST_GAMES)) << "send_option should not throw any exception";
@@ -40,12 +42,13 @@ TEST(CLIENT_PROTOCOL,_LIST_GAMES_AND_JOIN_GAME) {
     EXPECT_NO_THROW(protocol.send_string("New player")) << "send_string should not throw any exception";
     GameInfo gameInfo = protocol.recv_game_info();
     EXPECT_NE(gameInfo.game_id, INVALID_GAME_ID) << "game_id should be equal to the expected game_id";
-    
+    protocol.shutdown();
     
 
 }
 
 TEST(CLIENT_PROTOCOL,_RECV_INITIAL_SNAPSHOT) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     Socket socket("localhost","8080");
     ClientProtocol protocol(std::move(socket));
     Snapshot snapshot = protocol.recv_snapshot();
@@ -66,11 +69,12 @@ TEST(CLIENT_PROTOCOL,_RECV_INITIAL_SNAPSHOT) {
     EXPECT_EQ(snapshot.maps.size(), 1) << "maps size should be equal to the expected size";
     ASSERT_TRUE(check_maps(snapshot.maps));
     
-    
+    protocol.shutdown();
 }
 
 
 TEST(CLIENT_PROTOCOL,_SEND_COMMANDS) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     Socket socket("localhost","8080");
     ClientProtocol protocol(std::move(socket));
     action action0 = {0, StartMovingRight};

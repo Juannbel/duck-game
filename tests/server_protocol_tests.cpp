@@ -24,10 +24,11 @@ TEST(SERVER_PROTOCOL,_CREATE_GAME) {
     GameInfo game_info = {0, 0, INVALID_DUCK_ID};
     EXPECT_NO_THROW(protocol.send_game_info(game_info)) << "send_game_info should not throw any exception";
     EXPECT_EQ(protocol.receive_cmd(),0)<< "cmd should be equal to the expected cmd";
-    
+    protocol.shutdown();
 }
 
 TEST(SERVER_PROTOCOL,_LIST_GAMES_AND_JOIN_GAME) {
+    
     Socket socket("8080");
     Socket peer(socket.accept());
     ServerProtocol protocol(peer);
@@ -51,19 +52,21 @@ TEST(SERVER_PROTOCOL,_LIST_GAMES_AND_JOIN_GAME) {
     EXPECT_EQ(name, "New player") << "name should be equal to the expected name";
     GameInfo game_info = {0, 0, INVALID_DUCK_ID};
     EXPECT_NO_THROW(protocol.send_game_info(game_info)) << "send_game_info should not throw any exception";
-
+    
 }
 
 TEST(SERVER_PROTOCOL,SEND_INITIAL_SNAPSHOT){
+    
     Socket socket("8080");
     Socket peer(socket.accept());
     ServerProtocol protocol(peer);
     Snapshot snapshot = initialize_snapshot();
     EXPECT_NO_THROW(protocol.send_snapshot(snapshot)) << "send_snapshot should not throw any exception";
-
+    
 }
 
 TEST(SERVER_PROTOCOL,RECV_COMMANDS){
+    
     Socket socket("8080");
     Socket peer(socket.accept());
     ServerProtocol protocol(peer);
@@ -92,7 +95,7 @@ TEST(SERVER_PROTOCOL,RECV_COMMANDS){
     ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == LayDown);
     action_check = protocol.recv_player_action();
     ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StandUp);
-
+    protocol.shutdown();
 }
 
 int main(int argc, char **argv) {
