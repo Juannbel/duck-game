@@ -320,3 +320,16 @@ collectables_spawns:
     y: 10
   - x: 21
     y: 10
+boxes_spawns:
+  - x: 14
+    y: 10
+  - x: 20
+    y: 10
+  - x: 22
+    y: 17
+  - x: 12
+    y: 17
+  - x: 9
+    y: 8
+  - x: 25
+    y: 8

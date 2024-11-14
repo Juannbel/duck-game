@@ -551,14 +551,14 @@ blocks:
     type: 9
     solid: true
 duck_spawns:
-  - x: 5
-    y: 12
-  - x: 29
-    y: 12
   - x: 4
     y: 2
   - x: 30
     y: 2
+  - x: 5
+    y: 13
+  - x: 29
+    y: 13
 collectables_spawns:
   - x: 6
     y: 7
@@ -576,3 +576,20 @@ collectables_spawns:
     y: 10
   - x: 21
     y: 10
+boxes_spawns:
+  - x: 12
+    y: 17
+  - x: 22
+    y: 17
+  - x: 8
+    y: 14
+  - x: 26
+    y: 14
+  - x: 14
+    y: 11
+  - x: 16
+    y: 11
+  - x: 18
+    y: 11
+  - x: 20
+    y: 11

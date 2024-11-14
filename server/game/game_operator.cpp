@@ -1,6 +1,7 @@
 #include "game_operator.h"
 
 #include <cstdint>
+#include <iostream>
 #include <random>
 #include <utility>
 #include <vector>
@@ -52,6 +53,7 @@ void GameOperator::initialize_players(
 }
 
 void GameOperator::initialize_boxes(const Map& map_info) {
+    boxes.clear();
     uint32_t id = 0;
     for (auto& box: map_info.boxes_spawns) {
         ++id;
@@ -116,7 +118,7 @@ void GameOperator::process_action(action& action) {
 }
 
 void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
-    if (!CHEATS) 
+    if (!CHEATS)
         return;
     if (command == KillEveryone) {
         for (auto &[id, other_duck] : players) {
