@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <vector>
+#include <cstring>
 #include "../common/snapshot.h"
 
 bool check_ducks(const std::vector<Duck>& ducks);

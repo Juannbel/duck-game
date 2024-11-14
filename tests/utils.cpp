@@ -1,7 +1,13 @@
 #include "utils.h"
+#include <string>
 
 bool check_ducks(const std::vector<Duck>& duck){
     int duck_index = 0;
+    std::string name = "Facundo88";
+    uint8_t player_name_length = name.size();
+    if (duck[duck_index].player_name_length != player_name_length) return false;
+    if (std::strncmp(duck[duck_index].player_name, name.c_str(), duck[duck_index].player_name_length) != 0) return false;
+    if (duck[duck_index].player_name_length != 9) return false;
     if(duck[duck_index].duck_id != 0) return false;
     if(duck[duck_index].duck_hp != 100) return false;
     if(duck[duck_index].gun != None) return false;
@@ -98,6 +104,9 @@ Snapshot initialize_snapshot(){
 
 Duck initialize_duck(){
     Duck duck;
+    std::string name = "Facundo88";
+    duck.player_name_length = name.size();
+    std::strncpy(duck.player_name, name.c_str(), duck.player_name_length);
     duck.duck_id = 0;
     duck.duck_hp = 100;
     duck.gun = None;
