@@ -1,6 +1,7 @@
 #include "collectables_manager.h"
 
 #include <cstdint>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -9,6 +10,7 @@
 #include "server/game/collisions.h"
 #include "server/game/duck_player.h"
 #include "server/game/gun_entity.h"
+#include "server/game/guns/death_laser.h"
 
 #include "gun_types.h"
 
@@ -28,6 +30,11 @@ void CollectablesManager::reset_collectables() {
     bullets.clear_bullets();
 }
 
+std::shared_ptr<GunEntity> CollectablesManager::add_death_laser(Gun& gun) {
+    guns.emplace(++collectable_id, new DeathLaserG(gun, &bullets, collisions));
+    picked_up_guns.insert(collectable_id);
+    return guns[collectable_id];
+}
 
 void CollectablesManager::new_gun(Gun& gun) {
     uint32_t id = gun.gun_id;

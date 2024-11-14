@@ -83,7 +83,7 @@ void BulletEntity::check_collision_and_change_angle(float new_x, float new_y) {
     Collision collision = collisions.check_near_blocks_collision(hitbox, new_x, new_y);
     hitbox.coords.x = new_x;
     hitbox.coords.y = new_y;
-    if (status.type == PewPewLaser || status.type == LaserRifle) {
+    if (status.type == PewPewLaser || status.type == LaserRifle || status.type == DeathLaser) {
         update_angle(new_x, collision);
     } else if (collision.vertical_collision || collision.horizontal_collision) {
         is_alive = false;

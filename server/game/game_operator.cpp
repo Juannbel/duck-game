@@ -1,7 +1,6 @@
 #include "game_operator.h"
 
 #include <cstdint>
-#include <iostream>
 #include <random>
 #include <utility>
 #include <vector>
@@ -131,6 +130,11 @@ void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
         if (!duck.equipped_gun)
             return;
         duck.equipped_gun->infinite_ammo();
+    } else if (command == GetDeathLaser) {
+        Gun new_gun = {0, DeathLaser, static_cast<int16_t>(duck.hitbox.coords.x),
+                           static_cast<int16_t>(duck.hitbox.coords.y)};
+        duck.drop_collectable();
+        duck.equipped_gun = collectables.add_death_laser(new_gun);
     } else if (command == InfiniteHP) {
         duck.infinite_hp();
     } else {

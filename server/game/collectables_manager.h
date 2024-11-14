@@ -30,6 +30,7 @@ public:
     CollectablesManager(CollisionChecks& collision, std::unordered_map<uint8_t, DuckPlayer>& ducks,
                         std::unordered_map<uint32_t, BoxEntity>& boxes);
     void reset_collectables();
+    std::shared_ptr<GunEntity> add_death_laser(Gun& gun);
     uint32_t add_gun(Gun& gun);
     void drop_gun(std::shared_ptr<GunEntity> gun, const Rectangle& duck_hitbox);
     void update_guns_and_bullets();
