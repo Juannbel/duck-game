@@ -40,7 +40,8 @@ private:
         {"helmet", Helmet},
         {"armor", Armor},
         {"active_grenade", ActiveGrenade},
-        {"active_banana", ActiveBanana}
+        {"active_banana", ActiveBanana},
+        {"death_laser", DeathLaser}
     };
 
 

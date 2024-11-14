@@ -83,7 +83,7 @@ void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facin
         bullets->add_bullet(b_hb, angle, type);
         it_since_shoot = it_to_shoot;
         --shooted_bullets;
-        if (!infinite_ammo_activated) {
+        if (!infinite_ammo_activated && type != DeathLaser) {
            --ammo;
         }
     }

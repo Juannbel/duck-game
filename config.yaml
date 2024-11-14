@@ -90,7 +90,7 @@ guns:
     recoil: 0
 
   death_laser:
-    damage: 100
+    damage: 255
     range: 100
     speed: 30
     ammo: 10
