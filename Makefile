@@ -50,7 +50,8 @@ uninstall:
 	@sudo rm -rf $(ASSETS_DIR_INSTALL)
 
 run-tests: compile-debug
-	./build/taller_tests
+	./build/taller_server_tests &
+	./build/taller_client_tests
 
 all: clean run-tests
 

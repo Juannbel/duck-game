@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
-#include "common/commands.h"
-#include "common/lobby.h"
-#include "common/snapshot.h"
-#include "common/socket.h"
+#include "../common/commands.h"
+#include "../common/lobby.h"
+#include "../common/snapshot.h"
+#include "../common/socket.h"
 
 class ServerProtocol {
 private:
@@ -15,8 +15,6 @@ private:
 
 public:
     explicit ServerProtocol(Socket& socket);
-
-    void send_duck_id(const uint8_t& duck_id);
 
     void send_snapshot(Snapshot& snapshot);
 
