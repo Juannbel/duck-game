@@ -23,7 +23,7 @@ TEST(SERVER_PROTOCOL,_CREATE_GAME) {
     EXPECT_EQ(name, "Facundo88") << "name should be equal to the expected name";
     GameInfo game_info = {0, 0, INVALID_DUCK_ID};
     EXPECT_NO_THROW(protocol.send_game_info(game_info)) << "send_game_info should not throw any exception";
-    EXPECT_EQ(protocol.receive_cmd(),0)<< "cmd should be equal to the expected cmd";
+    EXPECT_EQ(protocol.receive_cmd(),START_GAME)<< "cmd should be equal to the expected cmd";
     protocol.shutdown();
 }
 

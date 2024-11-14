@@ -20,7 +20,7 @@ TEST(CLIENT_PROTOCOL,_CREATE_GAME_AND_START_GAME) {
     EXPECT_EQ(gameInfo.game_id, 0) << "game_id should be equal to the expected game_id";
     EXPECT_EQ(gameInfo.duck_id_1, 0) << "duck_id_1 should be equal to the expected duck_id_1";
     EXPECT_EQ(gameInfo.duck_id_2, INVALID_DUCK_ID) << "duck_id_2 should be equal to the expected duck_id_2";
-    EXPECT_NO_THROW(protocol.send_option(0)) << "send_option should not throw any exception";
+    EXPECT_NO_THROW(protocol.send_option(START_GAME)) << "send_option should not throw any exception";
     
 }
 
