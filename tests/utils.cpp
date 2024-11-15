@@ -106,7 +106,7 @@ Duck initialize_duck(){
     Duck duck;
     std::string name = "Facundo88";
     duck.player_name_length = name.size();
-    std::strncpy(duck.player_name, name.c_str(), duck.player_name_length);
+    std::strncpy(duck.player_name, name.c_str(), MAX_PLAYER_NAME);
     duck.duck_id = 0;
     duck.duck_hp = 100;
     duck.gun = None;

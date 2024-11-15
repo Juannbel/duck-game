@@ -39,7 +39,7 @@ target_include_directories(duck_game_common PUBLIC .)
 
 set(CONFIG_PATH "${PROJECT_SOURCE_DIR}/config.yaml")
 set(DATA_PATH "${PROJECT_SOURCE_DIR}/client/data")
-set(SERVER_DATA_PATH "${PROJECT_SOURCE_DIR}/server/maps")
+set(MAPS_PATH "${PROJECT_SOURCE_DIR}/server/maps")
 
 if(DEFINED CUSTOM_CONFIG_PATH)
     set(CONFIG_PATH "${CUSTOM_CONFIG_PATH}")
@@ -49,13 +49,13 @@ if(DEFINED CUSTOM_DATA_PATH)
     set(DATA_PATH "${CUSTOM_DATA_PATH}")
 endif()
 
-if(DEFINED CUSTOM_SERVER_DATA_PATH)
-    set(SERVER_DATA_PATH "${CUSTOM_SERVER_DATA_PATH}")
+if(DEFINED CUSTOM_MAPS_PATH)
+    set(MAPS_PATH "${CUSTOM_MAPS_PATH}")
 endif()
 
 add_definitions(-DCONFIG_PATH="${CONFIG_PATH}")
 add_definitions(-DDATA_PATH="${DATA_PATH}")
-add_definitions(-DSERVER_DATA_PATH="${SERVER_DATA_PATH}")
+add_definitions(-DMAPS_PATH="${MAPS_PATH}")
 
 if(DUCK_GAME_CLIENT OR DUCK_GAME_EDITOR)
     include(FetchContent)

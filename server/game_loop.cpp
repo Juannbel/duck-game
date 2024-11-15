@@ -28,7 +28,7 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         round_number(5),
         round_finished(),
         game_finished(),
-        paths_to_maps(map_loader.list_maps(SERVER_DATA_PATH)),
+        paths_to_maps(map_loader.list_maps(MAPS_PATH)),
         curr_map() {}
 
 std::string get_rand_string(const std::vector<std::string>& v_strings) {

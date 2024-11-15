@@ -477,7 +477,7 @@ void MainWindow::on_saveMapButton_clicked() {
     Map mapToSave = map;
     serializeDuckSpawns(mapToSave);
 
-    QString filePath = SERVER_DATA_PATH + static_cast<QString>("/") + fileName;
+    QString filePath = MAPS_PATH + static_cast<QString>("/") + fileName;
 
     loader.save_map(filePath.toStdString(), mapToSave);
 }
@@ -495,7 +495,7 @@ void MainWindow::on_loadMapButton_clicked() {
     layout->addWidget(comboBox);
     layout->addWidget(loadButton);
 
-    std::vector<std::string> files = loader.list_maps(SERVER_DATA_PATH);
+    std::vector<std::string> files = loader.list_maps(MAPS_PATH);
 
     for (const auto& file: files) {
         QString fullPath = QString::fromStdString(file);
@@ -513,7 +513,7 @@ void MainWindow::on_loadMapButton_clicked() {
         if (!selectedFile.endsWith(".yaml", Qt::CaseInsensitive)) {
             selectedFile += ".yaml";
         }
-        selectedFile = SERVER_DATA_PATH + static_cast<QString>("/") + selectedFile;
+        selectedFile = MAPS_PATH + static_cast<QString>("/") + selectedFile;
 
         Map loaded_map = loader.load_map(selectedFile.toStdString());
         int quantity_duck_spawns = static_cast<int>(loaded_map.duck_spawns.size());

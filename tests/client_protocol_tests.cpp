@@ -21,11 +21,11 @@ TEST(CLIENT_PROTOCOL,_CREATE_GAME_AND_START_GAME) {
     EXPECT_EQ(gameInfo.duck_id_1, 0) << "duck_id_1 should be equal to the expected duck_id_1";
     EXPECT_EQ(gameInfo.duck_id_2, INVALID_DUCK_ID) << "duck_id_2 should be equal to the expected duck_id_2";
     EXPECT_NO_THROW(protocol.send_option(START_GAME)) << "send_option should not throw any exception";
-    
+
 }
 
 TEST(CLIENT_PROTOCOL,_LIST_GAMES_AND_JOIN_GAME) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     Socket socket("localhost","8080");
     ClientProtocol protocol(std::move(socket));
     EXPECT_NO_THROW(protocol.send_option(LIST_GAMES)) << "send_option should not throw any exception";
@@ -48,7 +48,7 @@ TEST(CLIENT_PROTOCOL,_LIST_GAMES_AND_JOIN_GAME) {
 }
 
 TEST(CLIENT_PROTOCOL,_RECV_INITIAL_SNAPSHOT) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     Socket socket("localhost","8080");
     ClientProtocol protocol(std::move(socket));
     Snapshot snapshot = protocol.recv_snapshot();
@@ -56,7 +56,7 @@ TEST(CLIENT_PROTOCOL,_RECV_INITIAL_SNAPSHOT) {
     EXPECT_EQ(snapshot.round_finished, false) << "round_finished should be equal to the expected match_finished";
     EXPECT_EQ(snapshot.show_stats, false) << "show_stats should be equal to the expected match_finished";
     EXPECT_EQ(snapshot.game_finished, false) << "game_finished should be equal to the expected match_finished";
-    
+
     EXPECT_EQ(snapshot.ducks.size(), 1) << "ducks size should be equal to the expected size";
     ASSERT_TRUE(check_ducks(snapshot.ducks));
 
@@ -77,7 +77,7 @@ TEST(CLIENT_PROTOCOL,_RECV_INITIAL_SNAPSHOT) {
 
 
 TEST(CLIENT_PROTOCOL,_SEND_COMMANDS) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     Socket socket("localhost","8080");
     ClientProtocol protocol(std::move(socket));
     action action0 = {0, StartMovingRight};

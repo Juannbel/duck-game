@@ -28,7 +28,7 @@ TEST(SERVER_PROTOCOL,_CREATE_GAME) {
 }
 
 TEST(SERVER_PROTOCOL,_LIST_GAMES_AND_JOIN_GAME) {
-    
+    std::this_thread::sleep_for(std::chrono::milliseconds(3));
     Socket socket("8080");
     Socket peer(socket.accept());
     ServerProtocol protocol(peer);
@@ -52,21 +52,21 @@ TEST(SERVER_PROTOCOL,_LIST_GAMES_AND_JOIN_GAME) {
     EXPECT_EQ(name, "New player") << "name should be equal to the expected name";
     GameInfo game_info = {0, 0, INVALID_DUCK_ID};
     EXPECT_NO_THROW(protocol.send_game_info(game_info)) << "send_game_info should not throw any exception";
-    
+
 }
 
 TEST(SERVER_PROTOCOL,SEND_INITIAL_SNAPSHOT){
-    
+    std::this_thread::sleep_for(std::chrono::milliseconds(3));
     Socket socket("8080");
     Socket peer(socket.accept());
     ServerProtocol protocol(peer);
     Snapshot snapshot = initialize_snapshot();
     EXPECT_NO_THROW(protocol.send_snapshot(snapshot)) << "send_snapshot should not throw any exception";
-    
+
 }
 
 TEST(SERVER_PROTOCOL,RECV_COMMANDS){
-    
+    std::this_thread::sleep_for(std::chrono::milliseconds(3));
     Socket socket("8080");
     Socket peer(socket.accept());
     ServerProtocol protocol(peer);
@@ -83,7 +83,7 @@ TEST(SERVER_PROTOCOL,RECV_COMMANDS){
     ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StopShooting);
     action_check = protocol.recv_player_action();
     ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StartLookup);
-    action_check = protocol.recv_player_action();   
+    action_check = protocol.recv_player_action();
     ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == StopLookup);
     action_check = protocol.recv_player_action();
     ASSERT_TRUE(action_check.duck_id == 0 && action_check.command == PickUp);
