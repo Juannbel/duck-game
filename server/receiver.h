@@ -24,6 +24,7 @@ private:
     Queue<Snapshot>& sender_q;
     std::atomic<bool>& is_alive;
     ServerSender sender;
+    bool in_lobby;
 
 public:
     ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_monitor, Queue<Snapshot>& sender_q,

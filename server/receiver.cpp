@@ -22,7 +22,8 @@ ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_mon
         duck_id(-1),
         sender_q(sender_q),
         is_alive(is_alive),
-        sender(protocol, sender_q, playerId, is_alive) {}
+        sender(protocol, sender_q, playerId, is_alive),
+        in_lobby(true) {}
 
 // Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
 void ServerReceiver::run() {
@@ -38,6 +39,7 @@ void ServerReceiver::run() {
         return;
     }
 
+    in_lobby = false;
     sender.start();
 
     while (_keep_running && is_alive) {
@@ -126,7 +128,9 @@ void ServerReceiver::setup_game() {
 
 void ServerReceiver::join_sender() {
     is_alive = false;
-    sender.join();
+    if (!in_lobby) {
+        sender.join();
+    }
 }
 
 ServerReceiver::~ServerReceiver() {}
