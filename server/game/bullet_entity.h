@@ -23,7 +23,7 @@ private:
     std::unordered_map<uint32_t, BoxEntity>& boxes;
     bool check_collision_with_boxes_ducks();
     void check_collision_and_change_angle(float new_x, float new_y);
-    void update_angle(float new_x, Collision collision);
+    void update_angle(Collision collision);
     void move_banana();
 
 public:

@@ -24,7 +24,7 @@ bool LaserRifleG::update_bullets(const Rectangle& player_hb, bool facing_right, 
             shooted_bullets = bullets_to_shoot;
         }
         int16_t angle = calculate_initial_angle(facing_right, facing_up) + 360;
-        if (angle % 360 == 0) {
+        if (angle % 360 < 90) {
             angle -= initial_angle;
         } else {
             angle += initial_angle;

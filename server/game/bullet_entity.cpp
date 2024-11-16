@@ -5,12 +5,11 @@
 
 #include <sys/types.h>
 
+#include "common/config.h"
 #include "common/snapshot.h"
 #include "server/game/boxes.h"
 #include "server/game/collisions.h"
 #include "server/game/duck_player.h"
-
-#include "common/config.h"
 
 static Config& config = Config::get_instance();
 
@@ -25,7 +24,8 @@ BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_cke
                            std::unordered_map<uint8_t, DuckPlayer>& ducks,
                            std::unordered_map<uint32_t, BoxEntity>& boxes, int16_t angle,
                            GunType type, uint32_t id):
-        status(),
+        status({id, static_cast<int16_t>(info.coords.x), static_cast<int16_t>(info.coords.y),
+                static_cast<uint16_t>(angle % 360), type}),
         hitbox(info),
         speed(SPEED_PER_TICK(config.get_bullet_speed(type) * BLOCK_SIZE)),
         damage(config.get_bullet_damage(type)),
@@ -33,10 +33,7 @@ BulletEntity::BulletEntity(const Rectangle& info, CollisionChecks& collision_cke
         is_alive(true),
         collisions(collision_ckecker),
         ducks(ducks),
-        boxes(boxes) {
-    status = {id, static_cast<int16_t>(info.coords.x), static_cast<int16_t>(info.coords.y),
-              static_cast<uint16_t>(angle % 360), type};
-}
+        boxes(boxes) {}
 
 bool BulletEntity::check_collision_with_boxes_ducks() {
     for (auto& [id, duck]: ducks) {
@@ -55,13 +52,13 @@ bool BulletEntity::check_collision_with_boxes_ducks() {
     return false;
 }
 
-void BulletEntity::update_angle(float new_x, Collision collision) {
-    Coordenades& coords = collision.last_valid_position;
+void BulletEntity::update_angle(Collision collision) {
+    const Coordenades& coords = collision.last_valid_position;
     if (collision.horizontal_collision || collision.vertical_collision) {
         uint16_t diff = status.angle % 90;
         if (diff == 0) {
             status.angle = (status.angle + 180) % 360;
-        } else if (new_x == coords.x && !collision.vertical_collision) {
+        } else if (!collision.vertical_collision) {
             if (status.angle < 90 || (status.angle > 180 && status.angle < 270)) {
                 status.angle = (status.angle + 180 - 2 * diff) % 360;
             } else {
@@ -84,7 +81,7 @@ void BulletEntity::check_collision_and_change_angle(float new_x, float new_y) {
     hitbox.coords.x = new_x;
     hitbox.coords.y = new_y;
     if (status.type == PewPewLaser || status.type == LaserRifle || status.type == DeathLaser) {
-        update_angle(new_x, collision);
+        update_angle(collision);
     } else if (collision.vertical_collision || collision.horizontal_collision) {
         is_alive = false;
     }
