@@ -55,6 +55,7 @@ public:
 
     bool is_alive() const override { return _is_alive; }
 
+    bool joinable() const { return thread.joinable(); }
     virtual void run() = 0;
     virtual ~Thread() {}
 
