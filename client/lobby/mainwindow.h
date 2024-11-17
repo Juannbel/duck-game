@@ -2,8 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMessageBox>
 #include <utility>
 #include <vector>
+
+#include <qdebug.h>
 
 #include "../client_protocol.h"
 #include "common/lobby.h"
@@ -41,6 +44,18 @@ private:
     int selected_lobby_row = -1;
     int32_t game_id = -1;
     bool& ready_to_play;
+
+    template <typename Func>
+    bool executeSafely(Func&& func) {
+        try {
+            func();
+        } catch (const SocketWasClosed& e) {
+            QMessageBox::critical(this, "Error", "Server closed the connection");
+            close();
+            return false;
+        }
+        return true;
+    }
 };
 
 #endif  // MAINWINDOW_H

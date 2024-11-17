@@ -27,6 +27,8 @@ void Client::run() {
     if (!ready_to_play)
         return;
 
+    std::cout << "Ready to play!" << std::endl;
+
     ConstantLooper looper(duck_ids, snapshot_q, actions_q);
     looper.run();
 }

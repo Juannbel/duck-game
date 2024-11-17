@@ -7,6 +7,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
+#include "common/liberror.h"
+
 
 ClientProtocol::ClientProtocol(Socket&& socket): socket(std::move(socket)) {}
 
@@ -90,7 +92,11 @@ void ClientProtocol::send_player_action(const action& action) {
 }
 
 void ClientProtocol::shutdown() {
-    socket.shutdown(SHUT_RDWR);
+    try {
+        socket.shutdown(SHUT_RDWR);
+    } catch (const LibError& le) {
+        // evita Transport endpoint is not connected
+    }
     socket.close();
 }
 

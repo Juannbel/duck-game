@@ -1,10 +1,12 @@
 #include "mainwindow.h"
 
+#include <QApplication>
 #include <QFile>
 #include <QMessageBox>
 #include <QResource>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <iostream>
 #include <utility>
 #include <vector>
 
@@ -15,6 +17,7 @@
 #include "../../common/lobby.h"
 #include "./ui_mainwindow.h"
 #include "common/snapshot.h"
+#include "common/socket.h"
 
 MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
                        std::pair<uint8_t, uint8_t>& duck_ids, bool& ready_to_play):
@@ -81,14 +84,22 @@ void MainWindow::onCreateGameConfirmed() {
 
     int numPlayers = ui->multiPlayerRadio->isChecked() ? 2 : 1;
 
-    protocol.send_option(CREATE_GAME);
-    protocol.send_option(numPlayers);
-    protocol.send_string(player1Name.toStdString());
-    if (numPlayers == 2) {
-        protocol.send_string(player2Name.toStdString());
+    GameInfo gameInfo;
+    bool ok = executeSafely([this, &numPlayers, &player1Name, &player2Name, &gameInfo]() {
+        protocol.send_option(CREATE_GAME);
+        protocol.send_option(numPlayers);
+        protocol.send_string(player1Name.toStdString());
+        if (numPlayers == 2) {
+            protocol.send_string(player2Name.toStdString());
+        }
+
+        gameInfo = protocol.recv_game_info();
+    });
+
+    if (!ok) {
+        return;
     }
 
-    GameInfo gameInfo = protocol.recv_game_info();
     duck_ids.first = gameInfo.duck_id_1;
     duck_ids.second = gameInfo.duck_id_2;
     game_id = gameInfo.game_id;
@@ -118,15 +129,24 @@ void MainWindow::onJoinGameConfirmed() {
     int numPlayers = ui->multiPlayerRadio->isChecked() ? 2 : 1;
 
     int32_t game_id = lobbies_info[selected_lobby_row].game_id;
-    protocol.send_option(JOIN_GAME);
-    protocol.send_option(game_id);
-    protocol.send_option(numPlayers);
-    protocol.send_string(player1Name.toStdString());
-    if (numPlayers == 2) {
-        protocol.send_string(player2Name.toStdString());
+
+    GameInfo gameInfo;
+    bool ok = executeSafely([this, &numPlayers, &player1Name, &player2Name, &game_id, &gameInfo]() {
+        protocol.send_option(JOIN_GAME);
+        protocol.send_option(game_id);
+        protocol.send_option(numPlayers);
+        protocol.send_string(player1Name.toStdString());
+        if (numPlayers == 2) {
+            protocol.send_string(player2Name.toStdString());
+        }
+
+        gameInfo = protocol.recv_game_info();
+    });
+
+    if (!ok) {
+        return;
     }
 
-    GameInfo gameInfo = protocol.recv_game_info();
     if (gameInfo.game_id != INVALID_GAME_ID) {
         duck_ids.first = gameInfo.duck_id_1;
         duck_ids.second = gameInfo.duck_id_2;
@@ -158,18 +178,33 @@ void MainWindow::onJoinLobbyClicked() {
 }
 
 void MainWindow::onStartGameClicked() {
-    protocol.send_option(START_GAME);
-    if (protocol.recv_option() != CREATE_OK) {
-        QMessageBox::warning(this, "Error", "Not enough players to start the game");
+    bool ok = executeSafely([this]() {
+        protocol.send_option(START_GAME);
+        if (protocol.recv_option() != CREATE_OK) {
+            QMessageBox::warning(this, "Error", "Not enough players to start the game");
+            return;
+        }
+    });
+
+    if (!ok) {
         return;
     }
+
     ready_to_play = true;
     close();
 }
 
 void MainWindow::onRefreshConnectedClicked() {
-    protocol.send_option(GET_INFO);
-    std::vector<LobbyInfo> lobbies_info = protocol.recv_lobbies_info();
+    std::vector<LobbyInfo> lobbies_info;
+    bool ok = executeSafely([this, &lobbies_info]() {
+        protocol.send_option(GET_INFO);
+        lobbies_info = protocol.recv_lobbies_info();
+    });
+
+    if (!ok) {
+        return;
+    }
+
     if (lobbies_info[0].game_id != game_id) {
         return;
     }
@@ -180,9 +215,15 @@ void MainWindow::onRefreshConnectedClicked() {
 }
 
 void MainWindow::onRefreshLobbiesClicked() {
-    protocol.send_option(LIST_GAMES);
     ui->lobbiesList->clear();
-    lobbies_info = protocol.recv_lobbies_info();
+    bool ok = executeSafely([this]() {
+        protocol.send_option(LIST_GAMES);
+        lobbies_info = protocol.recv_lobbies_info();
+    });
+
+    if (!ok) {
+        return;
+    }
 
     ui->lobbiesList->setColumnCount(3);
     ui->lobbiesList->setRowCount(lobbies_info.size());

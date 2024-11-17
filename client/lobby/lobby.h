@@ -1,7 +1,9 @@
 #include <QApplication>
+#include <iostream>
 #include <utility>
 
 #include "client/client_protocol.h"
+#include "common/socket.h"
 
 #include "mainwindow.h"
 
@@ -18,7 +20,12 @@ public:
 
     void run() {
         mainWindow.show();
-        app.exec();
+        try {
+            app.exec();
+        } catch (const SocketWasClosed& e) {
+            std::cerr << "Server closed connection" << std::endl;
+            mainWindow.close();
+        }
     }
 
     ~Lobby() { free(argv[0]); }
