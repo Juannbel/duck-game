@@ -67,59 +67,83 @@ void ServerReceiver::run() {
     games_monitor.remove_player(gameId, playerId);
 }
 
+void ServerReceiver::handle_list_games() const {
+    std::vector<LobbyInfo> lobbies = games_monitor.list_lobbies();
+    protocol.send_lobbies_info(lobbies);
+}
+
+GameInfo ServerReceiver::handle_join_game() {
+    gameId = protocol.receive_cmd();
+    const int32_t num_players = protocol.receive_cmd();
+    std::vector<std::string> players;
+    players.push_back(protocol.recv_string());
+    if (num_players == 2) {
+        players.push_back(protocol.recv_string());
+    }
+    const GameInfo game_info = games_monitor.player_join_game(playerId, gameId, sender_q, players);
+    protocol.send_game_info(game_info);
+    return game_info;
+}
+
+void ServerReceiver::wait_for_start() const {
+    while (true) {
+        int32_t cmd = protocol.receive_cmd();
+        if (cmd == START_GAME) {
+            break; // Sacar este break y dejar lo comentado abajo
+            /*
+            std::vector<LobbyInfo> lobbies(1);
+            lobbies[0] = games_monitor.get_lobby_info(gameId);
+            if (lobbies[0].connected_players >= 2) {
+                protocol.send_option(CREATE_OK);
+                break;
+            }
+            protocol.send_option(CREATE_ERROR);
+            */
+        } else if (cmd == GET_INFO) {
+            std::vector<LobbyInfo> lobbies(1);
+            lobbies[0] = games_monitor.get_lobby_info(gameId);
+            protocol.send_lobbies_info(lobbies);
+        }
+    }
+}
+
+void ServerReceiver::handle_create_game() {
+    int32_t num_players = protocol.receive_cmd();
+    std::vector<std::string> players;
+    players.push_back(protocol.recv_string());
+    if (num_players == 2) {
+        players.push_back(protocol.recv_string());
+    }
+    GameInfo game_info = games_monitor.player_create_game(playerId, sender_q, players);
+    protocol.send_game_info(game_info);
+    if (game_info.game_id == INVALID_GAME_ID) {
+        setup_game();
+    }
+    gameId = game_info.game_id;
+
+    wait_for_start();
+
+    games_monitor.start_game(gameId);
+}
+
+
 // Protocolo de inicio de juego
 void ServerReceiver::setup_game() {
     while (true) {
         int32_t cmd = protocol.receive_cmd();
         if (cmd == CREATE_GAME) {
-            int32_t num_players = protocol.receive_cmd();
-            std::vector<std::string> players;
-            players.push_back(protocol.recv_string());
-            if (num_players == 2) {
-                players.push_back(protocol.recv_string());
-            }
-            GameInfo game_info = games_monitor.player_create_game(playerId, sender_q, players);
-            protocol.send_game_info(game_info);
-            if (game_info.game_id == INVALID_GAME_ID) {
-                continue;
-            }
-            gameId = game_info.game_id;
-
-            while (true) {
-                int32_t cmd = protocol.receive_cmd();
-                if (cmd == START_GAME) {
-                    break;
-                } else if (cmd == GET_INFO) {
-                    std::vector<LobbyInfo> lobbies(1);
-                    lobbies[0] = games_monitor.get_lobby_info(gameId);
-                    protocol.send_lobbies_info(lobbies);
-                }
-            }
-
-            games_monitor.start_game(gameId);
+            handle_create_game();
             break;
         } else if (cmd == LIST_GAMES) {
-            std::vector<LobbyInfo> lobbies = games_monitor.list_lobbies();
-            protocol.send_lobbies_info(lobbies);
-            continue;
+            handle_list_games();
         } else if (cmd == JOIN_GAME) {
-            gameId = protocol.receive_cmd();
-            int32_t num_players = protocol.receive_cmd();
-            std::vector<std::string> players;
-            players.push_back(protocol.recv_string());
-            if (num_players == 2) {
-                players.push_back(protocol.recv_string());
-            }
-            GameInfo game_info =
-                    games_monitor.player_join_game(playerId, gameId, sender_q, players);
-            protocol.send_game_info(game_info);
+            GameInfo game_info = handle_join_game();
             // si no se pudo unir, game_id es INVALID_GAME_ID
             if (game_info.game_id != INVALID_GAME_ID) {
                 break;
             }
         }
     }
-
     gameloop_q = games_monitor.get_gameloop_q(gameId);
 }
 
