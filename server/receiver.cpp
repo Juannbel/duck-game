@@ -51,10 +51,6 @@ void ServerReceiver::run() {
                       << std::endl;
             break;
         } catch (const SocketWasClosed& e) {
-            // TODO: Ver donde va ubicado esto (remove_player)
-            if (is_alive) {
-                games_monitor.remove_player(gameId, playerId);
-            }
             std::cout << "Client dissconected" << std::endl;
             break;
         }
@@ -68,6 +64,7 @@ void ServerReceiver::run() {
         }
     }
     is_alive = false;
+    games_monitor.remove_player(gameId, playerId);
 }
 
 // Protocolo de inicio de juego

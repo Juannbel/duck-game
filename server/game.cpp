@@ -70,8 +70,6 @@ void Game::set_on_game_end_callback(const std::function<void(int)>& callback) {
 }
 
 Game::~Game() {
-    if (gameloop.is_alive()) {
-        gameloop.stop();
-        gameloop.join();
-    }
+    gameloop.stop();
+    gameloop.join();
 }
