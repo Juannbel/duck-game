@@ -29,8 +29,6 @@ void Client::run() {
 
     ConstantLooper looper(duck_ids, snapshot_q, actions_q);
     looper.run();
-
-    std::cout << "Game ended" << std::endl;
 }
 
 Client::~Client() {

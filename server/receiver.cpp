@@ -1,6 +1,5 @@
 #include "receiver.h"
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -25,7 +24,6 @@ ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_mon
         sender(protocol, sender_q, playerId, is_alive),
         in_lobby(true) {}
 
-// Me quedo trabado en recibir_msg (hasta tener algo) y lo mando a queue de gameloop
 void ServerReceiver::run() {
     try {
         setup_game();
@@ -33,31 +31,24 @@ void ServerReceiver::run() {
         sender.start();
     } catch (const SocketWasClosed& se) {
         is_alive = false;
-        std::cout << "Client disconnected when setuping game" << std::endl;
     } catch (const LibError& le) {
-        std::cout << "LibError when setuping game" << std::endl;
         is_alive = false;
     }
-    
+
 
     while (_keep_running && is_alive) {
         action action;
         try {
             action = protocol.recv_player_action();
-        } catch (const LibError& le) {  // Catchear excepcion de socket cerrado
-            std::cout << "LibError en receiver player id: " << playerId << " " << le.what()
-                      << std::endl;
+        } catch (const LibError& le) {
             break;
         } catch (const SocketWasClosed& e) {
-            std::cout << "Client dissconected" << std::endl;
             break;
         }
 
         try {
             gameloop_q->push(action);
         } catch (const ClosedQueue& e) {
-            std::cout << "ClosedQueue en receiver player id: " << playerId << " " << e.what()
-                      << std::endl;
             break;
         }
     }

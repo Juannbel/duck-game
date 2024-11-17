@@ -18,7 +18,8 @@ class MainWindow: public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids, bool& ready_to_play);
+    MainWindow(QWidget* parent, ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids,
+               bool& ready_to_play);
     ~MainWindow();
 
 private slots:

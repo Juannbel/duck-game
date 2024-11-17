@@ -9,7 +9,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Inicializo el server y la comunicación con el cliente
     try {
         Server server(argv[1]);
         server.start();

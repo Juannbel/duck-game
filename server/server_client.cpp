@@ -31,7 +31,9 @@ bool ServerClient::is_dead() { return not is_alive; }
 Queue<Snapshot>* ServerClient::get_sender_queue() { return &sender_q; }
 
 void ServerClient::kill() {
-    try { sender_q.close(); } catch(...) {}
+    try {
+        sender_q.close();
+    } catch (...) {}
     sk.shutdown(2);
     sk.close();
 }

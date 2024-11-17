@@ -5,16 +5,17 @@
 
 #include "common/snapshot.h"
 #include "server/game/collisions.h"
+
 #include "bullets_manager.h"
 
-class GameOperator; 
+class GameOperator;
 
 class GunEntity {
 private:
     bool infinite_ammo_activated;
     void infinite_ammo();
-protected:
 
+protected:
     uint32_t id;
     GunType type;
 
@@ -60,7 +61,7 @@ public:
     const Rectangle& get_hitbox();
     bool empty();
 
-    friend class GameOperator;        
+    friend class GameOperator;
 
     GunEntity(const GunEntity&) = delete;
     GunEntity& operator=(const GunEntity&) = delete;

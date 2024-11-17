@@ -1,7 +1,9 @@
 #include "config.h"
+
 #include <iostream>
 
 #include <yaml-cpp/yaml.h>
+
 #include "common/snapshot.h"
 
 void Config::load_config() try {
@@ -24,13 +26,13 @@ void Config::load_config() try {
 
     YAML::Node guns = config["guns"];
 
-    for (auto gun : guns) {
+    for (auto gun: guns) {
         GunType type = string_to_gun[gun.first.as<std::string>()];
         gun_ammo[type] = gun.second["ammo"].as<int>();
         gun_recoil[type] = gun.second["recoil"].as<int>();
-        try{
+        try {
             gun_knockback[type] = gun.second["knockback"].as<float>();
-        }catch(YAML::Exception& e) {}
+        } catch (YAML::Exception& e) {}
         bullet_damage[type] = gun.second["damage"].as<int>();
         bullet_range[type] = gun.second["range"].as<int>();
         bullet_speed[type] = gun.second["speed"].as<float>();

@@ -9,7 +9,7 @@
 
 class Config {
 private:
-    Config() { load_config(); };
+    Config() { load_config(); }
 
     int client_fps;
     std::string window_title;
@@ -27,24 +27,22 @@ private:
     int initial_box_hp;
 
 
-    std::map<std::string, GunType> string_to_gun {
-        {"none", None},
-        {"grenade", Grenade},
-        {"banana", Banana},
-        {"pew_pew_laser", PewPewLaser},
-        {"laser_rifle", LaserRifle},
-        {"ak47", Ak47},
-        {"dueling_pistol", DuelingPistol},
-        {"cowboy_pistol", CowboyPistol},
-        {"magnum", Magnum},
-        {"shootgun", Shootgun},
-        {"sniper", Sniper},
-        {"helmet", Helmet},
-        {"armor", Armor},
-        {"active_grenade", ActiveGrenade},
-        {"active_banana", ActiveBanana},
-        {"death_laser", DeathLaser}
-    };
+    std::map<std::string, GunType> string_to_gun{{"none", None},
+                                                 {"grenade", Grenade},
+                                                 {"banana", Banana},
+                                                 {"pew_pew_laser", PewPewLaser},
+                                                 {"laser_rifle", LaserRifle},
+                                                 {"ak47", Ak47},
+                                                 {"dueling_pistol", DuelingPistol},
+                                                 {"cowboy_pistol", CowboyPistol},
+                                                 {"magnum", Magnum},
+                                                 {"shootgun", Shootgun},
+                                                 {"sniper", Sniper},
+                                                 {"helmet", Helmet},
+                                                 {"armor", Armor},
+                                                 {"active_grenade", ActiveGrenade},
+                                                 {"active_banana", ActiveBanana},
+                                                 {"death_laser", DeathLaser}};
 
 
     std::map<GunType, uint8_t> gun_ammo;
@@ -83,7 +81,6 @@ public:
     uint8_t get_gun_ammo(GunType gun);
     uint16_t get_gun_recoil(GunType gun);
     float get_gun_knockback(GunType gun);
-
 };
 
 #endif

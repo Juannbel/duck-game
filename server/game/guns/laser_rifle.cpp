@@ -17,7 +17,6 @@ LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets, CollisionChecks& coll
 }
 
 
-// void LaserRifleG::start_shooting() {}
 bool LaserRifleG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {
     if (ammo > 0) {
         if (trigger_pulled && !it_since_shoot) {

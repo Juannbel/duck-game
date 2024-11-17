@@ -1,7 +1,6 @@
 #ifndef CLIENT_RECEIVER_H
 #define CLIENT_RECEIVER_H
 
-// TODO: Todos los includes necesarios
 #include <atomic>
 
 #include "common/blocking_queue.h"

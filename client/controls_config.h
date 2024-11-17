@@ -5,20 +5,18 @@
 
 #include "client/duck_controller.h"
 
-const ControlScheme P1_CONTROLS = {
-        .move_right = SDLK_d,
-        .move_left = SDLK_a,
-        .jump = SDLK_w,
-        .lay_down = SDLK_s,
-        .pick_up = SDLK_c,
-        .shoot = SDLK_v,
-        .look_up = SDLK_e,
-        .fly_mode = SDLK_F1,
-        .infinite_ammo = SDLK_F2,
-        .kill_everyone = SDLK_F3,
-        .infinite_hp = SDLK_F4,
-        .get_death_laser = SDLK_F5
-};
+const ControlScheme P1_CONTROLS = {.move_right = SDLK_d,
+                                   .move_left = SDLK_a,
+                                   .jump = SDLK_w,
+                                   .lay_down = SDLK_s,
+                                   .pick_up = SDLK_c,
+                                   .shoot = SDLK_v,
+                                   .look_up = SDLK_e,
+                                   .fly_mode = SDLK_F1,
+                                   .infinite_ammo = SDLK_F2,
+                                   .kill_everyone = SDLK_F3,
+                                   .infinite_hp = SDLK_F4,
+                                   .get_death_laser = SDLK_F5};
 
 const ControlScheme P2_CONTROLS = {
         .move_right = SDLK_RIGHT,

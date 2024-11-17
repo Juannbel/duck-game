@@ -9,20 +9,16 @@ ClientSender::ClientSender(ClientProtocol& protocol, Queue<action>& sender_q,
 
 void ClientSender::run() {
     while (alive) {
-        // Espero que queue tenga algo y mando
         action action;
         try {
-            action = sender_q.pop();  // bloqueante, espera a que haya algo
+            action = sender_q.pop();
         } catch (const ClosedQueue&) {
-            // std::cout << "closed queue en sender, todo bien, es para salir" << std::endl;
             break;
         }
 
         try {
-            // Envio el command recibido en la queue
             protocol.send_player_action(action);
         } catch (const LibError& le) {
-            // std::cout << "liberror en sender, todo bien, es para salir" << std::endl;
             break;
         } catch (const SocketWasClosed& se) {
             break;

@@ -1,6 +1,7 @@
 #ifndef SOUND_MANAGER_H
 #define SOUND_MANAGER_H
 
+#include <string>
 #include <unordered_map>
 
 #include <SDL2pp/SDL2pp.hh>

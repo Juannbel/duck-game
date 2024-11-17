@@ -15,7 +15,7 @@
 class GameOperator;
 
 class Cheats {
-    public:
+public:
     bool flying;
     bool infiniteHP;
 };

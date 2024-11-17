@@ -16,18 +16,23 @@ struct Coordenades {
 
 struct Rectangle {
     Coordenades coords;
+    // cppcheck-suppress unusedStructMember
     float width;
+    // cppcheck-suppress unusedStructMember
     float height;
 };
 
 struct BlockInfo {
     Rectangle hitbox;
+    // cppcheck-suppress unusedStructMember
     bool solid;
 };
 
 struct Collision {
     Coordenades last_valid_position;
+    // cppcheck-suppress unusedStructMember
     bool vertical_collision;
+    // cppcheck-suppress unusedStructMember
     bool horizontal_collision;
 };
 

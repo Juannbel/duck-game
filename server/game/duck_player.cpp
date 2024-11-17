@@ -7,8 +7,8 @@
 
 #include <sys/types.h>
 
-#include "common/snapshot.h"
 #include "common/config.h"
+#include "common/snapshot.h"
 #include "server/game/boxes.h"
 #include "server/game/collisions.h"
 
@@ -20,7 +20,7 @@ const static uint8_t DECREACENT_JUMP_SPEED = TICKS / 3;
 const static uint8_t FLAPPING_TIME = TICKS / 3;
 const static uint8_t IT_TO_GET_HIT_AGAIN = TICKS / 10;
 const static uint8_t SLIDING_ITS = TICKS / 2;
-const static float DUCK_SPEED = (config.get_duck_speed() * BLOCK_SIZE)/ TICKS;
+const static float DUCK_SPEED = (config.get_duck_speed() * BLOCK_SIZE) / TICKS;
 const static float FALL_SPEED = (config.get_fall_speed() * BLOCK_SIZE) / TICKS;
 const static float JUMP_SPEED = FALL_SPEED * 4;
 
@@ -58,14 +58,13 @@ void DuckPlayer::die() {
 
 void DuckPlayer::infinite_hp() { cheats_on.infiniteHP = !cheats_on.infiniteHP; }
 
-void DuckPlayer::fly_mode() { 
-    if(!cheats_on.flying) {
+void DuckPlayer::fly_mode() {
+    if (!cheats_on.flying) {
         status.is_falling = false;
         status.is_jumping = false;
-        status.is_falling = false;
         it_flapping = 0;
     }
-    cheats_on.flying = !cheats_on.flying; 
+    cheats_on.flying = !cheats_on.flying;
 }
 
 void DuckPlayer::status_after_move(struct Collision& collision) {
@@ -98,8 +97,7 @@ void DuckPlayer::status_after_move(struct Collision& collision) {
 float DuckPlayer::calculate_move_y_jumping() {
     float move_y = 0;
     if (status.is_jumping) {
-        move_y =
-                JUMP_SPEED - (static_cast<float>(FALL_SPEED * it_jumping) / DECREACENT_JUMP_SPEED);
+        move_y = JUMP_SPEED - (static_cast<float>(FALL_SPEED * it_jumping) / DECREACENT_JUMP_SPEED);
         it_jumping += 2;
         return move_y;
     }
@@ -108,11 +106,11 @@ float DuckPlayer::calculate_move_y_jumping() {
 
 float DuckPlayer::calculate_move_y_flying() {
     float move_y = 0;
-    if(status.is_jumping)
+    if (status.is_jumping)
         move_y = -DUCK_SPEED;
     else if (status.is_falling)
         move_y = DUCK_SPEED;
-    
+
     return move_y;
 }
 
@@ -124,7 +122,7 @@ Collision DuckPlayer::move_sliding() {
         float move_y = FALL_SPEED;
         new_y += move_y;
     }
-    new_y-= calculate_move_y_jumping();
+    new_y -= calculate_move_y_jumping();
     --it_sliding;
     if (!it_sliding)
         stand_up();
@@ -154,13 +152,12 @@ Collision DuckPlayer::normal_duck_move() {
         new_y += move_y;
     }
     if (cheats_on.flying) {
-        new_y+=calculate_move_y_flying();
+        new_y += calculate_move_y_flying();
         hitbox.coords = {new_x, new_y};
         status.x = static_cast<int16_t>(hitbox.coords.x);
         status.y = static_cast<int16_t>(hitbox.coords.y);
-    }
-    else {
-        new_y-= calculate_move_y_jumping();
+    } else {
+        new_y -= calculate_move_y_jumping();
     }
     return collisions.check_near_blocks_collision(hitbox, new_x, new_y);
 }
@@ -175,7 +172,8 @@ void DuckPlayer::move_duck() {
     } else {
         collision = normal_duck_move();
     }
-    if (cheats_on.flying) return;
+    if (cheats_on.flying)
+        return;
     hitbox.coords.x = collision.last_valid_position.x;
     hitbox.coords.y = collision.last_valid_position.y;
     status_after_move(collision);
@@ -257,7 +255,7 @@ void DuckPlayer::lay_down() {
 }
 
 void DuckPlayer::stand_up() {
-     if (cheats_on.flying) {
+    if (cheats_on.flying) {
         status.is_falling = false;
         return;
     }
@@ -279,7 +277,7 @@ void DuckPlayer::face_up() {
 void DuckPlayer::stop_face_up() { status.facing_up = false; }
 
 void DuckPlayer::jump() {
-    if (cheats_on.flying){
+    if (cheats_on.flying) {
         status.is_jumping = true;
         return;
     }
@@ -296,10 +294,10 @@ void DuckPlayer::jump() {
     status.is_jumping = true;
 }
 
-void DuckPlayer::stop_jump() { 
+void DuckPlayer::stop_jump() {
     if (cheats_on.flying)
         status.is_jumping = false;
-    ready_to_jump = true; 
+    ready_to_jump = true;
 }
 
 bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
@@ -329,7 +327,7 @@ bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
 }
 
 void DuckPlayer::slide() {
-    if (cheats_on.infiniteHP || cheats_on.flying) 
+    if (cheats_on.infiniteHP || cheats_on.flying)
         return;
     stop_running();
     it_sliding = SLIDING_ITS;

@@ -4,9 +4,9 @@
 #include <cstdlib>
 #include <random>
 
+#include "common/config.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
-#include "common/config.h"
 #include "server/game/collisions.h"
 
 static Config& config = Config::get_instance();
@@ -84,7 +84,7 @@ void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facin
         it_since_shoot = it_to_shoot;
         --shooted_bullets;
         if (!infinite_ammo_activated && type != DeathLaser) {
-           --ammo;
+            --ammo;
         }
     }
     if (it_to_shoot && it_since_shoot) {

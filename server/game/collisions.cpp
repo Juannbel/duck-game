@@ -29,7 +29,8 @@ void CollisionChecks::load_map(const MapDto& map_dto) {
 }
 
 bool CollisionChecks::out_of_map(float x, float y) {
-    return x < -MAP_EDGE_X || x > MAP_WIDTH_PIXELS + MAP_EDGE_X || y > MAP_HEIGHT_PIXELS + MAP_EDGE_Y;
+    return x < -MAP_EDGE_X || x > MAP_WIDTH_PIXELS + MAP_EDGE_X ||
+           y > MAP_HEIGHT_PIXELS + MAP_EDGE_Y;
 }
 
 bool check_collision_with_no_solid(float new_y, const Rectangle& entity,

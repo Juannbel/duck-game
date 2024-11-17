@@ -28,12 +28,10 @@ GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
 
     std::pair<uint8_t, uint8_t> duck_ids = {INVALID_DUCK_ID, INVALID_DUCK_ID};
     duck_ids.first = gameloop.add_player(players_names[0]);
-    // duck_ids.first = gameloop.add_player();
     game_info.duck_id_1 = duck_ids.first;
 
     if (players_names.size() == 2) {
         duck_ids.second = gameloop.add_player(players_names[1]);
-        // duck_ids.second = gameloop.add_player();
         game_info.duck_id_2 = duck_ids.second;
     }
 
@@ -56,7 +54,8 @@ void Game::delete_player(const int id_player) {
     if (player_sender_q) {
         player_sender_q->close();
     }
-    if (!gameloop.is_initialized() && id_player == owner_id) { // si el dueño se va, se cierra el juego
+    if (!gameloop.is_initialized() &&
+        id_player == owner_id) {  // si el dueño se va, se cierra el juego
         gameloop.notify_not_started();
         on_game_end_callback();
         return;
@@ -81,8 +80,8 @@ void Game::set_on_game_end_callback(const std::function<void(int)>& callback) {
 }
 
 Game::~Game() {
-    gameloop.stop(); // siempre se puede hacer stop por el wrapper
-    if (gameloop.joinable()) { // NO siempre se puede hacer join
+    gameloop.stop();            // siempre se puede hacer stop por el wrapper
+    if (gameloop.joinable()) {  // NO siempre se puede hacer join
         gameloop.join();
     }
 }

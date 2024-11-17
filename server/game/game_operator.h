@@ -47,7 +47,7 @@ private:
 
 public:
     GameOperator();
-    void initialize_game(Map& map_info,
+    void initialize_game(const Map& map_info,
                          const std::vector<std::pair<uint8_t, std::string>>& ducks_info);
     void process_action(action& action);
     void update_game_status();

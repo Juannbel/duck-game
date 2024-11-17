@@ -42,6 +42,11 @@ void Camera::update(const Snapshot& snapshot) {
     // No actualizar si estamos dentro de la zona muerta
     if (std::abs(dx) < CAMERA_DEAD_ZONE && std::abs(dy) < CAMERA_DEAD_ZONE &&
         std::abs(dw) < CAMERA_DEAD_ZONE && std::abs(dh) < CAMERA_DEAD_ZONE) {
+
+        // Ajustamos igual el zoom por si cambió el tamaño de la ventana
+        zoom_x = (float)renderer.GetOutputWidth() / current_rect.w;
+        zoom_y = (float)renderer.GetOutputHeight() / current_rect.h;
+        zoom = std::min(zoom_x, zoom_y);
         return;
     }
 

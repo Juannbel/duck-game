@@ -8,10 +8,10 @@
 #include <sys/types.h>
 
 #include "common/commands.h"
+#include "common/config.h"
 #include "common/map.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
-#include "common/config.h"
 #include "server/game/boxes.h"
 #include "server/game/collisions.h"
 
@@ -63,7 +63,7 @@ void GameOperator::initialize_boxes(const Map& map_info) {
 
 void GameOperator::delete_duck_player(uint8_t id_duck) { players.erase(id_duck); }
 
-void GameOperator::initialize_game(Map& map_info,
+void GameOperator::initialize_game(const Map& map_info,
                                    const std::vector<std::pair<uint8_t, std::string>>& ducks_info) {
     load_map(map_info);
     initialize_players(ducks_info, map_info);
@@ -120,7 +120,7 @@ void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
     if (!CHEATS)
         return;
     if (command == KillEveryone) {
-        for (auto &[id, other_duck] : players) {
+        for (auto& [id, other_duck]: players) {
             if (other_duck.status.duck_id == duck.status.duck_id) {
                 continue;
             }
@@ -132,7 +132,7 @@ void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
         duck.equipped_gun->infinite_ammo();
     } else if (command == GetDeathLaser) {
         Gun new_gun = {0, DeathLaser, static_cast<int16_t>(duck.hitbox.coords.x),
-                           static_cast<int16_t>(duck.hitbox.coords.y)};
+                       static_cast<int16_t>(duck.hitbox.coords.y)};
         duck.drop_collectable();
         duck.equipped_gun = collectables.add_death_laser(new_gun);
     } else if (command == InfiniteHP) {
@@ -186,8 +186,9 @@ GunType GameOperator::get_random_guntype(bool with_exploded_grenade) {
     std::random_device rd;
     std::mt19937 gen(rd());
     int max = with_exploded_grenade ? GunTypeCount : GunTypeCount - 1;
-    int min = with_exploded_grenade ? 0 : 1;
-    std::uniform_int_distribution<> dis(min, max);  // 0 es None
+    int min = with_exploded_grenade ? 0 :
+                                      1;  // 0 es None, lo interpretamos como una granada explotada
+    std::uniform_int_distribution<> dis(min, max);
     return static_cast<GunType>(dis(gen));
 }
 

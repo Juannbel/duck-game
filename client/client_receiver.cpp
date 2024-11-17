@@ -12,22 +12,18 @@ ClientReceiver::ClientReceiver(ClientProtocol& protocol, Queue<Snapshot>& q,
 
 void ClientReceiver::run() {
     while (alive) {
-        // Espero que queue tenga algo y mando
         Snapshot snapshot;
         try {
             snapshot = protocol.recv_snapshot();
         } catch (const LibError& le) {
-            // Catchear la excepcion de que el skt estaba cerrado
-            // std::cout << "liberror en receiver, todo bien, es para salir" << std::endl;
             break;
         } catch (const SocketWasClosed& se) {
             break;
         }
 
         try {
-            snapshot_q.push(snapshot);  // bloqueante, espera a que haya algo
+            snapshot_q.push(snapshot);
         } catch (const ClosedQueue&) {
-            // std::cout << "closed queue en receiver, todo bien, es para salir" << std::endl;
             break;
         }
     }

@@ -11,7 +11,7 @@
 
 #define FPS_BASE 60  // para cuantos fps fueron diseñadas las animaciones
 
-static Config &config = Config::get_instance();
+static Config& config = Config::get_instance();
 const static int FPS = config.get_client_fps();
 
 std::unordered_map<std::string, AnimationData> AnimationDataProvider::frames_data;
@@ -48,12 +48,12 @@ const AnimationData& AnimationDataProvider::get_animation_data(const std::string
 }
 
 void AnimationDataProvider::load_from_yaml(const std::string& name, const std::string& path) {
-    YAML::Node config = YAML::LoadFile(path);
+    YAML::Node animation_config = YAML::LoadFile(path);
 
-    int width = config["width"].as<int>();
-    int height = config["height"].as<int>();
+    int width = animation_config["width"].as<int>();
+    int height = animation_config["height"].as<int>();
 
-    for (const auto& obj: config[name]) {
+    for (const auto& obj: animation_config[name]) {
         std::string animation_name = obj.first.as<std::string>();
         std::vector<FrameData> frames;
 

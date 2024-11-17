@@ -33,11 +33,11 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         paths_to_maps(map_loader.list_maps(MAPS_PATH)),
         curr_map(),
         game_initialized(false),
-        ducks_id_available(){
-            for (uint8_t i = MAX_DUCKS; i > 0; i--) {
-                ducks_id_available.push_back(i-1);
-            }
-        }
+        ducks_id_available() {
+    for (uint8_t i = MAX_DUCKS; i > 0; i--) {
+        ducks_id_available.push_back(i - 1);
+    }
+}
 
 std::string get_rand_string(const std::vector<std::string>& v_strings) {
     std::random_device rd;
@@ -57,7 +57,6 @@ void GameLoop::run() {
     initial_snapshot();
 
     // Tiempo para que los jugadores vean que pato les toco
-    // std::this_thread::sleep_for(milliseconds(4000));
     sleep_checking(milliseconds(4000));
 
     uint it = its_after_round;
@@ -106,7 +105,7 @@ void GameLoop::pop_and_process_all() {
     game_operator.update_game_status();
 }
 
-void GameLoop::create_and_push_snapshot(uint& its_since_finish) {
+void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
     check_for_winner(actual_status);
@@ -122,11 +121,9 @@ void GameLoop::send_game_status(auto& t1, uint& its_since_finish) {
     create_and_push_snapshot(its_since_finish);
     if (!its_since_finish) {
         if (!round_number)
-            // std::this_thread::sleep_for(milliseconds(3000));
             sleep_checking(milliseconds(3000));
         else  // Sleep chico para asegurarnos que lea el round finished
-            // std::this_thread::sleep_for(milliseconds(200));
-            sleep_checking(milliseconds(200));
+            sleep_checking(milliseconds(100));
 
         initialice_new_round();
         initial_snapshot();

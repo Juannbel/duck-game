@@ -1,4 +1,5 @@
 #include "feathers.h"
+
 #include <algorithm>
 
 #include "client/animation_data_provider.h"

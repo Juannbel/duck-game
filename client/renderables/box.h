@@ -1,10 +1,12 @@
 #ifndef RENDERABLE_BOX_H
 #define RENDERABLE_BOX_H
 
-#include <SDL2pp/SDL2pp.hh>
 #include <map>
 
+#include <SDL2pp/SDL2pp.hh>
+
 #include "common/snapshot.h"
+
 #include "animation.h"
 
 class RenderableBox {

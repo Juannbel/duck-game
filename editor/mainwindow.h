@@ -16,9 +16,9 @@
 #include <QString>
 #include <QTextStream>
 #include <QVector>
+#include <unordered_map>
 #include <utility>
 #include <vector>
-#include <unordered_map>
 
 #include <qpoint.h>
 #include <yaml-cpp/yaml.h>
@@ -117,7 +117,6 @@ private:
 
     void placeTile(int x, int y, BlockType blockType, bool solid);
     bool eventFilter(QObject* watched, QEvent* event) override;
-
 };
 
 #endif  // MAINWINDOW_H

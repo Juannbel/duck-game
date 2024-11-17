@@ -5,7 +5,6 @@
 #include <QResource>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <iostream>
 #include <utility>
 #include <vector>
 
@@ -19,7 +18,11 @@
 
 MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
                        std::pair<uint8_t, uint8_t>& duck_ids, bool& ready_to_play):
-        QMainWindow(parent), ui(new Ui::MainWindow), protocol(protocol), duck_ids(duck_ids), ready_to_play(ready_to_play) {
+        QMainWindow(parent),
+        ui(new Ui::MainWindow),
+        protocol(protocol),
+        duck_ids(duck_ids),
+        ready_to_play(ready_to_play) {
     ui->setupUi(this);
 
     ui->stackedWidget->setCurrentIndex(0);
@@ -29,10 +32,12 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
 
     connect(ui->backButton, &QPushButton::clicked, this, &MainWindow::onBackClicked);
     connect(ui->joinLobbyButton, &QPushButton::clicked, this, &MainWindow::onJoinLobbyClicked);
-    connect(ui->refreshLobbiesButton, &QPushButton::clicked, this, &MainWindow::onRefreshLobbiesClicked);
+    connect(ui->refreshLobbiesButton, &QPushButton::clicked, this,
+            &MainWindow::onRefreshLobbiesClicked);
 
     connect(ui->startGameButton, &QPushButton::clicked, this, &MainWindow::onStartGameClicked);
-    connect(ui->refreshConnectedButton, &QPushButton::clicked, this, &MainWindow::onRefreshConnectedClicked);
+    connect(ui->refreshConnectedButton, &QPushButton::clicked, this,
+            &MainWindow::onRefreshConnectedClicked);
 
     connect(ui->namesConfirmButton, &QPushButton::clicked, this,
             &MainWindow::onCreateGameConfirmed);
@@ -125,7 +130,7 @@ void MainWindow::onJoinGameConfirmed() {
     if (gameInfo.game_id != INVALID_GAME_ID) {
         duck_ids.first = gameInfo.duck_id_1;
         duck_ids.second = gameInfo.duck_id_2;
-        game_id = gameInfo.game_id;
+        // game_id = gameInfo.game_id; se queja cppcheck porque no se usa
         ready_to_play = true;
         close();
     } else {
@@ -168,7 +173,10 @@ void MainWindow::onRefreshConnectedClicked() {
     if (lobbies_info[0].game_id != game_id) {
         return;
     }
-    ui->gameIdLabel->setText(QString("Game ID: %1 \nConnected players: %2/%3").arg(game_id).arg(lobbies_info[0].connected_players).arg(MAX_DUCKS));
+    ui->gameIdLabel->setText(QString("Game ID: %1 \nConnected players: %2/%3")
+                                     .arg(game_id)
+                                     .arg(lobbies_info[0].connected_players)
+                                     .arg(MAX_DUCKS));
 }
 
 void MainWindow::onRefreshLobbiesClicked() {

@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <unordered_set>
 #include <utility>
 
@@ -34,7 +35,7 @@
 
 #define USE_CAMERA true
 
-static Config &config = Config::get_instance();
+static Config& config = Config::get_instance();
 
 const static int RATE = 1000 / config.get_client_fps();
 const static std::string WIN_TITLE = config.get_window_title();

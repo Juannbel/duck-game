@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include "server/game/gun_entity.h"
 #include "common/config.h"
+#include "server/game/gun_entity.h"
 
 static Config& config = Config::get_instance();
 

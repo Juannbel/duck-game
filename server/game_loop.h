@@ -44,7 +44,7 @@ private:
 
     void pop_and_process_all();
 
-    void create_and_push_snapshot(uint& its_since_finish);
+    void create_and_push_snapshot(const uint& its_since_finish);
 
     void send_game_status(auto& t1, uint& it);
 

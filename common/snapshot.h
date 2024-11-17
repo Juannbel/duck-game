@@ -38,7 +38,7 @@ struct Duck {
     char player_name[MAX_PLAYER_NAME];
 
     uint8_t duck_id;  // del 0 al 3
-    int8_t duck_hp;   // 100
+    int8_t duck_hp;
     GunType gun;
     uint8_t rounds_won = 0;
 
@@ -91,8 +91,10 @@ struct Box {
 
 struct Snapshot {
     // cppcheck-suppress unusedStructMember
-    bool round_finished = true;  // each match has five rounds.
+    bool round_finished = true;
+    // cppcheck-suppress unusedStructMember
     bool show_stats = false;
+    // cppcheck-suppress unusedStructMember
     bool game_finished = false;
     std::vector<Duck> ducks;
     std::vector<Gun> guns;

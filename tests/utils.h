@@ -1,8 +1,9 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef TEST_UTILS_H
+#define TEST_UTILS_H
 
-#include <vector>
 #include <cstring>
+#include <vector>
+
 #include "../common/snapshot.h"
 
 bool check_ducks(const std::vector<Duck>& ducks);
@@ -16,4 +17,5 @@ Gun initialize_gun();
 Bullet initialize_bullet();
 Box initialize_box();
 MapDto initialize_map();
+
 #endif

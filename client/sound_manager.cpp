@@ -1,4 +1,5 @@
 #include "sound_manager.h"
+
 #include "common/config.h"
 
 #define CHANNELS 8
@@ -53,9 +54,7 @@ void SoundManager::shoot_sound(GunType gun) {
     }
 }
 
-void SoundManager::update() {
-    it_since_last_beep++;
-}
+void SoundManager::update() { it_since_last_beep++; }
 
 void SoundManager::active_grenade_sound() {
     if (it_since_last_beep < BEEP_INTERVAL)
