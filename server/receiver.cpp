@@ -29,18 +29,16 @@ ServerReceiver::ServerReceiver(ServerProtocol& protocol, GamesMonitor& games_mon
 void ServerReceiver::run() {
     try {
         setup_game();
+        in_lobby = false;
+        sender.start();
     } catch (const SocketWasClosed& se) {
         is_alive = false;
         std::cout << "Client disconnected when setuping game" << std::endl;
-        return;
     } catch (const LibError& le) {
         std::cout << "LibError when setuping game" << std::endl;
         is_alive = false;
-        return;
     }
-
-    in_lobby = false;
-    sender.start();
+    
 
     while (_keep_running && is_alive) {
         action action;

@@ -70,6 +70,8 @@ void Game::set_on_game_end_callback(const std::function<void(int)>& callback) {
 }
 
 Game::~Game() {
-    gameloop.stop();
-    gameloop.join();
+    gameloop.stop(); // siempre se puede hacer stop por el wrapper
+    if (gameloop.joinable()) { // NO siempre se puede hacer join
+        gameloop.join();
+    }
 }
