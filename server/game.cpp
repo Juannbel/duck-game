@@ -8,8 +8,8 @@
 
 #include "common/lobby.h"
 
-Game::Game(const int id, const std::string& creator):
-        gameloop(gameloop_q, sv_msg_queues), creator(creator), id(id) {
+Game::Game(const int id, const std::string& creator, const int owner_id):
+        gameloop(gameloop_q, sv_msg_queues), creator(creator), owner_id(owner_id), game_id(id) {
     open = true;
     cant_players = 0;
 }
@@ -23,7 +23,7 @@ GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
         return game_info;
     }
 
-    game_info.game_id = id;
+    game_info.game_id = game_id;
     sv_msg_queues.add_element(&player_sender_queue, player_id);
 
     std::pair<uint8_t, uint8_t> duck_ids = {INVALID_DUCK_ID, INVALID_DUCK_ID};
@@ -56,20 +56,32 @@ void Game::delete_player(const int id_player) {
     if (player_sender_q) {
         player_sender_q->close();
     }
+    if (id_player == owner_id) { // si el dueño se va, se cierra el juego
+        on_game_end_callback();
+        return;
+    }
     const std::pair<uint8_t, uint8_t> duck_ids = player_to_duck_ids[id_player];
     gameloop.delete_duck(duck_ids.first);
+    cant_players--;
     if (duck_ids.second != INVALID_DUCK_ID) {
-        if (gameloop.is_alive()) {
+        if (gameloop.is_alive() || (!gameloop.is_initialized() && !gameloop.is_alive())) {
             gameloop.delete_duck(duck_ids.second);
+            cant_players--;
         }
+    }
+    if (cant_players < MAX_DUCKS && !gameloop.is_initialized()) {
+        open = true;
     }
 }
 
 void Game::set_on_game_end_callback(const std::function<void(int)>& callback) {
-    gameloop.set_on_game_end_callback([this, callback]() { callback(id); });
+    on_game_end_callback = [callback, this]() { callback(game_id); };
+    gameloop.set_on_game_end_callback([this, callback]() { callback(game_id); });
 }
 
 Game::~Game() {
-    gameloop.stop();
-    gameloop.join();
+    gameloop.stop(); // siempre se puede hacer stop por el wrapper
+    if (gameloop.joinable()) { // NO siempre se puede hacer join
+        gameloop.join();
+    }
 }

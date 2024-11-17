@@ -27,7 +27,7 @@ public:
 
     void start_game(int id);
 
-    Game* create_game(const std::string& creator_name);
+    Game* create_game(const std::string& creator_name, int id_player);
 
     void delete_game(int id);
 

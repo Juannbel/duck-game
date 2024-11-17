@@ -31,7 +31,13 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         round_finished(),
         game_finished(),
         paths_to_maps(map_loader.list_maps(MAPS_PATH)),
-        curr_map() {}
+        curr_map(),
+        game_initialized(false),
+        ducks_id_available(){
+            for (uint8_t i = MAX_DUCKS; i > 0; i--) {
+                ducks_id_available.push_back(i-1);
+            }
+        }
 
 std::string get_rand_string(const std::vector<std::string>& v_strings) {
     std::random_device rd;
@@ -46,7 +52,7 @@ void GameLoop::initialice_new_round() {
 }
 
 void GameLoop::run() {
-
+    game_initialized = true;
     initialice_new_round();
     initial_snapshot();
 
@@ -185,7 +191,8 @@ uint8_t GameLoop::add_player(const std::string& player_name) {
     if (ducks_info.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
     }
-    uint8_t duck_id = ducks_info.size();
+    uint8_t duck_id = ducks_id_available.back();
+    ducks_id_available.pop_back();
     ducks_info.emplace_back(duck_id, player_name);
     return duck_id;
 }
@@ -196,9 +203,10 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
                            [duck_id](const auto& info) { return info.first == duck_id; });
     if (it != ducks_info.end()) {
         ducks_info.erase(it);
+        ducks_id_available.push_back(duck_id);
     }
 
-    if (ducks_info.size() <= 1) {
+    if (ducks_info.size() <= 1 && game_initialized) {
         _keep_running = false;
         if (on_game_end_callback) {
             std::cout << "Game ended" << std::endl;

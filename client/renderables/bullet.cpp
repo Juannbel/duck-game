@@ -29,14 +29,6 @@ void RenderableBullet::render(SDL2pp::Renderer& renderer, Camera& camera) {
     bool facing_right = angle <= 90 || angle >= 270;
     animation.render(renderer, camera, position, facing_right,
                      facing_right ? (360 - angle) : (180 - angle));
-
-
-    SDL2pp::Rect hitbox(position.x, position.y, BULLET_HITBOX_WIDTH, BULLET_HITBOX_HEIGHT);
-    camera.transform_rect(hitbox);
-    renderer.SetDrawColor(255, 0, 0, 255);
-    // renderer.FillRect(hitbox);
-    renderer.DrawRect(hitbox);
-    renderer.SetDrawColor(0, 0, 0, 255);
 }
 
 std::unordered_map<GunType, std::string> RenderableBullet::gun_to_string{

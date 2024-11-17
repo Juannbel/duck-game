@@ -130,6 +130,13 @@ void ServerProtocol::send_game_info(GameInfo game_info) {
         throw SocketWasClosed();
 }
 
+void ServerProtocol::send_option(int32_t option) {
+    bool was_closed = false;
+    option = htonl(option);
+    socket.sendall(&option, sizeof(option), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+}
 
 void ServerProtocol::shutdown() {
     socket.shutdown(SHUT_RDWR);

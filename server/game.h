@@ -21,12 +21,14 @@ private:
     GameLoop gameloop;
     int cant_players = 0;
     std::string creator;
+    int owner_id;
     std::map<int, std::pair<uint8_t, uint8_t>> player_to_duck_ids;
     bool open = true;
-    int id;
+    int game_id;
+    std::function<void()> on_game_end_callback;
 
 public:
-    Game(int id, const std::string& creator);
+    Game(int id, const std::string& creator, int owner_id);
 
     Queue<action>& get_gameloop_queue();
 
@@ -37,11 +39,11 @@ public:
 
     void delete_player(int id_player);
 
-    bool is_open() { return open; }
+    bool is_open() const { return open; }
 
-    LobbyInfo get_info() {
-        LobbyInfo info;
-        info.game_id = id;
+    LobbyInfo get_info() const {
+        LobbyInfo info{};
+        info.game_id = game_id;
         info.connected_players = cant_players;
         std::strncpy(info.creator, creator.c_str(), MAX_PLAYER_NAME - 1);
         info.creator[MAX_PLAYER_NAME - 1] = '\0';

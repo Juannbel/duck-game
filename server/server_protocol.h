@@ -28,6 +28,8 @@ public:
 
     action recv_player_action();
 
+    void send_option(int32_t option);
+
     void shutdown();
 
 private:
