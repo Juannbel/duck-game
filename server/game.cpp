@@ -51,17 +51,22 @@ void Game::start() {
     open = false;
 }
 
-void Game::delete_player(const int id_player) {
+void Game::delete_player(const int id_player) { // caso que el creador se desconecte
     Queue<Snapshot>* player_sender_q = sv_msg_queues.remove_element(id_player);
     if (player_sender_q) {
         player_sender_q->close();
     }
     const std::pair<uint8_t, uint8_t> duck_ids = player_to_duck_ids[id_player];
     gameloop.delete_duck(duck_ids.first);
+    cant_players--;
     if (duck_ids.second != INVALID_DUCK_ID) {
-        if (gameloop.is_alive()) {
+        if (gameloop.is_alive() || (!gameloop.is_initialized() && !gameloop.is_alive())) {
             gameloop.delete_duck(duck_ids.second);
+            cant_players--;
         }
+    }
+    if (cant_players < MAX_DUCKS && !gameloop.is_initialized()) {
+        open = true;
     }
 }
 
