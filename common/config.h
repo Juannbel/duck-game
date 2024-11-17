@@ -17,6 +17,8 @@ private:
     int window_height;
 
     int server_ticks;
+    uint8_t rounds_to_win;
+    uint8_t rounds_between_stats;
     bool cheats;
     uint8_t initial_duck_hp;
     float duck_speed;
@@ -68,6 +70,8 @@ public:
 
     // Server
     int get_server_ticks();
+    uint8_t get_rounds_to_win();
+    uint8_t get_rounds_between_stats();
     bool get_cheats_on();
     uint8_t get_initial_duck_hp();
     float get_duck_speed();

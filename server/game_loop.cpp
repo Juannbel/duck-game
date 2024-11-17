@@ -21,11 +21,13 @@ static Config& config = Config::get_instance();
 const static int TICKS = config.get_server_ticks();
 const milliseconds RATE(1000 / TICKS);
 const uint its_after_round = 3000 / (1000 / TICKS);
+const uint8_t ROUNDS_TO_WIN = config.get_rounds_to_win();
+const uint8_t ROUNDS_BETWEEN_STATS = config.get_rounds_between_stats();
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
         snaps_queue_list(queue_list),
-        round_number(5),
+        round_number(ROUNDS_BETWEEN_STATS),
         round_finished(),
         game_finished(),
         paths_to_maps(map_loader.list_maps(MAPS_PATH)),
@@ -49,7 +51,8 @@ void GameLoop::run() {
     initial_snapshot();
 
     // Tiempo para que los jugadores vean que pato les toco
-    std::this_thread::sleep_for(milliseconds(4000));
+    // std::this_thread::sleep_for(milliseconds(4000));
+    sleep_checking(milliseconds(4000));
 
     uint it = its_after_round;
     auto t1 = high_resolution_clock::now();
@@ -70,7 +73,7 @@ void GameLoop::run() {
         }
         t1 += RATE;
     }
-    
+
     round_finished = true;
     game_finished = true;
     it = 0;
@@ -113,16 +116,18 @@ void GameLoop::send_game_status(auto& t1, uint& its_since_finish) {
     create_and_push_snapshot(its_since_finish);
     if (!its_since_finish) {
         if (!round_number)
-            std::this_thread::sleep_for(milliseconds(3000));
+            // std::this_thread::sleep_for(milliseconds(3000));
+            sleep_checking(milliseconds(3000));
         else  // Sleep chico para asegurarnos que lea el round finished
-            std::this_thread::sleep_for(milliseconds(200));
+            // std::this_thread::sleep_for(milliseconds(200));
+            sleep_checking(milliseconds(200));
 
         initialice_new_round();
         initial_snapshot();
         t1 = high_resolution_clock::now();
         action action{};
         while (actions_queue.try_pop(action)) {}
-        round_number = !round_number && !game_finished ? 5 : round_number;
+        round_number = !round_number && !game_finished ? ROUNDS_BETWEEN_STATS : round_number;
         its_since_finish = its_after_round;
         round_finished = false;
     } else if (round_finished) {
@@ -162,7 +167,7 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
         --round_number;
     }
     if (round_number == 0) {
-        uint8_t max_winner = 10;
+        uint8_t max_winner = ROUNDS_TO_WIN;
         for (auto& [id, count]: winners_id_count) {
             if (count >= max_winner) {
                 if (game_finished && count == max_winner) {
@@ -212,3 +217,11 @@ void GameLoop::stop() {
 }
 
 GameLoop::~GameLoop() {}
+
+void GameLoop::sleep_checking(const milliseconds& time) {
+    uint its_to_sleep = time / RATE;
+    while (its_to_sleep && _keep_running) {
+        --its_to_sleep;
+        std::this_thread::sleep_for(RATE);
+    }
+}

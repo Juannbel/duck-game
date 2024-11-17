@@ -21,8 +21,16 @@ compile-release:
 	cmake --build  build/ $(EXTRA_COMPILE)
 
 dependencies:
-	sudo apt-get update
-	sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+	@echo "Installing dependencies"
+	@sudo apt-get update
+	@echo "Installing build dependencies"
+	@sudo apt-get install -y cmake
+	@echo "Installing SDL2 dependencies"
+	@sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+	@echo "Installing QT dependencies"
+	@sudo apt-get install -y qtbase5-dev
+	@echo "Installing yaml-cpp dependencies"
+	@sudo apt-get install -y libyaml-cpp-dev
 
 install-no-deps: CMAKE_OPTIONS := -DCUSTOM_CONFIG_PATH=$(CONFIG_DIR_INSTALL)/config.yaml -DCUSTOM_DATA_PATH=$(DATA_DIR_INSTALL)/data -DCUSTOM_MAPS_PATH=$(MAPS_DIR_INSTALL)/maps
 install-no-deps: compile-release run-tests

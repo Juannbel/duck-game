@@ -13,6 +13,8 @@ void Config::load_config() try {
     window_height = config["window_height"].as<int>();
 
     server_ticks = config["server_ticks"].as<int>();
+    rounds_to_win = config["rounds_to_win"].as<int>();
+    rounds_between_stats = config["rounds_between_stats"].as<int>();
     cheats = config["cheats"].as<bool>();
     initial_duck_hp = config["initial_duck_hp"].as<int>();
     duck_speed = config["duck_speed"].as<float>();
@@ -47,6 +49,10 @@ int Config::get_window_width() { return window_width; }
 int Config::get_window_height() { return window_height; }
 
 int Config::get_server_ticks() { return server_ticks; }
+
+uint8_t Config::get_rounds_to_win() { return rounds_to_win; }
+
+uint8_t Config::get_rounds_between_stats() { return rounds_between_stats; }
 
 bool Config::get_cheats_on() { return cheats; }
 

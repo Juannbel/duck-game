@@ -1,6 +1,7 @@
 #ifndef GAME_LOOP_H
 #define GAME_LOOP_H
 
+#include <chrono>
 #include <cstdint>
 #include <functional>
 #include <map>
@@ -50,6 +51,8 @@ private:
     void push_responce(const Snapshot& actual_status);
 
     void check_for_winner(const Snapshot&);
+
+    void sleep_checking(const std::chrono::milliseconds& time);
 
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list);

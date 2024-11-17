@@ -6,9 +6,12 @@ window_height: 690
 
 # Server side
 server_ticks: 120
+rounds_to_win: 10 # Cantidad de rondas para ganar
+rounds_between_stats: 5 # Cantidad de rondas entre que se muestran las estadisticas
 cheats: true
 
-# Todos los rangos y velocidades se expresan en bloques por segundo
+# Las velocidades estan expresadas en bloques por segundo
+# Los rangos estan expresados en bloques
 initial_duck_hp: 100
 duck_speed: 9.5
 fall_speed: 7.5

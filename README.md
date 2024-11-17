@@ -1,9 +1,11 @@
 # Duck Game
 
 ## Dependencias
-Las dependencias necesarias para correr el juego son las siguientes:
-- SDL2
-- ...
+Las dependencias necesarias para instalar y correr el juego son las siguientes:
+- CMake
+- SDL2 (image, mixer y ttf)
+- Qt5
+- YAML-cpp
 
 Para instalar las mismas en un sistema basado en Debian, se puede ejecutar el siguiente comando:
 
@@ -79,4 +81,4 @@ duck_game_editor
 En el mismo pueden crearse y editar niveles del juego, que luego serán utilizados en las partidas.
 Vale aclarar que los niveles que se utilizan son los que se encuentran en la maquina donde se ejecuta el servidor.
 
-Al igual que con el juego, en caso de no haber realizado la instalación se debe correr ./build/duck_game_editor en lugar de duck_game_editor
+Al igual que con el juego, en caso de no haber realizado la instalación se debe correr `./build/duck_game_editor` en lugar de `duck_game_editor`
