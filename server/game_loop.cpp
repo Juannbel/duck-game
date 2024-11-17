@@ -31,7 +31,11 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         paths_to_maps(map_loader.list_maps(MAPS_PATH)),
         curr_map(),
         game_initialized(false),
-        ducks_id_available({0,1,2,3}){}
+        ducks_id_available(){
+            for (uint8_t i = MAX_DUCKS; i > 0; i--) {
+                ducks_id_available.push_back(i-1);
+            }
+        }
 
 std::string get_rand_string(const std::vector<std::string>& v_strings) {
     std::random_device rd;
@@ -72,7 +76,7 @@ void GameLoop::run() {
         }
         t1 += RATE;
     }
-    
+
     round_finished = true;
     game_finished = true;
     it = 0;
