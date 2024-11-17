@@ -154,6 +154,10 @@ void MainWindow::onJoinLobbyClicked() {
 
 void MainWindow::onStartGameClicked() {
     protocol.send_option(START_GAME);
+    if (protocol.recv_option() != CREATE_OK) {
+        QMessageBox::warning(this, "Error", "Not enough players to start the game");
+        return;
+    }
     ready_to_play = true;
     close();
 }

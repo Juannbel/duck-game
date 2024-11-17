@@ -89,16 +89,12 @@ void ServerReceiver::wait_for_start() const {
     while (true) {
         int32_t cmd = protocol.receive_cmd();
         if (cmd == START_GAME) {
-            break; // Sacar este break y dejar lo comentado abajo
-            /*
-            std::vector<LobbyInfo> lobbies(1);
-            lobbies[0] = games_monitor.get_lobby_info(gameId);
-            if (lobbies[0].connected_players >= 2) {
+            LobbyInfo info(games_monitor.get_lobby_info(gameId));
+            if (info.connected_players >= 2) {
                 protocol.send_option(CREATE_OK);
                 break;
             }
             protocol.send_option(CREATE_ERROR);
-            */
         } else if (cmd == GET_INFO) {
             std::vector<LobbyInfo> lobbies(1);
             lobbies[0] = games_monitor.get_lobby_info(gameId);

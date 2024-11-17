@@ -102,6 +102,15 @@ void ClientProtocol::send_option(int32_t option) {
         throw SocketWasClosed();
 }
 
+int32_t ClientProtocol::recv_option() {
+    bool was_closed = false;
+    int32_t option;
+    socket.recvall(&option, sizeof(option), &was_closed);
+    if (was_closed)
+        throw SocketWasClosed();
+    return ntohl(option);
+}
+
 void ClientProtocol::send_string(const std::string& str) {
     bool was_closed = false;
     uint8_t str_len = str.size();

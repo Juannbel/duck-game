@@ -22,6 +22,8 @@ public:
 
     void send_option(int32_t option);
 
+    int32_t recv_option();
+
     void send_string(const std::string& str);
 
     GameInfo recv_game_info();
