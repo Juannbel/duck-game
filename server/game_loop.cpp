@@ -224,6 +224,20 @@ void GameLoop::stop() {
     actions_queue.close();
 }
 
+void GameLoop::notify_not_started() {
+    Snapshot status = {};
+    status.game_finished = true;
+    status.round_finished = true;
+    status.show_stats = true;
+    status.maps.push_back(curr_map.map_dto);
+
+    // es necesario enviar 2
+    // La primera es para desbloquearlo de la waiting screen
+    // en la segunda se chequea si el juego termino y se muestra una pantalla final
+    push_responce(status);
+    push_responce(status);
+}
+
 GameLoop::~GameLoop() {}
 
 void GameLoop::sleep_checking(const milliseconds& time) {

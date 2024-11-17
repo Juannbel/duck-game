@@ -56,7 +56,8 @@ void Game::delete_player(const int id_player) {
     if (player_sender_q) {
         player_sender_q->close();
     }
-    if (id_player == owner_id) { // si el dueño se va, se cierra el juego
+    if (!gameloop.is_initialized() && id_player == owner_id) { // si el dueño se va, se cierra el juego
+        gameloop.notify_not_started();
         on_game_end_callback();
         return;
     }

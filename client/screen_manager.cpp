@@ -197,8 +197,13 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
 bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
                                           RenderableMap& map, Camera& camera) {
     if (last_snapshot.game_finished) {
+        if (last_snapshot.ducks.size() == 0) {
+            return end_game_no_winner_screen(map, camera);
+        }
         return end_game_screen(last_snapshot, map, camera);
-    } else if (last_snapshot.show_stats) {
+    }
+
+    if (last_snapshot.show_stats) {
         return stats_screen(snapshot_q, last_snapshot, map, camera);
     }
 
@@ -369,6 +374,55 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map,
                                    rect_height);
             render_duck_stat(ducks[i], duck_rect, duck_texture, animations[ducks[i].duck_id]);
         }
+
+        renderer.Present();
+
+        SDL_Delay(RATE);
+    }
+    return false;
+}
+
+bool ScreenManager::end_game_no_winner_screen(RenderableMap& map, Camera& camera) {
+    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Game terminated with no winner",
+                                                                SDL_Color{255, 255, 255, 255}));
+
+    SDL2pp::Texture exit_text(renderer, primary_font.RenderText_Solid("Press ESC to exit",
+                                                                     SDL_Color{255, 255, 255, 255}));
+
+    int screen_width = renderer.GetOutputWidth();
+    int screen_height = renderer.GetOutputHeight();
+    SDL2pp::Rect background_rect(0, 0, screen_width, screen_height);
+    while (true) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+                return false;
+            }
+        }
+
+        screen_width = renderer.GetOutputWidth();
+        screen_height = renderer.GetOutputHeight();
+        background_rect.w = screen_width;
+        background_rect.h = screen_height;
+
+        renderer.Clear();
+        map.render(renderer, camera);
+        renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+        renderer.SetDrawColor(0, 0, 0, 50);
+        renderer.FillRect(background_rect);
+        renderer.SetDrawBlendMode();
+
+        renderer.Copy(
+                info, SDL2pp::NullOpt,
+                SDL2pp::Rect(SDL2pp::Point(screen_width / 2 - info.GetSize().x / 2,
+                                           screen_height / 2 - info.GetSize().y / 2),
+                             info.GetSize()));
+
+        renderer.Copy(
+                exit_text, SDL2pp::NullOpt,
+                SDL2pp::Rect(SDL2pp::Point(screen_width / 2 - exit_text.GetSize().x / 2,
+                                            screen_height - exit_text.GetSize().y - 30),
+                                exit_text.GetSize()));
 
         renderer.Present();
 

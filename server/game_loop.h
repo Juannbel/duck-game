@@ -71,6 +71,8 @@ public:
 
     void delete_duck(uint8_t duck_id);
 
+    void notify_not_started();
+
     void set_on_game_end_callback(std::function<void()> callback);
 
     bool is_initialized() const { return game_initialized; }

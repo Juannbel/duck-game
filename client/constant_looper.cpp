@@ -72,6 +72,10 @@ void ConstantLooper::run() try {
         return;
 
     bool keep_running = true;
+    if (last_snapshot.game_finished) {
+        screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
+        return;
+    }
 
     while (keep_running) {
         uint32_t t1 = SDL_GetTicks();

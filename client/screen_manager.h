@@ -29,6 +29,8 @@ private:
 
     bool end_game_screen(Snapshot& last_snapshot, RenderableMap& map, Camera& camera);
 
+    bool end_game_no_winner_screen(RenderableMap& map, Camera& camera);
+
 public:
     ScreenManager(SDL2pp::Renderer& renderer, std::pair<uint8_t, uint8_t>& duck_ids);
 
