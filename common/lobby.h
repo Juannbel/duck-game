@@ -12,8 +12,8 @@
 #define JOIN_GAME 3
 #define START_GAME 4
 #define GET_INFO 5
-#define CREATE_ERROR 5
-#define CREATE_OK 5
+#define CREATE_ERROR 6
+#define CREATE_OK 7
 
 struct GameInfo {
     int32_t game_id;
