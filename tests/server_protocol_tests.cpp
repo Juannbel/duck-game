@@ -20,20 +20,15 @@ TEST(SERVER_PROTOCOL, _CREATE_GAME_AND_START_GAME) {
     EXPECT_EQ(cmd, CREATE_GAME) << "cmd should be equal to the expected cmd";
     int32_t num_players = protocol.receive_cmd();
     EXPECT_EQ(num_players, 1) << "num_players should be 1";
-    // std::vector<std::string> players;
     std::string name = protocol.recv_string();
     EXPECT_EQ(name, "Facundo88") << "name should be equal to the expected name";
     GameInfo game_info = {0, 0, INVALID_DUCK_ID};
     EXPECT_NO_THROW(protocol.send_game_info(game_info))
             << "send_game_info should not throw any exception";
-    cmd =  protocol.receive_cmd();
+    cmd = protocol.receive_cmd();
     EXPECT_EQ(cmd, GET_INFO);
 
-    LobbyInfo info;
-    info.game_id = game_info.game_id;
-    info.connected_players = 2;
-    std::strncpy(info.creator, name.c_str(), MAX_PLAYER_NAME - 1);
-    info.creator[MAX_PLAYER_NAME - 1] = '\0';
+    LobbyInfo info = initialize_lobby_info(game_info.game_id, 2, name);
     std::vector<LobbyInfo> lobbies = {info};
 
     EXPECT_NO_THROW(protocol.send_lobbies_info(lobbies));
@@ -48,11 +43,7 @@ TEST(SERVER_PROTOCOL, _LIST_GAMES_AND_JOIN_GAME) {
     ServerProtocol protocol(peer);
     int32_t cmd = protocol.receive_cmd();
     EXPECT_EQ(cmd, LIST_GAMES) << "cmd should be equal to the expected cmd";
-    LobbyInfo info;
-    info.game_id = 0;
-    info.connected_players = 1;
-    std::strncpy(info.creator, "Facundo88", MAX_PLAYER_NAME - 1);
-    info.creator[MAX_PLAYER_NAME - 1] = '\0';
+    LobbyInfo info = initialize_lobby_info(0, 1, "Facundo88");
     std::vector<LobbyInfo> lobbies = {info};
     EXPECT_NO_THROW(protocol.send_lobbies_info(lobbies))
             << "send_lobbies_info should not throw any exception";
@@ -62,7 +53,6 @@ TEST(SERVER_PROTOCOL, _LIST_GAMES_AND_JOIN_GAME) {
     EXPECT_EQ(game_id, 0) << "game_id should be equal to the expected game_id";
     int32_t num_players = protocol.receive_cmd();
     EXPECT_EQ(num_players, 1) << "num_players should be 1";
-    // std::vector<std::string> players;
     std::string name = protocol.recv_string();
     EXPECT_EQ(name, "New player") << "name should be equal to the expected name";
     GameInfo game_info = {0, 0, INVALID_DUCK_ID};

@@ -106,6 +106,38 @@ bool check_maps(const std::vector<MapDto>& maps) {
     return true;
 }
 
+bool check_game_info(const GameInfo& game_info, int32_t game_id, uint8_t duck_id_1,
+                     uint8_t duck_id_2) {
+    if (game_info.game_id != game_id)
+        return false;
+    if (game_info.duck_id_1 != duck_id_1)
+        return false;
+    if (game_info.duck_id_2 != duck_id_2)
+        return false;
+    return true;
+}
+
+bool check_lobby_info(LobbyInfo info, int32_t game_id, uint8_t connected_players,
+                      const std::string& name) {
+    if (info.game_id != game_id)
+        return false;
+    if (info.connected_players != connected_players)
+        return false;
+    if (std::strncmp(info.creator, name.c_str(), name.size()) != 0)
+        return false;
+    return true;
+}
+
+LobbyInfo initialize_lobby_info(int32_t game_id, int32_t connected_players,
+                                const std::string& creator) {
+    LobbyInfo info;
+    info.game_id = game_id;
+    info.connected_players = connected_players;
+    std::strncpy(info.creator, creator.c_str(), MAX_PLAYER_NAME - 1);
+    info.creator[MAX_PLAYER_NAME - 1] = '\0';
+    return info;
+}
+
 Snapshot initialize_snapshot() {
     Snapshot snapshot;
     snapshot.round_finished = false;

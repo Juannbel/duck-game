@@ -1,5 +1,3 @@
-#include <bits/this_thread_sleep.h>
-
 #include "../client/client_protocol.h"
 #include "../common/lobby.h"
 #include "../common/socket.h"
@@ -18,24 +16,21 @@ TEST(CLIENT_PROTOCOL, _CREATE_GAME_AND_START_GAME) {
     EXPECT_NO_THROW(protocol.send_option(CREATE_GAME))
             << "send_option should not throw any exception";
     int32_t num_players(1);
-    EXPECT_NO_THROW(protocol.send_option(num_players)) << "send_option should not throw any exception";
+    EXPECT_NO_THROW(protocol.send_option(num_players))
+            << "send_option should not throw any exception";
     std::string name = "Facundo88";
-    EXPECT_NO_THROW(protocol.send_string(name))
-            << "send_string should not throw any exception";
+    EXPECT_NO_THROW(protocol.send_string(name)) << "send_string should not throw any exception";
     GameInfo gameInfo = protocol.recv_game_info();
-    EXPECT_EQ(gameInfo.game_id, 0) << "game_id should be equal to the expected game_id";
-    EXPECT_EQ(gameInfo.duck_id_1, 0) << "duck_id_1 should be equal to the expected duck_id_1";
-    EXPECT_EQ(gameInfo.duck_id_2, INVALID_DUCK_ID)
-            << "duck_id_2 should be equal to the expected duck_id_2";
+    ASSERT_TRUE(check_game_info(gameInfo, 0, 0, INVALID_DUCK_ID));
+
     EXPECT_NO_THROW(protocol.send_option(GET_INFO));
     std::vector<LobbyInfo> lobbies_info = protocol.recv_lobbies_info();
-    EXPECT_EQ(lobbies_info[0].game_id, gameInfo.game_id)<< "game_id should be equal to the expected game_id";
-    EXPECT_EQ(lobbies_info[0].connected_players, 2)<< "connected_players should be equal to the expected connected_players";
-    ASSERT_TRUE(strncmp(lobbies_info[0].creator, name.c_str(), name.size())==0)<< "creator should be equal to the expected creator";
+    EXPECT_EQ(lobbies_info.size(), 1) << "lobbies_info size should be equal to the expected size";
+    ASSERT_TRUE(check_lobby_info(lobbies_info[0], gameInfo.game_id, 2, name));
     EXPECT_NO_THROW(protocol.send_option(START_GAME))
-            << "send_option should not throw any exception";    
+            << "send_option should not throw any exception";
     int32_t game_created = protocol.recv_option();
-    EXPECT_EQ(game_created, CREATE_OK);  
+    EXPECT_EQ(game_created, CREATE_OK);
     protocol.shutdown();
 }
 
@@ -47,11 +42,7 @@ TEST(CLIENT_PROTOCOL, _LIST_GAMES_AND_JOIN_GAME) {
             << "send_option should not throw any exception";
     std::vector<LobbyInfo> lobbies_info = protocol.recv_lobbies_info();
     EXPECT_EQ(lobbies_info.size(), 1) << "lobbies_info size should be equal to the expected size";
-    EXPECT_EQ(lobbies_info[0].game_id, 0) << "game_id should be equal to the expected game_id";
-    EXPECT_EQ(lobbies_info[0].connected_players, 1)
-            << "connected_players should be equal to the expected connected_players";
-    EXPECT_EQ(std::string(lobbies_info[0].creator), "Facundo88")
-            << "creator should be equal to the expected creator";
+    ASSERT_TRUE(check_lobby_info(lobbies_info[0], 0, 1, "Facundo88"));
     EXPECT_NO_THROW(protocol.send_option(JOIN_GAME))
             << "send_option should not throw any exception";
     uint32_t game_id = lobbies_info[0].game_id;
