@@ -62,6 +62,7 @@ void ServerProtocol::serializeSnapshot(Snapshot& snapshot) {
         bullet.bullet_id = htonl(bullet.bullet_id);
         bullet.x = htons(bullet.x);
         bullet.y = htons(bullet.y);
+        bullet.angle = htons(bullet.angle);
     }
 
     int boxes_quantity = snapshot.boxes.size();

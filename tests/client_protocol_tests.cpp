@@ -17,16 +17,26 @@ TEST(CLIENT_PROTOCOL, _CREATE_GAME_AND_START_GAME) {
     ClientProtocol protocol(std::move(socket));
     EXPECT_NO_THROW(protocol.send_option(CREATE_GAME))
             << "send_option should not throw any exception";
-    EXPECT_NO_THROW(protocol.send_option(1)) << "send_option should not throw any exception";
-    EXPECT_NO_THROW(protocol.send_string("Facundo88"))
+    int32_t num_players(1);
+    EXPECT_NO_THROW(protocol.send_option(num_players)) << "send_option should not throw any exception";
+    std::string name = "Facundo88";
+    EXPECT_NO_THROW(protocol.send_string(name))
             << "send_string should not throw any exception";
     GameInfo gameInfo = protocol.recv_game_info();
     EXPECT_EQ(gameInfo.game_id, 0) << "game_id should be equal to the expected game_id";
     EXPECT_EQ(gameInfo.duck_id_1, 0) << "duck_id_1 should be equal to the expected duck_id_1";
     EXPECT_EQ(gameInfo.duck_id_2, INVALID_DUCK_ID)
             << "duck_id_2 should be equal to the expected duck_id_2";
+    EXPECT_NO_THROW(protocol.send_option(GET_INFO));
+    std::vector<LobbyInfo> lobbies_info = protocol.recv_lobbies_info();
+    EXPECT_EQ(lobbies_info[0].game_id, gameInfo.game_id)<< "game_id should be equal to the expected game_id";
+    EXPECT_EQ(lobbies_info[0].connected_players, 2)<< "connected_players should be equal to the expected connected_players";
+    ASSERT_TRUE(strncmp(lobbies_info[0].creator, name.c_str(), name.size())==0)<< "creator should be equal to the expected creator";
     EXPECT_NO_THROW(protocol.send_option(START_GAME))
-            << "send_option should not throw any exception";
+            << "send_option should not throw any exception";    
+    int32_t game_created = protocol.recv_option();
+    EXPECT_EQ(game_created, CREATE_OK);  
+    protocol.shutdown();
 }
 
 TEST(CLIENT_PROTOCOL, _LIST_GAMES_AND_JOIN_GAME) {
@@ -117,6 +127,16 @@ TEST(CLIENT_PROTOCOL, _SEND_COMMANDS) {
     EXPECT_NO_THROW(protocol.send_player_action(action10));
     action action11 = {0, StandUp};
     EXPECT_NO_THROW(protocol.send_player_action(action11));
+    action action12 = {0, FlyMode};
+    EXPECT_NO_THROW(protocol.send_player_action(action12));
+    action action13 = {0, InfiniteAmmo};
+    EXPECT_NO_THROW(protocol.send_player_action(action13));
+    action action14 = {0, KillEveryone};
+    EXPECT_NO_THROW(protocol.send_player_action(action14));
+    action action15 = {0, InfiniteHP};
+    EXPECT_NO_THROW(protocol.send_player_action(action15));
+    action action16 = {0, GetDeathLaser};
+    EXPECT_NO_THROW(protocol.send_player_action(action16));
 }
 
 int main(int argc, char** argv) {

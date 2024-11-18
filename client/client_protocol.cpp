@@ -73,6 +73,7 @@ void ClientProtocol::deserialize_snapshot(Snapshot& snapshot) {
         bullet.bullet_id = ntohl(bullet.bullet_id);
         bullet.x = ntohs(bullet.x);
         bullet.y = ntohs(bullet.y);
+        bullet.angle = ntohs(bullet.angle);
     }
 
     int boxes_quantity = snapshot.boxes.size();
