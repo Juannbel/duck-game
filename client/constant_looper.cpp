@@ -74,6 +74,7 @@ void ConstantLooper::run() try {
 
     bool keep_running = true;
     if (last_snapshot.game_finished) {
+        // partida no iniciada
         screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
         return;
     }
@@ -85,7 +86,7 @@ void ConstantLooper::run() try {
 
         while (snapshot_q.try_pop(last_snapshot)) {}
 
-        if (last_snapshot.round_finished) {
+        if (last_snapshot.round_finished || last_snapshot.game_finished) {
             keep_running =
                     screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
             if (!keep_running)
@@ -113,7 +114,7 @@ void ConstantLooper::run() try {
         sleep_or_catch_up(t1);
     }
 } catch (const ClosedQueue& e) {
-    std::cout << "Server disconnected, leaving constant looper" << std::endl;
+    // El servidor se desconecto sin enviar ultimas snapshots
 }
 
 void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {

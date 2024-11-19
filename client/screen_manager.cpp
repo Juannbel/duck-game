@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
@@ -198,6 +199,7 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
 bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
                                           RenderableMap& map, Camera& camera) {
     if (last_snapshot.game_finished) {
+        std::cout << "Game finished" << std::endl;
         if (last_snapshot.ducks.size() == 0) {
             return end_game_no_winner_screen(map, camera);
         }

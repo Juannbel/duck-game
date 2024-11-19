@@ -20,12 +20,7 @@ public:
 
     void run() {
         mainWindow.show();
-        try {
-            app.exec();
-        } catch (const SocketWasClosed& e) {
-            std::cerr << "Server closed connection" << std::endl;
-            mainWindow.close();
-        }
+        app.exec();
     }
 
     ~Lobby() { free(argv[0]); }

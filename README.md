@@ -2,14 +2,17 @@
 
 ## Dependencias
 Las dependencias necesarias para instalar y correr el juego son las siguientes:
+- Make
 - CMake
 - SDL2 (image, mixer y ttf)
 - Qt5
 - YAML-cpp
 
-Para instalar las mismas en un sistema basado en Debian, se puede ejecutar el siguiente comando:
+Para instalar las mismas en un sistema basado en Debian (como Ubuntu), se puede ejecutar el siguiente comando:
 
 ```bash
+# Primero instalar Make, necesario para luego instalar las dependencias y compilar
+sudo apt-get install make -y
 make dependencies
 ```
 
@@ -18,6 +21,7 @@ make dependencies
 Para instalar el juego estando en una distribución de linux basada en Debian, como Ubuntu, ejecutar el siguiente comando:
 
 ```bash
+sudo apt-get install make -y
 make install
 ```
 El target se encargará de instalar las dependencias necesarias para el juego, compilarlo, correr las pruebas y finalmente instalar el juego en el sistema.

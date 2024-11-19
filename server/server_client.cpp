@@ -1,8 +1,10 @@
 #include "server_client.h"
 
 #include <utility>
+#include <sys/socket.h>
 
 #include "common/blocking_queue.h"
+#include "common/liberror.h"
 
 #define SIZE_QUEUE 0
 
@@ -34,6 +36,10 @@ void ServerClient::kill() {
     try {
         sender_q.close();
     } catch (...) {}
-    sk.shutdown(2);
+    try {
+        sk.shutdown(SHUT_RDWR);
+    } catch (const LibError& le) {
+        // evita Transport endpoint is not connected
+    }
     sk.close();
 }
