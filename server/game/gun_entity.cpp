@@ -80,7 +80,11 @@ void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facin
                                     player_hb.coords.y + DUCK_LAYED_HITBOX_HEIGHT;
         b_hb.height = BULLET_HITBOX_HEIGHT;
         b_hb.width = BULLET_HITBOX_WIDTH;
-        bullets->add_bullet(b_hb, angle, type);
+        Collision verify_coords =
+                collisions.check_near_blocks_collision(b_hb, b_hb.coords.x, b_hb.coords.x);
+        if (!(verify_coords.horizontal_collision || verify_coords.vertical_collision)) {
+            bullets->add_bullet(b_hb, angle, type);
+        }
         it_since_shoot = it_to_shoot;
         --shooted_bullets;
         if (!infinite_ammo_activated && type != DeathLaser) {
