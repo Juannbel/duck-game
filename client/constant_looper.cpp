@@ -48,7 +48,7 @@ ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snaps
         window(WIN_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_WIDTH, WIN_HEIGHT,
                SDL_WINDOW_RESIZABLE),
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
-        screen_manager(renderer, duck_ids),
+        screen_manager(renderer, this->duck_ids),
         snapshot_q(snapshot_q),
         actions_q(actions_q),
         p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS),
