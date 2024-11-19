@@ -20,15 +20,13 @@ Empezamos con una reunion entre todos para definir las estructuras generales nec
 #### Semana 2 (22 de Octubre al 29 de Octubre)
 - Lautaro Pedrozo:
 - Federico Letier: En cada iteración del game loop se crea una snapshot que los distintos objetos la llenan con su estado. Se implementan los spawns para que las armas aparezcan cada un tiempo constante mas un tiempo random extra. Implementación de aleteo de los patos y cambio a uso de coordenadas con floats del lado del server. Patos pueden agarrar armas, no pueden disparar. Primera idea para validar que si un solo jugador queda vivo, gano la ronda.
-- Juan Bel: Se hacen modificaciones para poder recibir y usar el mapa enviado por el servidor. Se empieza a agregar música y sonidos. Se agregan collectables. Modularización de varias cosas, creando clas
- para obtener idatos de animaciones y texturas ss
- n tener que cargarlas cada vez que se piFen. Mejora de controles.acundo Lescano: Modificaciones en los vectores de patos, armas y balas en el snapshot a vectores dinamicos y agregar metodos para enviar y recibir los vectores de tipo std::vector por medio de los protocolos.
+- Juan Bel: Se hacen modificaciones para poder recibir y usar el mapa enviado por el servidor. Se empieza a agregar música y sonidos. Se agregan collectables. Modularización de varias cosas, creando clase para obtener datos de animaciones y texturas y no tener que cargarlas cada vez que se piden. Mejora de controles.
+- Facundo Lescano: Modificaciones en los vectores de patos, armas y balas en el snapshot a vectores dinamicos y agregar metodos para enviar y recibir los vectores de tipo std::vector por medio de los protocolos.
 
 #### Semana 3 (29 de Octubre al 5 de Noviembre)
 - Lautaro Pedrozo:
 - Federico Letier: Se implementa la lógica de plataformas, lgunos bloques se pueden atravesar saltando por debajo. Patos ya pueden disparar y mueren por los disparos. Aun las balas no eran una clase con comportamiento, las movia el manager. Balas no atraviesan jugadores ni bloques.
 - Juan Bel: Se agrega la pantalla de estadísticas para mostrar entre    rondas. Se arreglan varios bugs en algunas texturas y animaciones. Optimizaciones en el renderizado para objetos que no son visibles. Pruebas para crear un lobby con QT en lugar de manejarlo con CLI. Ahora se detecta el cierre del servidor y se desconectan los clientes.
-
 - Facundo Lescano: Agregado de excepciones en el protocolo si se cierra el socket en las comunicaciones, un vector de mapas y un inidicador de que la partida termino en la snapshot y metodos para enviarlos en el protocolo.
 Comienzo con el editor de niveles. Se pueden editar bloques en un mapa, guardar el mapa y cargar mapas anteriores.
 
