@@ -29,8 +29,6 @@ public:
 
     Game* create_game(const std::string& creator_name, int id_player);
 
-    void delete_game(int id);
-
     std::vector<LobbyInfo> list_lobbies();
 
     LobbyInfo get_lobby_info(int id_game);
