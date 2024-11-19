@@ -1,5 +1,4 @@
 #include "list_monitor.h"
-#include <iostream>
 
 QueueListMonitor::QueueListMonitor() {}
 

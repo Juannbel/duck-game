@@ -11,6 +11,7 @@ using ::testing::HasSubstr;
 using ::testing::ThrowsMessage;
 
 TEST(CLIENT_PROTOCOL, _CREATE_GAME_AND_START_GAME) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     Socket socket("localhost", "8080");
     ClientProtocol protocol(std::move(socket));
     EXPECT_NO_THROW(protocol.send_option(CREATE_GAME))

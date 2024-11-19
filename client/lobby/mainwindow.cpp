@@ -6,7 +6,6 @@
 #include <QResource>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <iostream>
 #include <utility>
 #include <vector>
 
@@ -17,7 +16,6 @@
 #include "../../common/lobby.h"
 #include "./ui_mainwindow.h"
 #include "common/snapshot.h"
-#include "common/socket.h"
 
 MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
                        std::pair<uint8_t, uint8_t>& duck_ids, bool& ready_to_play):
@@ -150,7 +148,6 @@ void MainWindow::onJoinGameConfirmed() {
     if (gameInfo.game_id != INVALID_GAME_ID) {
         duck_ids.first = gameInfo.duck_id_1;
         duck_ids.second = gameInfo.duck_id_2;
-        // game_id = gameInfo.game_id; se queja cppcheck porque no se usa
         ready_to_play = true;
         close();
     } else {
@@ -178,15 +175,17 @@ void MainWindow::onJoinLobbyClicked() {
 }
 
 void MainWindow::onStartGameClicked() {
-    bool ok = executeSafely([this]() {
+    bool started = false;
+    bool ok = executeSafely([this, &started]() {
         protocol.send_option(START_GAME);
         if (protocol.recv_option() != CREATE_OK) {
             QMessageBox::warning(this, "Error", "Not enough players to start the game");
             return;
         }
+        started = true;
     });
 
-    if (!ok) {
+    if (!ok || !started) {
         return;
     }
 
