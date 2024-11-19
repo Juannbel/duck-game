@@ -2,18 +2,19 @@
 
 #include <cstdint>
 
+#include "common/config.h"
 #include "server/game/gun_entity.h"
+
+static Config& config = Config::get_instance();
 
 LaserRifleG::LaserRifleG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = LASER_RIFLE_HITBOX_HEIGHT;
     hitbox.width = LASER_RIFLE_HITBOX_WIDTH;
-    ammo = 10;
     bullets_to_shoot = 1;
     it_to_shoot = 10;
     it_since_shoot = it_to_shoot;
     initial_angle = 45;
-    inaccuracy = 0;
 }
 
 
@@ -39,5 +40,5 @@ bool LaserRifleG::update_bullets(const Rectangle& player_hb, bool facing_right, 
 
 void LaserRifleG::stop_shooting() {
     GunEntity::stop_shooting();
-    inaccuracy = 0;
+    inaccuracy = config.get_gun_recoil(type);
 }

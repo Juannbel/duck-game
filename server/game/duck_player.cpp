@@ -308,14 +308,14 @@ bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
             die();
             return true;
         }
-        if (status.armor_equiped) {
+        uint8_t taken_dmg = cheats_on.infiniteHP ? 0 : damage;
+        if (status.armor_equiped && taken_dmg) {
             status.armor_equiped = false;
             return true;
-        } else if (status.helmet_equiped) {
+        } else if (status.helmet_equiped && taken_dmg) {
             status.helmet_equiped = false;
             return true;
         }
-        uint8_t taken_dmg = cheats_on.infiniteHP ? 0 : damage;
         if (status.duck_hp < taken_dmg) {
             die();
         } else {

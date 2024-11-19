@@ -10,9 +10,7 @@ GrenadeG::GrenadeG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions
         GunEntity(gun, bullets, collisions) {
     hitbox.height = GRENADE_HITBOX_HEIGHT;
     hitbox.width = GRENADE_HITBOX_WIDTH;
-    ammo = 30;
     it_to_shoot = config.get_server_ticks() * 4;
-    inaccuracy = 360;
     if (explode) {
         it_since_shoot = it_to_shoot;
         trigger_pulled = true;

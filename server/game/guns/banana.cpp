@@ -1,7 +1,6 @@
 #include "banana.h"
 
 #include "server/game/gun_entity.h"
-#include "server/game/ticks.h"
 
 BananaG::BananaG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {

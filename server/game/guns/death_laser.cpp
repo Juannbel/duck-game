@@ -13,7 +13,6 @@ DeathLaserG::DeathLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& coll
         GunEntity(gun, bullets, collisions) {
     hitbox.height = DEATH_LASER_HITBOX_HEIGHT;
     hitbox.width = DEATH_LASER_HITBOX_WIDTH;
-    ammo = 1;
     bullets_to_shoot = 1;
     it_to_shoot = 0;
     it_since_shoot = it_to_shoot;

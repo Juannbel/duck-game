@@ -4,11 +4,9 @@ MagnumG::MagnumG(Gun& gun, BulletManager* bullets, CollisionChecks& collisions):
         GunEntity(gun, bullets, collisions) {
     hitbox.height = MAGNUM_HITBOX_HEIGHT;
     hitbox.width = MAGNUM_HITBOX_WIDTH;
-    ammo = 6;
     bullets_to_shoot = 1;
     it_to_shoot = 0;
     initial_angle = 0;
-    inaccuracy = 8;
 }
 
 bool MagnumG::update_bullets(const Rectangle& player_hb, bool facing_right, bool facing_up) {

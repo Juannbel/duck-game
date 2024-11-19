@@ -2,7 +2,9 @@
 
 #include <cstdint>
 
-#include "server/game/ticks.h"
+#include "common/config.h"
+
+static Config& config = Config::get_instance();
 
 const int16_t DISPERSION = 6;
 
@@ -10,10 +12,8 @@ PewPewLaserG::PewPewLaserG(Gun& gun, BulletManager* bullets, CollisionChecks& co
         GunEntity(gun, bullets, collisions) {
     hitbox.height = PEWPEW_LASER_HITBOX_HEIGHT;
     hitbox.width = PEWPEW_LASER_HITBOX_WIDTH;
-    ammo = 12 * 3;
-    it_to_shoot = TICKS / 20;
+    it_to_shoot = config.get_server_ticks() / 20;
     initial_angle = 0;
-    inaccuracy = DISPERSION;
     bullets_to_shoot = 3;
 }
 
