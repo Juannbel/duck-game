@@ -38,7 +38,7 @@ struct Duck {
     char player_name[MAX_PLAYER_NAME];
 
     uint8_t duck_id;  // del 0 al 3
-    int8_t duck_hp;
+    uint8_t duck_hp;
     GunType gun;
     uint8_t rounds_won = 0;
 

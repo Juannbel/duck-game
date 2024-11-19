@@ -25,7 +25,7 @@
 ### 1.2. **Unirse a partida:**
 
 - Al seleccionar la opción de Unirse a partida se listan los juegos disponibles, se selecciona uno y se ingresa el nombre del jugador.
-- Se puede refrescar la lista de lobbys disponigles con el botón `Refresh`.
+- Se puede refrescar la lista de lobbys disponibles con el botón `Refresh`.
 
 ![listar lobbys](images/manual-usuario/lobby-join.png)
 
