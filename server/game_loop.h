@@ -34,7 +34,6 @@ private:
     std::vector<std::string> paths_to_maps;
     Map curr_map;
     std::vector<std::pair<uint8_t, std::string>> ducks_info;
-    std::function<void()> on_game_end_callback;
     bool game_initialized;
     std::vector<int> ducks_id_available;
 
@@ -72,8 +71,6 @@ public:
     void delete_duck(uint8_t duck_id);
 
     void notify_not_started();
-
-    void set_on_game_end_callback(std::function<void()> callback);
 
     bool is_initialized() const { return game_initialized; }
 

@@ -25,7 +25,6 @@ private:
     std::map<int, std::pair<uint8_t, uint8_t>> player_to_duck_ids;
     bool open = true;
     int game_id;
-    std::function<void()> on_game_end_callback;
 
 public:
     Game(int id, const std::string& creator, int owner_id);
@@ -37,7 +36,7 @@ public:
     GameInfo add_player(int player_id, Queue<Snapshot>& player_sender_queue,
                         const std::vector<std::string>& players_names);
 
-    void delete_player(int id_player);
+    bool delete_player(int id_player);
 
     bool is_open() const { return open; }
 
@@ -51,7 +50,6 @@ public:
         return info;
     }
 
-    void set_on_game_end_callback(const std::function<void(int)>& callback);
 
     ~Game();
 };

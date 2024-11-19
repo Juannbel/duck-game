@@ -49,7 +49,7 @@ void Game::start() {
     open = false;
 }
 
-void Game::delete_player(const int id_player) {
+bool Game::delete_player(const int id_player) {
     Queue<Snapshot>* player_sender_q = sv_msg_queues.remove_element(id_player);
     if (player_sender_q) {
         player_sender_q->close();
@@ -57,8 +57,6 @@ void Game::delete_player(const int id_player) {
     if (!gameloop.is_initialized() &&
         id_player == owner_id) {  // si el dueño se va, se cierra el juego
         gameloop.notify_not_started();
-        on_game_end_callback();
-        return;
     }
     const std::pair<uint8_t, uint8_t> duck_ids = player_to_duck_ids[id_player];
     gameloop.delete_duck(duck_ids.first);
@@ -72,11 +70,7 @@ void Game::delete_player(const int id_player) {
     if (cant_players < MAX_DUCKS && !gameloop.is_initialized()) {
         open = true;
     }
-}
-
-void Game::set_on_game_end_callback(const std::function<void(int)>& callback) {
-    on_game_end_callback = [callback, this]() { callback(game_id); };
-    gameloop.set_on_game_end_callback([this, callback]() { callback(game_id); });
+    return cant_players == 0;
 }
 
 Game::~Game() {
