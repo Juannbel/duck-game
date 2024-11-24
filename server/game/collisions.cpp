@@ -37,7 +37,7 @@ bool check_collision_with_no_solid(float new_y, const Rectangle& entity,
                                    const Rectangle& block_hb) {
     if (new_y < entity.coords.y) {
         return true;
-    } else if (new_y > entity.coords.y && entity.coords.y + entity.height > block_hb.coords.y) {
+    } else if (new_y >= entity.coords.y && entity.coords.y + entity.height > block_hb.coords.y) {
         return true;
     }
     return false;
