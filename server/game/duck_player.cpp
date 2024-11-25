@@ -153,9 +153,11 @@ Collision DuckPlayer::normal_duck_move() {
     }
     if (cheats_on.flying) {
         new_y += calculate_move_y_flying();
-        hitbox.coords = {new_x, new_y};
-        status.x = static_cast<int16_t>(hitbox.coords.x);
-        status.y = static_cast<int16_t>(hitbox.coords.y);
+        if (!collisions.out_of_map(new_x, new_y) && new_y > -100) {
+            hitbox.coords = {new_x, new_y};
+            status.x = static_cast<int16_t>(hitbox.coords.x);
+            status.y = static_cast<int16_t>(hitbox.coords.y);
+        }
     } else {
         new_y -= calculate_move_y_jumping();
     }
@@ -303,27 +305,27 @@ void DuckPlayer::stop_jump() {
 bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
     if (status.is_dead)
         return false;
-    if (collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
-        if (damage == 255 && !cheats_on.infiniteHP) {
-            die();
-            return true;
-        }
-        uint8_t taken_dmg = cheats_on.infiniteHP ? 0 : damage;
-        if (status.armor_equiped && taken_dmg) {
-            status.armor_equiped = false;
-            return true;
-        } else if (status.helmet_equiped && taken_dmg) {
-            status.helmet_equiped = false;
-            return true;
-        }
-        if (status.duck_hp < taken_dmg) {
-            die();
-        } else {
-            status.duck_hp -= taken_dmg;
-        }
+    if (!collisions.rectangles_collision(hitbox, bullet).vertical_collision) return false;
+    
+    if (damage == 255 && !cheats_on.infiniteHP) {
+        die();
         return true;
     }
-    return false;
+    uint8_t taken_dmg = cheats_on.infiniteHP ? 0 : damage;
+    if (status.armor_equiped && taken_dmg) {
+        status.armor_equiped = false;
+        return true;
+    }
+    if (status.helmet_equiped && taken_dmg) {
+        status.helmet_equiped = false;
+        return true;
+    }
+    if (status.duck_hp < taken_dmg) {
+        die();
+    } else {
+        status.duck_hp -= taken_dmg;
+    }
+    return true;
 }
 
 void DuckPlayer::slide() {
