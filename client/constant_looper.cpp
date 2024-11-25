@@ -86,6 +86,11 @@ void ConstantLooper::run() try {
         while (snapshot_q.try_pop(last_snapshot)) {}
 
         if (last_snapshot.round_finished || last_snapshot.game_finished) {
+            if (!last_snapshot.game_finished) {
+                actions_q.push({duck_ids.first, Ready});
+                if (duck_ids.second != INVALID_DUCK_ID)
+                    actions_q.push({duck_ids.second, Ready});
+            }
             keep_running =
                     screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
             if (!keep_running)
@@ -142,6 +147,9 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 void ConstantLooper::process_snapshot() {
     if (!last_snapshot.maps.empty()) {
         map_dto = last_snapshot.maps[0];
+        actions_q.push({duck_ids.first, Ready});
+        if (duck_ids.second != INVALID_DUCK_ID)
+            actions_q.push({duck_ids.second, Ready});
     }
 
     update_ducks();
