@@ -120,11 +120,8 @@ void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
 void GameLoop::send_game_status(auto& t1, uint& its_since_finish) {
     create_and_push_snapshot(its_since_finish);
     if (!its_since_finish) {
-        //if (!round_number)
-        //    sleep_checking(milliseconds(3000));
-        //else  // Sleep chico para asegurarnos que lea el round finished
-        //    sleep_checking(milliseconds(100));
-        wait_ready();
+        if (!game_finished)
+            wait_ready();
         t1 = high_resolution_clock::now();
         action action{};
         while (actions_queue.try_pop(action)) {}
@@ -239,14 +236,14 @@ void GameLoop::sleep_checking(const milliseconds& time) {
 void GameLoop::wait_ready() {
     uint8_t readys = ducks_info.size();
     std::map<uint8_t, uint8_t> players_readys;
-    for (auto [id, name] : ducks_info) {
+    for (auto [id, name]: ducks_info) {
         players_readys[id] = 0;
     }
     bool first_ready = true;
     while (readys) {
         action action{};
         while (actions_queue.try_pop(action)) {
-            if (action.command != Ready) 
+            if (action.command != Ready)
                 continue;
             if (players_readys[action.duck_id] == 0 && first_ready) {
                 players_readys[action.duck_id] = 1;
@@ -257,7 +254,9 @@ void GameLoop::wait_ready() {
                 --readys;
             }
         }
-        if (!readys && first_ready){
+        if (!readys && first_ready) {
+            if (!round_number)
+                sleep_checking(milliseconds(3000));
             readys = game_finished ? 0 : ducks_info.size();
             first_ready = false;
             initialice_new_round();

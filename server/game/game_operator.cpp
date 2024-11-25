@@ -54,7 +54,7 @@ void GameOperator::initialize_players(
 void GameOperator::initialize_boxes(const Map& map_info) {
     boxes.clear();
     uint32_t id = 0;
-    for (auto& box: map_info.boxes_spawns) {
+    for (auto const& box: map_info.boxes_spawns) {
         ++id;
         boxes.emplace(id,
                       BoxEntity(box.first * BLOCK_SIZE, box.second * BLOCK_SIZE, id, collisions));
@@ -137,7 +137,7 @@ void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
         duck.equipped_gun = collectables.add_death_laser(new_gun);
     } else if (command == InfiniteHP) {
         duck.infinite_hp();
-    } else {
+    } else if (command == FlyMode) {
         duck.fly_mode();
     }
 }
