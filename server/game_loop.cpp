@@ -9,7 +9,9 @@
 #include <thread>
 #include <vector>
 
+#include "common/commands.h"
 #include "common/config.h"
+#include "common/map.h"
 #include "common/snapshot.h"
 
 using std::chrono::high_resolution_clock;
@@ -118,13 +120,11 @@ void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
 void GameLoop::send_game_status(auto& t1, uint& its_since_finish) {
     create_and_push_snapshot(its_since_finish);
     if (!its_since_finish) {
-        if (!round_number)
-            sleep_checking(milliseconds(3000));
-        else  // Sleep chico para asegurarnos que lea el round finished
-            sleep_checking(milliseconds(100));
-
-        initialice_new_round();
-        initial_snapshot();
+        //if (!round_number)
+        //    sleep_checking(milliseconds(3000));
+        //else  // Sleep chico para asegurarnos que lea el round finished
+        //    sleep_checking(milliseconds(100));
+        wait_ready();
         t1 = high_resolution_clock::now();
         action action{};
         while (actions_queue.try_pop(action)) {}
@@ -170,13 +170,14 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
     if (round_number == 0) {
         uint8_t max_winner = ROUNDS_TO_WIN;
         for (auto& [id, count]: winners_id_count) {
-            if (count >= max_winner) {
-                if (game_finished && count == max_winner) {
-                    game_finished = false;
-                } else {
-                    game_finished = true;
-                    max_winner = count;
-                }
+            if (count < max_winner) {
+                continue;
+            }
+            if (game_finished && count == max_winner) {
+                game_finished = false;
+            } else {
+                game_finished = true;
+                max_winner = count;
             }
         }
     }
@@ -231,6 +232,37 @@ void GameLoop::sleep_checking(const milliseconds& time) {
     uint its_to_sleep = time / RATE;
     while (its_to_sleep && _keep_running) {
         --its_to_sleep;
+        std::this_thread::sleep_for(RATE);
+    }
+}
+
+void GameLoop::wait_ready() {
+    uint8_t readys = ducks_info.size();
+    std::map<uint8_t, uint8_t> players_readys;
+    for (auto [id, name] : ducks_info) {
+        players_readys[id] = 0;
+    }
+    bool first_ready = true;
+    while (readys) {
+        action action{};
+        while (actions_queue.try_pop(action)) {
+            if (action.command != Ready) 
+                continue;
+            if (players_readys[action.duck_id] == 0 && first_ready) {
+                players_readys[action.duck_id] = 1;
+                --readys;
+            }
+            if (players_readys[action.duck_id] == 1 && !first_ready) {
+                players_readys[action.duck_id] = 2;
+                --readys;
+            }
+        }
+        if (!readys && first_ready){
+            readys = ducks_info.size();
+            first_ready = false;
+            initialice_new_round();
+            initial_snapshot();
+        }
         std::this_thread::sleep_for(RATE);
     }
 }

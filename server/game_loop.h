@@ -55,6 +55,8 @@ private:
 
     void sleep_checking(const std::chrono::milliseconds& time);
 
+    void wait_ready();
+
 public:
     GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list);
     /*   This class is the game loop.
