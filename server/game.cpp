@@ -18,7 +18,13 @@ Queue<action>& Game::get_gameloop_queue() { return gameloop_q; }
 
 GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
                           const std::vector<std::string>& players_names) {
+    // voy a dejar comentarios en los lugares en donde hay RC's
+    // obs: la alternativa a poner un locks acá es lockear por fuera (tradeoff: mayor contención)
+    // dos o mas jugadores podrían tratar de unirse de manera concurrente
+    // esta es una sección critica (monitorear)
     GameInfo game_info = {INVALID_GAME_ID, INVALID_DUCK_ID, INVALID_DUCK_ID};
+    // aca hay una rc (cant_players no está protegida en este scope)
+    // open debería ser atomic
     if (!open || cant_players + players_names.size() > MAX_DUCKS) {
         return game_info;
     }
@@ -27,6 +33,7 @@ GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
     sv_msg_queues.add_element(&player_sender_queue, player_id);
 
     std::pair<uint8_t, uint8_t> duck_ids = {INVALID_DUCK_ID, INVALID_DUCK_ID};
+    // aca hay otra rc (se modifican estructuras internas del gameloop)
     duck_ids.first = gameloop.add_player(players_names[0]);
     game_info.duck_id_1 = duck_ids.first;
 
@@ -35,9 +42,11 @@ GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
         game_info.duck_id_2 = duck_ids.second;
     }
 
+    // aca hay otra rc (proteger este mapa)
     player_to_duck_ids[player_id] = duck_ids;
     cant_players += players_names.size();
 
+    // RC
     if (cant_players == MAX_DUCKS) {
         open = false;
     }
@@ -50,6 +59,7 @@ void Game::start() {
 }
 
 bool Game::delete_player(const int id_player) {
+    // aca no hay rc al estar llamado desde un scope lockeado
     Queue<Snapshot>* player_sender_q = sv_msg_queues.remove_element(id_player);
     if (player_sender_q) {
         player_sender_q->close();

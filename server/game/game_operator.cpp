@@ -73,6 +73,7 @@ void GameOperator::initialize_game(const Map& map_info,
 
 void GameOperator::process_action(action& action) {
     DuckPlayer& player = players.at(action.duck_id);
+    // nit: esto daba para un patrón Command
     switch (action.command) {
         case StartMovingRight:
             player.run(true);

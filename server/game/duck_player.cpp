@@ -303,6 +303,8 @@ void DuckPlayer::stop_jump() {
 bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
     if (status.is_dead)
         return false;
+    // obs: siempre es mejor dejar la condicion que menor cuerpo de codigo genere
+    // en este caso: if (!collisions.rectangles_collision(hitbox, bullet).vertical_collision) return false
     if (collisions.rectangles_collision(hitbox, bullet).vertical_collision) {
         if (damage == 255 && !cheats_on.infiniteHP) {
             die();
@@ -312,7 +314,8 @@ bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
         if (status.armor_equiped && taken_dmg) {
             status.armor_equiped = false;
             return true;
-        } else if (status.helmet_equiped && taken_dmg) {
+        }
+        if (status.helmet_equiped && taken_dmg) {
             status.helmet_equiped = false;
             return true;
         }

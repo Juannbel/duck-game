@@ -27,6 +27,7 @@ void QueueListMonitor::send_to_every(const Snapshot& status) {
         try {
             pair.first->try_push(status);
         } catch (const ClosedQueue& e) {
+            // deadlock, vn a tratar de tomar m dos veces
             remove_element(pair.second);
         }
     }
