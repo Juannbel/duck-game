@@ -258,7 +258,7 @@ void GameLoop::wait_ready() {
             }
         }
         if (!readys && first_ready){
-            readys = ducks_info.size();
+            readys = game_finished ? 0 : ducks_info.size();
             first_ready = false;
             initialice_new_round();
             initial_snapshot();
