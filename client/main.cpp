@@ -1,21 +1,37 @@
 #include <cstdlib>
 #include <iostream>
+#include <qapplication.h>
 
 #include "client.h"
+#include "pre_lobby/pre_lobby.h"
 
 #define ARG_HOSTNAME 1
 #define ARG_SERVNAME 2
 
 int main(int argc, char* argv[]) {
-    if (argc != 3) {
-        std::cerr << "Bad call. Usage: " << argv[0] << " <hostname> <servname>" << std::endl;
+    if (argc != 1) {
+        std::cerr << "Bad call. Usage: " << argv[0] << ". No args expected" << std::endl;
         return EXIT_FAILURE;
     }
 
     try {
-        Client client(argv[ARG_HOSTNAME], argv[ARG_SERVNAME]);
-        client.run();
+        QApplication app(argc, argv);
+        bool connected = false;
+        PreLobby pre_lobby(app, connected);
+        pre_lobby.run();
+
+        if (!connected) {
+            return EXIT_SUCCESS;
+        }
+
+        bool play_again = true;
+        while (play_again) {
+            Client client(app, pre_lobby.get_socket());
+            play_again = client.run();
+        }
+
         return EXIT_SUCCESS;
+
     } catch (const std::exception& e) {
         std::cerr << "Something went wrong: " << e.what() << std::endl;
     } catch (...) {

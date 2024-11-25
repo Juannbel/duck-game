@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <SDL_keycode.h>
 
 #include "client/animation_data_provider.h"
 #include "client/renderables/map.h"
@@ -21,8 +22,9 @@ static Config& config = Config::get_instance();
 
 const static int RATE = 1000 / config.get_client_fps();
 
-ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, std::pair<uint8_t, uint8_t>& duck_ids):
-        duck_ids(duck_ids), renderer(renderer), primary_font(DATA_PATH "/fonts/primary.ttf", 30) {}
+
+ScreenManager::ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager, SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again) :
+        window(window), sound_manager(sound_manager), renderer(renderer), duck_ids(duck_ids), primary_font(DATA_PATH "/fonts/primary.ttf", 30), map(map), camera(camera), play_again(play_again) {}
 
 bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
@@ -57,6 +59,7 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     uint8_t it_since_change = 0;
 
     SDL2pp::Rect dst_1 = duck_data_1.frames[0].rect;
+    SDL2pp::Rect dst_2;
     dst_1.w *= 5;
     dst_1.h *= 5;
     if (duck_ids.second == INVALID_DUCK_ID) {
@@ -65,10 +68,6 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     } else {
         dst_1.x = renderer.GetOutputWidth() / 4 - dst_1.w / 2;
         dst_1.y = renderer.GetOutputHeight() / 2;
-    }
-
-    SDL2pp::Rect dst_2;
-    if (duck_ids.second != INVALID_DUCK_ID) {
         dst_2 = duck_data_2.frames[0].rect;
         dst_2.w *= 5;
         dst_2.h *= 5;
@@ -82,9 +81,26 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
             if (event.type == SDL_QUIT) {
                 return false;
             }
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+            }
         }
 
         renderer.Clear();
+
+        if (duck_ids.second == INVALID_DUCK_ID) {
+            dst_1.x = renderer.GetOutputWidth() / 2 - dst_1.w / 2;
+            dst_1.y = renderer.GetOutputHeight() / 2;
+        } else {
+            dst_1.x = renderer.GetOutputWidth() / 4 - dst_1.w / 2;
+            dst_1.y = renderer.GetOutputHeight() / 2;
+            dst_2.x = renderer.GetOutputWidth() / 4 * 3 - dst_2.w / 2;
+            dst_2.y = renderer.GetOutputHeight() / 2;
+        }
 
         renderer.Copy(*duck_texture, duck_data_1.frames[0].rect, dst_1);
         renderer.Copy(info_1, SDL2pp::NullOpt,
@@ -121,8 +137,7 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     return true;
 }
 
-bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                                   RenderableMap& map, Camera& camera) {
+bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<Duck>& ducks = last_snapshot.ducks;
     std::vector<AnimationData> duck_animations;
@@ -150,6 +165,13 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 return false;
+            }
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
             }
         }
 
@@ -196,18 +218,17 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     return true;
 }
 
-bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                                          RenderableMap& map, Camera& camera) {
+bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     if (last_snapshot.game_finished) {
         std::cout << "Game finished" << std::endl;
         if (last_snapshot.ducks.size() == 0) {
-            return end_game_no_winner_screen(map, camera);
+            return end_game_no_winner_screen();
         }
-        return end_game_screen(last_snapshot, map, camera);
+        return end_game_screen(last_snapshot);
     }
 
     if (last_snapshot.show_stats) {
-        return stats_screen(snapshot_q, last_snapshot, map, camera);
+        return stats_screen(snapshot_q, last_snapshot);
     }
 
     while (!snapshot_q.try_pop(last_snapshot)) {
@@ -216,6 +237,14 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot&
             if (event.type == SDL_QUIT) {
                 return false;
             }
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+            }
+
         }
 
         renderer.Clear();
@@ -261,8 +290,7 @@ void ScreenManager::render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
                          rounds_won_texture.GetSize()));
 }
 
-bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                                 RenderableMap& map, Camera& camera) {
+bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
 
@@ -284,6 +312,13 @@ bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_sna
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 return false;
+            }
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
             }
         }
 
@@ -315,7 +350,7 @@ bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_sna
     return true;
 }
 
-bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map, Camera& camera) {
+bool ScreenManager::end_game_screen(Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
     std::vector<Duck> ducks;
@@ -339,12 +374,27 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map,
             renderer,
             primary_font.RenderText_Solid("Press ESC to exit", SDL_Color{255, 255, 255, 255}));
 
+    SDL2pp::Texture play_again_text(
+            renderer,
+            primary_font.RenderText_Solid("Press r to play again", SDL_Color{255, 255, 255, 255}));
+
     while (true) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT ||
-                (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+            if (event.type == SDL_QUIT)
                 return false;
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                    return false;
+                else if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+                else if (event.key.keysym.sym == SDLK_r) {
+                    play_again = true;
+                    return false;
+                }
             }
         }
 
@@ -373,8 +423,15 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map,
                 exit_text, SDL2pp::NullOpt,
                 SDL2pp::Rect(
                         SDL2pp::Point(renderer.GetOutputWidth() / 2 - exit_text.GetSize().x / 2,
-                                      renderer.GetOutputHeight() - exit_text.GetSize().y - 30),
+                                      renderer.GetOutputHeight() - exit_text.GetSize().y - 100),
                         exit_text.GetSize()));
+
+        renderer.Copy(
+                play_again_text, SDL2pp::NullOpt,
+                SDL2pp::Rect(
+                        SDL2pp::Point(renderer.GetOutputWidth() / 2 - play_again_text.GetSize().x / 2,
+                                      renderer.GetOutputHeight() - play_again_text.GetSize().y - 30),
+                        play_again_text.GetSize()));
 
         for (size_t i = 0; i < ducks.size(); ++i) {
             SDL2pp::Rect duck_rect(start_x, start_y + i * (rect_height + 10), rect_width,
@@ -389,7 +446,7 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map,
     return false;
 }
 
-bool ScreenManager::end_game_no_winner_screen(RenderableMap& map, Camera& camera) {
+bool ScreenManager::end_game_no_winner_screen() {
     SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Game terminated with no winner",
                                                                  SDL_Color{255, 255, 255, 255}));
 
@@ -397,15 +454,31 @@ bool ScreenManager::end_game_no_winner_screen(RenderableMap& map, Camera& camera
             renderer,
             primary_font.RenderText_Solid("Press ESC to exit", SDL_Color{255, 255, 255, 255}));
 
+
+    SDL2pp::Texture play_again_text(
+            renderer,
+            primary_font.RenderText_Solid("Press r to play again", SDL_Color{255, 255, 255, 255}));
+
     int screen_width = renderer.GetOutputWidth();
     int screen_height = renderer.GetOutputHeight();
     SDL2pp::Rect background_rect(0, 0, screen_width, screen_height);
     while (true) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT ||
-                (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+            if (event.type == SDL_QUIT)
                 return false;
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                    return false;
+                else if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+                else if (event.key.keysym.sym == SDLK_r) {
+                    play_again = true;
+                    return false;
+                }
             }
         }
 
@@ -428,12 +501,76 @@ bool ScreenManager::end_game_no_winner_screen(RenderableMap& map, Camera& camera
 
         renderer.Copy(exit_text, SDL2pp::NullOpt,
                       SDL2pp::Rect(SDL2pp::Point(screen_width / 2 - exit_text.GetSize().x / 2,
-                                                 screen_height - exit_text.GetSize().y - 30),
+                                                 screen_height - exit_text.GetSize().y - 100),
                                    exit_text.GetSize()));
+
+
+        renderer.Copy(
+                play_again_text, SDL2pp::NullOpt,
+                SDL2pp::Rect(
+                        SDL2pp::Point(renderer.GetOutputWidth() / 2 - play_again_text.GetSize().x / 2,
+                                      renderer.GetOutputHeight() - play_again_text.GetSize().y - 30),
+                        play_again_text.GetSize()));
 
         renderer.Present();
 
         SDL_Delay(RATE);
     }
     return false;
+}
+
+void ScreenManager::server_disconnected_screen() {
+    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Server disconnected",
+                                                                 SDL_Color{255, 255, 255, 255}));
+
+    SDL2pp::Texture exit_text(
+            renderer,
+            primary_font.RenderText_Solid("Press ESC to exit", SDL_Color{255, 255, 255, 255}));
+
+    int screen_width = renderer.GetOutputWidth();
+    int screen_height = renderer.GetOutputHeight();
+    SDL2pp::Rect background_rect(0, 0, screen_width, screen_height);
+    while (true) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT)
+                return;
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                    return;
+                if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+            }
+        }
+
+        screen_width = renderer.GetOutputWidth();
+        screen_height = renderer.GetOutputHeight();
+        background_rect.w = screen_width;
+        background_rect.h = screen_height;
+
+        renderer.Clear();
+        map.render(renderer, camera);
+        renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+        renderer.SetDrawColor(0, 0, 0, 50);
+        renderer.FillRect(background_rect);
+        renderer.SetDrawBlendMode();
+
+        renderer.Copy(info, SDL2pp::NullOpt,
+                      SDL2pp::Rect(SDL2pp::Point(screen_width / 2 - info.GetSize().x / 2,
+                                                 screen_height / 2 - info.GetSize().y / 2),
+                                   info.GetSize()));
+
+        renderer.Copy(exit_text, SDL2pp::NullOpt,
+                      SDL2pp::Rect(SDL2pp::Point(screen_width / 2 - exit_text.GetSize().x / 2,
+                                                 screen_height - exit_text.GetSize().y - 100),
+                                   exit_text.GetSize()));
+
+
+        renderer.Present();
+
+        SDL_Delay(RATE);
+    }
 }

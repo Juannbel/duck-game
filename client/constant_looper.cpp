@@ -48,34 +48,35 @@ ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snaps
         window(WIN_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIN_WIDTH, WIN_HEIGHT,
                SDL_WINDOW_RESIZABLE),
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
-        screen_manager(renderer, this->duck_ids),
         snapshot_q(snapshot_q),
         actions_q(actions_q),
         p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS),
         p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS),
-        map_dto() {}
+        play_again(false),
+        map_dto(),
+        camera(renderer),
+        map(map_dto),
+        screen_manager(window, sound_manager, renderer, camera, map, this->duck_ids, play_again) {}
 
-void ConstantLooper::run() try {
+bool ConstantLooper::run() try {
     TexturesProvider::load_textures(renderer);
     AnimationDataProvider::load_animations_data();
 
     if (!screen_manager.waiting_screen(snapshot_q, last_snapshot))
-        return;
+        return false;
 
     process_snapshot();
 
-    Camera camera(renderer);
+    map.update(map_dto);
 
-    RenderableMap map(map_dto);
-
-    if (!screen_manager.initial_screen(snapshot_q, last_snapshot, map, camera))
-        return;
+    if (!screen_manager.initial_screen(snapshot_q, last_snapshot))
+        return false;
 
     bool keep_running = true;
     if (last_snapshot.game_finished) {
         // partida no iniciada
-        screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
-        return;
+        screen_manager.between_rounds_screen(snapshot_q, last_snapshot);
+        return play_again;
     }
 
     while (keep_running) {
@@ -92,7 +93,7 @@ void ConstantLooper::run() try {
                     actions_q.push({duck_ids.second, Ready});
             }
             keep_running =
-                    screen_manager.between_rounds_screen(snapshot_q, last_snapshot, map, camera);
+                    screen_manager.between_rounds_screen(snapshot_q, last_snapshot);
             if (!keep_running)
                 continue;
             clear_renderables();
@@ -117,8 +118,11 @@ void ConstantLooper::run() try {
 
         sleep_or_catch_up(t1);
     }
+
+    return play_again;
 } catch (const ClosedQueue& e) {
-    // El servidor se desconecto sin enviar ultimas snapshots
+    screen_manager.server_disconnected_screen();
+    return false;
 }
 
 void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
