@@ -10,6 +10,7 @@
 
 GameInfo GamesMonitor::player_create_game(const int id_player, Queue<Snapshot>& player_sender_queue,
                                           const std::vector<std::string>& players_names) {
+    std::lock_guard<std::mutex> lck(m);
     Game* game = create_game(players_names[0], id_player);
     GameInfo game_info = game->add_player(id_player, player_sender_queue, players_names);
     return game_info;
@@ -45,24 +46,17 @@ std::vector<LobbyInfo> GamesMonitor::list_lobbies() {
 }
 
 LobbyInfo GamesMonitor::get_lobby_info(int32_t id_game) {
-    // esto no es atomic, asi que a priori si otro thread modifica el contendor, esto genera UB
-    // -> tomar primero el lock
+    std::lock_guard<std::mutex> lck(m);
     if (map_games.find(id_game) == map_games.end()) {
         return LobbyInfo{};
     }
-    std::lock_guard<std::mutex> lck(m);
     Game* game = map_games[id_game];
     return game->get_info();
 }
 
 Game* GamesMonitor::create_game(const std::string& creator_name, const int id_player) {
-    // race condition
-    // primero el lock, luego crean un game
-    // tranquilamente podrían crear dos juegos con el mismo id
-
-    // podrían haber utilizado smart pointers para evitar new/delete
+    // TODO: podrían haber utilizado smart pointers para evitar new/delete
     Game* game = new Game(id, creator_name, id_player);
-    std::lock_guard<std::mutex> lck(m);
     map_games.emplace(id, game);
     id++;
     return game;
