@@ -45,6 +45,11 @@ private:
 
     bool process_events();
 
+    void update_ducks();
+    void update_boxes();
+    void update_collectables();
+    void update_bullets();
+
     void process_snapshot();
 
     void render(Camera& camera, RenderableMap& map);

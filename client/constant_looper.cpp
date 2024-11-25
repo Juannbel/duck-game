@@ -144,6 +144,13 @@ void ConstantLooper::process_snapshot() {
         map_dto = last_snapshot.maps[0];
     }
 
+    update_ducks();
+    update_boxes();
+    update_collectables();
+    update_bullets();
+}
+
+void ConstantLooper::update_ducks() {
     std::unordered_set<uint8_t> ducks_in_snapshot;
     for (auto& duck: last_snapshot.ducks) {
         ducks_in_snapshot.insert(duck.duck_id);
@@ -152,70 +159,75 @@ void ConstantLooper::process_snapshot() {
                 sound_manager.dead_sound();
             if (duck.gun == ActiveGrenade)
                 sound_manager.active_grenade_sound();
+        } else {
+            auto pair = ducks_renderables.emplace(duck.duck_id, std::make_unique<RenderableDuck>(duck.duck_id));
+            if (!pair.second)
+                // Error al insertar, no hago el update
+                continue;
         }
-        ducks_renderables.try_emplace(duck.duck_id, std::make_unique<RenderableDuck>(duck.duck_id));
         ducks_renderables[duck.duck_id]->update(duck);
     }
 
-    for (auto it = ducks_renderables.begin(); it != ducks_renderables.end();) {
-        if (ducks_in_snapshot.find(it->first) == ducks_in_snapshot.end()) {
-            it = ducks_renderables.erase(it);
-        } else {
-            ++it;
-        }
-    }
+    std::erase_if(ducks_renderables, [&ducks_in_snapshot](const auto& pair) {
+        return ducks_in_snapshot.find(pair.first) == ducks_in_snapshot.end();
+    });
+}
 
+void ConstantLooper::update_boxes() {
     std::unordered_set<uint32_t> boxes_in_snapshot;
     for (const Box& box: last_snapshot.boxes) {
         boxes_in_snapshot.insert(box.box_id);
-        boxes_renderables.try_emplace(box.box_id, std::make_unique<RenderableBox>(box.box_id));
+        if (boxes_renderables.find(box.box_id) == boxes_renderables.end()) {
+            auto pair = boxes_renderables.emplace(box.box_id, std::make_unique<RenderableBox>(box.box_id));
+            if (!pair.second)
+                continue;
+        }
+
         boxes_renderables[box.box_id]->update(box);
     }
 
-    for (auto it = boxes_renderables.begin(); it != boxes_renderables.end();) {
-        if (boxes_in_snapshot.find(it->first) == boxes_in_snapshot.end()) {
-            it = boxes_renderables.erase(it);
-        } else {
-            ++it;
-        }
-    }
+    std::erase_if(boxes_renderables, [&boxes_in_snapshot](const auto& pair) {
+        return boxes_in_snapshot.find(pair.first) == boxes_in_snapshot.end();
+    });
+}
 
+void ConstantLooper::update_collectables() {
     std::unordered_set<uint32_t> collectables_in_snapshot;
     for (const Gun& gun: last_snapshot.guns) {
         collectables_in_snapshot.insert(gun.gun_id);
-        collectables_renderables.try_emplace(
-                gun.gun_id, std::make_unique<RenderableCollectable>(gun.gun_id, gun.type));
+        if (collectables_renderables.find(gun.gun_id) == collectables_renderables.end()) {
+            auto pair = collectables_renderables.emplace(gun.gun_id, std::make_unique<RenderableCollectable>(gun.gun_id, gun.type));
+            if (!pair.second)
+                continue;
+        }
         if (gun.type == ActiveGrenade)
             sound_manager.active_grenade_sound();
         collectables_renderables[gun.gun_id]->update(gun);
     }
 
-    for (auto it = collectables_renderables.begin(); it != collectables_renderables.end();) {
-        if (collectables_in_snapshot.find(it->first) == collectables_in_snapshot.end()) {
-            it = collectables_renderables.erase(it);
-        } else {
-            ++it;
-        }
-    }
+    std::erase_if(collectables_renderables, [&collectables_in_snapshot](const auto& pair) {
+        return collectables_in_snapshot.find(pair.first) == collectables_in_snapshot.end();
+    });
+}
 
+void ConstantLooper::update_bullets() {
     std::unordered_set<uint32_t> bullets_in_snapshot;
     for (const Bullet& bullet: last_snapshot.bullets) {
         bullets_in_snapshot.insert(bullet.bullet_id);
-        if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end())
-            sound_manager.shoot_sound(bullet.type);
+        if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end()) {
+            auto pair = bullets_renderables.emplace(bullet.bullet_id, std::make_unique<RenderableBullet>(bullet.bullet_id, bullet.type));
+            if (!pair.second)
+                continue;
 
-        bullets_renderables.try_emplace(bullet.bullet_id, std::make_unique<RenderableBullet>(
-                                                                  bullet.bullet_id, bullet.type));
+            sound_manager.shoot_sound(bullet.type);
+        }
+
         bullets_renderables[bullet.bullet_id]->update(bullet);
     }
 
-    for (auto it = bullets_renderables.begin(); it != bullets_renderables.end();) {
-        if (bullets_in_snapshot.find(it->first) == bullets_in_snapshot.end()) {
-            it = bullets_renderables.erase(it);
-        } else {
-            ++it;
-        }
-    }
+    std::erase_if(bullets_renderables, [&bullets_in_snapshot](const auto& pair) {
+        return bullets_in_snapshot.find(pair.first) == bullets_in_snapshot.end();
+    });
 }
 
 void ConstantLooper::render(Camera& camera, RenderableMap& map) {

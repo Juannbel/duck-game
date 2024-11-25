@@ -3,7 +3,7 @@
 ## Cómo jugar
 
 ## 1. **Lobby inicial:**
-     
+
 - Al iniciar el juego, se mostrará un lobby con las opciones para Crear o Unirse a una partida.
 
 ![lobby inicial](images/manual-usuario/lobby_inicial.png)
@@ -15,7 +15,7 @@
 ![ingreso partida](images/manual-usuario/ingreso-partida.png)
 
 ### 1.1.1. **Menu de inicio de Partida:**
- 
+
 - Una vez ingresados los datos, se mostrará un menú de inicio de partida, donde se esperará a que se unan los jugadores.
  El creador decide cuando iniciar la partida.
 - Se puede refrescar la lista de jugadores conectados con el botón `Refresh`.
@@ -65,7 +65,7 @@
 ![victoria](images/manual-usuario/victoria.png)
 
 ## 3. **Mecanicas:**
-- Estando en el aire y presionando repetidamente la tecla de salto ( `w` o `↑` ), se puede aletear y caér mas despacio. 
+- Estando en el aire y presionando repetidamente la tecla de salto ( `w` o `↑` ), se puede aletear y caér mas despacio.
 - **CAJAS:** Al disparar una caja, esta se rompe y puede contener equipamiento (armas y armaduras).
 
 ## 4. **Controles:**
@@ -81,9 +81,9 @@
 
 #### Jugador 2:
 - `↑` `↓` `←` `→` para moverse.
-- `i` para recoger/soltar equipamientos (armas y armaduras).
-- `o` para disparar (caso arma), para equipar (caso armadura).
-- `p` para mirar arriba.
+- `k` para recoger/soltar equipamientos (armas y armaduras).
+- `l` para disparar (caso arma), para equipar (caso armadura).
+- `shift derecho` para mirar arriba.
 
 ### Cheats
 #### Jugador 1
@@ -102,11 +102,10 @@
 
 ## 5. **Editor de niveles:**
 
-- Una vez iniciado el editor de niveles, se mostrará este pantalla inicial 
+- Una vez iniciado el editor de niveles, se mostrará este pantalla inicial
 - Se pueden utilizar las opciones para `Guardar`, `Cargar` o `Borrar` el mapa.
 
 ![editor inicial](images/manual-usuario/inicial-editor.png)
 
 - Una vez seleccionado el tipo de bloque, con `Click Izquierdo` se puede colocar y con `Click Derecho` se puede eliminar.
 - Si se desea hacer que el bloque sea transpasable, se puede hacer con `Click Izquierdo` sobre el bloque.
-

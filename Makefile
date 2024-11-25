@@ -55,11 +55,11 @@ install-no-deps: compile-release run-tests
 	@sudo cp ./build/$(NAME)_editor $(BIN_DIR)/$(NAME)_editor
 
 	@echo "Copying data to $(DATA_DIR_INSTALL) and maps to $(MAPS_DIR_INSTALL)"
-	sudo cp -r ./client/data $(DATA_DIR_INSTALL)
-	sudo cp -r ./server/maps $(MAPS_DIR_INSTALL)
+	@sudo cp -r ./client/data $(DATA_DIR_INSTALL)
+	@sudo cp -r ./server/maps $(MAPS_DIR_INSTALL)
 	@echo "Setting permissions for $(WHOAMI) on $(MAPS_DIR_INSTALL)"
-	sudo chown -R $(WHOAMI):$(WHOAMI) $(MAPS_DIR_INSTALL)
-	sudo chmod -R u+rw $(MAPS_DIR_INSTALL)
+	@sudo chown -R $(WHOAMI):$(WHOAMI) $(MAPS_DIR_INSTALL)
+	@sudo chmod -R u+rw $(MAPS_DIR_INSTALL)
 
 	@echo "Copying config file to $(CONFIG_DIR_INSTALL)"
 
@@ -68,15 +68,36 @@ install-no-deps: compile-release run-tests
 install: dependencies install-no-deps
 
 uninstall:
-	@echo "Removing $(NAME)_client, $(NAME)_server and $(NAME)_editor binaries from $(BIN_DIR)"
-	@sudo rm -f $(BIN_DIR)/$(NAME)_client
-	@sudo rm -f $(BIN_DIR)/$(NAME)_server
-	@sudo rm -f $(BIN_DIR)/$(NAME)_editor
-	@echo "Removing config file from $(CONFIG_DIR_INSTALL)"
-	@sudo rm -rf $(CONFIG_DIR_INSTALL)
-	@echo "Removing data from $(DATA_DIR_INSTALL) and maps from $(MAPS_DIR_INSTALL)"
-	@sudo rm -rf $(DATA_DIR_INSTALL)
-	@sudo rm -rf $(MAPS_DIR_INSTALL)
+	@echo "Remove $(NAME)_client, $(NAME)_server, and $(NAME)_editor binaries from $(BIN_DIR)"
+	@read -p "Are you sure you want to remove these binaries? (y/n): " confirm; \
+	if [ "$$confirm" = "y" ]; then \
+		sudo rm -f $(BIN_DIR)/$(NAME)_client; \
+		sudo rm -f $(BIN_DIR)/$(NAME)_server; \
+		sudo rm -f $(BIN_DIR)/$(NAME)_editor; \
+		echo "Binaries removed."; \
+	else \
+		echo "Binaries removal canceled."; \
+	fi
+	@echo ""
+	@echo "Remove config file from $(CONFIG_DIR_INSTALL)"
+	@read -p "Are you sure you want to remove the config file? (y/n): " confirm; \
+	if [ "$$confirm" = "y" ]; then \
+		sudo rm -rf $(CONFIG_DIR_INSTALL); \
+		echo "Config file removed."; \
+	else \
+		echo "Config file removal canceled."; \
+	fi
+	@echo ""
+	@echo "Remove data from $(DATA_DIR_INSTALL) and maps from $(MAPS_DIR_INSTALL)"
+	@read -p "Are you sure you want to remove data and maps? (y/n): " confirm; \
+	if [ "$$confirm" = "y" ]; then \
+		sudo rm -rf $(DATA_DIR_INSTALL); \
+		sudo rm -rf $(MAPS_DIR_INSTALL); \
+		echo "Data and maps removed."; \
+	else \
+		echo "Data and maps removal canceled."; \
+	fi
+	@echo ""
 
 run-tests:
 	./build/$(NAME)_server_tests &
