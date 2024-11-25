@@ -56,7 +56,7 @@ ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snaps
         map_dto(),
         camera(renderer),
         map(map_dto),
-        screen_manager(renderer, camera, map, this->duck_ids, play_again) {}
+        screen_manager(window, sound_manager, renderer, camera, map, this->duck_ids, play_again) {}
 
 bool ConstantLooper::run() try {
     TexturesProvider::load_textures(renderer);

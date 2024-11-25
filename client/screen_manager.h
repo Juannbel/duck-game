@@ -10,13 +10,16 @@
 #include "client/camera.h"
 #include "client/renderables/animation.h"
 #include "client/renderables/map.h"
+#include "client/sound_manager.h"
 #include "common/blocking_queue.h"
 #include "common/snapshot.h"
 
 class ScreenManager {
 private:
-    std::pair<uint8_t, uint8_t>& duck_ids;
+    SDL2pp::Window& window;
+    SoundManager& sound_manager;
     SDL2pp::Renderer& renderer;
+    std::pair<uint8_t, uint8_t>& duck_ids;
     SDL2pp::SDLTTF sdl_ttf;
     SDL2pp::Font primary_font;
     RenderableMap& map;
@@ -35,7 +38,7 @@ private:
 
 
 public:
-    ScreenManager(SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again);
+    ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager, SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again);
 
     bool waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 

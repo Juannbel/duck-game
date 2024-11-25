@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <SDL_keycode.h>
 
 #include "client/animation_data_provider.h"
 #include "client/renderables/map.h"
@@ -22,8 +23,8 @@ static Config& config = Config::get_instance();
 const static int RATE = 1000 / config.get_client_fps();
 
 
-ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again) :
-        duck_ids(duck_ids), renderer(renderer), primary_font(DATA_PATH "/fonts/primary.ttf", 30), map(map), camera(camera), play_again(play_again) {}
+ScreenManager::ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager, SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again) :
+        window(window), sound_manager(sound_manager), renderer(renderer), duck_ids(duck_ids), primary_font(DATA_PATH "/fonts/primary.ttf", 30), map(map), camera(camera), play_again(play_again) {}
 
 bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
@@ -58,6 +59,7 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     uint8_t it_since_change = 0;
 
     SDL2pp::Rect dst_1 = duck_data_1.frames[0].rect;
+    SDL2pp::Rect dst_2;
     dst_1.w *= 5;
     dst_1.h *= 5;
     if (duck_ids.second == INVALID_DUCK_ID) {
@@ -66,10 +68,6 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     } else {
         dst_1.x = renderer.GetOutputWidth() / 4 - dst_1.w / 2;
         dst_1.y = renderer.GetOutputHeight() / 2;
-    }
-
-    SDL2pp::Rect dst_2;
-    if (duck_ids.second != INVALID_DUCK_ID) {
         dst_2 = duck_data_2.frames[0].rect;
         dst_2.w *= 5;
         dst_2.h *= 5;
@@ -83,9 +81,26 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
             if (event.type == SDL_QUIT) {
                 return false;
             }
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+            }
         }
 
         renderer.Clear();
+
+        if (duck_ids.second == INVALID_DUCK_ID) {
+            dst_1.x = renderer.GetOutputWidth() / 2 - dst_1.w / 2;
+            dst_1.y = renderer.GetOutputHeight() / 2;
+        } else {
+            dst_1.x = renderer.GetOutputWidth() / 4 - dst_1.w / 2;
+            dst_1.y = renderer.GetOutputHeight() / 2;
+            dst_2.x = renderer.GetOutputWidth() / 4 * 3 - dst_2.w / 2;
+            dst_2.y = renderer.GetOutputHeight() / 2;
+        }
 
         renderer.Copy(*duck_texture, duck_data_1.frames[0].rect, dst_1);
         renderer.Copy(info_1, SDL2pp::NullOpt,
@@ -151,6 +166,13 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
             if (event.type == SDL_QUIT) {
                 return false;
             }
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+            }
         }
 
         renderer.Clear();
@@ -215,6 +237,14 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot&
             if (event.type == SDL_QUIT) {
                 return false;
             }
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+            }
+
         }
 
         renderer.Clear();
@@ -283,6 +313,13 @@ bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_sna
             if (event.type == SDL_QUIT) {
                 return false;
             }
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+            }
         }
 
         renderer.Clear();
@@ -344,12 +381,20 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot) {
     while (true) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT ||
-                (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+            if (event.type == SDL_QUIT)
                 return false;
-            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_r) {
-                play_again = true;
-                return false;
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                    return false;
+                else if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+                else if (event.key.keysym.sym == SDLK_r) {
+                    play_again = true;
+                    return false;
+                }
             }
         }
 
@@ -408,7 +453,7 @@ bool ScreenManager::end_game_no_winner_screen() {
     SDL2pp::Texture exit_text(
             renderer,
             primary_font.RenderText_Solid("Press ESC to exit", SDL_Color{255, 255, 255, 255}));
-    
+
 
     SDL2pp::Texture play_again_text(
             renderer,
@@ -420,12 +465,20 @@ bool ScreenManager::end_game_no_winner_screen() {
     while (true) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT ||
-                (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+            if (event.type == SDL_QUIT)
                 return false;
-            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_r) {
-                play_again = true;
-                return false;
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                    return false;
+                else if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+                else if (event.key.keysym.sym == SDLK_r) {
+                    play_again = true;
+                    return false;
+                }
             }
         }
 
@@ -450,7 +503,7 @@ bool ScreenManager::end_game_no_winner_screen() {
                       SDL2pp::Rect(SDL2pp::Point(screen_width / 2 - exit_text.GetSize().x / 2,
                                                  screen_height - exit_text.GetSize().y - 100),
                                    exit_text.GetSize()));
-        
+
 
         renderer.Copy(
                 play_again_text, SDL2pp::NullOpt,
@@ -473,16 +526,23 @@ void ScreenManager::server_disconnected_screen() {
     SDL2pp::Texture exit_text(
             renderer,
             primary_font.RenderText_Solid("Press ESC to exit", SDL_Color{255, 255, 255, 255}));
-    
+
     int screen_width = renderer.GetOutputWidth();
     int screen_height = renderer.GetOutputHeight();
     SDL2pp::Rect background_rect(0, 0, screen_width, screen_height);
     while (true) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT ||
-                (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+            if (event.type == SDL_QUIT)
                 return;
+
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                    return;
+                if (event.key.keysym.sym == SDLK_1)
+                    sound_manager.toggle_mute();
+                else if (event.key.keysym.sym == SDLK_2)
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
             }
         }
 
@@ -507,7 +567,7 @@ void ScreenManager::server_disconnected_screen() {
                       SDL2pp::Rect(SDL2pp::Point(screen_width / 2 - exit_text.GetSize().x / 2,
                                                  screen_height - exit_text.GetSize().y - 100),
                                    exit_text.GetSize()));
-        
+
 
         renderer.Present();
 
