@@ -50,6 +50,7 @@ void Camera::update(const Snapshot& snapshot) {
         return;
     }
 
+    // bien hecho el lerp para suavizar el zzom
     current_rect.x += dx * CAMERA_LERP_FACTOR;
     current_rect.y += dy * CAMERA_LERP_FACTOR;
     current_rect.w += dw * CAMERA_LERP_FACTOR;

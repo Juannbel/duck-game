@@ -140,6 +140,7 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 }
 
 void ConstantLooper::process_snapshot() {
+    // ver de splittear en metodos mas chicos
     if (!last_snapshot.maps.empty()) {
         map_dto = last_snapshot.maps[0];
     }
@@ -153,10 +154,11 @@ void ConstantLooper::process_snapshot() {
             if (duck.gun == ActiveGrenade)
                 sound_manager.active_grenade_sound();
         }
+        // si falla try_emplace la proxima linea crashea
         ducks_renderables.try_emplace(duck.duck_id, std::make_unique<RenderableDuck>(duck.duck_id));
         ducks_renderables[duck.duck_id]->update(duck);
     }
-
+    // nit: remove_if
     for (auto it = ducks_renderables.begin(); it != ducks_renderables.end();) {
         if (ducks_in_snapshot.find(it->first) == ducks_in_snapshot.end()) {
             it = ducks_renderables.erase(it);

@@ -35,6 +35,8 @@ void DuckController::update_duck_status() {
 
 void DuckController::handle_key_down(const SDL_Event& event) {
     const SDL_Keycode& key = event.key.keysym.sym;
+    // nit: para emprolijar, se puede usar "table-driven-methods" (un mapa de punteros a funciones, indexado por `key`)
+    // o tmbn un patrón command
     if (key == controls.move_right) {
         if (!moving_right && !(duck.is_running && duck.facing_right)) {
             moving_right = true;

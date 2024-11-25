@@ -13,6 +13,7 @@ private:
     std::mutex m;
     std::list<std::pair<Queue<struct Snapshot>*, int>> list;
 
+    Queue<Snapshot>* find_and_remove(int player_id);
 public:
     QueueListMonitor();
     // Append a new Queue reference to the list.
