@@ -93,7 +93,7 @@ if(DUCK_GAME_CLIENT)
 
     target_include_directories(duck_game_client PRIVATE ${libSDL2pp_SOURCE_DIR} ${Qt${QT_VERSION_MAJOR}_INCLUDE_DIRS})
 
-    target_link_libraries(duck_game_client duck_game_common SDL2pp::SDL2pp yaml-cpp lobby Qt${QT_VERSION_MAJOR}::Widgets)
+    target_link_libraries(duck_game_client duck_game_common SDL2pp::SDL2pp yaml-cpp pre_lobby lobby Qt${QT_VERSION_MAJOR}::Widgets)
 endif()
 
 if(DUCK_GAME_SERVER)

@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include <atomic>
+#include <qapplication.h>
 
 #include "client_protocol.h"
 #include "client_receiver.h"
@@ -15,11 +16,12 @@ private:
     Queue<Snapshot> snapshot_q;
     ClientReceiver receiver;
     ClientSender sender;
+    QApplication& app;
 
 public:
-    Client(const char* hostname, const char* servname);
+    Client(QApplication& app, Socket&& socket);
 
-    void run();
+    bool run();
 
     ~Client();
 };

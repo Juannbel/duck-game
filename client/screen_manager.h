@@ -19,28 +19,31 @@ private:
     SDL2pp::Renderer& renderer;
     SDL2pp::SDLTTF sdl_ttf;
     SDL2pp::Font primary_font;
+    RenderableMap& map;
+    Camera& camera;
+    bool& play_again;
 
     void render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
                           std::shared_ptr<SDL2pp::Texture> ducks_texture,
                           AnimationData& animation_data);
 
-    bool stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot, RenderableMap& map,
-                      Camera& camera);
+    bool stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 
-    bool end_game_screen(Snapshot& last_snapshot, RenderableMap& map, Camera& camera);
+    bool end_game_no_winner_screen();
 
-    bool end_game_no_winner_screen(RenderableMap& map, Camera& camera);
+    bool end_game_screen(Snapshot& last_snapshot);
+
 
 public:
-    ScreenManager(SDL2pp::Renderer& renderer, std::pair<uint8_t, uint8_t>& duck_ids);
+    ScreenManager(SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again);
 
     bool waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 
-    bool initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot, RenderableMap& map,
-                        Camera& camera);
+    bool initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 
-    bool between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                               RenderableMap& map, Camera& camera);
+    bool between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
+
+    void server_disconnected_screen();
 };
 
 #endif

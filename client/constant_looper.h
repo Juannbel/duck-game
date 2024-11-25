@@ -9,6 +9,7 @@
 #include "SDL2pp/Renderer.hh"
 #include "SDL2pp/SDL.hh"
 #include "SDL2pp/Window.hh"
+#include "client/camera.h"
 #include "client/renderables/box.h"
 #include "client/renderables/bullet.h"
 #include "client/renderables/collectable.h"
@@ -29,14 +30,17 @@ private:
     SDL2pp::SDL sdl;
     SDL2pp::Window window;
     SDL2pp::Renderer renderer;
-    ScreenManager screen_manager;
     SoundManager sound_manager;
     Queue<Snapshot>& snapshot_q;
     Queue<action>& actions_q;
     Snapshot last_snapshot;
     DuckController p1_controller;
     DuckController p2_controller;
+    bool play_again;
     MapDto map_dto;
+    Camera camera;
+    RenderableMap map;
+    ScreenManager screen_manager;
 
     std::unordered_map<uint8_t, std::unique_ptr<RenderableDuck>> ducks_renderables;
     std::unordered_map<uint32_t, std::unique_ptr<RenderableBox>> boxes_renderables;
@@ -64,7 +68,7 @@ public:
     ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                    Queue<action>& actions_q);
 
-    void run();
+    bool run();
 
     ~ConstantLooper();
 };

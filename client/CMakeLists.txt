@@ -1,3 +1,4 @@
+add_subdirectory(pre_lobby)
 add_subdirectory(lobby)
 
 file(GLOB CPP_SOURCES

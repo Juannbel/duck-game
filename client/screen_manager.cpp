@@ -21,8 +21,9 @@ static Config& config = Config::get_instance();
 
 const static int RATE = 1000 / config.get_client_fps();
 
-ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, std::pair<uint8_t, uint8_t>& duck_ids):
-        duck_ids(duck_ids), renderer(renderer), primary_font(DATA_PATH "/fonts/primary.ttf", 30) {}
+
+ScreenManager::ScreenManager(SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again) :
+        duck_ids(duck_ids), renderer(renderer), primary_font(DATA_PATH "/fonts/primary.ttf", 30), map(map), camera(camera), play_again(play_again) {}
 
 bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
@@ -121,8 +122,7 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     return true;
 }
 
-bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                                   RenderableMap& map, Camera& camera) {
+bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<Duck>& ducks = last_snapshot.ducks;
     std::vector<AnimationData> duck_animations;
@@ -196,18 +196,17 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     return true;
 }
 
-bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                                          RenderableMap& map, Camera& camera) {
+bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     if (last_snapshot.game_finished) {
         std::cout << "Game finished" << std::endl;
         if (last_snapshot.ducks.size() == 0) {
-            return end_game_no_winner_screen(map, camera);
+            return end_game_no_winner_screen();
         }
-        return end_game_screen(last_snapshot, map, camera);
+        return end_game_screen(last_snapshot);
     }
 
     if (last_snapshot.show_stats) {
-        return stats_screen(snapshot_q, last_snapshot, map, camera);
+        return stats_screen(snapshot_q, last_snapshot);
     }
 
     while (!snapshot_q.try_pop(last_snapshot)) {
@@ -261,8 +260,7 @@ void ScreenManager::render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
                          rounds_won_texture.GetSize()));
 }
 
-bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-                                 RenderableMap& map, Camera& camera) {
+bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
 
@@ -315,7 +313,7 @@ bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_sna
     return true;
 }
 
-bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map, Camera& camera) {
+bool ScreenManager::end_game_screen(Snapshot& last_snapshot) {
     std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
     std::vector<Duck> ducks;
@@ -339,11 +337,18 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map,
             renderer,
             primary_font.RenderText_Solid("Press ESC to exit", SDL_Color{255, 255, 255, 255}));
 
+    SDL2pp::Texture play_again_text(
+            renderer,
+            primary_font.RenderText_Solid("Press r to play again", SDL_Color{255, 255, 255, 255}));
+
     while (true) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT ||
                 (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+                return false;
+            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_r) {
+                play_again = true;
                 return false;
             }
         }
@@ -373,8 +378,15 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map,
                 exit_text, SDL2pp::NullOpt,
                 SDL2pp::Rect(
                         SDL2pp::Point(renderer.GetOutputWidth() / 2 - exit_text.GetSize().x / 2,
-                                      renderer.GetOutputHeight() - exit_text.GetSize().y - 30),
+                                      renderer.GetOutputHeight() - exit_text.GetSize().y - 100),
                         exit_text.GetSize()));
+
+        renderer.Copy(
+                play_again_text, SDL2pp::NullOpt,
+                SDL2pp::Rect(
+                        SDL2pp::Point(renderer.GetOutputWidth() / 2 - play_again_text.GetSize().x / 2,
+                                      renderer.GetOutputHeight() - play_again_text.GetSize().y - 30),
+                        play_again_text.GetSize()));
 
         for (size_t i = 0; i < ducks.size(); ++i) {
             SDL2pp::Rect duck_rect(start_x, start_y + i * (rect_height + 10), rect_width,
@@ -389,13 +401,18 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot, RenderableMap& map,
     return false;
 }
 
-bool ScreenManager::end_game_no_winner_screen(RenderableMap& map, Camera& camera) {
+bool ScreenManager::end_game_no_winner_screen() {
     SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Game terminated with no winner",
                                                                  SDL_Color{255, 255, 255, 255}));
 
     SDL2pp::Texture exit_text(
             renderer,
             primary_font.RenderText_Solid("Press ESC to exit", SDL_Color{255, 255, 255, 255}));
+    
+
+    SDL2pp::Texture play_again_text(
+            renderer,
+            primary_font.RenderText_Solid("Press r to play again", SDL_Color{255, 255, 255, 255}));
 
     int screen_width = renderer.GetOutputWidth();
     int screen_height = renderer.GetOutputHeight();
@@ -405,6 +422,9 @@ bool ScreenManager::end_game_no_winner_screen(RenderableMap& map, Camera& camera
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT ||
                 (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+                return false;
+            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_r) {
+                play_again = true;
                 return false;
             }
         }
@@ -428,12 +448,69 @@ bool ScreenManager::end_game_no_winner_screen(RenderableMap& map, Camera& camera
 
         renderer.Copy(exit_text, SDL2pp::NullOpt,
                       SDL2pp::Rect(SDL2pp::Point(screen_width / 2 - exit_text.GetSize().x / 2,
-                                                 screen_height - exit_text.GetSize().y - 30),
+                                                 screen_height - exit_text.GetSize().y - 100),
                                    exit_text.GetSize()));
+        
+
+        renderer.Copy(
+                play_again_text, SDL2pp::NullOpt,
+                SDL2pp::Rect(
+                        SDL2pp::Point(renderer.GetOutputWidth() / 2 - play_again_text.GetSize().x / 2,
+                                      renderer.GetOutputHeight() - play_again_text.GetSize().y - 30),
+                        play_again_text.GetSize()));
 
         renderer.Present();
 
         SDL_Delay(RATE);
     }
     return false;
+}
+
+void ScreenManager::server_disconnected_screen() {
+    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Server disconnected",
+                                                                 SDL_Color{255, 255, 255, 255}));
+
+    SDL2pp::Texture exit_text(
+            renderer,
+            primary_font.RenderText_Solid("Press ESC to exit", SDL_Color{255, 255, 255, 255}));
+    
+    int screen_width = renderer.GetOutputWidth();
+    int screen_height = renderer.GetOutputHeight();
+    SDL2pp::Rect background_rect(0, 0, screen_width, screen_height);
+    while (true) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT ||
+                (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)) {
+                return;
+            }
+        }
+
+        screen_width = renderer.GetOutputWidth();
+        screen_height = renderer.GetOutputHeight();
+        background_rect.w = screen_width;
+        background_rect.h = screen_height;
+
+        renderer.Clear();
+        map.render(renderer, camera);
+        renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+        renderer.SetDrawColor(0, 0, 0, 50);
+        renderer.FillRect(background_rect);
+        renderer.SetDrawBlendMode();
+
+        renderer.Copy(info, SDL2pp::NullOpt,
+                      SDL2pp::Rect(SDL2pp::Point(screen_width / 2 - info.GetSize().x / 2,
+                                                 screen_height / 2 - info.GetSize().y / 2),
+                                   info.GetSize()));
+
+        renderer.Copy(exit_text, SDL2pp::NullOpt,
+                      SDL2pp::Rect(SDL2pp::Point(screen_width / 2 - exit_text.GetSize().x / 2,
+                                                 screen_height - exit_text.GetSize().y - 100),
+                                   exit_text.GetSize()));
+        
+
+        renderer.Present();
+
+        SDL_Delay(RATE);
+    }
 }
