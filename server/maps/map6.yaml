@@ -185,11 +185,11 @@ blocks:
   - x: 10
     y: 11
     type: 3
-    solid: false
+    solid: true
   - x: 24
     y: 11
     type: 1
-    solid: false
+    solid: true
   - x: 25
     y: 11
     type: 2
