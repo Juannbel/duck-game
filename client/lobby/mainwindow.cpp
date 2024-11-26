@@ -6,10 +6,12 @@
 #include <QResource>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QFontDatabase>
 #include <utility>
 #include <vector>
 
 #include <qinputdialog.h>
+#include <qpainter.h>
 #include <qpushbutton.h>
 #include <qresource.h>
 
@@ -25,6 +27,13 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
         duck_ids(duck_ids),
         ready_to_play(ready_to_play) {
     ui->setupUi(this);
+
+    int id = QFontDatabase::addApplicationFont(DATA_PATH "/fonts/primary.ttf");
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    QFont font(family);
+    font.setPointSize(18);
+
+    this->setFont(font);
 
     ui->stackedWidget->setCurrentIndex(0);
 
@@ -45,11 +54,21 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
     connect(ui->namesBackButton, &QPushButton::clicked, this, &MainWindow::onBackClicked);
 
     ui->player2NameEdit->setVisible(false);
-    connect(ui->singlePlayerRadio, &QRadioButton::toggled, [this](bool checked) {
+    QPixmap single_player(DATA_PATH "/others/single_player.png");
+    QPixmap two_players(DATA_PATH "/others/two_players.png");
+
+    single_player = single_player.scaled(ui->duck->size(), Qt::KeepAspectRatio);
+    two_players = two_players.scaled(ui->duck->size(), Qt::KeepAspectRatio);
+    ui->duck->setPixmap(single_player);
+    ui->duck->setAlignment(Qt::AlignCenter);
+
+
+    connect(ui->singlePlayerRadio, &QRadioButton::toggled, [single_player, two_players, this](bool checked) {
         ui->player2NameEdit->setEnabled(!checked);
         ui->player2NameEdit->setVisible(!checked);
+        const QPixmap &pixmap = checked ? single_player : two_players;
+        ui->duck->setPixmap(pixmap);
     });
-
 
     QPixmap logoPixmap(DATA_PATH "/logo.png");
 
@@ -57,6 +76,15 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
     ui->p1logo->setPixmap(logoPixmap);
     ui->p3logo->setAlignment(Qt::AlignCenter);
     ui->p1logo->setAlignment(Qt::AlignCenter);
+
+    QPixmap bkgnd(DATA_PATH "/backgrounds/lobby.png");
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPainter painter(&bkgnd);
+    painter.fillRect(bkgnd.rect(), QColor(0, 0, 0, 150));
+    painter.end();
+    QPalette palette;
+    palette.setBrush(QPalette::Window, bkgnd);
+    this->setPalette(palette);
 }
 
 void MainWindow::onCreateGameClicked() {
@@ -207,7 +235,7 @@ void MainWindow::onRefreshConnectedClicked() {
     if (lobbies_info[0].game_id != game_id) {
         return;
     }
-    ui->gameIdLabel->setText(QString("Game ID: %1 \nConnected players: %2/%3")
+    ui->gameIdLabel->setText(QString("ID: %1 \nConnected: %2 of %3")
                                      .arg(game_id)
                                      .arg(lobbies_info[0].connected_players)
                                      .arg(MAX_DUCKS));
@@ -228,8 +256,8 @@ void MainWindow::onRefreshLobbiesClicked() {
     ui->lobbiesList->setRowCount(lobbies_info.size());
 
     QStringList headers;
-    headers << "Game ID"
-            << "Players"
+    headers << "ID"
+            << "Connected"
             << "Creator";
     ui->lobbiesList->setHorizontalHeaderLabels(headers);
 
@@ -241,7 +269,7 @@ void MainWindow::onRefreshLobbiesClicked() {
         idItem->setTextAlignment(Qt::AlignCenter);
         ui->lobbiesList->setItem(row, 0, idItem);
 
-        QString playersText = QString("%1/%2").arg(lobby.connected_players).arg(MAX_DUCKS);
+        QString playersText = QString("%1 of %2").arg(lobby.connected_players).arg(MAX_DUCKS);
         QTableWidgetItem* playersItem = new QTableWidgetItem(playersText);
         playersItem->setTextAlignment(Qt::AlignCenter);
         ui->lobbiesList->setItem(row, 1, playersItem);
@@ -252,6 +280,8 @@ void MainWindow::onRefreshLobbiesClicked() {
 
         row++;
     }
+
+    ui->lobbiesList->setColumnWidth(1, 160);
 
     ui->lobbiesList->setAlternatingRowColors(true);
     ui->lobbiesList->setSelectionBehavior(QAbstractItemView::SelectRows);

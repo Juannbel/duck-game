@@ -368,7 +368,7 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot) {
     std::string winner_name = ducks[0].player_name;
     SDL2pp::Texture winner_text(
             renderer,
-            primary_font.RenderText_Solid(winner_name + " wins!", SDL_Color{255, 255, 255, 255}));
+            primary_font.RenderText_Solid("Winner: " + winner_name, SDL_Color{255, 255, 255, 255}));
 
     SDL2pp::Texture exit_text(
             renderer,

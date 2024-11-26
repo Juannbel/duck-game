@@ -1,6 +1,10 @@
 #include "prelobbymainwindow.h"
 #include <iostream>
 #include <QMessageBox>
+#include <QFontDatabase>
+#include <qapplication.h>
+#include <qlineedit.h>
+#include <qpainter.h>
 
 #include "./ui_prelobbymainwindow.h"
 
@@ -13,6 +17,20 @@ PreLobbyMainWindow::PreLobbyMainWindow(QWidget* parent, std::optional<Socket>& s
 
     QPixmap logoPixmap(DATA_PATH "/logo.png");
     ui->logo->setPixmap(logoPixmap);
+
+    QPixmap bkgnd(DATA_PATH "/backgrounds/lobby.png");
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPainter painter(&bkgnd);
+    painter.fillRect(bkgnd.rect(), QColor(0, 0, 0, 150));
+    painter.end();
+    QPalette palette;
+    palette.setBrush(QPalette::Window, bkgnd);
+    this->setPalette(palette);
+
+    int id = QFontDatabase::addApplicationFont(DATA_PATH "/fonts/primary.ttf");
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    QFont font(family);
+    this->setFont(font);
 }
 
 void PreLobbyMainWindow::onConnectClicked() {
