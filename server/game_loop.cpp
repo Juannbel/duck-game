@@ -234,30 +234,30 @@ void GameLoop::sleep_checking(const milliseconds& time) {
 }
 
 void GameLoop::wait_ready() {
-    uint8_t readys = ducks_info.size();
+    uint8_t readys = 0;
     std::map<uint8_t, uint8_t> players_readys;
     for (auto [id, name]: ducks_info) {
         players_readys[id] = 0;
     }
     bool first_ready = true;
-    while (readys) {
+    while (readys < ducks_info.size() && _keep_running) {
         action action{};
         while (actions_queue.try_pop(action)) {
             if (action.command != Ready)
                 continue;
             if (players_readys[action.duck_id] == 0 && first_ready) {
                 players_readys[action.duck_id] = 1;
-                --readys;
+                ++readys;
             }
             if (players_readys[action.duck_id] == 1 && !first_ready) {
                 players_readys[action.duck_id] = 2;
-                --readys;
+                ++readys;
             }
         }
-        if (!readys && first_ready) {
+        if (readys == ducks_info.size() && first_ready) {
             if (!round_number)
                 sleep_checking(milliseconds(3000));
-            readys = game_finished ? 0 : ducks_info.size();
+            readys = 0;
             first_ready = false;
             initialice_new_round();
             initial_snapshot();
