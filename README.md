@@ -4,6 +4,23 @@
   <img src="./client/data/logo.png" alt="Duck game logo" width="400">
 </p>
 
+Trabajo práctico realizado para la materia Taller de Programación (TA045). FIUBA.
+
+**Integrantes**
+
+- [Federico Letier](https://github.com/FedericoLetier)
+- [Juan Pablo Bel](https://github.com/Juannbel)
+- [Facundo Lescano](https://github.com/facundolescano0)
+- [Lautaro Pedrozo](https://github.com/Lautarop03)
+
+**Corrector**
+- [Leonardo Giampieri](https://github.com/leogm99)
+
+<p align="center">
+  <img src="./docs/images/readme/banner.gif" alt="duck game gif" />
+</p>
+
+
 ## Dependencias
 Las dependencias necesarias para instalar y correr el juego son las siguientes:
 - Make
@@ -73,9 +90,8 @@ Con esto se iniciará el servidor del juego en el puerto especificado.
 Para correr un cliente del juego, ejecutar el siguiente comando:
 
 ```bash
-duck_game_client <ip> <puerto>
+duck_game_client
 ```
-Donde `ip` es la dirección IP del servidor y `puerto` es el puerto en el que se está ejecutando el servidor.
 
 En caso de no haber realizado la instalación se debe usar `./build/duck_game_server` y `./build/duck_game_client` en lugar de `duck_game_server` y `duck_game_client`.
 Pues los binarios no se instalan en el PATH del sistema.

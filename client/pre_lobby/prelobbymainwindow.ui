@@ -489,7 +489,7 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>PreLobbyMainWindow</string>
+   <string>Connect to server</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="palette">

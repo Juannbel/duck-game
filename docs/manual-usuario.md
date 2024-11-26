@@ -1,16 +1,36 @@
 # Manual de usuario
 
-## Cómo jugar
+## Servidor
+
+Antes de poder conectar clientes es necesario iniciar un servidor, para esto, una vez instalado el juego, basta con correr el siguiente comando:
+```bash
+duck_game_server <puerto>
+```
+
+Donde `<puerto>` es el puerto donde estará escuchando el servidor
+
+## Clientes
+
+Para iniciar un cliente, se ejecuta el siguiente comando:
+```bash
+duck_game_client
+```
+
+## 1. **Conexión al servidor**
+
+- Al iniciar un cliente se muestra una ventana que permite conectarse al servidor. Para ello, es necesario ingresar la dirección IP del mismo (en el caso de ejecutar en red local, se usaría la IP de la computadora donde se está ejecutando el mismo) y el puerto en el que está escuchando.
+
+![Pre Lobby](images/manual-usuario/pre-lobby.png)
 
 ## 1. **Lobby inicial:**
 
-- Al iniciar el juego, se mostrará un lobby con las opciones para Crear o Unirse a una partida.
+- Una vez conectado al servidor, se mostrará un lobby con las opciones para Crear o Unirse a una partida.
 
 ![lobby inicial](images/manual-usuario/lobby_inicial.png)
 
 ### 1.1. **Crear partida:**
 
-- Al seleccionar la opción de Crear partida, se mostrará un menú para ingresar el nombre de jugadores y la cantidad.
+- Al seleccionar la opción de *Crear partida* (Create Game), se mostrará un menú para seleccionar la cantidad de jugadores que se conectarán en este cliente gráfico, y la opción para ingresar sus nombres de usuario
 
 ![ingreso partida](images/manual-usuario/ingreso-partida.png)
 
@@ -18,27 +38,29 @@
 
 - Una vez ingresados los datos, se mostrará un menú de inicio de partida, donde se esperará a que se unan los jugadores.
  El creador decide cuando iniciar la partida.
-- Se puede refrescar la lista de jugadores conectados con el botón `Refresh`.
+- Se puede ver tanto el ID del juego creado, como la cantidad de jugadores conectados actualmente
+- Se puede refrescar la cantidad de jugadores conectados con el botón *Refresh*.
 
 ![esperando jugadores](images/manual-usuario/lobby-creador.png)
 
 ### 1.2. **Unirse a partida:**
 
-- Al seleccionar la opción de Unirse a partida se listan los juegos disponibles, se selecciona uno y se ingresa el nombre del jugador.
-- Se puede refrescar la lista de lobbys disponibles con el botón `Refresh`.
+- Al seleccionar la opción de *Unirse a partida* (Join Game) se listan los juegos disponibles, se puede seleccionar cualquiera de estos y presionar *Join*.
+- Se puede refrescar la lista de juegos disponibles con el botón *Refresh*.
+- Por cada juego se muestra su ID, la cantidad de jugadores conectados actualmente, y quien es el creador del mismo.
 
 ![listar lobbys](images/manual-usuario/lobby-join.png)
 
 ### 1.2.1. **Ingreso a partida:**
 
-- Una vez elegida la partida deseada se mostrará el menú para ingresar el nombre de jugadores y la cantidad.
+- Una vez elegida la partida, aparecen las mismas opciones que al crear un juego, para seleccionar la cantidad de jugadores a conectarse en el cliente gráfico y se pide sus nombres.
 
-![ingreso partida](images/manual-usuario/ingreso-partida.png)
+![ingreso partida](images/manual-usuario/unirse-partida.png)
 
 ### 1.2.2. **Menu de inicio de Partida:**
 
-- Una vez ingresados a la partida, se mostrará un menú de inicio de partida, donde se esperará a que se unan los jugadores.
-    Se muestra el color y ID del jugador.
+- Una vez ingresados a la partida, se mostrará una pantalla de espera, donde se esperará a que el creador inicie el juego.
+- Se muestra el color y ID del jugador.
 
 ![esperando jugadores](images/manual-usuario/esperando-jugadores.png)
 
@@ -50,23 +72,35 @@
 
 ### 2.1 **Inicio de partida:**
 
-- Una vez iniciada la partida, se mostrará el juego.
+- Una vez iniciada la partida, se muestra que pato fue asignado a cada jugador, y empieza la primera ronda.
 
 ![inicio juego](images/manual-usuario/inicio-juego.png)
 
-- Cada cinco rounds se mostrará un resumen de las puntuaciones de los jugadores.
+- Cada cinco rounds (configurable, ver sección [configuración](#6-configuración)) se mostrará un resumen de las puntuaciones de los jugadores y se verificará si alguno de ellos ganó la partida.
 
 ![Puntuacion](images/manual-usuario/puntuaciones-media.png)
 
 2.2 **Condición de victoria:**
 
-- El jugador que obtenga 10 o mas puntos será el ganador.
+- El jugador que obtenga 10 (nuevamente configurable, ver sección [configuración](#6-configuración)) o mas puntos será el ganador. En caso de empate, se vuelven a jugar 5 rondas hasta que pueda declararse un único ganador.
+- Como la partida se desarrolla en tiradas de 5 rondas, y se busca el ganador unicamente al finalizar estas tiradas, puede pasar que un jugador llegue primero a 10 rondas y otro jugador termine siendo el ganador, 
 
 ![victoria](images/manual-usuario/victoria.png)
 
+- Una vez terminado el juego, con `ESC` puede cerrase el cliente, o puede decidirse volver a jugar presionando la tecla `r`, lo que lleva de nuevo al [lobby](#1-lobby-inicial)
+
 ## 3. **Mecanicas:**
-- Estando en el aire y presionando repetidamente la tecla de salto ( `w` o `↑` ), se puede aletear y caér mas despacio.
-- **CAJAS:** Al disparar una caja, esta se rompe y puede contener equipamiento (armas y armaduras).
+- Estando en el aire y presionando repetidamente la tecla de salto ( `w` o `↑` según el jugador ), se puede aletear y caér mas despacio.
+
+<p align="center">
+  <img src="./images/manual-usuario/aleteando.gif" alt="pato aleteando" />
+</p>
+
+- **CAJAS:** Al disparar a una caja, esta se rompe, puede contener equipamiento (armas y armaduras), **explotar** o estar vacía.
+
+<p align="center">
+  <img src="./images/manual-usuario/cajas.gif" alt="Rompiendo cajas" />
+</p>
 
 ## 4. **Controles:**
 
@@ -108,4 +142,14 @@
 ![editor inicial](images/manual-usuario/inicial-editor.png)
 
 - Una vez seleccionado el tipo de bloque, con `Click Izquierdo` se puede colocar y con `Click Derecho` se puede eliminar.
-- Si se desea hacer que el bloque sea transpasable, se puede hacer con `Click Izquierdo` sobre el bloque.
+- Si se desea hacer que el bloque sea traspasable, se puede hacer con `Click Izquierdo` sobre el bloque (teniendo seleccionado el mismo tipo de bloque colocado actualmente).
+- También es necesario seleccionar los 4 spawns para los patos, spawns para armas, y ubicaciones de cajas
+
+## 6. **Configuración**
+
+Gran parte de la configuración del juego puede modificarse a traves del archivo `config.yaml`, al instalarse el juego, el mismo se ubica en `/etc/duck_game/config.yaml`.
+Algunos de los aspectos que pueden modificarse son:
+- Vida inicial y velocidad del pato
+- Rondas necesarias para ganar el juego
+- Cantidad de rondas entre que se muestran las estadísticas y se busca un ganador
+- Daño, rango, y munición de las armas
