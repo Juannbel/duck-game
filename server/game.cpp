@@ -16,9 +16,12 @@ Game::Game(const int id, const std::string& creator, const int owner_id):
 
 Queue<action>& Game::get_gameloop_queue() { return gameloop_q; }
 
+// RES: De ambos lugares donde se llama a add_player ya se tiene el lock.
 GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
                           const std::vector<std::string>& players_names) {
+
     GameInfo game_info = {INVALID_GAME_ID, INVALID_DUCK_ID, INVALID_DUCK_ID};
+
     if (!open || cant_players + players_names.size() > MAX_DUCKS) {
         return game_info;
     }
