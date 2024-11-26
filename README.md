@@ -1,5 +1,9 @@
 # Duck Game
 
+<p align="center">
+  <img src="./client/data/logo.png" alt="Duck game logo" width="400">
+</p>
+
 ## Dependencias
 Las dependencias necesarias para instalar y correr el juego son las siguientes:
 - Make
