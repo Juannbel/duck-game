@@ -79,6 +79,9 @@ make run-tests
 ```
 
 ## Ejecución
+
+Para información detallada sobre la ejecución y controles del juego, referise al [manual de usuario](./docs/manual-usuario.md)
+
 ### Juego
 Para correr el servidor del juego, ejecutar el siguiente comando:
 
@@ -106,3 +109,10 @@ En el mismo pueden crearse y editar niveles del juego, que luego serán utilizad
 Vale aclarar que los niveles que se utilizan son los que se encuentran en la maquina donde se ejecuta el servidor.
 
 Al igual que con el juego, en caso de no haber realizado la instalación se debe correr `./build/duck_game_editor` en lugar de `duck_game_editor`
+
+## Documentación
+
+Se presentan los siguientes documentos
+- [Manual de usuario](/docs/manual-usuario.md)
+- [Manual de proyecto](/docs/manual-proyecto.md)
+- [Documentación técnica](/docs/documentacion-tecnica.md)

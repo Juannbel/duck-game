@@ -90,7 +90,7 @@ duck_game_client
 - Una vez terminado el juego, con `ESC` puede cerrase el cliente, o puede decidirse volver a jugar presionando la tecla `r`, lo que lleva de nuevo al [lobby](#1-lobby-inicial)
 
 ## 3. **Mecanicas:**
-- Estando en el aire y presionando repetidamente la tecla de salto ( `w` o `↑` según el jugador ), se puede aletear y caér mas despacio.
+- Estando en el aire y presionando repetidamente la tecla de salto ( `w` o `↑` según el jugador ), se puede aletear y caer mas despacio.
 
 <p align="center">
   <img src="./images/manual-usuario/aleteando.gif" alt="pato aleteando" />
