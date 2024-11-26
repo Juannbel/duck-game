@@ -835,7 +835,7 @@
       <widget class="QWidget" name="page_2">
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3" stretch="10,70,15,15">
+         <layout class="QVBoxLayout" name="verticalLayout_3" stretch="8,70,15,15">
           <property name="spacing">
            <number>10</number>
           </property>
@@ -843,7 +843,7 @@
            <number>50</number>
           </property>
           <property name="topMargin">
-           <number>10</number>
+           <number>0</number>
           </property>
           <property name="rightMargin">
            <number>50</number>
@@ -852,7 +852,7 @@
            <number>50</number>
           </property>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="90,15">
             <item>
              <spacer name="horizontalSpacer_2">
               <property name="orientation">
@@ -868,9 +868,15 @@
             </item>
             <item>
              <widget class="QPushButton" name="refreshLobbiesButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="font">
                <font>
-                <pointsize>10</pointsize>
+                <pointsize>11</pointsize>
                </font>
               </property>
               <property name="text">
@@ -971,7 +977,7 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="10,80,10">
+           <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="20,70,20">
             <item>
              <spacer name="horizontalSpacer">
               <property name="orientation">
@@ -1007,16 +1013,55 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="refreshConnectedButton">
-              <property name="font">
-               <font>
-                <pointsize>10</pointsize>
-               </font>
+             <layout class="QVBoxLayout" name="verticalLayout_11" stretch="10,50,10">
+              <property name="spacing">
+               <number>0</number>
               </property>
-              <property name="text">
-               <string>Refresh</string>
-              </property>
-             </widget>
+              <item>
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="refreshConnectedButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Refresh</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
