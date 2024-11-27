@@ -151,6 +151,7 @@ duck_game_editor
 - Una vez seleccionado el tipo de bloque, con `Click Izquierdo` se puede colocar y con `Click Derecho` se puede eliminar.
 - Si se desea hacer que el bloque sea traspasable, se puede hacer con `Click Izquierdo` sobre el bloque (teniendo seleccionado el mismo tipo de bloque colocado actualmente).
 - También es necesario seleccionar los 4 spawns para los patos, spawns para armas, y ubicaciones de cajas
+- Para aumentar el zoom de la grilla hacer `Ctrl + wheel` (ctrl + "ruedita") sobre la misma. 
 
 ## 🔧 **Configuración**
 
