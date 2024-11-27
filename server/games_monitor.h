@@ -15,7 +15,7 @@ class Game;
 class GamesMonitor {
 private:
     std::mutex m;
-    std::map<int, Game*> map_games;
+    std::map<int, std::unique_ptr<Game>> map_games;
     int id = 0;
 
 public:
@@ -27,7 +27,7 @@ public:
 
     void start_game(int id);
 
-    Game* create_game(const std::string& creator_name, int id_player);
+    int create_game(const std::string& creator_name, int id_player);
 
     std::vector<LobbyInfo> list_lobbies();
 
