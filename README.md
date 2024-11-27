@@ -4,7 +4,7 @@
   <img src="./client/data/logo.png" alt="Duck game logo" width="400">
 </p>
 
-Trabajo práctico realizado para la materia Taller de Programación (TA045). FIUBA.
+Juego de disparos multijugador 2D desarrollado como trabajo práctico para Taller de Programación (TA045) en FIUBA.
 
 **Integrantes**
 
@@ -21,7 +21,7 @@ Trabajo práctico realizado para la materia Taller de Programación (TA045). FIU
 </p>
 
 
-## Dependencias
+## ⚡️ Dependencias
 Las dependencias necesarias para instalar y correr el juego son las siguientes:
 - Make
 - CMake
@@ -37,8 +37,8 @@ sudo apt-get install make -y
 make dependencies
 ```
 
-## Instalación
-### Instalación con dependencias (para sistemas basados en Debian)
+## 📦 Instalación
+### Instalación junto con dependencias (Debian/Ubuntu)
 Para instalar el juego estando en una distribución de linux basada en Debian, como Ubuntu, ejecutar el siguiente comando:
 
 ```bash
@@ -47,10 +47,10 @@ make install
 ```
 El target se encargará de instalar las dependencias necesarias para el juego, compilarlo, correr las pruebas y finalmente instalar el juego en el sistema.
 
-### Sin dependencias
+### Instalación en otros sistemas
 Para otros sistemas operativos se puede instalar las dependencias manualmente utilizando el gestor de paquetes correspondiente.
 
-Una vez instaladas las dependencias, puede realizarse la instalación del juego ejecutando el siguiente comando:
+Una vez instaladas las mismas, puede realizarse la instalación del juego ejecutando el siguiente comando:
 
 ```bash
 make install-no-deps
@@ -58,14 +58,17 @@ make install-no-deps
 
 El target se encargará de compilar el juego, correr las pruebas y finalmente instalar el juego en el sistema.
 
-## Desinstalación
-Para desinstalar el juego, ejecutar el siguiente comando:
+## 🗑️ Desinstalación
 
 ```bash
 make uninstall
 ```
 
-## Sin instalación
+## 🚀 Ejecución
+
+  Para información detallada sobre la ejecución y controles del juego, referise al [manual de usuario](./docs/manual-usuario.md)
+
+### Sin instalación
 Para correr el juego sin instalarlo, teniendo las dependencias instaladas, ejecutar el siguiente comando para compilar en modo release:
 
 ```bash
@@ -78,17 +81,12 @@ Luego pueden ejecutarse los tests con el siguiente comando:
 make run-tests
 ```
 
-## Ejecución
-
-Para información detallada sobre la ejecución y controles del juego, referise al [manual de usuario](./docs/manual-usuario.md)
-
 ### Juego
 Para correr el servidor del juego, ejecutar el siguiente comando:
 
 ```bash
 duck_game_server <puerto>
 ```
-Con esto se iniciará el servidor del juego en el puerto especificado.
 
 Para correr un cliente del juego, ejecutar el siguiente comando:
 
@@ -96,21 +94,18 @@ Para correr un cliente del juego, ejecutar el siguiente comando:
 duck_game_client
 ```
 
-En caso de no haber realizado la instalación se debe usar `./build/duck_game_server` y `./build/duck_game_client` en lugar de `duck_game_server` y `duck_game_client`.
-Pues los binarios no se instalan en el PATH del sistema.
+  En caso de no haber realizado la instalación se debe usar `./build/duck_game_server` y `./build/duck_game_client` en lugar de `duck_game_server` y `duck_game_client`.
+  Pues los binarios no se instalan en el PATH del sistema.
 
-### Editor de niveles
+### 🗺️ Editor de niveles
 Para correr el editor de niveles, ejecutar el siguiente comando:
 
 ```bash
 duck_game_editor
 ```
-En el mismo pueden crearse y editar niveles del juego, que luego serán utilizados en las partidas.
-Vale aclarar que los niveles que se utilizan son los que se encuentran en la maquina donde se ejecuta el servidor.
+  Al igual que con el juego, en caso de no haber realizado la instalación se debe correr `./build/duck_game_editor` en lugar de `duck_game_editor`
 
-Al igual que con el juego, en caso de no haber realizado la instalación se debe correr `./build/duck_game_editor` en lugar de `duck_game_editor`
-
-## Documentación
+## 📚 Documentación
 
 Se presentan los siguientes documentos
 - [Manual de usuario](/docs/manual-usuario.md)
