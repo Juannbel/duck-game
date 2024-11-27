@@ -5,7 +5,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        perror("argumentos invalidos");
+        std::cerr << "Argumentos invalidos usar: " << argv[0] << " <puerto>" << std::endl;
         return 1;
     }
 
