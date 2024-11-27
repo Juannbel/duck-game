@@ -18,6 +18,14 @@ blocks:
     y: 4
     type: 10
     solid: true
+  - x: 7
+    y: 7
+    type: 12
+    solid: false
+  - x: 27
+    y: 7
+    type: 12
+    solid: false
   - x: 14
     y: 10
     type: 12
@@ -98,6 +106,14 @@ blocks:
     y: 13
     type: 11
     solid: true
+  - x: 25
+    y: 13
+    type: 12
+    solid: false
+  - x: 26
+    y: 13
+    type: 12
+    solid: false
   - x: 27
     y: 13
     type: 5
