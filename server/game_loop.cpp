@@ -8,7 +8,8 @@
 #include <string>
 #include <thread>
 #include <vector>
-
+#include <iostream>
+#include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/config.h"
 #include "common/map.h"
@@ -48,6 +49,7 @@ std::string get_rand_string(const std::vector<std::string>& v_strings) {
 
 void GameLoop::initialice_new_round() {
     curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
+    std::lock_guard<std::mutex> lock(map_lock);
     game_operator.initialize_game(curr_map, ducks_info);
 }
 
@@ -58,7 +60,6 @@ void GameLoop::run() {
 
     // Tiempo para que los jugadores vean que pato les toco
     sleep_checking(milliseconds(4000));
-
     uint it = its_after_round;
     auto t1 = high_resolution_clock::now();
     initial_snapshot();
@@ -100,6 +101,7 @@ void GameLoop::initial_snapshot() {
 void GameLoop::pop_and_process_all() {
     action action{};
     while (actions_queue.try_pop(action)) {
+        std::lock_guard<std::mutex> lock(map_lock);
         game_operator.process_action(action);
     }
     game_operator.update_game_status();
@@ -191,6 +193,7 @@ uint8_t GameLoop::add_player(const std::string& player_name) {
 }
 
 void GameLoop::delete_duck(const uint8_t duck_id) {
+    std::lock_guard<std::mutex> lock(map_lock);
     game_operator.delete_duck_player(duck_id);
     auto it = std::find_if(ducks_info.begin(), ducks_info.end(),
                            [duck_id](const auto& info) { return info.first == duck_id; });
@@ -206,7 +209,6 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
 
 void GameLoop::stop() {
     _keep_running = false;
-    actions_queue.close();
 }
 
 void GameLoop::notify_not_started() {
@@ -223,7 +225,9 @@ void GameLoop::notify_not_started() {
     push_responce(status);
 }
 
-GameLoop::~GameLoop() {}
+GameLoop::~GameLoop() {
+    actions_queue.close();
+}
 
 void GameLoop::sleep_checking(const milliseconds& time) {
     uint its_to_sleep = time / RATE;
@@ -233,12 +237,17 @@ void GameLoop::sleep_checking(const milliseconds& time) {
     }
 }
 
-void GameLoop::wait_ready() {
-    uint8_t readys = 0;
-    std::map<uint8_t, uint8_t> players_readys;
+void GameLoop::create_new_map(std::map<uint8_t, uint8_t> &players_readys) {
+    std::lock_guard<std::mutex> lock(map_lock);
     for (auto [id, name]: ducks_info) {
         players_readys[id] = 0;
     }
+}
+
+void GameLoop::wait_ready() {
+    uint8_t readys = 0;
+    std::map<uint8_t, uint8_t> players_readys;
+    create_new_map(players_readys);
     bool first_ready = true;
     while (readys < ducks_info.size() && _keep_running) {
         action action{};

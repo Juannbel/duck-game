@@ -36,6 +36,7 @@ private:
     std::vector<std::pair<uint8_t, std::string>> ducks_info;
     bool game_initialized;
     std::vector<int> ducks_id_available;
+    std::mutex map_lock;
 
     void initialice_new_round();
 
@@ -54,6 +55,8 @@ private:
     void check_for_winner(const Snapshot&);
 
     void sleep_checking(const std::chrono::milliseconds& time);
+
+    void create_new_map(std::map<uint8_t, uint8_t> &players_readys);
 
     void wait_ready();
 
