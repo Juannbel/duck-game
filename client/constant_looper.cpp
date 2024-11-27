@@ -92,8 +92,7 @@ bool ConstantLooper::run() try {
                 if (duck_ids.second != INVALID_DUCK_ID)
                     actions_q.push({duck_ids.second, Ready});
             }
-            keep_running =
-                    screen_manager.between_rounds_screen(snapshot_q, last_snapshot);
+            keep_running = screen_manager.between_rounds_screen(snapshot_q, last_snapshot);
             if (!keep_running)
                 continue;
             clear_renderables();
@@ -172,7 +171,8 @@ void ConstantLooper::update_ducks() {
             if (duck.gun == ActiveGrenade)
                 sound_manager.active_grenade_sound();
         } else {
-            auto pair = ducks_renderables.emplace(duck.duck_id, std::make_unique<RenderableDuck>(duck.duck_id));
+            auto pair = ducks_renderables.emplace(duck.duck_id,
+                                                  std::make_unique<RenderableDuck>(duck.duck_id));
             if (!pair.second)
                 // Error al insertar, no hago el update
                 continue;
@@ -190,7 +190,8 @@ void ConstantLooper::update_boxes() {
     for (const Box& box: last_snapshot.boxes) {
         boxes_in_snapshot.insert(box.box_id);
         if (boxes_renderables.find(box.box_id) == boxes_renderables.end()) {
-            auto pair = boxes_renderables.emplace(box.box_id, std::make_unique<RenderableBox>(box.box_id));
+            auto pair = boxes_renderables.emplace(box.box_id,
+                                                  std::make_unique<RenderableBox>(box.box_id));
             if (!pair.second)
                 continue;
         }
@@ -208,7 +209,8 @@ void ConstantLooper::update_collectables() {
     for (const Gun& gun: last_snapshot.guns) {
         collectables_in_snapshot.insert(gun.gun_id);
         if (collectables_renderables.find(gun.gun_id) == collectables_renderables.end()) {
-            auto pair = collectables_renderables.emplace(gun.gun_id, std::make_unique<RenderableCollectable>(gun.gun_id, gun.type));
+            auto pair = collectables_renderables.emplace(
+                    gun.gun_id, std::make_unique<RenderableCollectable>(gun.gun_id, gun.type));
             if (!pair.second)
                 continue;
         }
@@ -227,7 +229,9 @@ void ConstantLooper::update_bullets() {
     for (const Bullet& bullet: last_snapshot.bullets) {
         bullets_in_snapshot.insert(bullet.bullet_id);
         if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end()) {
-            auto pair = bullets_renderables.emplace(bullet.bullet_id, std::make_unique<RenderableBullet>(bullet.bullet_id, bullet.type));
+            auto pair = bullets_renderables.emplace(
+                    bullet.bullet_id,
+                    std::make_unique<RenderableBullet>(bullet.bullet_id, bullet.type));
             if (!pair.second)
                 continue;
 

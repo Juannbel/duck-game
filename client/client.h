@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include <atomic>
+
 #include <qapplication.h>
 
 #include "client_protocol.h"

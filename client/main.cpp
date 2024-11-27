@@ -1,9 +1,11 @@
 #include <cstdlib>
 #include <iostream>
+
 #include <qapplication.h>
 
-#include "client.h"
 #include "pre_lobby/pre_lobby.h"
+
+#include "client.h"
 
 #define ARG_HOSTNAME 1
 #define ARG_SERVNAME 2

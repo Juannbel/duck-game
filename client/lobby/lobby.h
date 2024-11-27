@@ -13,7 +13,8 @@ private:
     MainWindow mainWindow;
 
 public:
-    Lobby(QApplication& app, ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids, bool& ready_to_play):
+    Lobby(QApplication& app, ClientProtocol& protocol, std::pair<uint8_t, uint8_t>& duck_ids,
+          bool& ready_to_play):
             app(app), mainWindow(nullptr, protocol, duck_ids, ready_to_play) {}
 
     void run() {

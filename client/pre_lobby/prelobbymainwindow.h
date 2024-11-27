@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <optional>
+#include <string>
+
 #include "common/socket.h"
 
 QT_BEGIN_NAMESPACE
