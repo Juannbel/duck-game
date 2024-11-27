@@ -1,5 +1,9 @@
 # Duck Game
 
+[![license](https://img.shields.io/badge/license-GPLv3-brightgreen.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![language](https://img.shields.io/badge/language-C++-pink.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.html)
+![os](https://img.shields.io/badge/OS-linux-blue.svg?style=flat-square)
+
 <p align="center">
   <img src="./client/data/logo.png" alt="Duck game logo" width="400">
 </p>
