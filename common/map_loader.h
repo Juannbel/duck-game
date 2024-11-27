@@ -15,7 +15,7 @@ public:
 
     Map load_map(const std::string& path);
 
-    void save_map(const std::string& path, const Map& map);
+    bool save_map(const std::string& path, const Map& map);
 };
 
 #endif  // YAML_H

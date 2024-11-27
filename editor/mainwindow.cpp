@@ -487,7 +487,14 @@ void MainWindow::on_saveMapButton_clicked() {
 
     QString filePath = MAPS_PATH + static_cast<QString>("/") + fileName;
 
-    loader.save_map(filePath.toStdString(), mapToSave);
+    bool saved = loader.save_map(filePath.toStdString(), mapToSave);
+
+    if(!saved){
+        QMessageBox::warning(this, "Error", "The map could not be saved.");
+        return;
+    }
+    
+    QMessageBox::information(this, "Success", "Map saved successfully.");
 }
 
 

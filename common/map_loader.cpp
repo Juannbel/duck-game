@@ -64,7 +64,7 @@ Map MapLoader::load_map(const std::string& path) {
     return map;
 }
 
-void MapLoader::save_map(const std::string& path, const Map& map) {
+bool MapLoader::save_map(const std::string& path, const Map& map) {
     const MapDto& map_dto = map.map_dto;
 
     YAML::Node root;
@@ -114,6 +114,13 @@ void MapLoader::save_map(const std::string& path, const Map& map) {
     }
 
     std::ofstream file(path);
+    if (!file.is_open()) {
+        return false;
+    }
     file << root;
+    if (file.fail()){
+        return false;
+    }
     file.close();
+    return true;
 }
