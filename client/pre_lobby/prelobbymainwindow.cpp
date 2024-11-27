@@ -40,6 +40,8 @@ PreLobbyMainWindow::PreLobbyMainWindow(QWidget* parent, std::optional<Socket>& s
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     QFont font(family);
     this->setFont(font);
+
+    ui->connect_to_server_button->setFocus();
 }
 
 void PreLobbyMainWindow::onConnectClicked() {
