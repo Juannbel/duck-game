@@ -55,3 +55,56 @@ Se muestra la comunicación entre el servidor y el cliente, donde el cliente env
 Toda la comunicacion se realiza mediante socket previamente serializada/deserializada por el protocolo.
 
 ![comunicacion](images/doc-tecnica/comunicacion-server-cliente.png)
+
+## Tipos de mensajes | Protocolo
+
+---
+
+### Protocolo del servidor
+
+#### Envio de Snapshots
+El servidor envía información sobre el estado del juego en formato Snapshot. Esto incluye listas de jugadores, armas, balas, cajas y mapas. Cada tipo de dato es serializado.
+- Método: send_snapshot(Snapshot& snapshot)
+- Datos enviados:
+
+  - `round_finished` (bool): Indica si la ronda ha terminado.
+  - `show_stats` (bool): Indica si se deben mostrar estadísticas.
+  - `game_finished` (bool): Indica si el juego ha finalizado.
+  - Listas serializadas:
+    - `ducks` (posición y estado actual de cada duck)
+    - `guns` (armas en el mapa)
+    - `bullets` (balas activas)
+    - `boxes` (cajas disponibles)
+    - `maps` (información del mapa)
+- Serialización: Cada atributo dentro de los objetos en las listas es serializado utilizando funciones como `htons` y `htonl`.
+
+#### Otros Métodos del Servidor
+- Enviar Información de Lobbies: `send_lobbies_info(std::vector<LobbyInfo>& lobbies)`
+- Enviar Información del Juego: `send_game_info(GameInfo game_info)`
+- Enviar Opciones del jugador: `send_option(int32_t option)`
+- Terminar Comunicación: `shutdown()`
+
+---
+
+### Protocolo del cliente
+
+#### Recepción de Snapshots
+Los datos recibidos se deserializan utilizando las funciones `ntohs` y `ntohl`.
+- Método: `recv_snapshot()`
+
+#### Envío de Acciones
+El cliente envía las acciones realizadas por el jugador al servidor en estructuras `action`. Estas acciones representan comandos específicos del jugador, como moverse, disparar o interactuar con armaduras/armas.
+- Método: `void send_player_action(const action& action);`
+
+- Datos enviados:
+  - Estructura `action`, que contiene:
+    - `uint8_t duck_id`: Identificador de jugador que ejecuta la acción.
+    - `enum Command`: Comando que el jugador desea ejecutar.
+
+#### Otros Métodos del Cliente
+- Enviar Opciones: `send_option(int32_t option)`
+- Recibir Opciones: `recv_option()`
+- Recibir Información de Lobbies: `recv_lobbies_info()`
+- Recibir Información del Juego: `recv_game_info()`
+- Enviar Cadenas: `send_string(const std::string& str)`
+- Terminar Comunicación: `shutdown()`

@@ -1,6 +1,31 @@
 # Duck Game
 
-## Dependencias
+[![license](https://img.shields.io/badge/license-GPLv3-brightgreen.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![language](https://img.shields.io/badge/language-C++-pink.svg?style=flat-square)](https://cplusplus.com/)
+![os](https://img.shields.io/badge/OS-linux-blue.svg?style=flat-square)
+
+<p align="center">
+  <img src="./client/data/logo.png" alt="Duck game logo" width="400">
+</p>
+
+Juego de disparos multijugador 2D desarrollado como trabajo práctico para Taller de Programación (TA045) en FIUBA.
+
+**Integrantes**
+
+- [Federico Letier](https://github.com/FedericoLetier)
+- [Juan Pablo Bel](https://github.com/Juannbel)
+- [Facundo Lescano](https://github.com/facundolescano0)
+- [Lautaro Pedrozo](https://github.com/Lautarop03)
+
+**Corrector**
+- [Leonardo Giampieri](https://github.com/leogm99)
+
+<p align="center">
+  <img src="./docs/images/readme/banner.gif" alt="duck game gif" />
+</p>
+
+
+## ⚡️ Dependencias
 Las dependencias necesarias para instalar y correr el juego son las siguientes:
 - Make
 - CMake
@@ -16,8 +41,8 @@ sudo apt-get install make -y
 make dependencies
 ```
 
-## Instalación
-### Instalación con dependencias (para sistemas basados en Debian)
+## 📦 Instalación
+### Instalación junto con dependencias (Debian/Ubuntu)
 Para instalar el juego estando en una distribución de linux basada en Debian, como Ubuntu, ejecutar el siguiente comando:
 
 ```bash
@@ -26,10 +51,10 @@ make install
 ```
 El target se encargará de instalar las dependencias necesarias para el juego, compilarlo, correr las pruebas y finalmente instalar el juego en el sistema.
 
-### Sin dependencias
+### Instalación en otros sistemas
 Para otros sistemas operativos se puede instalar las dependencias manualmente utilizando el gestor de paquetes correspondiente.
 
-Una vez instaladas las dependencias, puede realizarse la instalación del juego ejecutando el siguiente comando:
+Una vez instaladas las mismas, puede realizarse la instalación del juego ejecutando el siguiente comando:
 
 ```bash
 make install-no-deps
@@ -37,14 +62,17 @@ make install-no-deps
 
 El target se encargará de compilar el juego, correr las pruebas y finalmente instalar el juego en el sistema.
 
-## Desinstalación
-Para desinstalar el juego, ejecutar el siguiente comando:
+## 🗑️ Desinstalación
 
 ```bash
 make uninstall
 ```
 
-## Sin instalación
+## 🚀 Ejecución
+
+  Para información detallada sobre la ejecución y controles del juego, referise al [manual de usuario](./docs/manual-usuario.md)
+
+### Sin instalación
 Para correr el juego sin instalarlo, teniendo las dependencias instaladas, ejecutar el siguiente comando para compilar en modo release:
 
 ```bash
@@ -57,32 +85,33 @@ Luego pueden ejecutarse los tests con el siguiente comando:
 make run-tests
 ```
 
-## Ejecución
 ### Juego
 Para correr el servidor del juego, ejecutar el siguiente comando:
 
 ```bash
 duck_game_server <puerto>
 ```
-Con esto se iniciará el servidor del juego en el puerto especificado.
 
 Para correr un cliente del juego, ejecutar el siguiente comando:
 
 ```bash
-duck_game_client <ip> <puerto>
+duck_game_client
 ```
-Donde `ip` es la dirección IP del servidor y `puerto` es el puerto en el que se está ejecutando el servidor.
 
-En caso de no haber realizado la instalación se debe usar `./build/duck_game_server` y `./build/duck_game_client` en lugar de `duck_game_server` y `duck_game_client`.
-Pues los binarios no se instalan en el PATH del sistema.
+  En caso de no haber realizado la instalación se debe usar `./build/duck_game_server` y `./build/duck_game_client` en lugar de `duck_game_server` y `duck_game_client`.
+  Pues los binarios no se instalan en el PATH del sistema.
 
-### Editor de niveles
+### 🗺️ Editor de niveles
 Para correr el editor de niveles, ejecutar el siguiente comando:
 
 ```bash
 duck_game_editor
 ```
-En el mismo pueden crearse y editar niveles del juego, que luego serán utilizados en las partidas.
-Vale aclarar que los niveles que se utilizan son los que se encuentran en la maquina donde se ejecuta el servidor.
+  Al igual que con el juego, en caso de no haber realizado la instalación se debe correr `./build/duck_game_editor` en lugar de `duck_game_editor`
 
-Al igual que con el juego, en caso de no haber realizado la instalación se debe correr `./build/duck_game_editor` en lugar de `duck_game_editor`
+## 📚 Documentación
+
+Se presentan los siguientes documentos
+- [Manual de usuario](/docs/manual-usuario.md)
+- [Manual de proyecto](/docs/manual-proyecto.md)
+- [Documentación técnica](/docs/documentacion-tecnica.md)

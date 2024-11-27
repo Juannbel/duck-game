@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <QFontDatabase>
 
 #include "../common/map_loader.h"
 
@@ -17,6 +18,12 @@ MainWindow::MainWindow(QWidget* parent):
     map.map_dto.theme = 0;
     initialize_blocks();
 
+    int id = QFontDatabase::addApplicationFont(DATA_PATH "/fonts/primary.ttf");
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    QFont font(family);
+    font.setPointSize(12);
+
+    this->setFont(font);
     grassTextures.resize(MAP_THEMES * (static_cast<int>(HalfFloor)));
 
     loadTiles();
@@ -85,11 +92,11 @@ void MainWindow::loadBoxTexture() {
 }
 
 std::unordered_map<BlockType, QString> MainWindow::blockToString = {
-        {Empty, "empty"},          {Floor1, "floor_1"},       {Floor2, "floor_2"},
-        {Floor3, "floor_3"},       {Base1, "base_1"},         {Base2, "base_2"},
-        {Base3, "base_3"},         {Platform1, "platform_1"}, {Platform2, "platform_2"},
-        {Platform3, "platform_3"}, {Platform4, "platform_4"}, {Wall, "wall"},
-        {HalfFloor, "half_floor"}};
+        {Empty, "empty"},          {Floor1, "floor 1"},       {Floor2, "floor 2"},
+        {Floor3, "floor 3"},       {Base1, "base 1"},         {Base2, "base 2"},
+        {Base3, "base 3"},         {Platform1, "platform 1"}, {Platform2, "platform 2"},
+        {Platform3, "platform 3"}, {Platform4, "platform 4"}, {Wall, "wall"},
+        {HalfFloor, "half floor"}};
 
 void MainWindow::updateThemeSelected() {
 
@@ -105,9 +112,9 @@ void MainWindow::updateItemSelector() {
 
     updateTilesItems();
 
-    ui->itemSelector->addItem(QIcon(duckTexture), "duck_spawn");
-    ui->itemSelector->addItem(QIcon(gunTexture), "collectable_spawn");
-    ui->itemSelector->addItem(QIcon(boxTexture), "collectable_box");
+    ui->itemSelector->addItem(QIcon(duckTexture), "Duck spawn");
+    ui->itemSelector->addItem(QIcon(gunTexture), "Collectable spawn");
+    ui->itemSelector->addItem(QIcon(boxTexture), "Box");
 }
 
 void MainWindow::updateTilesItems() {
@@ -480,7 +487,14 @@ void MainWindow::on_saveMapButton_clicked() {
 
     QString filePath = MAPS_PATH + static_cast<QString>("/") + fileName;
 
-    loader.save_map(filePath.toStdString(), mapToSave);
+    bool saved = loader.save_map(filePath.toStdString(), mapToSave);
+
+    if(!saved){
+        QMessageBox::warning(this, "Error", "The map could not be saved.");
+        return;
+    }
+    
+    QMessageBox::information(this, "Success", "Map saved successfully.");
 }
 
 

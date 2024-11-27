@@ -18,28 +18,26 @@ DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapsh
         update_duck_status();
 
     key_down_handlers = {
-        {controls.move_right, std::bind(&DuckController::handle_move_right, this)},
-        {controls.move_left, std::bind(&DuckController::handle_move_left, this)},
-        {controls.jump, std::bind(&DuckController::handle_jump, this)},
-        {controls.lay_down, std::bind(&DuckController::handle_lay_down, this)},
-        {controls.pick_up, std::bind(&DuckController::handle_pick_up, this)},
-        {controls.shoot, std::bind(&DuckController::handle_shoot, this)},
-        {controls.look_up, std::bind(&DuckController::handle_look_up, this)},
-        {controls.fly_mode, std::bind(&DuckController::handle_fly_mode, this)},
-        {controls.infinite_ammo, std::bind(&DuckController::handle_infinite_ammo, this)},
-        {controls.kill_everyone, std::bind(&DuckController::handle_kill_everyone, this)},
-        {controls.infinite_hp, std::bind(&DuckController::handle_infinite_hp, this)},
-        {controls.get_death_laser, std::bind(&DuckController::handle_get_death_laser, this)}
-    };
+            {controls.move_right, std::bind(&DuckController::handle_move_right, this)},
+            {controls.move_left, std::bind(&DuckController::handle_move_left, this)},
+            {controls.jump, std::bind(&DuckController::handle_jump, this)},
+            {controls.lay_down, std::bind(&DuckController::handle_lay_down, this)},
+            {controls.pick_up, std::bind(&DuckController::handle_pick_up, this)},
+            {controls.shoot, std::bind(&DuckController::handle_shoot, this)},
+            {controls.look_up, std::bind(&DuckController::handle_look_up, this)},
+            {controls.fly_mode, std::bind(&DuckController::handle_fly_mode, this)},
+            {controls.infinite_ammo, std::bind(&DuckController::handle_infinite_ammo, this)},
+            {controls.kill_everyone, std::bind(&DuckController::handle_kill_everyone, this)},
+            {controls.infinite_hp, std::bind(&DuckController::handle_infinite_hp, this)},
+            {controls.get_death_laser, std::bind(&DuckController::handle_get_death_laser, this)}};
 
     key_up_handlers = {
-        {controls.move_right, std::bind(&DuckController::handle_stop_move_right, this)},
-        {controls.move_left, std::bind(&DuckController::handle_stop_move_left, this)},
-        {controls.jump, std::bind(&DuckController::handle_stop_jump, this)},
-        {controls.lay_down, std::bind(&DuckController::handle_stop_lay_down, this)},
-        {controls.shoot, std::bind(&DuckController::handle_stop_shoot, this)},
-        {controls.look_up, std::bind(&DuckController::handle_stop_look_up, this)}
-    };
+            {controls.move_right, std::bind(&DuckController::handle_stop_move_right, this)},
+            {controls.move_left, std::bind(&DuckController::handle_stop_move_left, this)},
+            {controls.jump, std::bind(&DuckController::handle_stop_jump, this)},
+            {controls.lay_down, std::bind(&DuckController::handle_stop_lay_down, this)},
+            {controls.shoot, std::bind(&DuckController::handle_stop_shoot, this)},
+            {controls.look_up, std::bind(&DuckController::handle_stop_look_up, this)}};
 }
 
 void DuckController::process_event(const SDL_Event& event) {
@@ -104,13 +102,9 @@ void DuckController::handle_move_left() {
     }
 }
 
-void DuckController::handle_jump() {
-    actions_q.push({duck_id, Jump});
-}
+void DuckController::handle_jump() { actions_q.push({duck_id, Jump}); }
 
-void DuckController::handle_lay_down() {
-    actions_q.push({duck_id, LayDown});
-}
+void DuckController::handle_lay_down() { actions_q.push({duck_id, LayDown}); }
 
 void DuckController::handle_shoot() {
     if (!duck.is_shooting)
@@ -122,29 +116,17 @@ void DuckController::handle_look_up() {
         actions_q.push({duck_id, StartLookup});
 }
 
-void DuckController::handle_pick_up() {
-    actions_q.push({duck_id, PickUp});
-}
+void DuckController::handle_pick_up() { actions_q.push({duck_id, PickUp}); }
 
-void DuckController::handle_fly_mode() {
-    actions_q.push({duck_id, FlyMode});
-}
+void DuckController::handle_fly_mode() { actions_q.push({duck_id, FlyMode}); }
 
-void DuckController::handle_infinite_ammo() {
-    actions_q.push({duck_id, InfiniteAmmo});
-}
+void DuckController::handle_infinite_ammo() { actions_q.push({duck_id, InfiniteAmmo}); }
 
-void DuckController::handle_kill_everyone() {
-    actions_q.push({duck_id, KillEveryone});
-}
+void DuckController::handle_kill_everyone() { actions_q.push({duck_id, KillEveryone}); }
 
-void DuckController::handle_infinite_hp() {
-    actions_q.push({duck_id, InfiniteHP});
-}
+void DuckController::handle_infinite_hp() { actions_q.push({duck_id, InfiniteHP}); }
 
-void DuckController::handle_get_death_laser() {
-    actions_q.push({duck_id, GetDeathLaser});
-}
+void DuckController::handle_get_death_laser() { actions_q.push({duck_id, GetDeathLaser}); }
 
 // Handlers para key up
 
@@ -170,18 +152,10 @@ void DuckController::handle_stop_move_left() {
     }
 }
 
-void DuckController::handle_stop_jump() {
-    actions_q.push({duck_id, StopJump});
-}
+void DuckController::handle_stop_jump() { actions_q.push({duck_id, StopJump}); }
 
-void DuckController::handle_stop_lay_down() {
-    actions_q.push({duck_id, StandUp});
-}
+void DuckController::handle_stop_lay_down() { actions_q.push({duck_id, StandUp}); }
 
-void DuckController::handle_stop_shoot() {
-    actions_q.push({duck_id, StopShooting});
-}
+void DuckController::handle_stop_shoot() { actions_q.push({duck_id, StopShooting}); }
 
-void DuckController::handle_stop_look_up() {
-    actions_q.push({duck_id, StopLookup});
-}
+void DuckController::handle_stop_look_up() { actions_q.push({duck_id, StopLookup}); }

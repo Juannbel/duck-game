@@ -2,11 +2,11 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QFontDatabase>
 #include <QMessageBox>
 #include <QResource>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <QFontDatabase>
 #include <utility>
 #include <vector>
 
@@ -63,12 +63,13 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
     ui->duck->setAlignment(Qt::AlignCenter);
 
 
-    connect(ui->singlePlayerRadio, &QRadioButton::toggled, [single_player, two_players, this](bool checked) {
-        ui->player2NameEdit->setEnabled(!checked);
-        ui->player2NameEdit->setVisible(!checked);
-        const QPixmap &pixmap = checked ? single_player : two_players;
-        ui->duck->setPixmap(pixmap);
-    });
+    connect(ui->singlePlayerRadio, &QRadioButton::toggled,
+            [single_player, two_players, this](bool checked) {
+                ui->player2NameEdit->setEnabled(!checked);
+                ui->player2NameEdit->setVisible(!checked);
+                const QPixmap& pixmap = checked ? single_player : two_players;
+                ui->duck->setPixmap(pixmap);
+            });
 
     QPixmap logoPixmap(DATA_PATH "/logo.png");
 

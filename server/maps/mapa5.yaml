@@ -5,23 +5,23 @@ blocks:
   - x: 8
     y: 3
     type: 7
-    solid: true
+    solid: false
   - x: 9
     y: 3
     type: 8
-    solid: true
+    solid: false
   - x: 10
     y: 3
     type: 8
-    solid: true
+    solid: false
   - x: 11
     y: 3
     type: 8
-    solid: true
+    solid: false
   - x: 12
     y: 3
     type: 8
-    solid: true
+    solid: false
   - x: 13
     y: 3
     type: 8
@@ -61,23 +61,23 @@ blocks:
   - x: 22
     y: 3
     type: 8
-    solid: true
+    solid: false
   - x: 23
     y: 3
     type: 8
-    solid: true
+    solid: false
   - x: 24
     y: 3
     type: 8
-    solid: true
+    solid: false
   - x: 25
     y: 3
     type: 8
-    solid: true
+    solid: false
   - x: 26
     y: 3
     type: 9
-    solid: true
+    solid: false
   - x: 2
     y: 6
     type: 12

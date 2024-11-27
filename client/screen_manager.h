@@ -38,7 +38,9 @@ private:
 
 
 public:
-    ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager, SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again);
+    ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager, SDL2pp::Renderer& renderer,
+                  Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids,
+                  bool& play_again);
 
     bool waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 

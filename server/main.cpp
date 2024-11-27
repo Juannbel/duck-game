@@ -5,7 +5,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        perror("argumentos invalidos");
+        std::cerr << "Bad call. Usage:  " << argv[0] << " <port>" << std::endl;
         return 1;
     }
 
