@@ -8,7 +8,6 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include <iostream>
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/config.h"
