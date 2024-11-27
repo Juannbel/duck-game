@@ -35,6 +35,10 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
 
     this->setFont(font);
 
+    QPalette central_palette = ui->centralwidget->palette();
+    central_palette.setColor(ui->centralwidget->foregroundRole(), Qt::white);
+    ui->centralwidget->setPalette(central_palette);
+
     ui->stackedWidget->setCurrentIndex(0);
 
     connect(ui->createGameButton, &QPushButton::clicked, this, &MainWindow::onCreateGameClicked);
