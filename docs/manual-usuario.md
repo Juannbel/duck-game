@@ -112,7 +112,7 @@ duck_game_client
 ## 🔫 **Armas**
 
 Las armas pueden aparecer en spawn points, o dentro de cajas. Se encuentran inicialmente cargadas, al quedarse sin municiones, desaparecen automáticamente.
-Todas las armas pueden tomarse y soltarse con la tecla `c` (jugador 1) o `k` (jugador 2), y dispararse con la tecla `v` (jugador 1) o `l` (jugador 2). 
+Todas las armas pueden tomarse y soltarse con la tecla `c` (jugador 1) o `k` (jugador 2), y dispararse con la tecla `v` (jugador 1) o `l` (jugador 2).
 
 El efecto que resulta de disparar depende del arma equipada, generalmente se dispara una o varias balas que puede dañar a los otros jugadores (o a uno mismo).
 
@@ -195,6 +195,11 @@ duck_game_editor
 - Si se desea hacer que el bloque sea traspasable, se puede hacer con `Click Izquierdo` sobre el bloque (teniendo seleccionado el mismo tipo de bloque colocado actualmente).
 - También es necesario seleccionar los 4 spawns para los patos, spawns para armas, y ubicaciones de cajas
 - Para aumentar el zoom de la grilla hacer `Ctrl + wheel` (ctrl + "ruedita") sobre la misma.
+
+Una vez terminado el mapa, se puede guardar con el botón `Save map` (guardar mapa), en ese momento se pedirá un nombre para el mapa, y al confirmar se mostrará un mensaje indicando si el mapa se guardó correctamente o no.
+En caso de estar editando un mapa existente, si al guardarlo se elige el mismo nombre, se sobreescribirá el mapa existente, en caso contrario se creará un nuevo mapa con el nombre ingresado y el original no se verá afectado.
+
+Durante una partida, los mapas se iran eligiendo de forma aleatoria en cada ronda.
 
 ## 🔧 **Configuración**
 
