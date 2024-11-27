@@ -41,6 +41,7 @@ private:
     void fly_mode();
     void equip_armor();
     void equip_helmet();
+    bool fall_from_platform();
     float calculate_move_y_jumping();
     float calculate_move_y_flying();
     void knockback();
