@@ -5,7 +5,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        std::cerr << "Argumentos invalidos usar: " << argv[0] << " <puerto>" << std::endl;
+        std::cerr << "Bad call. Usage:  " << argv[0] << " <port>" << std::endl;
         return 1;
     }
 
