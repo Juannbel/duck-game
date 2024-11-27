@@ -7,7 +7,11 @@
 #include <SDL_blendmode.h>
 
 #include "client/camera.h"
+#include "common/config.h"
 
+static Config& conf = Config::get_instance();
+
+const static uint8_t NON_SOLID_OPACITY = conf.get_non_solid_opacity();
 class RenderableBlock {
 private:
     SDL2pp::Rect src_rect;
@@ -29,13 +33,13 @@ public:
         camera.transform_rect(d_rect);
 
         if (!solid) {
-            texture->SetAlphaMod(170);
+            texture->SetAlphaMod(NON_SOLID_OPACITY);
         }
 
         renderer.Copy(*texture, src_rect, d_rect);
 
         if (!solid) {
-            texture->SetAlphaMod(255);
+            texture->SetAlphaMod();
         }
 
     }
