@@ -93,6 +93,7 @@ uint32_t CollectablesManager::add_gun(Gun& gun) {
         gun.gun_id = ++collectable_id;
     }
     new_gun(gun);
+    guns[collectable_id]->drop_gun(gun.x, gun.y);
     return collectable_id;
 }
 
@@ -116,7 +117,7 @@ void CollectablesManager::drop_gun(std::shared_ptr<GunEntity> gun, const Rectang
         return;
     Gun gun_info = gun->get_gun_info();
     float new_x = duck_hitbox.coords.x;
-    float new_y = duck_hitbox.coords.y + duck_hitbox.height;
+    float new_y = duck_hitbox.coords.y + duck_hitbox.height / 2;
     gun->drop_gun(new_x, new_y);
     picked_up_guns.erase(gun_info.gun_id);
     if (gun_info.type == None) {
