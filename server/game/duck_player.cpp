@@ -153,7 +153,7 @@ Collision DuckPlayer::normal_duck_move() {
     }
     if (cheats_on.flying) {
         new_y += calculate_move_y_flying();
-        if (!collisions.out_of_map(new_x, new_y) && new_y > -100) {
+        if (!collisions.out_of_background(new_x, new_y)) {
             hitbox.coords = {new_x, new_y};
             status.x = static_cast<int16_t>(hitbox.coords.x);
             status.y = static_cast<int16_t>(hitbox.coords.y);

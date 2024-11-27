@@ -7,7 +7,7 @@
 
 const int16_t NEAR_CELLS = 4;
 const float MAP_EDGE_Y = 100;
-const float MAP_EDGE_X = 200;
+const float MAP_EDGE_X = 300;
 
 void CollisionChecks::add_block(float x, float y, bool half, bool solid) {
     float heigh = half ? static_cast<float>(BLOCK_SIZE) / 2 : BLOCK_SIZE;
@@ -31,6 +31,11 @@ void CollisionChecks::load_map(const MapDto& map_dto) {
 bool CollisionChecks::out_of_map(float x, float y) {
     return x < -MAP_EDGE_X || x > MAP_WIDTH_PIXELS + MAP_EDGE_X ||
            y > MAP_HEIGHT_PIXELS + MAP_EDGE_Y;
+}
+
+bool CollisionChecks::out_of_background(float x, float y) {
+    return x < -MAP_EDGE_X*2 || x > MAP_WIDTH_PIXELS + MAP_EDGE_X*2 ||
+           y > MAP_HEIGHT_PIXELS + MAP_EDGE_Y*2.5 || y < -MAP_EDGE_Y*3;
 }
 
 bool check_collision_with_no_solid(float new_y, const Rectangle& entity,

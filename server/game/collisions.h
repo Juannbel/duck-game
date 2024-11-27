@@ -49,6 +49,7 @@ public:
     void load_map(const MapDto& map_dto);
 
     bool out_of_map(float x, float y);
+    bool out_of_background(float x, float y);
 
     Collision check_near_blocks_collision(const Rectangle& entity, float new_x, float new_y);
     Collision rectangles_collision(const Rectangle& r1, const Rectangle& r2);
