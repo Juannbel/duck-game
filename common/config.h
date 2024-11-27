@@ -15,6 +15,7 @@ private:
     std::string window_title;
     int window_width;
     int window_height;
+    uint8_t non_solid_opacity;
 
     int server_ticks;
     uint8_t rounds_to_win;
@@ -65,6 +66,7 @@ public:
     int get_window_width();
     int get_window_height();
     int get_client_fps();
+    uint8_t get_non_solid_opacity();
 
     // Server
     int get_server_ticks();

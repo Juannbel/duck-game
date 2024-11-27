@@ -58,7 +58,8 @@ void RenderableMap::update(const MapDto& new_map_dto) {
     background_texture =
             TexturesProvider::get_texture("background_" + std::to_string(new_map_dto.theme));
 
-    std::shared_ptr<SDL2pp::Texture> blocks_texture(TexturesProvider::get_texture("blocks"));
+    std::shared_ptr<SDL2pp::Texture> solid_blocks_texture(TexturesProvider::get_texture("blocks_solid"));
+    std::shared_ptr<SDL2pp::Texture> non_solid_blocks_texture(TexturesProvider::get_texture("blocks_non_solid"));
     for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
         for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
             auto& block = new_map_dto.blocks[i][j];
@@ -71,7 +72,7 @@ void RenderableMap::update(const MapDto& new_map_dto) {
             // BLOCK_SIZE + 1 para que no haya espacio entre bloques por redondeo
             SDL2pp::Rect dst_rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE + 1, BLOCK_SIZE);
 
-            map.push_back(RenderableBlock(animation_data.frames[0].rect, dst_rect, blocks_texture, block.solid));
+            map.push_back(RenderableBlock(animation_data.frames[0].rect, dst_rect, block.solid ? solid_blocks_texture : non_solid_blocks_texture));
         }
     }
 }

@@ -3,6 +3,9 @@
 #include <cstdint>
 
 #include "common/map_dto.h"
+#include "common/config.h"
+
+static Config& config = Config::get_instance();
 
 std::unordered_map<std::string, std::shared_ptr<SDL2pp::Texture>> TexturesProvider::textures;
 
@@ -11,8 +14,11 @@ void TexturesProvider::load_textures(SDL2pp::Renderer& renderer) {
         textures["background_" + std::to_string(i)] = std::make_shared<SDL2pp::Texture>(
                 renderer, DATA_PATH "/backgrounds/background_" + std::to_string(i) + ".png");
     }
-    textures["blocks"] =
+    textures["blocks_solid"] =
             std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/blocks/blocks.png");
+    textures["blocks_non_solid"] =
+            std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/blocks/blocks.png");
+    textures["blocks_non_solid"]->SetAlphaMod(config.get_non_solid_opacity());
     textures["boxes"] =
             std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/boxes/boxes.png");
     textures["duck"] =

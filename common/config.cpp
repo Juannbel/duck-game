@@ -13,6 +13,7 @@ void Config::load_config() try {
     window_title = config["window_title"].as<std::string>();
     window_width = config["window_width"].as<int>();
     window_height = config["window_height"].as<int>();
+    non_solid_opacity = config["non_solid_opacity"].as<uint8_t>();
 
     server_ticks = config["server_ticks"].as<int>();
     rounds_to_win = config["rounds_to_win"].as<int>();
@@ -51,6 +52,8 @@ int Config::get_window_width() { return window_width; }
 int Config::get_window_height() { return window_height; }
 
 int Config::get_server_ticks() { return server_ticks; }
+
+uint8_t Config::get_non_solid_opacity() { return non_solid_opacity; }
 
 uint8_t Config::get_rounds_to_win() { return rounds_to_win; }
 
