@@ -1,0 +1,579 @@
+width: 35
+height: 20
+theme: 2
+blocks:
+  - x: 9
+    y: 4
+    type: 10
+    solid: true
+  - x: 10
+    y: 4
+    type: 10
+    solid: true
+  - x: 11
+    y: 4
+    type: 10
+    solid: true
+  - x: 12
+    y: 4
+    type: 10
+    solid: true
+  - x: 13
+    y: 4
+    type: 10
+    solid: true
+  - x: 14
+    y: 4
+    type: 10
+    solid: true
+  - x: 15
+    y: 4
+    type: 10
+    solid: true
+  - x: 16
+    y: 4
+    type: 10
+    solid: true
+  - x: 17
+    y: 4
+    type: 10
+    solid: true
+  - x: 18
+    y: 4
+    type: 10
+    solid: true
+  - x: 19
+    y: 4
+    type: 10
+    solid: true
+  - x: 20
+    y: 4
+    type: 10
+    solid: true
+  - x: 21
+    y: 4
+    type: 10
+    solid: true
+  - x: 22
+    y: 4
+    type: 10
+    solid: true
+  - x: 23
+    y: 4
+    type: 10
+    solid: true
+  - x: 24
+    y: 4
+    type: 10
+    solid: true
+  - x: 25
+    y: 4
+    type: 10
+    solid: true
+  - x: 5
+    y: 7
+    type: 12
+    solid: false
+  - x: 6
+    y: 7
+    type: 12
+    solid: false
+  - x: 7
+    y: 7
+    type: 12
+    solid: false
+  - x: 8
+    y: 7
+    type: 12
+    solid: false
+  - x: 9
+    y: 7
+    type: 12
+    solid: false
+  - x: 10
+    y: 7
+    type: 12
+    solid: false
+  - x: 11
+    y: 7
+    type: 12
+    solid: false
+  - x: 12
+    y: 7
+    type: 12
+    solid: false
+  - x: 13
+    y: 7
+    type: 12
+    solid: false
+  - x: 14
+    y: 7
+    type: 12
+    solid: false
+  - x: 15
+    y: 7
+    type: 12
+    solid: false
+  - x: 16
+    y: 7
+    type: 12
+    solid: false
+  - x: 17
+    y: 7
+    type: 12
+    solid: false
+  - x: 18
+    y: 7
+    type: 12
+    solid: false
+  - x: 19
+    y: 7
+    type: 12
+    solid: false
+  - x: 20
+    y: 7
+    type: 12
+    solid: false
+  - x: 21
+    y: 7
+    type: 12
+    solid: false
+  - x: 22
+    y: 7
+    type: 12
+    solid: false
+  - x: 23
+    y: 7
+    type: 12
+    solid: false
+  - x: 24
+    y: 7
+    type: 12
+    solid: false
+  - x: 25
+    y: 7
+    type: 12
+    solid: false
+  - x: 26
+    y: 7
+    type: 12
+    solid: false
+  - x: 27
+    y: 7
+    type: 12
+    solid: false
+  - x: 28
+    y: 7
+    type: 12
+    solid: false
+  - x: 29
+    y: 7
+    type: 12
+    solid: false
+  - x: 8
+    y: 10
+    type: 11
+    solid: true
+  - x: 9
+    y: 10
+    type: 11
+    solid: true
+  - x: 16
+    y: 10
+    type: 11
+    solid: true
+  - x: 17
+    y: 10
+    type: 11
+    solid: true
+  - x: 25
+    y: 10
+    type: 11
+    solid: true
+  - x: 26
+    y: 10
+    type: 11
+    solid: true
+  - x: 8
+    y: 11
+    type: 11
+    solid: true
+  - x: 9
+    y: 11
+    type: 11
+    solid: true
+  - x: 16
+    y: 11
+    type: 11
+    solid: true
+  - x: 17
+    y: 11
+    type: 11
+    solid: true
+  - x: 25
+    y: 11
+    type: 11
+    solid: true
+  - x: 26
+    y: 11
+    type: 11
+    solid: true
+  - x: 5
+    y: 12
+    type: 10
+    solid: true
+  - x: 8
+    y: 12
+    type: 11
+    solid: true
+  - x: 9
+    y: 12
+    type: 11
+    solid: true
+  - x: 13
+    y: 12
+    type: 10
+    solid: true
+  - x: 16
+    y: 12
+    type: 11
+    solid: true
+  - x: 17
+    y: 12
+    type: 11
+    solid: true
+  - x: 21
+    y: 12
+    type: 10
+    solid: true
+  - x: 25
+    y: 12
+    type: 11
+    solid: true
+  - x: 26
+    y: 12
+    type: 11
+    solid: true
+  - x: 29
+    y: 12
+    type: 10
+    solid: true
+  - x: 8
+    y: 13
+    type: 11
+    solid: true
+  - x: 9
+    y: 13
+    type: 11
+    solid: true
+  - x: 16
+    y: 13
+    type: 11
+    solid: true
+  - x: 17
+    y: 13
+    type: 11
+    solid: true
+  - x: 25
+    y: 13
+    type: 11
+    solid: true
+  - x: 26
+    y: 13
+    type: 11
+    solid: true
+  - x: 8
+    y: 14
+    type: 11
+    solid: true
+  - x: 9
+    y: 14
+    type: 11
+    solid: true
+  - x: 16
+    y: 14
+    type: 11
+    solid: true
+  - x: 17
+    y: 14
+    type: 11
+    solid: true
+  - x: 25
+    y: 14
+    type: 11
+    solid: true
+  - x: 26
+    y: 14
+    type: 11
+    solid: true
+  - x: 3
+    y: 15
+    type: 1
+    solid: true
+  - x: 4
+    y: 15
+    type: 2
+    solid: true
+  - x: 5
+    y: 15
+    type: 2
+    solid: true
+  - x: 6
+    y: 15
+    type: 2
+    solid: true
+  - x: 7
+    y: 15
+    type: 2
+    solid: true
+  - x: 8
+    y: 15
+    type: 2
+    solid: true
+  - x: 9
+    y: 15
+    type: 2
+    solid: true
+  - x: 10
+    y: 15
+    type: 2
+    solid: true
+  - x: 11
+    y: 15
+    type: 2
+    solid: true
+  - x: 12
+    y: 15
+    type: 2
+    solid: true
+  - x: 13
+    y: 15
+    type: 2
+    solid: true
+  - x: 14
+    y: 15
+    type: 2
+    solid: true
+  - x: 15
+    y: 15
+    type: 2
+    solid: true
+  - x: 16
+    y: 15
+    type: 2
+    solid: true
+  - x: 17
+    y: 15
+    type: 2
+    solid: true
+  - x: 18
+    y: 15
+    type: 2
+    solid: true
+  - x: 19
+    y: 15
+    type: 2
+    solid: true
+  - x: 20
+    y: 15
+    type: 2
+    solid: true
+  - x: 21
+    y: 15
+    type: 2
+    solid: true
+  - x: 22
+    y: 15
+    type: 2
+    solid: true
+  - x: 23
+    y: 15
+    type: 2
+    solid: true
+  - x: 24
+    y: 15
+    type: 2
+    solid: true
+  - x: 25
+    y: 15
+    type: 2
+    solid: true
+  - x: 26
+    y: 15
+    type: 2
+    solid: true
+  - x: 27
+    y: 15
+    type: 2
+    solid: true
+  - x: 28
+    y: 15
+    type: 2
+    solid: true
+  - x: 29
+    y: 15
+    type: 2
+    solid: true
+  - x: 30
+    y: 15
+    type: 2
+    solid: true
+  - x: 31
+    y: 15
+    type: 3
+    solid: true
+  - x: 3
+    y: 16
+    type: 4
+    solid: true
+  - x: 4
+    y: 16
+    type: 5
+    solid: true
+  - x: 5
+    y: 16
+    type: 5
+    solid: true
+  - x: 6
+    y: 16
+    type: 5
+    solid: true
+  - x: 7
+    y: 16
+    type: 5
+    solid: true
+  - x: 8
+    y: 16
+    type: 5
+    solid: true
+  - x: 9
+    y: 16
+    type: 5
+    solid: true
+  - x: 10
+    y: 16
+    type: 5
+    solid: true
+  - x: 11
+    y: 16
+    type: 5
+    solid: true
+  - x: 12
+    y: 16
+    type: 5
+    solid: true
+  - x: 13
+    y: 16
+    type: 5
+    solid: true
+  - x: 14
+    y: 16
+    type: 5
+    solid: true
+  - x: 15
+    y: 16
+    type: 5
+    solid: true
+  - x: 16
+    y: 16
+    type: 5
+    solid: true
+  - x: 17
+    y: 16
+    type: 5
+    solid: true
+  - x: 18
+    y: 16
+    type: 5
+    solid: true
+  - x: 19
+    y: 16
+    type: 5
+    solid: true
+  - x: 20
+    y: 16
+    type: 5
+    solid: true
+  - x: 21
+    y: 16
+    type: 5
+    solid: true
+  - x: 22
+    y: 16
+    type: 5
+    solid: true
+  - x: 23
+    y: 16
+    type: 5
+    solid: true
+  - x: 24
+    y: 16
+    type: 5
+    solid: true
+  - x: 25
+    y: 16
+    type: 5
+    solid: true
+  - x: 26
+    y: 16
+    type: 5
+    solid: true
+  - x: 27
+    y: 16
+    type: 5
+    solid: true
+  - x: 28
+    y: 16
+    type: 5
+    solid: true
+  - x: 29
+    y: 16
+    type: 5
+    solid: true
+  - x: 30
+    y: 16
+    type: 5
+    solid: true
+  - x: 31
+    y: 16
+    type: 6
+    solid: true
+duck_spawns:
+  - x: 5
+    y: 10
+  - x: 13
+    y: 10
+  - x: 21
+    y: 10
+  - x: 29
+    y: 10
+collectables_spawns:
+  - x: 5
+    y: 14
+  - x: 13
+    y: 14
+  - x: 21
+    y: 14
+  - x: 29
+    y: 14
+  - x: 15
+    y: 3
+  - x: 18
+    y: 3
+boxes_spawns:
+  - x: 8
+    y: 9
+  - x: 9
+    y: 9
+  - x: 16
+    y: 9
+  - x: 17
+    y: 9
+  - x: 25
+    y: 9
+  - x: 26
+    y: 9
+  - x: 16
+    y: 3
+  - x: 17
+    y: 3
