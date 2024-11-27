@@ -252,7 +252,7 @@ void DuckController::process_joystick_event(const SDL_Event& event) {
                 break;
             case SDL_CONTROLLER_BUTTON_X:
                 fake_event.key.keysym.sym = controls.lay_down;
-                handle_key_down(fake_event);
+                handle_key_up(fake_event);
                 break;
             case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
                 fake_event.key.keysym.sym = controls.shoot;
