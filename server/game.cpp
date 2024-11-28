@@ -12,6 +12,7 @@ Game::Game(const int id, const std::string& creator, const int owner_id):
         gameloop(gameloop_q, sv_msg_queues), creator(creator), owner_id(owner_id), game_id(id) {
     open = true;
     cant_players = 0;
+    gameloop.start();
 }
 
 Queue<action>& Game::get_gameloop_queue() { return gameloop_q; }
@@ -48,7 +49,7 @@ GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
 }
 
 void Game::start() {
-    gameloop.start();
+    gameloop.start_game();
     open = false;
 }
 

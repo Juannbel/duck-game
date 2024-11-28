@@ -33,6 +33,7 @@ private:
     CollectablesManager collectables;
     std::vector<Spawn> spawns;
     std::unordered_map<uint32_t, BoxEntity> boxes;
+    bool game_started;
 
     void verify_spawn();
     void check_broken_boxes();
@@ -42,7 +43,6 @@ private:
     void load_map(const Map& map_dto);     
     void initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info,
                             const Map& map_info, bool first_round);
-    void initialize_boxes(const Map& map_info);
     void give_death_laser(DuckPlayer& duck);
     void handle_cheat(DuckPlayer& duck, Command command);
 
@@ -50,6 +50,8 @@ public:
     GameOperator();
     void initialize_game(const Map& map_info,
                          const std::vector<std::pair<uint8_t, std::string>>& ducks_info, bool first_round);
+    void initialize_boxes(const Map& map_info);
+    void add_player(const std::vector<std::pair<int16_t, int16_t>>& spawn_points, uint8_t duck_id, const std::basic_string<char>& name, bool first_round);
     bool check_start_game();
     void process_action(action& action);
     void update_game_status();

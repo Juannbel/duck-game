@@ -54,7 +54,7 @@ void GameLoop::initialice_new_round() {
         lobby.append(FIRST_MAP);
         curr_map = map_loader.load_map(lobby);
         
-        } else {
+    } else {
         curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
     }
     std::lock_guard<std::mutex> lock(map_lock);
@@ -191,12 +191,14 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
 }
 
 uint8_t GameLoop::add_player(const std::string& player_name) {
+    std::lock_guard<std::mutex> lock(map_lock);
     if (ducks_info.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
     }
     uint8_t duck_id = ducks_id_available.back();
     ducks_id_available.pop_back();
     ducks_info.emplace_back(duck_id, player_name);
+    initial_snapshot();
     return duck_id;
 }
 
@@ -213,6 +215,10 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
     if (ducks_info.size() <= 1 && game_initialized) {
         _keep_running = false;
     }
+}
+
+void GameLoop::start_game() {
+    game_operator.initialize_boxes(curr_map);
 }
 
 void GameLoop::stop() {

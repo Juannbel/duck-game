@@ -78,6 +78,8 @@ public:
 
     void notify_not_started();
 
+    void start_game();
+
     bool is_initialized() const { return game_initialized; }
 
     ~GameLoop();

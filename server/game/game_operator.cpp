@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <random>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,7 @@ const static int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 const static bool CHEATS = config.get_cheats_on();
 
 
-GameOperator::GameOperator(): collisions(), collectables(collisions, players, boxes) {}
+GameOperator::GameOperator(): collisions(), collectables(collisions, players, boxes), game_started() {}
 
 void GameOperator::load_map(const Map& map_info) {
     collisions.load_map(map_info.map_dto);
@@ -42,19 +43,23 @@ void GameOperator::load_map(const Map& map_info) {
 
 void GameOperator::initialize_players(
         const std::vector<std::pair<uint8_t, std::string>>& ducks_info, const Map& map_info, bool first_round) {
-    const auto& spawn_points = map_info.duck_spawns;
+    const std::vector<std::pair<int16_t, int16_t>>& spawn_points = map_info.duck_spawns;
     players.clear();
     for (auto& [duck_id, name]: ducks_info) {
-        DuckPlayer player(collectables, collisions, spawn_points[duck_id].first * BLOCK_SIZE,
-                          spawn_points[duck_id].second * BLOCK_SIZE, duck_id, name);
-        players.emplace(duck_id, std::move(player));
-        if (first_round) 
-            players.at(duck_id).cheats_on.infiniteHP = true;
-        
+        add_player(spawn_points, duck_id, name, first_round);
     }
 }
 
+void GameOperator::add_player(const std::vector<std::pair<int16_t, int16_t>>& spawn_points, uint8_t duck_id, const std::basic_string<char>& name, bool first_round) {
+    DuckPlayer player(collectables, collisions, spawn_points[duck_id].first * BLOCK_SIZE,
+                          spawn_points[duck_id].second * BLOCK_SIZE, duck_id, name);
+    players.emplace(duck_id, std::move(player));
+    if (first_round) 
+        players.at(duck_id).cheats_on.infiniteHP = true;       
+}
+
 void GameOperator::initialize_boxes(const Map& map_info) {
+    game_started = true;
     boxes.clear();
     uint32_t id = 0;
     for (auto const& box: map_info.boxes_spawns) {
@@ -70,12 +75,14 @@ void GameOperator::initialize_game(const Map& map_info,
                                    const std::vector<std::pair<uint8_t, std::string>>& ducks_info, bool first_round) {
     load_map(map_info);
     initialize_players(ducks_info, map_info, first_round);
-    initialize_boxes(map_info);
+    if (!first_round) 
+        initialize_boxes(map_info);
+    
     collectables.reset_collectables();
 }
 
 bool GameOperator::check_start_game() {
-    if (players.size() > MAX_DUCKS-boxes.size()) {
+    if (players.size() > MAX_DUCKS-boxes.size() && game_started) {
         return false;
     }
     return true;

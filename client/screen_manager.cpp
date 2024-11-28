@@ -105,7 +105,7 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
         background_rect.w = static_cast<int>(background_rect.h * texture_aspect_ratio);
     }
 
-    while (!snapshot_q.try_pop(last_snapshot)) {
+    while (!snapshot_q.try_pop(last_snapshot) && last_snapshot.maps.empty()) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
