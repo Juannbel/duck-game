@@ -16,6 +16,7 @@
 #include "common/config.h"
 #include "common/lobby.h"
 #include "common/snapshot.h"
+#include "common/shared_constants.h"
 
 #define END_GAME_DELAY 1000
 
@@ -186,86 +187,6 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
     return true;
 }
 
-bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
-    std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
-    std::vector<Duck>& ducks = last_snapshot.ducks;
-    std::vector<AnimationData> duck_animations;
-
-    std::sort(ducks.begin(), ducks.end(),
-              [](const Duck& a, const Duck& b) { return a.duck_id < b.duck_hp; });
-
-    std::transform(ducks.begin(), ducks.end(), std::back_inserter(duck_animations),
-                   [](const auto& duck) {
-                       return AnimationDataProvider::get_animation_data(
-                               "duck_" + std::to_string(duck.duck_id) + "_standing");
-                   });
-
-    int screen_width = renderer.GetOutputWidth();
-    int screen_height = renderer.GetOutputHeight();
-    SDL2pp::Rect background_rect(0, 0, screen_width, screen_height);
-
-    while (!snapshot_q.try_pop(last_snapshot)) {
-        screen_width = renderer.GetOutputWidth();
-        screen_height = renderer.GetOutputHeight();
-        background_rect.w = screen_width;
-        background_rect.h = screen_height;
-
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                return false;
-            }
-
-            if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_1)
-                    sound_manager.toggle_mute();
-                else if (event.key.keysym.sym == SDLK_2)
-                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
-            }
-        }
-
-        renderer.Clear();
-        map.render(renderer, camera);
-        renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-        renderer.SetDrawColor(0, 0, 0, 50);
-        renderer.FillRect(background_rect);
-        renderer.SetDrawBlendMode();
-
-        int section_width = screen_width / 2;
-        int section_height = screen_height / 2;
-
-        for (size_t i = 0; i < ducks.size(); ++i) {
-            const Duck& duck = ducks[i];
-            const AnimationData& animation_data = duck_animations[i];
-
-            int row = i / 2;
-            int col = i % 2;
-
-            int center_x = col * section_width + section_width / 2;
-            int center_y = row * section_height + section_height / 2;
-
-            SDL2pp::Rect duck_dst_rect = animation_data.frames[0].rect;
-            duck_dst_rect.w *= 4;
-            duck_dst_rect.h *= 4;
-            duck_dst_rect.x = center_x - duck_dst_rect.w / 2;
-            duck_dst_rect.y = center_y - duck_dst_rect.h / 2;
-            renderer.Copy(*duck_texture, animation_data.frames[0].rect, duck_dst_rect);
-
-            SDL2pp::Texture player_name_texture(
-                    renderer,
-                    primary_font.RenderText_Solid(duck.player_name, SDL_Color{255, 255, 255, 255}));
-            renderer.Copy(player_name_texture, SDL2pp::NullOpt,
-                          SDL2pp::Rect(SDL2pp::Point(center_x - player_name_texture.GetSize().x / 2,
-                                                     duck_dst_rect.y - 10),
-                                       player_name_texture.GetSize()));
-        }
-
-        renderer.Present();
-        SDL_Delay(RATE);
-    }
-    return true;
-}
-
 bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     if (last_snapshot.game_finished) {
         std::cout << "Game finished" << std::endl;
@@ -295,6 +216,7 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot&
         }
 
         renderer.Clear();
+        camera.update(last_snapshot, false);
         map.render(renderer, camera);
         renderer.Present();
         SDL_Delay(RATE);
@@ -371,6 +293,7 @@ bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_sna
 
         renderer.Clear();
 
+        camera.update(last_snapshot, false);
         map.render(renderer, camera);
 
         int rect_width = renderer.GetOutputWidth() * 0.8;
@@ -448,6 +371,7 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot) {
         }
 
         renderer.Clear();
+        camera.update(last_snapshot, false);
         map.render(renderer, camera);
 
         int rect_width = renderer.GetOutputWidth() * 0.8;
@@ -535,6 +459,7 @@ bool ScreenManager::end_game_no_winner_screen() {
         background_rect.h = screen_height;
 
         renderer.Clear();
+        camera.update({}, false);
         map.render(renderer, camera);
         renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
         renderer.SetDrawColor(0, 0, 0, 50);
@@ -599,6 +524,8 @@ void ScreenManager::server_disconnected_screen() {
         background_rect.h = screen_height;
 
         renderer.Clear();
+
+        camera.update({}, false);
         map.render(renderer, camera);
         renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
         renderer.SetDrawColor(0, 0, 0, 50);
@@ -620,4 +547,35 @@ void ScreenManager::server_disconnected_screen() {
 
         SDL_Delay(RATE);
     }
+}
+
+void ScreenManager::show_lobby_text(Snapshot& last_snapshot) {
+    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Break the boxes to start",
+                                                                 SDL_Color{255, 255, 255, 255}));
+
+    SDL2pp::Rect info_rect;
+
+    info_rect.w = info.GetSize().x*0.6;
+    info_rect.h = info.GetSize().y*0.6;
+    info_rect.x = LOBBY_MAP_X + (LOBBY_MAP_WIDTH - info_rect.w) / 2;
+    info_rect.y = LOBBY_MAP_Y + (LOBBY_MAP_HEIGHT - info_rect.h) / 2;
+    camera.transform_rect(info_rect);
+    renderer.Copy(info, SDL2pp::NullOpt, info_rect);
+
+    for (const auto& duck: last_snapshot.ducks) {
+        SDL2pp::Texture duck_name(renderer, primary_font.RenderText_Solid(duck.player_name,
+                                                                         SDL_Color{255, 255, 255, 255}));
+        SDL2pp::Rect duck_name_rect;
+        duck_name_rect.w = duck_name.GetSize().x*0.27;
+        duck_name_rect.h = duck_name.GetSize().y*0.27;
+
+        duck_name_rect.x = LOBBY_MAP_X;
+        duck_name_rect.x += duck.duck_id % 2 == 0 ? 75 - duck_name_rect.w/2 : LOBBY_MAP_WIDTH - 80 - duck_name_rect.w/2;
+        duck_name_rect.y = LOBBY_MAP_Y + (LOBBY_MAP_HEIGHT / 2) - 19;
+        duck_name_rect.y += duck.duck_id >= 2 ? ((LOBBY_MAP_HEIGHT / 2) - 8) : 0;
+
+        camera.transform_rect(duck_name_rect);
+        renderer.Copy(duck_name, SDL2pp::NullOpt, duck_name_rect);
+    }
+
 }

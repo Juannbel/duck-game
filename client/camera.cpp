@@ -21,9 +21,9 @@ using SDL2pp::Renderer;
 
 Camera::Camera(Renderer& renderer):
         renderer(renderer),
-        current_rect(-MARGIN_W * SCALE, -MARGIN_H * SCALE,
-                     (MAP_WIDTH_PIXELS + 2 * MARGIN_W) * SCALE,
-                     (MAP_HEIGHT_PIXELS + 2 * MARGIN_H) * SCALE),
+        current_rect(LOBBY_MAP_X * SCALE, LOBBY_MAP_Y * SCALE,
+                     LOBBY_MAP_WIDTH * SCALE,
+                     LOBBY_MAP_HEIGHT * SCALE),
         target_rect(current_rect),
         zoom_x((float)renderer.GetOutputWidth() / current_rect.w),
         zoom_y((float)renderer.GetOutputHeight() / current_rect.h),
@@ -31,8 +31,11 @@ Camera::Camera(Renderer& renderer):
     assert(CAMERA_LERP_FACTOR >= 0.0f && CAMERA_LERP_FACTOR <= 1.0f);
 }
 
-void Camera::update(const Snapshot& snapshot) {
-    update_target(snapshot);
+void Camera::update(const Snapshot& snapshot, bool move_target) {
+    if (move_target)
+        update_target(snapshot);
+    else
+        adjust_aspect_ratio(current_rect);
 
     float dx = target_rect.x - current_rect.x;
     float dy = target_rect.y - current_rect.y;

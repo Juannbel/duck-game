@@ -57,6 +57,9 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
             &MainWindow::onCreateGameConfirmed);
     connect(ui->namesBackButton, &QPushButton::clicked, this, &MainWindow::onBackClicked);
 
+    ui->player1NameEdit->setMaxLength(MAX_PLAYER_NAME - 1);
+    ui->player2NameEdit->setMaxLength(MAX_PLAYER_NAME - 1);
+
     ui->player2NameEdit->setVisible(false);
     QPixmap single_player(DATA_PATH "/others/single_player.png");
     QPixmap two_players(DATA_PATH "/others/two_players.png");

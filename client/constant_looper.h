@@ -41,6 +41,7 @@ private:
     Camera camera;
     RenderableMap map;
     ScreenManager screen_manager;
+    bool is_first_round;
 
     std::unordered_map<uint8_t, std::unique_ptr<RenderableDuck>> ducks_renderables;
     std::unordered_map<uint32_t, std::unique_ptr<RenderableBox>> boxes_renderables;

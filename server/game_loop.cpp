@@ -24,6 +24,7 @@ const milliseconds RATE(1000 / TICKS);
 const uint its_after_round = 3000 / (1000 / TICKS);
 const uint8_t ROUNDS_TO_WIN = config.get_rounds_to_win();
 const uint8_t ROUNDS_BETWEEN_STATS = config.get_rounds_between_stats();
+const std::string FIRST_MAP = "lobby.yaml";
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
@@ -31,6 +32,7 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
         round_number(ROUNDS_BETWEEN_STATS),
         round_finished(),
         game_finished(),
+        first_round(true),
         paths_to_maps(map_loader.list_maps(MAPS_PATH)),
         curr_map(),
         game_initialized(false) {
@@ -47,18 +49,24 @@ std::string get_rand_string(const std::vector<std::string>& v_strings) {
 }
 
 void GameLoop::initialice_new_round() {
-    curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
+    if (first_round) {
+        for (auto &map_name : paths_to_maps) {
+            auto res = map_name.find(FIRST_MAP);
+            if (res != std::string::npos) {
+                curr_map = map_loader.load_map(map_name);
+            }
+        }
+    } else {
+        curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
+    }
     std::lock_guard<std::mutex> lock(map_lock);
-    game_operator.initialize_game(curr_map, ducks_info);
+    game_operator.initialize_game(curr_map, ducks_info, first_round);
 }
 
 void GameLoop::run() {
     game_initialized = true;
     initialice_new_round();
-    initial_snapshot();
 
-    // Tiempo para que los jugadores vean que pato les toco
-    sleep_checking(milliseconds(4000));
     uint it = its_after_round;
     auto t1 = high_resolution_clock::now();
     initial_snapshot();
@@ -109,6 +117,8 @@ void GameLoop::pop_and_process_all() {
 void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
+    if (first_round)
+        round_finished = game_operator.check_start_game();
     check_for_winner(actual_status);
 
     actual_status.round_finished = its_since_finish == 0 ? round_finished : false;
@@ -121,6 +131,7 @@ void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
 void GameLoop::send_game_status(auto& t1, uint& its_since_finish) {
     create_and_push_snapshot(its_since_finish);
     if (!its_since_finish) {
+        first_round = false;
         if (!game_finished)
             wait_ready();
         t1 = high_resolution_clock::now();
@@ -145,7 +156,7 @@ void GameLoop::push_responce(const Snapshot& actual_status) {
 }
 
 void GameLoop::check_for_winner(const Snapshot& actual_status) {
-    if (round_finished) {
+    if (round_finished || first_round) {
         return;
     }
     uint8_t winner_id;
@@ -217,10 +228,7 @@ void GameLoop::notify_not_started() {
     status.show_stats = true;
     status.maps.push_back(curr_map.map_dto);
 
-    // es necesario enviar 2
-    // La primera es para desbloquearlo de la waiting screen
-    // en la segunda se chequea si el juego termino y se muestra una pantalla final
-    push_responce(status);
+    // es necesario enviar 1 para desbloquearlo de la waiting screen
     push_responce(status);
 }
 
