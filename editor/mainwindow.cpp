@@ -56,7 +56,9 @@ MainWindow::~MainWindow() { delete ui; }
 std::unordered_map<int, QString> MainWindow::themeToName = {
         {0, "Forest"},       {1, "Castle"},
         {2, "Office"},       {3, "Bunker"},
-        {4, "Lobby"}
+        {4, "Lobby"}, {5, "Industrial"},
+        {6, "Wood"}, {7, "Space"},
+        {8, "Piramid"}
 };
 
 void MainWindow::loadTiles() {
@@ -501,7 +503,7 @@ void MainWindow::on_saveMapButton_clicked() {
         QMessageBox::warning(this, "Error", "The map could not be saved.");
         return;
     }
-    
+
     QMessageBox::information(this, "Success", "Map saved successfully.");
 }
 
