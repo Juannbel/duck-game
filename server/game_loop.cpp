@@ -24,7 +24,7 @@ const milliseconds RATE(1000 / TICKS);
 const uint its_after_round = 3000 / (1000 / TICKS);
 const uint8_t ROUNDS_TO_WIN = config.get_rounds_to_win();
 const uint8_t ROUNDS_BETWEEN_STATS = config.get_rounds_between_stats();
-const std::string FIRST_MAP;
+const std::string FIRST_MAP = "lobby.yaml";
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
@@ -50,9 +50,15 @@ std::string get_rand_string(const std::vector<std::string>& v_strings) {
 
 void GameLoop::initialice_new_round() {
     if (first_round) {
-        curr_map = map_loader.load_map(FIRST_MAP);
-    } else 
+        for (auto &map_name : paths_to_maps) {
+            auto res = map_name.find(FIRST_MAP);
+            if (res != std::string::npos) {
+                curr_map = map_loader.load_map(map_name);
+            }
+        }
+    } else {
         curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
+    }
     std::lock_guard<std::mutex> lock(map_lock);
     game_operator.initialize_game(curr_map, ducks_info, first_round);
 }
@@ -114,10 +120,8 @@ void GameLoop::pop_and_process_all() {
 void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
-    if (first_round) {
-        game_operator.check_start_game(actual_status);
-        round_finished = actual_status.round_finished;
-    } 
+    if (first_round) 
+        round_finished = game_operator.check_start_game();
     check_for_winner(actual_status);
 
     actual_status.round_finished = its_since_finish == 0 ? round_finished : false;
@@ -130,9 +134,9 @@ void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
 void GameLoop::send_game_status(auto& t1, uint& its_since_finish) {
     create_and_push_snapshot(its_since_finish);
     if (!its_since_finish) {
+        first_round = false;
         if (!game_finished)
             wait_ready();
-        first_round = false;
         t1 = high_resolution_clock::now();
         action action{};
         while (actions_queue.try_pop(action)) {}

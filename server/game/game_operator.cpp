@@ -1,6 +1,7 @@
 #include "game_operator.h"
 
 #include <cstdint>
+#include <iostream>
 #include <random>
 #include <utility>
 #include <vector>
@@ -44,12 +45,12 @@ void GameOperator::initialize_players(
         const std::vector<std::pair<uint8_t, std::string>>& ducks_info, const Map& map_info, bool first_round) {
     const auto& spawn_points = map_info.duck_spawns;
     players.clear();
-    for (auto& duck: ducks_info) {
-        DuckPlayer player(collectables, collisions, spawn_points[duck.first].first * BLOCK_SIZE,
-                          spawn_points[duck.first].second * BLOCK_SIZE, duck.first, duck.second);
-        players.emplace(duck.first, std::move(player));
+    for (auto& [duck_id, name]: ducks_info) {
+        DuckPlayer player(collectables, collisions, spawn_points[duck_id].first * BLOCK_SIZE,
+                          spawn_points[duck_id].second * BLOCK_SIZE, duck_id, name);
+        players.emplace(duck_id, std::move(player));
         if (first_round) {
-            players[duck.first].cheats_on.infiniteHP = true;
+            players.at(duck_id).cheats_on.infiniteHP = true;
         }
     }
 }
@@ -74,11 +75,11 @@ void GameOperator::initialize_game(const Map& map_info,
     collectables.reset_collectables();
 }
 
-void GameOperator::check_start_game(Snapshot& actual_status) {
+bool GameOperator::check_start_game() {
     if (players.size() > MAX_DUCKS-boxes.size()) {
-        return;
+        return false;
     }
-    actual_status.round_finished = true;
+    return true;
 }
 
 void GameOperator::process_action(action& action) {
