@@ -14,6 +14,7 @@ void Config::load_config() try {
     window_width = config["window_width"].as<int>();
     window_height = config["window_height"].as<int>();
     non_solid_opacity = config["non_solid_opacity"].as<uint8_t>();
+    first_gamepad_player = config["first_gamepad_player"].as<uint8_t>();
 
     server_ticks = config["server_ticks"].as<int>();
     rounds_to_win = config["rounds_to_win"].as<int>();
@@ -54,6 +55,8 @@ int Config::get_window_height() { return window_height; }
 int Config::get_server_ticks() { return server_ticks; }
 
 uint8_t Config::get_non_solid_opacity() { return non_solid_opacity; }
+
+uint8_t Config::get_first_gamepad_player() { return first_gamepad_player; }
 
 uint8_t Config::get_rounds_to_win() { return rounds_to_win; }
 

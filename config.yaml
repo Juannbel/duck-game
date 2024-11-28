@@ -5,6 +5,9 @@ window_width: 1200
 window_height: 690
 # Opacidad de los bloques no solidos (0-255), 0 es transparente, 255 es opaco
 non_solid_opacity: 170
+# A que jugador se le asigna el primer gamepad conectado (0 para el jugador 1, 1 para el jugador 2)
+# Si se juega una partida con un solo jugador, este valor no se tiene en cuenta
+first_gamepad_player: 1
 
 # Server side
 server_ticks: 120

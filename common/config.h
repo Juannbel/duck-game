@@ -16,6 +16,7 @@ private:
     int window_width;
     int window_height;
     uint8_t non_solid_opacity;
+    uint8_t first_gamepad_player;
 
     int server_ticks;
     uint8_t rounds_to_win;
@@ -67,6 +68,7 @@ public:
     int get_window_height();
     int get_client_fps();
     uint8_t get_non_solid_opacity();
+    uint8_t get_first_gamepad_player();
 
     // Server
     int get_server_ticks();

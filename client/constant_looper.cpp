@@ -40,6 +40,7 @@ const static int RATE = 1000 / config.get_client_fps();
 const static std::string WIN_TITLE = config.get_window_title();
 const static int WIN_WIDTH = config.get_window_width();
 const static int WIN_HEIGHT = config.get_window_height();
+const static uint8_t FIRST_GAMEPAD_PLAYER = config.get_first_gamepad_player();
 
 ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
@@ -50,8 +51,8 @@ ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snaps
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
         snapshot_q(snapshot_q),
         actions_q(actions_q),
-        p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS, 0),
-        p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS, 1),
+        p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS, FIRST_GAMEPAD_PLAYER == 0 || duck_ids.second == INVALID_DUCK_ID ? 0 : 1),
+        p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS, FIRST_GAMEPAD_PLAYER == 0 ? 1 : 0),
         play_again(false),
         map_dto(),
         camera(renderer),
