@@ -5,7 +5,7 @@
 
 #include "shared_constants.h"
 
-#define MAP_THEMES 4
+#define MAP_THEMES 5
 
 enum BlockType {
     Empty,
