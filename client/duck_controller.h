@@ -6,6 +6,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL_events.h>
+#include <SDL_gamecontroller.h>
 
 #include "common/blocking_queue.h"
 #include "common/commands.h"
@@ -35,6 +36,10 @@ private:
     Queue<action>& actions_q;
     Snapshot& snapshot;
     ControlScheme controls;
+
+    SDL_GameController* joystick;
+    int joystick_id;
+    bool joystick_enabled;
 
     Command last_move_command;
     bool move_command;
@@ -67,9 +72,11 @@ private:
     void handle_stop_shoot();
     void handle_stop_look_up();
 
+    void process_joystick_event(const SDL_Event& event);
+
 public:
     DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
-                   ControlScheme controls);
+                ControlScheme controls, int joystick_id = -1);
 
     void update_duck_status();
 
@@ -78,6 +85,12 @@ public:
     void send_last_move_command();
 
     void restart_movement();
+
+    ~DuckController() {
+        if (joystick) {
+            SDL_GameControllerClose(joystick);
+        }
+    }
 };
 
 #endif
