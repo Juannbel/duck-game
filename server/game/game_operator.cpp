@@ -83,6 +83,9 @@ bool GameOperator::check_start_game() {
 }
 
 void GameOperator::process_action(action& action) {
+    if (players.find(action.duck_id) == players.end()) {
+        return;
+    }
     DuckPlayer& player = players.at(action.duck_id);
     switch (action.command) {
         case StartMovingRight:
