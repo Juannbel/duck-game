@@ -41,13 +41,16 @@ void GameOperator::load_map(const Map& map_info) {
 }
 
 void GameOperator::initialize_players(
-        const std::vector<std::pair<uint8_t, std::string>>& ducks_info, const Map& map_info) {
+        const std::vector<std::pair<uint8_t, std::string>>& ducks_info, const Map& map_info, bool first_round) {
     const auto& spawn_points = map_info.duck_spawns;
     players.clear();
     for (auto& duck: ducks_info) {
         DuckPlayer player(collectables, collisions, spawn_points[duck.first].first * BLOCK_SIZE,
                           spawn_points[duck.first].second * BLOCK_SIZE, duck.first, duck.second);
         players.emplace(duck.first, std::move(player));
+        if (first_round) {
+            players[duck.first].cheats_on.infiniteHP = true;
+        }
     }
 }
 
@@ -64,11 +67,18 @@ void GameOperator::initialize_boxes(const Map& map_info) {
 void GameOperator::delete_duck_player(uint8_t id_duck) { players.erase(id_duck); }
 
 void GameOperator::initialize_game(const Map& map_info,
-                                   const std::vector<std::pair<uint8_t, std::string>>& ducks_info) {
+                                   const std::vector<std::pair<uint8_t, std::string>>& ducks_info, bool first_round) {
     load_map(map_info);
-    initialize_players(ducks_info, map_info);
+    initialize_players(ducks_info, map_info, first_round);
     initialize_boxes(map_info);
     collectables.reset_collectables();
+}
+
+void GameOperator::check_start_game(Snapshot& actual_status) {
+    if (players.size() > MAX_DUCKS-boxes.size()) {
+        return;
+    }
+    actual_status.round_finished = true;
 }
 
 void GameOperator::process_action(action& action) {

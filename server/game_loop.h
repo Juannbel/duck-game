@@ -29,6 +29,7 @@ private:
     uint8_t round_number;
     bool round_finished;
     bool game_finished;
+    bool first_round;
     std::map<uint8_t, uint8_t> winners_id_count;
     MapLoader map_loader;
     std::vector<std::string> paths_to_maps;
