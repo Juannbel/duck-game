@@ -112,7 +112,7 @@ std::unordered_map<BlockType, QString> MainWindow::blockToString = {
 void MainWindow::updateThemeSelected() {
 
     ui->itemSelector->clear();
-
+    ui->themeSelector->setCurrentIndex(map.map_dto.theme);
     updateItemSelector();
     updateBackground();
 
@@ -463,7 +463,7 @@ bool MainWindow::isMapValid() {
 QString MainWindow::requestFileName() {
     bool ok;
     QString fileName = QInputDialog::getText(
-            nullptr, "Save MapDto", "Insert filename (without extension):", QLineEdit::Normal, "",
+            nullptr, "Save MapDto", "Insert filename:", QLineEdit::Normal, lastLoadMapName,
             &ok);
 
     if (!ok || fileName.isEmpty()) {
@@ -527,14 +527,13 @@ void MainWindow::on_loadMapButton_clicked() {
         QFileInfo fileInfo(fullPath);
         comboBox->addItem(fileInfo.fileName());
     }
-
     connect(loadButton, &QPushButton::clicked, [&]() {
         if (comboBox->currentIndex() == -1) {
             QMessageBox::warning(this, "Error", "Please select a map.");
             return;
         }
 
-        QString selectedFile = comboBox->currentText();
+        QString selectedFile = lastLoadMapName = comboBox->currentText();
         if (!selectedFile.endsWith(".yaml", Qt::CaseInsensitive)) {
             selectedFile += ".yaml";
         }
@@ -546,6 +545,7 @@ void MainWindow::on_loadMapButton_clicked() {
             loaded_map.duck_spawns[i].second += 1;
         }
         this->map = loaded_map;
+        std::cout << static_cast<int>(map.map_dto.theme) << std::endl;
         updateThemeSelected();
         renderGrid();
         dialog.accept();

@@ -62,6 +62,7 @@ private:
     QGraphicsScene* scene;
     Map map;
     MapLoader loader;
+    QString lastLoadMapName = "";
 
     std::vector<QPixmap> grassTextures;
     int selectedItemIndex = 0;
