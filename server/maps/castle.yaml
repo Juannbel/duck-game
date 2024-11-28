@@ -477,63 +477,63 @@ blocks:
   - x: 6
     y: 10
     type: 12
-    solid: true
+    solid: false
   - x: 7
     y: 10
     type: 12
-    solid: true
+    solid: false
   - x: 8
     y: 10
     type: 12
-    solid: true
+    solid: false
   - x: 9
     y: 10
     type: 12
-    solid: true
+    solid: false
   - x: 10
     y: 10
     type: 12
-    solid: true
+    solid: false
   - x: 11
     y: 10
-    type: 1
-    solid: true
+    type: 12
+    solid: false
   - x: 12
-    y: 10
-    type: 2
-    solid: true
-  - x: 13
-    y: 10
-    type: 6
-    solid: true
-  - x: 22
     y: 10
     type: 4
     solid: true
+  - x: 13
+    y: 10
+    type: 11
+    solid: true
+  - x: 22
+    y: 10
+    type: 11
+    solid: true
   - x: 23
     y: 10
-    type: 1
+    type: 6
     solid: true
   - x: 24
     y: 10
-    type: 3
-    solid: true
+    type: 12
+    solid: false
   - x: 25
     y: 10
     type: 12
-    solid: true
+    solid: false
   - x: 26
     y: 10
     type: 12
-    solid: true
+    solid: false
   - x: 27
     y: 10
     type: 12
-    solid: true
+    solid: false
   - x: 28
     y: 10
     type: 12
-    solid: true
+    solid: false
   - x: 29
     y: 10
     type: 4
@@ -702,6 +702,14 @@ blocks:
     y: 14
     type: 6
     solid: true
+  - x: 6
+    y: 14
+    type: 9
+    solid: false
+  - x: 11
+    y: 14
+    type: 7
+    solid: false
   - x: 12
     y: 14
     type: 4
@@ -718,6 +726,14 @@ blocks:
     y: 14
     type: 6
     solid: true
+  - x: 24
+    y: 14
+    type: 9
+    solid: false
+  - x: 28
+    y: 14
+    type: 7
+    solid: false
   - x: 29
     y: 14
     type: 4
@@ -1063,8 +1079,6 @@ boxes_spawns:
     y: 5
   - x: 23
     y: 9
-  - x: 12
-    y: 9
   - x: 15
     y: 17
   - x: 20
@@ -1081,3 +1095,5 @@ boxes_spawns:
     y: 18
   - x: 14
     y: 18
+  - x: 12
+    y: 9
