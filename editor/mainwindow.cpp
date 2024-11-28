@@ -56,7 +56,9 @@ MainWindow::~MainWindow() { delete ui; }
 std::unordered_map<int, QString> MainWindow::themeToName = {
         {0, "Forest"},       {1, "Castle"},
         {2, "Office"},       {3, "Bunker"},
-        {4, "Lobby"}
+        {4, "Lobby"}, {5, "Industrial"},
+        {6, "Wood"}, {7, "Space"},
+        {8, "Piramid"}
 };
 
 void MainWindow::loadTiles() {
@@ -145,7 +147,7 @@ void MainWindow::updateBackground() {
     if (!backgroundPixmap.isNull()) {
         currentBackground = backgroundPixmap;
     } else {
-        std::cerr << "No se pudo cargar el fondo para el tema " << themeIndex << std::endl;
+        std::cerr << "Failed to load the background for the theme " << themeIndex << std::endl;
     }
 }
 
@@ -336,7 +338,7 @@ bool MainWindow::isBlockOccupied(std::pair<int16_t, int16_t> pos) {
 
 void MainWindow::addDuckSpawn(std::pair<int16_t, int16_t> gridPos) {
     if (map.duck_spawns.size() >= 4) {
-        QMessageBox::warning(this, "Error", "Ya hay 4 spawns de patos.");
+        QMessageBox::warning(this, "Error", "There are already 4 duck spawns.");
         return;
     }
     bool check_blocks = true;
@@ -443,16 +445,16 @@ void MainWindow::onGridRightClicked(QPoint pos) {
 
 bool MainWindow::isMapValid() {
     if (map.duck_spawns.size() != 4) {
-        QMessageBox::warning(this, "Error", "Debe haber 4 spawns de patos.");
+        QMessageBox::warning(this, "Error", "There must be 4 duck spawns.");
         return false;
     }
     if (map.collectables_spawns.size() < 2) {
         QMessageBox::warning(this, "Error",
-                             "Debe haber al menos 2 spawns de armas (collectables).");
+                             "There must be at least 2 weapon spawns (collectables).");
         return false;
     }
     if (map.boxes_spawns.size() < 2) {
-        QMessageBox::warning(this, "Error", "Debe haber al menos 2 spawns de cajas.");
+        QMessageBox::warning(this, "Error", "There must be at least 2 box spawns.");
         return false;
     }
     return true;
@@ -465,7 +467,6 @@ QString MainWindow::requestFileName() {
             &ok);
 
     if (!ok || fileName.isEmpty()) {
-        std::cerr << "No se ingresó ningún nombre de archivo." << std::endl;
         return NULL;
     }
 
@@ -502,7 +503,7 @@ void MainWindow::on_saveMapButton_clicked() {
         QMessageBox::warning(this, "Error", "The map could not be saved.");
         return;
     }
-    
+
     QMessageBox::information(this, "Success", "Map saved successfully.");
 }
 
@@ -529,7 +530,7 @@ void MainWindow::on_loadMapButton_clicked() {
 
     connect(loadButton, &QPushButton::clicked, [&]() {
         if (comboBox->currentIndex() == -1) {
-            QMessageBox::warning(this, "Error", "Por favor, selecciona un mapa.");
+            QMessageBox::warning(this, "Error", "Please select a map.");
             return;
         }
 
