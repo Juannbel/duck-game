@@ -2,7 +2,7 @@ define: &y_row 96
 width: 16
 height: 16
 
-blocks_4:
+blocks_6:
   0: # empty
     iter_per_frame: 1
     loops: false
