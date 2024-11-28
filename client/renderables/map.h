@@ -25,6 +25,8 @@ public:
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 
+    void render_first_round(SDL2pp::Renderer& renderer, Camera& camera);
+
     void update(const MapDto& new_map_dto);
 };
 

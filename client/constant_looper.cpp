@@ -249,7 +249,10 @@ void ConstantLooper::update_bullets() {
 void ConstantLooper::render(Camera& camera, RenderableMap& map) {
     renderer.Clear();
 
-    map.render(renderer, camera);
+    if (is_first_round)
+        map.render_first_round(renderer, camera);
+    else
+        map.render(renderer, camera);
 
     for (auto& box: boxes_renderables) {
         box.second->render(renderer, camera);

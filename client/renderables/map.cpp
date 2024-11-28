@@ -15,9 +15,23 @@
 
 RenderableMap::RenderableMap(const MapDto& map_dto) { update(map_dto); }
 
-void RenderableMap::render(SDL2pp::Renderer& renderer, Camera& camera) {
-    const SDL2pp::Rect& camera_rect = camera.get_current_rect();
+void RenderableMap::render_first_round(SDL2pp::Renderer& renderer, Camera& camera) {
     SDL2pp::Rect background_rect;
+    background_rect.x = LOBBY_MAP_X;
+    background_rect.y = LOBBY_MAP_Y;
+    background_rect.w = LOBBY_MAP_WIDTH;
+    background_rect.h = LOBBY_MAP_HEIGHT;
+    camera.transform_rect(background_rect);
+    renderer.Copy(*background_texture, SDL2pp::NullOpt, background_rect);
+
+    for (auto& block: map) {
+        block.render(renderer, camera);
+    }
+}
+
+void RenderableMap::render(SDL2pp::Renderer& renderer, Camera& camera) {
+    SDL2pp::Rect background_rect;
+    const SDL2pp::Rect& camera_rect = camera.get_current_rect();
 
     float camera_center_x = camera_rect.x + camera_rect.w / 2.0f;
     float camera_center_y = camera_rect.y + camera_rect.h / 2.0f;
