@@ -1,6 +1,6 @@
 width: 35
 height: 20
-theme: 0
+theme: 5
 blocks:
   - x: 13
     y: 2
@@ -104,11 +104,11 @@ blocks:
     solid: false
   - x: 24
     y: 6
-    type: 1
+    type: 10
     solid: true
   - x: 25
     y: 6
-    type: 1
+    type: 10
     solid: true
   - x: 26
     y: 6
@@ -136,11 +136,11 @@ blocks:
     solid: false
   - x: 7
     y: 7
-    type: 6
+    type: 4
     solid: true
   - x: 8
     y: 7
-    type: 6
+    type: 5
     solid: true
   - x: 9
     y: 7
@@ -148,15 +148,15 @@ blocks:
     solid: true
   - x: 25
     y: 7
-    type: 6
+    type: 4
     solid: true
   - x: 26
     y: 7
-    type: 4
+    type: 5
     solid: true
   - x: 27
     y: 7
-    type: 4
+    type: 6
     solid: true
   - x: 0
     y: 10
