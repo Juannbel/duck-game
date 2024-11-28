@@ -154,21 +154,11 @@ Las excepciones a esto son:
 
 Se muestran, en orden, los controles para el jugador 1 y el jugador 2 por teclado, y los controles para joystick (iguales para ambos).
 
+Si se conecta un solo joystick y en el cliente hay 2 jugadores, este se asigna por defecto al jugador 2 (configurable, ver sección [configuración](#-configuración)). En caso de haber un solo jugador, el joystick se asigna a este. Si se conectan 2 joysticks, se asignan uno a cada jugador.
+
 <p align="center">
   <img src="./images/manual-usuario/controls.png" alt="Controles" width="500" />
 </p>
-
-<!-- ### Jugador 1:
-- `w` `a` `s` `d` para moverse.
-- `c` para recoger/soltar equipamientos (armas y armaduras).
-- `v` para disparar (caso arma), para equipar (caso armadura).
-- `e` para mirar arriba.
-
-### Jugador 2:
-- `↑` `↓` `←` `→` para moverse.
-- `k` para recoger/soltar equipamientos (armas y armaduras).
-- `l` para disparar (caso arma), para equipar (caso armadura).
-- `shift derecho` para mirar arriba. -->
 
 ## 🛡️ **Cheats**
 
@@ -179,20 +169,6 @@ Se pueden activar los cheats con las siguientes teclas:
 <p align="center">
   <img src="./images/manual-usuario/cheats.png" alt="cheats" width="500" />
 </p>
-
-<!-- ### Jugador 1
-- `F1` Modo vuelo
-- `F2` Munición infinita
-- `F3` Matar a todos los otros jugadores
-- `F4` Vida infinita
-- `F5` Obtener Death Laser
-
-### Jugador 2
-- `F8` Modo vuelo
-- `F9` Munición infinita
-- `F10` Matar a todos los otros jugadores
-- `F11` Vida infinita
-- `F12` Obtener Death Laser -->
 
 ## 🗺️️️️️️ **Editor de niveles**
 
@@ -229,5 +205,6 @@ Algunos de los aspectos que pueden modificarse son:
 - Cantidad de rondas entre que se muestran las estadísticas y se busca un ganador
 - Daño, rango, y munición de las armas
 - Activar o desactivar cheats
+- A que jugador se asigna el joystick en caso de haber solo uno conectado (ver first_gamepad_player)
 
-La mayoría de los cambios en la configuración solo tendrán efecto si se realizan en la máquina que actúa como servidor, excepciones sobre esto son los que tienen que ver estrictamente con el cliente, como el tamaño incial de la ventana, o FPS del cliente.
+La mayoría de los cambios en la configuración solo tendrán efecto si se realizan en la máquina que actúa como servidor, excepciones sobre esto son los que tienen que ver estrictamente con el cliente, como el tamaño incial de la ventana, o a quien se asigna el primer joystick.
