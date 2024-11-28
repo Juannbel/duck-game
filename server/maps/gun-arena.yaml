@@ -150,14 +150,6 @@ blocks:
     y: 4
     type: 9
     solid: true
-  - x: 15
-    y: 4
-    type: 4
-    solid: true
-  - x: 19
-    y: 4
-    type: 6
-    solid: true
   - x: 24
     y: 4
     type: 7

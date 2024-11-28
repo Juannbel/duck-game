@@ -556,7 +556,15 @@ collectables_spawns:
     y: 14
   - x: 24
     y: 14
+  - x: 9
+    y: 8
   - x: 17
+    y: 8
+  - x: 26
+    y: 8
+  - x: 16
+    y: 14
+  - x: 18
     y: 14
 boxes_spawns:
   - x: 3
