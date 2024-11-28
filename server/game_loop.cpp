@@ -24,7 +24,7 @@ const milliseconds RATE(1000 / TICKS);
 const uint its_after_round = 3000 / (1000 / TICKS);
 const uint8_t ROUNDS_TO_WIN = config.get_rounds_to_win();
 const uint8_t ROUNDS_BETWEEN_STATS = config.get_rounds_between_stats();
-const std::string FIRST_MAP = "lobby.yaml";
+const std::string FIRST_MAP = "/server/lobby.yaml";
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
@@ -50,13 +50,11 @@ std::string get_rand_string(const std::vector<std::string>& v_strings) {
 
 void GameLoop::initialice_new_round() {
     if (first_round) {
-        for (auto &map_name : paths_to_maps) {
-            auto res = map_name.find(FIRST_MAP);
-            if (res != std::string::npos) {
-                curr_map = map_loader.load_map(map_name);
-            }
-        }
-    } else {
+        std::string lobby = DATA_PATH;
+        lobby.append(FIRST_MAP);
+        curr_map = map_loader.load_map(lobby);
+        
+        } else {
         curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
     }
     std::lock_guard<std::mutex> lock(map_lock);
