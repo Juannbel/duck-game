@@ -70,9 +70,6 @@ bool ConstantLooper::run() try {
 
     map.update(map_dto);
 
-    if (!screen_manager.initial_screen(snapshot_q, last_snapshot))
-        return false;
-
     bool keep_running = true;
     if (last_snapshot.game_finished) {
         // partida no iniciada

@@ -66,10 +66,10 @@ void GameLoop::initialice_new_round() {
 void GameLoop::run() {
     game_initialized = true;
     initialice_new_round();
-    initial_snapshot();
+    // initial_snapshot();
 
     // Tiempo para que los jugadores vean que pato les toco
-    sleep_checking(milliseconds(4000));
+    // sleep_checking(milliseconds(4000));
     uint it = its_after_round;
     auto t1 = high_resolution_clock::now();
     initial_snapshot();
@@ -120,7 +120,7 @@ void GameLoop::pop_and_process_all() {
 void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
-    if (first_round) 
+    if (first_round)
         round_finished = game_operator.check_start_game();
     check_for_winner(actual_status);
 
@@ -231,10 +231,7 @@ void GameLoop::notify_not_started() {
     status.show_stats = true;
     status.maps.push_back(curr_map.map_dto);
 
-    // es necesario enviar 2
-    // La primera es para desbloquearlo de la waiting screen
-    // en la segunda se chequea si el juego termino y se muestra una pantalla final
-    push_responce(status);
+    // es necesario enviar 1 para desbloquearlo de la waiting screen
     push_responce(status);
 }
 
