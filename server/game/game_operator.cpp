@@ -1,7 +1,6 @@
 #include "game_operator.h"
 
 #include <cstdint>
-#include <iostream>
 #include <random>
 #include <utility>
 #include <vector>
@@ -49,9 +48,9 @@ void GameOperator::initialize_players(
         DuckPlayer player(collectables, collisions, spawn_points[duck_id].first * BLOCK_SIZE,
                           spawn_points[duck_id].second * BLOCK_SIZE, duck_id, name);
         players.emplace(duck_id, std::move(player));
-        if (first_round) {
+        if (first_round) 
             players.at(duck_id).cheats_on.infiniteHP = true;
-        }
+        
     }
 }
 

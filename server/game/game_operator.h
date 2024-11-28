@@ -43,6 +43,7 @@ private:
     void initialize_players(const std::vector<std::pair<uint8_t, std::string>>& ducks_info,
                             const Map& map_info, bool first_round);
     void initialize_boxes(const Map& map_info);
+    void give_death_laser(DuckPlayer& duck);
     void handle_cheat(DuckPlayer& duck, Command command);
 
 public:

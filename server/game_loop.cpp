@@ -66,10 +66,7 @@ void GameLoop::initialice_new_round() {
 void GameLoop::run() {
     game_initialized = true;
     initialice_new_round();
-    // initial_snapshot();
 
-    // Tiempo para que los jugadores vean que pato les toco
-    // sleep_checking(milliseconds(4000));
     uint it = its_after_round;
     auto t1 = high_resolution_clock::now();
     initial_snapshot();
