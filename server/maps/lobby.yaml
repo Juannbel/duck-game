@@ -366,6 +366,18 @@ blocks:
     y: 10
     type: 10
     solid: true
+  - x: 15
+    y: 10
+    type: 10
+    solid: true
+  - x: 16
+    y: 10
+    type: 10
+    solid: true
+  - x: 17
+    y: 10
+    type: 10
+    solid: true
   - x: 18
     y: 10
     type: 10
@@ -752,6 +764,14 @@ collectables_spawns:
     y: 13
   - x: 28
     y: 7
+  - x: 4
+    y: 13
+  - x: 4
+    y: 7
+  - x: 29
+    y: 7
+  - x: 29
+    y: 13
 boxes_spawns:
   - x: 12
     y: 7

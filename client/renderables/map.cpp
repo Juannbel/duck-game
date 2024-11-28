@@ -70,7 +70,7 @@ void RenderableMap::update(const MapDto& new_map_dto) {
                     "blocks_" + std::to_string(new_map_dto.theme) + "_" +
                     std::to_string(static_cast<int>(block.type))));
             // BLOCK_SIZE + 1 para que no haya espacio entre bloques por redondeo
-            SDL2pp::Rect dst_rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE + 1, BLOCK_SIZE);
+            SDL2pp::Rect dst_rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE + 1, BLOCK_SIZE + 1);
 
             map.push_back(RenderableBlock(animation_data.frames[0].rect, dst_rect, block.solid ? solid_blocks_texture : non_solid_blocks_texture));
         }
