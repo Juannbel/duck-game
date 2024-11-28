@@ -25,7 +25,7 @@ const static int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 const static bool CHEATS = config.get_cheats_on();
 
 
-GameOperator::GameOperator(): collisions(), collectables(collisions, players, boxes), game_started() {}
+GameOperator::GameOperator(): collisions(), collectables(collisions, players, boxes) {}
 
 void GameOperator::load_map(const Map& map_info) {
     collisions.load_map(map_info.map_dto);
@@ -59,7 +59,6 @@ void GameOperator::add_player(const std::vector<std::pair<int16_t, int16_t>>& sp
 }
 
 void GameOperator::initialize_boxes(const Map& map_info) {
-    game_started = true;
     boxes.clear();
     uint32_t id = 0;
     for (auto const& box: map_info.boxes_spawns) {

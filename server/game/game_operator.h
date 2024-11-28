@@ -33,7 +33,6 @@ private:
     CollectablesManager collectables;
     std::vector<Spawn> spawns;
     std::unordered_map<uint32_t, BoxEntity> boxes;
-    bool game_started;
 
     void verify_spawn();
     void check_broken_boxes();

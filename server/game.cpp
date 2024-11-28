@@ -3,7 +3,6 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
-#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,13 +29,11 @@ GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
     }
 
     game_info.game_id = game_id;
-    if (player_id != owner_id) {
-        std::cout << "AÑADO UNA QUEUE" << std::endl;
+    if (player_id != owner_id) 
         sv_msg_queues.add_element(&player_sender_queue, player_id);
-    } else {
-        std::cout << "ES EL OWNER" << std::endl;
+    else 
         owner_queue = &player_sender_queue;
-    }
+    
 
     std::pair<uint8_t, uint8_t> duck_ids = {INVALID_DUCK_ID, INVALID_DUCK_ID};
     duck_ids.first = gameloop.add_player(players_names[0]);
