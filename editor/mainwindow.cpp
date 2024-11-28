@@ -52,15 +52,24 @@ void MainWindow::initialize_blocks() {
 
 MainWindow::~MainWindow() { delete ui; }
 
+
+std::unordered_map<int, QString> MainWindow::themeToName = {
+        {0, "Forest"},       {1, "Castle"},
+        {2, "Office"},       {3, "Bunker"},
+        {4, "Lobby"}
+};
+
 void MainWindow::loadTiles() {
 
     ui->themeSelector->clear();
     ui->itemSelector->clear();
 
     for (int i = 0; i < MAP_THEMES; i++) {
-        QString themeName = "Theme " + QString::number(i + 1);
-        ui->themeSelector->addItem(themeName);
+        QString themeName = themeToName[i];
         loadThemeTiles(i);
+        int floor2 = static_cast<int>(Floor2) - 1;
+        ui->themeSelector->addItem(QIcon(themeTiles[i][floor2]),themeName);
+
     }
 }
 

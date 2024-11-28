@@ -66,6 +66,7 @@ private:
     std::vector<QPixmap> grassTextures;
     int selectedItemIndex = 0;
     QMap<int, std::vector<QIcon>> themeTiles;
+    static std::unordered_map<int, QString> themeToName;
     static std::unordered_map<BlockType, QString> blockToString;
 
     QPoint lastProcessedTile = QPoint(-1, -1);
