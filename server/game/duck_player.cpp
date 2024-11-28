@@ -165,9 +165,6 @@ Collision DuckPlayer::normal_duck_move() {
 }
 
 void DuckPlayer::move_duck() {
-    if (status.is_dead) {
-        return;
-    }
     Collision collision{};
     if (it_sliding) {
         collision = move_sliding();
@@ -182,7 +179,7 @@ void DuckPlayer::move_duck() {
 }
 
 void DuckPlayer::run(bool right) {
-    if (status.is_laying) {
+    if (status.is_laying || status.is_dead) {
         return;
     }
     status.facing_right = right;
@@ -192,7 +189,7 @@ void DuckPlayer::run(bool right) {
 void DuckPlayer::stop_running() { status.is_running = false; }
 
 void DuckPlayer::shoot() {
-    if (!equipped_gun || status.is_laying)
+    if (!equipped_gun || status.is_laying || status.is_dead)
         return;
     equipped_gun->start_shooting();
     status.is_shooting = true;
@@ -206,7 +203,7 @@ void DuckPlayer::stop_shooting() {
 }
 
 void DuckPlayer::update_gun_status() {
-    if (!equipped_gun)
+    if (!equipped_gun || status.is_dead)
         return;
     if (equipped_gun->update_bullets(hitbox, status.facing_right, status.facing_up)) {
         GunType g_type = equipped_gun->get_gun_info().type;
@@ -253,7 +250,7 @@ bool DuckPlayer::fall_from_platform() {
 }
 
 void DuckPlayer::lay_down() {
-    if (status.is_laying)
+    if (status.is_laying || status.is_dead)
         return;
     if (cheats_on.flying) {
         status.is_falling = true;
@@ -279,7 +276,7 @@ void DuckPlayer::stand_up() {
         status.is_falling = false;
         return;
     }
-    if (!status.is_laying || it_sliding) {
+    if (!status.is_laying || it_sliding || status.is_dead) {
         return;
     }
     status.is_laying = false;
@@ -288,7 +285,7 @@ void DuckPlayer::stand_up() {
 }
 
 void DuckPlayer::face_up() {
-    if (status.is_laying) {
+    if (status.is_laying || status.is_dead) {
         return;
     }
     status.facing_up = true;
@@ -301,7 +298,7 @@ void DuckPlayer::jump() {
         status.is_jumping = true;
         return;
     }
-    if (!ready_to_jump || status.is_jumping || status.is_laying) {
+    if (!ready_to_jump || status.is_jumping || status.is_laying || status.is_dead) {
         return;
     }
     ready_to_jump = false;
@@ -348,7 +345,7 @@ bool DuckPlayer::get_hit(const Rectangle& bullet, uint8_t damage) {
 }
 
 void DuckPlayer::slide() {
-    if (cheats_on.infiniteHP || cheats_on.flying)
+    if (cheats_on.infiniteHP || cheats_on.flying || status.is_dead)
         return;
     stop_running();
     it_sliding = SLIDING_ITS;
