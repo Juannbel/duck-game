@@ -143,6 +143,10 @@ Las excepciones a esto son:
 
 > **Tip**: Una buena estrategia es lanzar la banana cerca de un borde, para que los jugadores que se resbalen mueran por ir fuera del mapa
 
+<p align="center">
+  <img src="./images/manual-usuario/cuidado_banana.gif" alt="Caida por banana" />
+</p>
+
 ## 🕹️ **Controles**
 
 - `1` Toggle mute
@@ -199,7 +203,7 @@ duck_game_editor
 Una vez terminado el mapa, se puede guardar con el botón `Save map` (guardar mapa), en ese momento se pedirá un nombre para el mapa, y al confirmar se mostrará un mensaje indicando si el mapa se guardó correctamente o no.
 En caso de estar editando un mapa existente, si al guardarlo se elige el mismo nombre, se sobreescribirá el mapa existente, en caso contrario se creará un nuevo mapa con el nombre ingresado y el original no se verá afectado.
 
-Si el juego está instalado, los mapas se guardan en `XDG_DATA_HOME/duck_game/maps` (por defecto `~/.local/share/duck_game/maps`), y es donde el servidor buscará los mapas para las partidas. 
+Si el juego está instalado, los mapas se guardan en `XDG_DATA_HOME/duck_game/maps` (por defecto `~/.local/share/duck_game/maps`), y es donde el servidor buscará los mapas para las partidas.
 Si se quiere compartir un mapa, se puede copiar el archivo cuyo nombre es el que se eligió al guardarlo, y con ubicarlo en la misma carpeta en otra computadora, el mismo estará disponible para ser jugado por el usuario.
 
 Durante una partida, los mapas se iran eligiendo de forma aleatoria en cada ronda.
