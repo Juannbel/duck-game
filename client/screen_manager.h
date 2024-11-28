@@ -48,6 +48,8 @@ public:
 
     bool between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 
+    void show_lobby_text();
+
     void server_disconnected_screen();
 };
 

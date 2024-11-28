@@ -56,7 +56,8 @@ ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snaps
         map_dto(),
         camera(renderer),
         map(map_dto),
-        screen_manager(window, sound_manager, renderer, camera, map, this->duck_ids, play_again) {}
+        screen_manager(window, sound_manager, renderer, camera, map, this->duck_ids, play_again),
+        is_first_round(true) {}
 
 bool ConstantLooper::run() try {
     TexturesProvider::load_textures(renderer);
@@ -92,13 +93,14 @@ bool ConstantLooper::run() try {
                 if (duck_ids.second != INVALID_DUCK_ID)
                     actions_q.push({duck_ids.second, Ready});
             }
+            is_first_round = false;
             keep_running = screen_manager.between_rounds_screen(snapshot_q, last_snapshot);
             if (!keep_running)
                 continue;
             clear_renderables();
             process_snapshot();
             map.update(map_dto);
-            camera.update(last_snapshot);
+            camera.update(last_snapshot, !is_first_round);
             p1_controller.restart_movement();
             p2_controller.restart_movement();
             continue;
@@ -108,7 +110,7 @@ bool ConstantLooper::run() try {
         process_snapshot();
 
         if (USE_CAMERA) {
-            camera.update(last_snapshot);
+            camera.update(last_snapshot, !is_first_round);
         }
 
         render(camera, map);
@@ -272,6 +274,9 @@ void ConstantLooper::render(Camera& camera, RenderableMap& map) {
     for (auto& collectable: collectables_renderables) {
         collectable.second->render(renderer, camera);
     }
+
+    if (is_first_round)
+        screen_manager.show_lobby_text();
 
     renderer.Present();
 }

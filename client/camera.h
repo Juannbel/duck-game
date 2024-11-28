@@ -27,7 +27,9 @@ public:
 
     const SDL2pp::Rect& get_current_rect();
 
-    void update(const Snapshot& snapshot);
+    // Hace el update de la camara, mueve el target basado en la snapshot si move_target es true,
+    // mueve lo que se ve actualmente hacia el target, y se ajusta a la ventana
+    void update(const Snapshot& snapshot, bool move_target);
 
     // Transorma un rectángulo con las coordenadas y la escala del mundo
     // a las coordenadas de la cámara

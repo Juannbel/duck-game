@@ -11,7 +11,7 @@
 #include "common/shared_constants.h"
 
 #define PARALLAX_FACTOR 0.05f
-#define MARGIN 100
+#define MARGIN 200
 
 RenderableMap::RenderableMap(const MapDto& map_dto) { update(map_dto); }
 

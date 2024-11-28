@@ -16,6 +16,7 @@
 #include "common/config.h"
 #include "common/lobby.h"
 #include "common/snapshot.h"
+#include "common/shared_constants.h"
 
 #define END_GAME_DELAY 1000
 
@@ -231,6 +232,9 @@ bool ScreenManager::initial_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
         renderer.FillRect(background_rect);
         renderer.SetDrawBlendMode();
 
+        camera.update(last_snapshot, false);
+        map.render(renderer, camera);
+
         int section_width = screen_width / 2;
         int section_height = screen_height / 2;
 
@@ -295,6 +299,7 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot&
         }
 
         renderer.Clear();
+        camera.update(last_snapshot, false);
         map.render(renderer, camera);
         renderer.Present();
         SDL_Delay(RATE);
@@ -371,6 +376,7 @@ bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_sna
 
         renderer.Clear();
 
+        camera.update(last_snapshot, false);
         map.render(renderer, camera);
 
         int rect_width = renderer.GetOutputWidth() * 0.8;
@@ -448,6 +454,7 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot) {
         }
 
         renderer.Clear();
+        camera.update(last_snapshot, false);
         map.render(renderer, camera);
 
         int rect_width = renderer.GetOutputWidth() * 0.8;
@@ -535,6 +542,7 @@ bool ScreenManager::end_game_no_winner_screen() {
         background_rect.h = screen_height;
 
         renderer.Clear();
+        camera.update({}, false);
         map.render(renderer, camera);
         renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
         renderer.SetDrawColor(0, 0, 0, 50);
@@ -599,6 +607,8 @@ void ScreenManager::server_disconnected_screen() {
         background_rect.h = screen_height;
 
         renderer.Clear();
+
+        camera.update({}, false);
         map.render(renderer, camera);
         renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
         renderer.SetDrawColor(0, 0, 0, 50);
@@ -620,4 +630,18 @@ void ScreenManager::server_disconnected_screen() {
 
         SDL_Delay(RATE);
     }
+}
+
+void ScreenManager::show_lobby_text() {
+    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Break the boxes to start",
+                                                                 SDL_Color{255, 255, 255, 255}));
+
+    SDL2pp::Rect info_rect;
+
+    info_rect.w = info.GetSize().x*0.7;
+    info_rect.h = info.GetSize().y*0.7;
+    info_rect.x = LOBBY_MAP_X + (LOBBY_MAP_WIDTH - info_rect.w) / 2;
+    info_rect.y = LOBBY_MAP_Y + (LOBBY_MAP_HEIGHT - info_rect.h) / 2;
+    camera.transform_rect(info_rect);
+    renderer.Copy(info, SDL2pp::NullOpt, info_rect);
 }
