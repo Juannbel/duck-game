@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,6 +23,7 @@ private:
     int cant_players = 0;
     std::string creator;
     int owner_id;
+    Queue<Snapshot>* owner_queue;
     std::map<int, std::pair<uint8_t, uint8_t>> player_to_duck_ids;
     std::atomic<bool> open = true;
     int game_id;

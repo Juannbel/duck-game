@@ -27,6 +27,7 @@
 #include "common/config.h"
 #include "common/lobby.h"
 #include "common/map_dto.h"
+#include "common/map_loader.h"
 #include "common/snapshot.h"
 
 #include "animation_data_provider.h"
@@ -41,6 +42,7 @@ const static std::string WIN_TITLE = config.get_window_title();
 const static int WIN_WIDTH = config.get_window_width();
 const static int WIN_HEIGHT = config.get_window_height();
 const static uint8_t FIRST_GAMEPAD_PLAYER = config.get_first_gamepad_player();
+const std::string LOBBY_MAP_PATH = DATA_PATH "/server/lobby.yaml";
 
 ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
@@ -64,15 +66,21 @@ bool ConstantLooper::run() try {
     TexturesProvider::load_textures(renderer);
     AnimationDataProvider::load_animations_data();
 
+    MapLoader map_loader;
+    map_dto = map_loader.load_map(LOBBY_MAP_PATH).map_dto;
+
+    map.update(map_dto);
+
     if (!screen_manager.waiting_screen(snapshot_q, last_snapshot))
         return false;
 
     process_snapshot();
 
-    map.update(map_dto);
+    std::cout << "PROCESADA LA PRIMERA" << std::endl;
 
     bool keep_running = true;
     if (last_snapshot.game_finished) {
+        std::cout << "GAME FINISHED no iniciada" << std::endl;
         // partida no iniciada
         screen_manager.between_rounds_screen(snapshot_q, last_snapshot);
         return play_again;
@@ -262,14 +270,21 @@ void ConstantLooper::render(Camera& camera, RenderableMap& map) {
         bullet.second->render(renderer, camera);
     }
 
+    bool render_myself = false;
     for (auto& duck: ducks_renderables) {
-        if (duck.first == duck_ids.first || duck.first == duck_ids.second)
+        if (duck.first == duck_ids.first || duck.first == duck_ids.second) {
+            render_myself = true;
             continue;
+        }
         duck.second->render(renderer, camera);
     }
-    ducks_renderables[duck_ids.first]->render(renderer, camera);
-    if (duck_ids.second != INVALID_DUCK_ID) {
-        ducks_renderables[duck_ids.second]->render(renderer, camera);
+
+    if (render_myself) {
+        ducks_renderables[duck_ids.first]->render(renderer, camera);
+
+        if (duck_ids.second != INVALID_DUCK_ID) {
+            ducks_renderables[duck_ids.second]->render(renderer, camera);
+        }
     }
 
     for (auto& collectable: collectables_renderables) {

@@ -1,7 +1,9 @@
 #include "game.h"
 
+#include <cassert>
 #include <cstdint>
 #include <cstdio>
+#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -9,7 +11,7 @@
 #include "common/lobby.h"
 
 Game::Game(const int id, const std::string& creator, const int owner_id):
-        gameloop(gameloop_q, sv_msg_queues), creator(creator), owner_id(owner_id), game_id(id) {
+        gameloop(gameloop_q, sv_msg_queues), creator(creator), owner_id(owner_id), owner_queue(nullptr), game_id(id) {
     open = true;
     cant_players = 0;
     gameloop.start();
@@ -28,7 +30,13 @@ GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
     }
 
     game_info.game_id = game_id;
-    sv_msg_queues.add_element(&player_sender_queue, player_id);
+    if (player_id != owner_id) {
+        std::cout << "AÑADO UNA QUEUE" << std::endl;
+        sv_msg_queues.add_element(&player_sender_queue, player_id);
+    } else {
+        std::cout << "ES EL OWNER" << std::endl;
+        owner_queue = &player_sender_queue;
+    }
 
     std::pair<uint8_t, uint8_t> duck_ids = {INVALID_DUCK_ID, INVALID_DUCK_ID};
     duck_ids.first = gameloop.add_player(players_names[0]);
@@ -49,6 +57,8 @@ GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
 }
 
 void Game::start() {
+    assert(owner_queue != nullptr);
+    sv_msg_queues.add_element(owner_queue, owner_id);
     gameloop.start_game();
     open = false;
 }

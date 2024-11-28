@@ -105,7 +105,7 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
         background_rect.w = static_cast<int>(background_rect.h * texture_aspect_ratio);
     }
 
-    while (!snapshot_q.try_pop(last_snapshot) && last_snapshot.maps.empty()) {
+    while (!snapshot_q.try_pop(last_snapshot)) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -183,6 +183,8 @@ bool ScreenManager::waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_s
 
         SDL_Delay(RATE);
     }
+
+    std::cout << "SALGO DE WAITING SCREEN" << std::endl;
 
     return true;
 }

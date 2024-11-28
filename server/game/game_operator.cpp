@@ -82,7 +82,7 @@ void GameOperator::initialize_game(const Map& map_info,
 }
 
 bool GameOperator::check_start_game() {
-    if (players.size() > MAX_DUCKS-boxes.size() && game_started) {
+    if (players.size() > MAX_DUCKS-boxes.size()) {
         return false;
     }
     return true;

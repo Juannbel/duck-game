@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -24,14 +25,14 @@ const milliseconds RATE(1000 / TICKS);
 const uint its_after_round = 3000 / (1000 / TICKS);
 const uint8_t ROUNDS_TO_WIN = config.get_rounds_to_win();
 const uint8_t ROUNDS_BETWEEN_STATS = config.get_rounds_between_stats();
-const std::string FIRST_MAP = "/server/lobby.yaml";
+const std::string LOBBY_MAP = DATA_PATH "/server/lobby.yaml";
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
         snaps_queue_list(queue_list),
         round_number(ROUNDS_BETWEEN_STATS),
-        round_finished(),
-        game_finished(),
+        round_finished(false),
+        game_finished(false),
         first_round(true),
         paths_to_maps(map_loader.list_maps(MAPS_PATH)),
         curr_map(),
@@ -39,6 +40,9 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
     for (uint8_t i = MAX_DUCKS; i > 0; i--) {
         ducks_id_available.push_back(i - 1);
     }
+
+    curr_map = map_loader.load_map(LOBBY_MAP);
+    game_operator.initialize_game(curr_map, ducks_info, first_round);
 }
 
 std::string get_rand_string(const std::vector<std::string>& v_strings) {
@@ -49,26 +53,19 @@ std::string get_rand_string(const std::vector<std::string>& v_strings) {
 }
 
 void GameLoop::initialice_new_round() {
-    if (first_round) {
-        std::string lobby = DATA_PATH;
-        lobby.append(FIRST_MAP);
-        curr_map = map_loader.load_map(lobby);
-        
-    } else {
-        curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
-    }
-    std::lock_guard<std::mutex> lock(map_lock);
+    curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
+    // std::lock_guard<std::mutex> lock(map_lock);
     game_operator.initialize_game(curr_map, ducks_info, first_round);
 }
 
 void GameLoop::run() {
-    game_initialized = true;
-    initialice_new_round();
+    // initialice_new_round();
 
     uint it = its_after_round;
     auto t1 = high_resolution_clock::now();
     initial_snapshot();
     while (_keep_running && (!game_finished || it)) {
+        std::cout << "DALE QUE VA" << std::endl;
         pop_and_process_all();
         send_game_status(t1, it);
         auto t2 = high_resolution_clock::now();
@@ -80,10 +77,16 @@ void GameLoop::run() {
             t1 += lost;
 
         } else {
+            std::cout << "Me duermo por " << rest.count() << std::endl;
             std::this_thread::sleep_for(rest);
         }
         t1 += RATE;
+
     }
+
+    std::cout << "ME TUVE QUE IR" << std::endl;
+
+
 
     round_finished = true;
     game_finished = true;
@@ -104,18 +107,22 @@ void GameLoop::initial_snapshot() {
 }
 
 void GameLoop::pop_and_process_all() {
+    std::cout << "ARRANCO POP AND PROCSES ALL" << std::endl;
     action action{};
     while (actions_queue.try_pop(action)) {
-        std::lock_guard<std::mutex> lock(map_lock);
+        // std::lock_guard<std::mutex> lock(map_lock);
         game_operator.process_action(action);
     }
     game_operator.update_game_status();
+
+    std::cout << "TERMINO POP AND PROCSES ALL" << std::endl;
 }
 
 void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
+    std::cout << "ARRANCO CREATE AND PUSH SNAPSHOT" << std::endl;
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
-    if (first_round)
+    if (first_round && game_initialized)
         round_finished = game_operator.check_start_game();
     check_for_winner(actual_status);
 
@@ -124,11 +131,15 @@ void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
     actual_status.game_finished = its_since_finish == 0 ? game_finished : false;
     add_rounds_won(actual_status);
     push_responce(actual_status);
+
+    std::cout << "TERMINO CREATE AND PUSH SNAPSHOT" << std::endl;
 }
 
 void GameLoop::send_game_status(auto& t1, uint& its_since_finish) {
+    std::cout << "ARRANCO SEND GAME STATUS" << std::endl;
     create_and_push_snapshot(its_since_finish);
     if (!its_since_finish) {
+        std::cout << "ENTRO AL IF" << std::endl;
         first_round = false;
         if (!game_finished)
             wait_ready();
@@ -139,8 +150,10 @@ void GameLoop::send_game_status(auto& t1, uint& its_since_finish) {
         its_since_finish = its_after_round;
         round_finished = false;
     } else if (round_finished) {
+        std::cout << "ENTRO AL ELSE IF" << std::endl;
         --its_since_finish;
     }
+    std::cout << "TERMINO EL SEND GAME STATU" << std::endl;
 }
 
 void GameLoop::add_rounds_won(Snapshot& snapshot) {
@@ -191,19 +204,20 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
 }
 
 uint8_t GameLoop::add_player(const std::string& player_name) {
-    std::lock_guard<std::mutex> lock(map_lock);
+    // std::lock_guard<std::mutex> lock(map_lock);
     if (ducks_info.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
     }
     uint8_t duck_id = ducks_id_available.back();
     ducks_id_available.pop_back();
     ducks_info.emplace_back(duck_id, player_name);
-    initial_snapshot();
+    game_operator.add_player(curr_map.duck_spawns, duck_id, player_name, first_round);
+    // initial_snapshot();
     return duck_id;
 }
 
 void GameLoop::delete_duck(const uint8_t duck_id) {
-    std::lock_guard<std::mutex> lock(map_lock);
+    // std::lock_guard<std::mutex> lock(map_lock);
     game_operator.delete_duck_player(duck_id);
     auto it = std::find_if(ducks_info.begin(), ducks_info.end(),
                            [duck_id](const auto& info) { return info.first == duck_id; });
@@ -218,6 +232,7 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
 }
 
 void GameLoop::start_game() {
+    game_initialized = true;
     game_operator.initialize_boxes(curr_map);
 }
 
@@ -249,7 +264,7 @@ void GameLoop::sleep_checking(const milliseconds& time) {
 }
 
 void GameLoop::create_new_map(std::map<uint8_t, uint8_t> &players_readys) {
-    std::lock_guard<std::mutex> lock(map_lock);
+    // std::lock_guard<std::mutex> lock(map_lock);
     for (auto [id, name]: ducks_info) {
         players_readys[id] = 0;
     }
