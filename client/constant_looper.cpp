@@ -276,7 +276,7 @@ void ConstantLooper::render(Camera& camera, RenderableMap& map) {
     }
 
     if (is_first_round)
-        screen_manager.show_lobby_text();
+        screen_manager.show_lobby_text(last_snapshot);
 
     renderer.Present();
 }

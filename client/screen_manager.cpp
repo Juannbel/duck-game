@@ -632,7 +632,7 @@ void ScreenManager::server_disconnected_screen() {
     }
 }
 
-void ScreenManager::show_lobby_text() {
+void ScreenManager::show_lobby_text(Snapshot& last_snapshot) {
     SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Break the boxes to start",
                                                                  SDL_Color{255, 255, 255, 255}));
 
@@ -644,4 +644,21 @@ void ScreenManager::show_lobby_text() {
     info_rect.y = LOBBY_MAP_Y + (LOBBY_MAP_HEIGHT - info_rect.h) / 2;
     camera.transform_rect(info_rect);
     renderer.Copy(info, SDL2pp::NullOpt, info_rect);
+
+    for (const auto& duck: last_snapshot.ducks) {
+        SDL2pp::Texture duck_name(renderer, primary_font.RenderText_Solid(duck.player_name,
+                                                                         SDL_Color{255, 255, 255, 255}));
+        SDL2pp::Rect duck_name_rect;
+        duck_name_rect.w = duck_name.GetSize().x*0.25;
+        duck_name_rect.h = duck_name.GetSize().y*0.25;
+
+        duck_name_rect.x = LOBBY_MAP_X;
+        duck_name_rect.x += duck.duck_id % 2 == 0 ? 75 - duck_name_rect.w/2 : LOBBY_MAP_WIDTH - 80 - duck_name_rect.w/2;
+        duck_name_rect.y = LOBBY_MAP_Y + (LOBBY_MAP_HEIGHT / 2) - 19;
+        duck_name_rect.y += duck.duck_id >= 2 ? ((LOBBY_MAP_HEIGHT / 2) - 8) : 0;
+
+        camera.transform_rect(duck_name_rect);
+        renderer.Copy(duck_name, SDL2pp::NullOpt, duck_name_rect);
+    }
+
 }
