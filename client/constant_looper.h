@@ -37,8 +37,9 @@ private:
     DuckController p2_controller;
     bool play_again;
     Camera camera;
-    RenderableMap map;
+    // screen_manager se encarga tambien de inicializar las texturas y data de animaciones
     ScreenManager screen_manager;
+    RenderableMap map;
     bool is_first_round;
 
     std::unordered_map<uint8_t, std::unique_ptr<RenderableDuck>> ducks_renderables;

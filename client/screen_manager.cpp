@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
@@ -35,7 +34,10 @@ ScreenManager::ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager
         map(map),
         camera(camera),
         play_again(play_again),
-        owner_started_game(false) {}
+        owner_started_game(false) {
+    TexturesProvider::load_textures(renderer);
+    AnimationDataProvider::load_animations_data();
+}
 
 bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     if (last_snapshot.game_finished) {
@@ -109,15 +111,13 @@ void ScreenManager::render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
 }
 
 bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
-    std::shared_ptr<SDL2pp::Texture> duck_texture(
-            TexturesProvider::get_instance(renderer).get_texture("duck"));
+    std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
 
     std::vector<Duck> ducks;
 
-    auto& animation_data_provider = AnimationDataProvider::get_instance();
     for (auto& duck: last_snapshot.ducks) {
-        animations[duck.duck_id] = animation_data_provider.get_animation_data(
+        animations[duck.duck_id] = AnimationDataProvider::get_animation_data(
                 "duck_" + std::to_string(duck.duck_id) + "_standing");
         ducks.push_back(duck);
     }
@@ -174,13 +174,11 @@ bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_sna
 }
 
 bool ScreenManager::end_game_screen(Snapshot& last_snapshot) {
-    std::shared_ptr<SDL2pp::Texture> duck_texture(
-            TexturesProvider::get_instance(renderer).get_texture("duck"));
+    std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
     std::vector<Duck> ducks;
-    auto& animation_data_provider = AnimationDataProvider::get_instance();
     for (auto& duck: last_snapshot.ducks) {
-        animations[duck.duck_id] = animation_data_provider.get_animation_data(
+        animations[duck.duck_id] = AnimationDataProvider::get_animation_data(
                 "duck_" + std::to_string(duck.duck_id) + "_standing");
         ducks.push_back(duck);
     }

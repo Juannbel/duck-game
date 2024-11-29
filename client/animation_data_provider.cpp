@@ -14,6 +14,8 @@
 static Config& config = Config::get_instance();
 const static int FPS = config.get_client_fps();
 
+std::unordered_map<std::string, AnimationData> AnimationDataProvider::frames_data;
+
 void AnimationDataProvider::load_animations_data() {
     for (uint8_t i = 0; i < MAX_DUCKS; i++) {
         load_from_yaml("duck_" + std::to_string(i),

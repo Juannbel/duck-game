@@ -7,8 +7,6 @@
 #include <SDL_render.h>
 #include <yaml-cpp/yaml.h>
 
-#include "client/animation_data_provider.h"
-#include "client/textures_provider.h"
 #include "common/snapshot.h"
 
 #include "animation.h"
@@ -25,12 +23,10 @@ private:
     bool facing_up;
 
     static std::unordered_map<GunType, std::string> gun_to_string;
-
-    void load_gun_animation(const GunType& gun, AnimationDataProvider& anim_prov,
-                            TexturesProvider& text_prov);
+    void load_gun_animation(const GunType& gun);
 
 public:
-    explicit RenderableEquippedGun(SDL2pp::Renderer& renderer);
+    RenderableEquippedGun();
 
     void update(const Duck& duck);
 

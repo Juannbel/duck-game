@@ -4,17 +4,16 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "SDL2pp/Rect.hh"
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 
-RenderableCollectable::RenderableCollectable(uint32_t id, GunType type, SDL2pp::Renderer& renderer):
+RenderableCollectable::RenderableCollectable(uint32_t id, GunType type):
         id(id),
-        animation(*TexturesProvider::get_instance(renderer).get_texture("collectables"),
-                  AnimationDataProvider::get_instance().get_animation_data(
-                          "collectables_" + collectable_to_string[type])),
+        animation(*TexturesProvider::get_texture("collectables"),
+                  AnimationDataProvider::get_animation_data("collectables_" +
+                                                            collectable_to_string[type])),
         position(0, 0) {}
 
 uint32_t RenderableCollectable::get_id() { return id; }

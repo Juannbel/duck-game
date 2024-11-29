@@ -6,18 +6,16 @@
 #include "client/textures_provider.h"
 #include "common/snapshot.h"
 
-RenderableBox::RenderableBox(uint32_t id, SDL2pp::Renderer& renderer): id(id), position(0, 0) {
-    std::shared_ptr<SDL2pp::Texture> texture(
-            TexturesProvider::get_instance(renderer).get_texture("boxes"));
-    auto& animation_data_provider = AnimationDataProvider::get_instance();
+RenderableBox::RenderableBox(uint32_t id): id(id), position(0, 0) {
+    std::shared_ptr<SDL2pp::Texture> texture(TexturesProvider::get_texture("boxes"));
     animations[NoDamage] =
-            new Animation(*texture, animation_data_provider.get_animation_data("box_no_damage"));
-    animations[LittleDamage] = new Animation(
-            *texture, animation_data_provider.get_animation_data("box_little_damage"));
-    animations[MediumDamage] = new Animation(
-            *texture, animation_data_provider.get_animation_data("box_medium_damage"));
+            new Animation(*texture, AnimationDataProvider::get_animation_data("box_no_damage"));
+    animations[LittleDamage] =
+            new Animation(*texture, AnimationDataProvider::get_animation_data("box_little_damage"));
+    animations[MediumDamage] =
+            new Animation(*texture, AnimationDataProvider::get_animation_data("box_medium_damage"));
     animations[HeavyDamage] =
-            new Animation(*texture, animation_data_provider.get_animation_data("box_heavy_damage"));
+            new Animation(*texture, AnimationDataProvider::get_animation_data("box_heavy_damage"));
 
     curr_animation = animations[NoDamage];
 }

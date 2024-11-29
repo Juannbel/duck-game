@@ -19,7 +19,7 @@ private:
     SDL2pp::Point position;
 
 public:
-    explicit RenderableBox(uint32_t id, SDL2pp::Renderer& renderer);
+    explicit RenderableBox(uint32_t id);
 
     void update(const Box& box_snapshot);
 
