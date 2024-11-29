@@ -3,18 +3,21 @@
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
 
-RenderableHelmet::RenderableHelmet(): curr_animation(nullptr), position(0, 0), facing_right(true) {
+RenderableHelmet::RenderableHelmet(SDL2pp::Renderer& renderer): curr_animation(nullptr), position(0, 0), facing_right(true) {
+    auto& animation_data_provider = AnimationDataProvider::get_instance();
+    auto& textures_provider = TexturesProvider::get_instance(renderer);
+
     animations["standing"] =
-            new Animation(*TexturesProvider::get_texture("helmet"),
-                          AnimationDataProvider::get_animation_data("helmet_standing"));
+            new Animation(*textures_provider.get_texture("helmet"),
+                          animation_data_provider.get_animation_data("helmet_standing"));
 
     animations["running"] =
-            new Animation(*TexturesProvider::get_texture("helmet"),
-                          AnimationDataProvider::get_animation_data("helmet_running"));
+            new Animation(*textures_provider.get_texture("helmet"),
+                          animation_data_provider.get_animation_data("helmet_running"));
 
     animations["laying"] =
-            new Animation(*TexturesProvider::get_texture("helmet"),
-                          AnimationDataProvider::get_animation_data("helmet_laying"));
+            new Animation(*textures_provider.get_texture("helmet"),
+                          animation_data_provider.get_animation_data("helmet_laying"));
 }
 
 void RenderableHelmet::update(const Duck& duck) {

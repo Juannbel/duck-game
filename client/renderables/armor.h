@@ -19,7 +19,7 @@ private:
     bool facing_right;
 
 public:
-    RenderableArmor();
+    explicit RenderableArmor(SDL2pp::Renderer& renderer);
 
     void update(const Duck& duck);
 

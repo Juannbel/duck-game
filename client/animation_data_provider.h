@@ -8,16 +8,21 @@
 
 class AnimationDataProvider {
 private:
-    static std::unordered_map<std::string, AnimationData> frames_data;
+    AnimationDataProvider() { load_animations_data(); }
 
-    AnimationDataProvider() {}
+    std::unordered_map<std::string, AnimationData> frames_data;
 
-    static void load_from_yaml(const std::string& name, const std::string& path);
+    void load_from_yaml(const std::string& name, const std::string& path);
 
 public:
-    static const AnimationData& get_animation_data(const std::string& name);
+    static AnimationDataProvider& get_instance() {
+        static AnimationDataProvider instance;
+        return instance;
+    }
 
-    static void load_animations_data();
+    const AnimationData& get_animation_data(const std::string& name);
+
+    void load_animations_data();
 };
 
 #endif

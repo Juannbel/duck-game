@@ -4,22 +4,26 @@
 #include "client/textures_provider.h"
 #include "common/snapshot.h"
 
-RenderableWings::RenderableWings(uint8_t duck_id):
+RenderableWings::RenderableWings(uint8_t duck_id, SDL2pp::Renderer& renderer):
         duck_id(duck_id), position(0, 0), facing_right(true) {
-    load_animation("standing");
-    load_animation("walking");
-    load_animation("falling");
-    load_animation("armed");
-    load_animation("laying");
-    load_animation("flapping");
-    load_animation("dead");
+
+    auto& anim_provider = AnimationDataProvider::get_instance();
+    auto& text_provider = TexturesProvider::get_instance(renderer);
+
+    load_animation("standing", anim_provider, text_provider);
+    load_animation("walking", anim_provider, text_provider);
+    load_animation("falling", anim_provider, text_provider);
+    load_animation("armed", anim_provider, text_provider);
+    load_animation("laying", anim_provider, text_provider);
+    load_animation("flapping", anim_provider, text_provider);
+    load_animation("dead", anim_provider, text_provider);
 
     curr_animation = animations["standing"];
 }
 
-void RenderableWings::load_animation(const std::string& name) {
-    animations[name] = new Animation(*TexturesProvider::get_texture("wings"),
-                                     AnimationDataProvider::get_animation_data(
+void RenderableWings::load_animation(const std::string& name, AnimationDataProvider& anim_provider, TexturesProvider& text_provider) {
+    animations[name] = new Animation(*text_provider.get_texture("wings"),
+                                     anim_provider.get_animation_data(
                                              "wings_" + std::to_string(duck_id) + "_" + name));
 }
 

@@ -7,20 +7,23 @@
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 
-RenderableEquippedGun::RenderableEquippedGun():
+RenderableEquippedGun::RenderableEquippedGun(SDL2pp::Renderer& renderer):
         position(0, 0), facing_right(true), facing_up(false) {
 
+    auto& animation_data_provider = AnimationDataProvider::get_instance();
+    auto& textures_provider = TexturesProvider::get_instance(renderer);
+
     for (auto& gun: gun_to_string) {
-        load_gun_animation(gun.first);
+        load_gun_animation(gun.first, animation_data_provider, textures_provider);
     }
     current_gun = None;
     curr_animation = guns[None];
 }
 
-void RenderableEquippedGun::load_gun_animation(const GunType& gun) {
+void RenderableEquippedGun::load_gun_animation(const GunType& gun, AnimationDataProvider& anim_prov, TexturesProvider& text_prov) {
     guns[gun] =
-            new Animation(*TexturesProvider::get_texture("guns"),
-                          AnimationDataProvider::get_animation_data("guns_" + gun_to_string[gun]));
+            new Animation(*text_prov.get_texture("guns"),
+                          anim_prov.get_animation_data("guns_" + gun_to_string[gun]));
 }
 
 std::unordered_map<GunType, std::string> RenderableEquippedGun::gun_to_string{

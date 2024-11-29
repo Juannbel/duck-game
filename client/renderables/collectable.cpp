@@ -10,10 +10,10 @@
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 
-RenderableCollectable::RenderableCollectable(uint32_t id, GunType type):
+RenderableCollectable::RenderableCollectable(uint32_t id, GunType type, SDL2pp::Renderer& renderer):
         id(id),
-        animation(*TexturesProvider::get_texture("collectables"),
-                  AnimationDataProvider::get_animation_data("collectables_" +
+        animation(*TexturesProvider::get_instance(renderer).get_texture("collectables"),
+                  AnimationDataProvider::get_instance().get_animation_data("collectables_" +
                                                             collectable_to_string[type])),
         position(0, 0) {}
 

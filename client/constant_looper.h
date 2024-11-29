@@ -18,7 +18,6 @@
 #include "client/sound_manager.h"
 #include "common/blocking_queue.h"
 #include "common/commands.h"
-#include "common/map_dto.h"
 #include "common/snapshot.h"
 #include "renderables/duck.h"
 
@@ -37,7 +36,6 @@ private:
     DuckController p1_controller;
     DuckController p2_controller;
     bool play_again;
-    MapDto map_dto;
     Camera camera;
     RenderableMap map;
     ScreenManager screen_manager;

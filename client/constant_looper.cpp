@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
@@ -26,8 +27,6 @@
 #include "common/blocking_queue.h"
 #include "common/config.h"
 #include "common/lobby.h"
-#include "common/map_dto.h"
-#include "common/map_loader.h"
 #include "common/snapshot.h"
 
 #include "animation_data_provider.h"
@@ -42,7 +41,6 @@ const static std::string WIN_TITLE = config.get_window_title();
 const static int WIN_WIDTH = config.get_window_width();
 const static int WIN_HEIGHT = config.get_window_height();
 const static uint8_t FIRST_GAMEPAD_PLAYER = config.get_first_gamepad_player();
-const std::string LOBBY_MAP_PATH = DATA_PATH "/server/lobby.yaml";
 
 ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
@@ -56,35 +54,13 @@ ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snaps
         p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS, FIRST_GAMEPAD_PLAYER == 0 || duck_ids.second == INVALID_DUCK_ID ? 0 : 1),
         p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS, FIRST_GAMEPAD_PLAYER == 0 ? 1 : 0),
         play_again(false),
-        map_dto(),
         camera(renderer),
-        map(map_dto),
+        map(renderer),
         screen_manager(window, sound_manager, renderer, camera, map, this->duck_ids, play_again),
         is_first_round(true) {}
 
 bool ConstantLooper::run() try {
-    TexturesProvider::load_textures(renderer);
-    AnimationDataProvider::load_animations_data();
-
-    MapLoader map_loader;
-    map_dto = map_loader.load_map(LOBBY_MAP_PATH).map_dto;
-
-    map.update(map_dto);
-
-    if (!screen_manager.waiting_screen(snapshot_q, last_snapshot))
-        return false;
-
-    process_snapshot();
-
-    std::cout << "PROCESADA LA PRIMERA" << std::endl;
-
     bool keep_running = true;
-    if (last_snapshot.game_finished) {
-        std::cout << "GAME FINISHED no iniciada" << std::endl;
-        // partida no iniciada
-        screen_manager.between_rounds_screen(snapshot_q, last_snapshot);
-        return play_again;
-    }
 
     while (keep_running) {
         uint32_t t1 = SDL_GetTicks();
@@ -105,7 +81,6 @@ bool ConstantLooper::run() try {
                 continue;
             clear_renderables();
             process_snapshot();
-            map.update(map_dto);
             camera.update(last_snapshot, !is_first_round);
             p1_controller.restart_movement();
             p2_controller.restart_movement();
@@ -157,7 +132,7 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 
 void ConstantLooper::process_snapshot() {
     if (!last_snapshot.maps.empty()) {
-        map_dto = last_snapshot.maps[0];
+        map.update(last_snapshot.maps[0]);
         actions_q.push({duck_ids.first, Ready});
         if (duck_ids.second != INVALID_DUCK_ID)
             actions_q.push({duck_ids.second, Ready});
@@ -180,7 +155,7 @@ void ConstantLooper::update_ducks() {
                 sound_manager.active_grenade_sound();
         } else {
             auto pair = ducks_renderables.emplace(duck.duck_id,
-                                                  std::make_unique<RenderableDuck>(duck.duck_id));
+                                                  std::make_unique<RenderableDuck>(duck.duck_id, renderer));
             if (!pair.second)
                 // Error al insertar, no hago el update
                 continue;
@@ -199,7 +174,7 @@ void ConstantLooper::update_boxes() {
         boxes_in_snapshot.insert(box.box_id);
         if (boxes_renderables.find(box.box_id) == boxes_renderables.end()) {
             auto pair = boxes_renderables.emplace(box.box_id,
-                                                  std::make_unique<RenderableBox>(box.box_id));
+                                                  std::make_unique<RenderableBox>(box.box_id, renderer));
             if (!pair.second)
                 continue;
         }
@@ -218,7 +193,7 @@ void ConstantLooper::update_collectables() {
         collectables_in_snapshot.insert(gun.gun_id);
         if (collectables_renderables.find(gun.gun_id) == collectables_renderables.end()) {
             auto pair = collectables_renderables.emplace(
-                    gun.gun_id, std::make_unique<RenderableCollectable>(gun.gun_id, gun.type));
+                    gun.gun_id, std::make_unique<RenderableCollectable>(gun.gun_id, gun.type, renderer));
             if (!pair.second)
                 continue;
         }
@@ -239,7 +214,7 @@ void ConstantLooper::update_bullets() {
         if (bullets_renderables.find(bullet.bullet_id) == bullets_renderables.end()) {
             auto pair = bullets_renderables.emplace(
                     bullet.bullet_id,
-                    std::make_unique<RenderableBullet>(bullet.bullet_id, bullet.type));
+                    std::make_unique<RenderableBullet>(bullet.bullet_id, bullet.type, renderer));
             if (!pair.second)
                 continue;
 
@@ -270,22 +245,20 @@ void ConstantLooper::render(Camera& camera, RenderableMap& map) {
         bullet.second->render(renderer, camera);
     }
 
-    bool render_myself = false;
     for (auto& duck: ducks_renderables) {
         if (duck.first == duck_ids.first || duck.first == duck_ids.second) {
-            render_myself = true;
             continue;
         }
         duck.second->render(renderer, camera);
     }
 
-    if (render_myself) {
+    if (ducks_renderables.find(duck_ids.first) != ducks_renderables.end()) {
         ducks_renderables[duck_ids.first]->render(renderer, camera);
-
-        if (duck_ids.second != INVALID_DUCK_ID) {
-            ducks_renderables[duck_ids.second]->render(renderer, camera);
-        }
     }
+    if (ducks_renderables.find(duck_ids.second) != ducks_renderables.end()) {
+        ducks_renderables[duck_ids.second]->render(renderer, camera);
+    }
+
 
     for (auto& collectable: collectables_renderables) {
         collectable.second->render(renderer, camera);

@@ -7,6 +7,8 @@
 #include <SDL_render.h>
 #include <yaml-cpp/yaml.h>
 
+#include "client/animation_data_provider.h"
+#include "client/textures_provider.h"
 #include "common/snapshot.h"
 
 #include "animation.h"
@@ -21,10 +23,10 @@ private:
 
     bool facing_right;
 
-    void load_animation(const std::string& name);
+    void load_animation(const std::string& name, AnimationDataProvider& anim_provider, TexturesProvider& text_provider);
 
 public:
-    explicit RenderableWings(uint8_t duck_id);
+    RenderableWings(uint8_t duck_id, SDL2pp::Renderer& renderer);
 
     void update(const Duck& duck);
 

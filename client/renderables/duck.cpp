@@ -9,34 +9,39 @@
 #include "client/textures_provider.h"
 #include "common/shared_constants.h"
 
-RenderableDuck::RenderableDuck(uint8_t duck_id):
+RenderableDuck::RenderableDuck(uint8_t duck_id, SDL2pp::Renderer& renderer):
         duck_id(duck_id),
-        wings(duck_id),
-        feathers(duck_id),
+        gun(renderer),
+        helmet(renderer),
+        armor(renderer),
+        wings(duck_id, renderer),
+        feathers(duck_id, renderer),
         position(50, 50),
         is_facing_right(true),
         is_alive(true) {
-    load_animations();
+    auto& animation_data_provider = AnimationDataProvider::get_instance();
+    auto& textures_provider = TexturesProvider::get_instance(renderer);
+    load_animations(animation_data_provider, textures_provider);
     curr_animation = animations["standing"];
 }
 
-void RenderableDuck::load_animation(const std::string& animation_name) {
+void RenderableDuck::load_animation(const std::string& animation_name, AnimationDataProvider& anim_prov, TexturesProvider& text_prov) {
     animations[animation_name] =
-            new Animation(*TexturesProvider::get_texture("duck"),
-                          AnimationDataProvider::get_animation_data(
+            new Animation(*text_prov.get_texture("duck"),
+                          anim_prov.get_animation_data(
                                   "duck_" + std::to_string(duck_id) + "_" + animation_name));
 }
 
 uint8_t RenderableDuck::get_id() { return duck_id; }
 
-void RenderableDuck::load_animations() {
-    load_animation("dead");
-    load_animation("falling");
-    load_animation("jumping");
-    load_animation("laying");
-    load_animation("standing");
-    load_animation("walking");
-    load_animation("facing_up");
+void RenderableDuck::load_animations(AnimationDataProvider& anim_prov, TexturesProvider& text_prov) {
+    load_animation("dead", anim_prov, text_prov);
+    load_animation("falling", anim_prov, text_prov);
+    load_animation("jumping", anim_prov, text_prov);
+    load_animation("laying", anim_prov, text_prov);
+    load_animation("standing", anim_prov, text_prov);
+    load_animation("walking", anim_prov, text_prov);
+    load_animation("facing_up", anim_prov, text_prov);
 }
 
 void RenderableDuck::update(const Duck& duck) {

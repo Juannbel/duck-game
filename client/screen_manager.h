@@ -25,6 +25,7 @@ private:
     RenderableMap& map;
     Camera& camera;
     bool& play_again;
+    bool owner_started_game;
 
     void render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
                           std::shared_ptr<SDL2pp::Texture> ducks_texture,
@@ -41,8 +42,6 @@ public:
     ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager, SDL2pp::Renderer& renderer,
                   Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids,
                   bool& play_again);
-
-    bool waiting_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 
     bool between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
 

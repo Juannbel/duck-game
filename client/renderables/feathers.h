@@ -13,7 +13,7 @@ private:
     uint8_t iterations_left;
 
 public:
-    explicit RenderableFeathers(uint8_t duck_id);
+    RenderableFeathers(uint8_t duck_id, SDL2pp::Renderer& renderer);
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 

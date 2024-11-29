@@ -7,10 +7,10 @@
 #include "common/shared_constants.h"
 #include "common/snapshot.h"
 
-RenderableBullet::RenderableBullet(uint32_t id, GunType type):
+RenderableBullet::RenderableBullet(uint32_t id, GunType type, SDL2pp::Renderer& renderer):
         id(id),
-        animation(*TexturesProvider::get_texture("bullets"),
-                  AnimationDataProvider::get_animation_data("bullets_" + gun_to_string[type])),
+        animation(*TexturesProvider::get_instance(renderer).get_texture("bullets"),
+                  AnimationDataProvider::get_instance().get_animation_data("bullets_" + gun_to_string[type])),
         position(0, 0),
         angle() {}
 

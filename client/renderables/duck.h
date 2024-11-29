@@ -9,11 +9,13 @@
 #include <SDL_stdinc.h>
 
 #include "SDL2pp/Point.hh"
+#include "client/animation_data_provider.h"
 #include "client/renderables/armor.h"
 #include "client/renderables/equipped_gun.h"
 #include "client/renderables/feathers.h"
 #include "client/renderables/helmet.h"
 #include "client/renderables/wings.h"
+#include "client/textures_provider.h"
 #include "common/snapshot.h"
 
 #include "animation.h"
@@ -36,13 +38,13 @@ private:
     bool is_facing_right;
     bool is_alive;
 
-    void load_animations();
+    void load_animations(AnimationDataProvider& anim_prov, TexturesProvider& text_prov);
 
-    void load_animation(const std::string& animation_name);
+    void load_animation(const std::string& animation_name, AnimationDataProvider& anim_prov, TexturesProvider& text_prov);
 
 
 public:
-    explicit RenderableDuck(uint8_t duck_id);
+    RenderableDuck(uint8_t duck_id, SDL2pp::Renderer& renderer);
 
     void update(const Duck& duck);
 

@@ -3,17 +3,19 @@
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
 
-RenderableArmor::RenderableArmor(): curr_animation(nullptr), position(0, 0), facing_right(true) {
+RenderableArmor::RenderableArmor(SDL2pp::Renderer& renderer): curr_animation(nullptr), position(0, 0), facing_right(true) {
+    auto& animation_data_provider = AnimationDataProvider::get_instance();
+    auto& textures_provider = TexturesProvider::get_instance(renderer);
     animations["standing"] =
-            new Animation(*TexturesProvider::get_texture("armor"),
-                          AnimationDataProvider::get_animation_data("armor_standing"));
+            new Animation(*textures_provider.get_texture("armor"),
+                          animation_data_provider.get_animation_data("armor_standing"));
 
     animations["running"] =
-            new Animation(*TexturesProvider::get_texture("armor"),
-                          AnimationDataProvider::get_animation_data("armor_running"));
+            new Animation(*textures_provider.get_texture("armor"),
+                          animation_data_provider.get_animation_data("armor_running"));
 
-    animations["laying"] = new Animation(*TexturesProvider::get_texture("armor"),
-                                         AnimationDataProvider::get_animation_data("armor_laying"));
+    animations["laying"] = new Animation(*textures_provider.get_texture("armor"),
+                                         animation_data_provider.get_animation_data("armor_laying"));
 }
 
 void RenderableArmor::update(const Duck& duck) {

@@ -7,8 +7,6 @@
 
 static Config& config = Config::get_instance();
 
-std::unordered_map<std::string, std::shared_ptr<SDL2pp::Texture>> TexturesProvider::textures;
-
 void TexturesProvider::load_textures(SDL2pp::Renderer& renderer) {
     for (uint8_t i = 0; i < MAP_THEMES; i++) {
         textures["background_" + std::to_string(i)] = std::make_shared<SDL2pp::Texture>(

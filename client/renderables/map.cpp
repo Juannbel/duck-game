@@ -8,12 +8,18 @@
 #include "client/renderables/animation.h"
 #include "client/textures_provider.h"
 #include "common/map_dto.h"
+#include "common/map_loader.h"
 #include "common/shared_constants.h"
 
 #define PARALLAX_FACTOR 0.05f
 #define MARGIN 200
 
-RenderableMap::RenderableMap(const MapDto& map_dto) { update(map_dto); }
+const std::string LOBBY_MAP_PATH = DATA_PATH "/server/lobby.yaml";
+
+RenderableMap::RenderableMap(SDL2pp::Renderer& renderer) : textures_provider(TexturesProvider::get_instance(renderer)) {
+    MapLoader map_loader;
+    update(map_loader.load_map(LOBBY_MAP_PATH).map_dto);
+}
 
 void RenderableMap::render_first_round(SDL2pp::Renderer& renderer, Camera& camera) {
     SDL2pp::Rect background_rect;
@@ -69,18 +75,19 @@ void RenderableMap::render(SDL2pp::Renderer& renderer, Camera& camera) {
 
 void RenderableMap::update(const MapDto& new_map_dto) {
     map.clear();
-    background_texture =
-            TexturesProvider::get_texture("background_" + std::to_string(new_map_dto.theme));
 
-    std::shared_ptr<SDL2pp::Texture> solid_blocks_texture(TexturesProvider::get_texture("blocks_solid"));
-    std::shared_ptr<SDL2pp::Texture> non_solid_blocks_texture(TexturesProvider::get_texture("blocks_non_solid"));
+    background_texture =
+            textures_provider.get_texture("background_" + std::to_string(new_map_dto.theme));
+
+    std::shared_ptr<SDL2pp::Texture> solid_blocks_texture(textures_provider.get_texture("blocks_solid"));
+    std::shared_ptr<SDL2pp::Texture> non_solid_blocks_texture(textures_provider.get_texture("blocks_non_solid"));
     for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
         for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
             auto& block = new_map_dto.blocks[i][j];
             if (block.type == Empty)
                 continue;
 
-            AnimationData animation_data(AnimationDataProvider::get_animation_data(
+            AnimationData animation_data(AnimationDataProvider::get_instance().get_animation_data(
                     "blocks_" + std::to_string(new_map_dto.theme) + "_" +
                     std::to_string(static_cast<int>(block.type))));
             // BLOCK_SIZE + 1 para que no haya espacio entre bloques por redondeo

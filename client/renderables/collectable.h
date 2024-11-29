@@ -18,7 +18,7 @@ private:
     static std::unordered_map<GunType, std::string> collectable_to_string;
 
 public:
-    RenderableCollectable(uint32_t id, GunType type);
+    RenderableCollectable(uint32_t id, GunType type, SDL2pp::Renderer& renderer);
 
     void update(const Gun& snapshot);
 

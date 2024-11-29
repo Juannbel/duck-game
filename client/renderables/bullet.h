@@ -22,7 +22,7 @@ private:
     static std::unordered_map<GunType, std::string> gun_to_string;
 
 public:
-    RenderableBullet(uint32_t id, GunType type);
+    RenderableBullet(uint32_t id, GunType type, SDL2pp::Renderer& renderer);
 
     void update(const Bullet& snapshot);
 
