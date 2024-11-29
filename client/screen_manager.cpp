@@ -407,7 +407,7 @@ void ScreenManager::show_lobby_text(Snapshot& last_snapshot) {
     std::string message = "Break the boxes to start";
     if (!owner_started_game)
         message = "Waiting for owner to start";
-    else if (last_snapshot.boxes.size() == MAX_DUCKS - last_snapshot.ducks.size())
+    else if (last_snapshot.boxes.size() == 0)
         message = "Starting game...";
 
     SDL2pp::Texture info(renderer,
