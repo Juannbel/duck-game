@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <SDL_events.h>
 #include <SDL_gamecontroller.h>
+#include <SDL_joystick.h>
 
 #include "common/blocking_queue.h"
 #include "common/commands.h"
@@ -39,6 +40,7 @@ private:
 
     SDL_GameController* joystick;
     int joystick_id;
+    SDL_JoystickID joystick_instance_id;
     bool joystick_enabled;
 
     Command last_move_command;

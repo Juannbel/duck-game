@@ -7,7 +7,12 @@
 #include <SDL_joystick.h>
 
 #include "common/commands.h"
+#include "common/config.h"
 #include "common/lobby.h"
+
+static Config& config = Config::get_instance();
+const int STICK_DEAD_ZONE = config.get_stick_dead_zone();
+const int TRIGGER_DEAD_ZONE = config.get_trigger_dead_zone();
 
 DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
                                ControlScheme controls, int joystick_id):
@@ -31,6 +36,7 @@ DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapsh
         joystick = SDL_GameControllerOpen(joystick_id);
         if (joystick) {
             joystick_enabled = true;
+            joystick_instance_id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(joystick));
         }
     }
 
@@ -188,7 +194,7 @@ void DuckController::handle_stop_shoot() { actions_q.push({duck_id, StopShooting
 void DuckController::handle_stop_look_up() { actions_q.push({duck_id, StopLookup}); }
 
 void DuckController::process_joystick_event(const SDL_Event& event) {
-    if (event.cdevice.which != joystick_id) {
+    if (event.cdevice.which != joystick_instance_id) {
         return;
     }
 
@@ -211,11 +217,11 @@ void DuckController::process_joystick_event(const SDL_Event& event) {
 void DuckController::handle_joy_axis_motion(const SDL_Event& event, SDL_Event& fake_event) {
     switch (event.caxis.axis) {
         case SDL_CONTROLLER_AXIS_LEFTX:
-            if (event.caxis.value < -3200) {
+            if (event.caxis.value < -STICK_DEAD_ZONE) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.move_left;
                 handle_key_down(fake_event);
-            } else if (event.caxis.value > 3200) {
+            } else if (event.caxis.value > STICK_DEAD_ZONE) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.move_right;
                 handle_key_down(fake_event);
@@ -228,7 +234,7 @@ void DuckController::handle_joy_axis_motion(const SDL_Event& event, SDL_Event& f
             break;
 
         case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-            if (event.caxis.value > 16000) {
+            if (event.caxis.value > TRIGGER_DEAD_ZONE) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.pick_up;
                 handle_key_down(fake_event);
@@ -240,7 +246,7 @@ void DuckController::handle_joy_axis_motion(const SDL_Event& event, SDL_Event& f
             break;
 
         case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-            if (event.caxis.value > 16000) {
+            if (event.caxis.value > TRIGGER_DEAD_ZONE) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.shoot;
                 handle_key_down(fake_event);

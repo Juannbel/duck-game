@@ -23,13 +23,11 @@
 #include "client/renderables/duck.h"
 #include "client/renderables/map.h"
 #include "client/screen_manager.h"
-#include "client/textures_provider.h"
 #include "common/blocking_queue.h"
 #include "common/config.h"
 #include "common/lobby.h"
 #include "common/snapshot.h"
 
-#include "animation_data_provider.h"
 #include "controls_config.h"
 
 #define USE_CAMERA true
