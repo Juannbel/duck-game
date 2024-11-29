@@ -65,9 +65,9 @@ void GameOperator::initialize_boxes(const Map& map_info) {
     boxes.clear();
     uint32_t id = 0;
     for (auto const& box: map_info.boxes_spawns) {
-        ++id;
         boxes.emplace(id,
                       BoxEntity(box.first * BLOCK_SIZE, box.second * BLOCK_SIZE, id, collisions));
+        ++id;
     }
 }
 
@@ -85,9 +85,12 @@ void GameOperator::initialize_game(const Map& map_info,
 }
 
 bool GameOperator::check_start_game() {
-    if (players.size() > MAX_DUCKS - boxes.size()) {
-        return false;
+    for (auto& [duck_id, duck] : players) {
+        if (boxes.find(duck_id) != boxes.end()) {
+            return false;
+        }
     }
+    boxes.clear();
     return true;
 }
 
