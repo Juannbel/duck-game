@@ -14,9 +14,10 @@
 #define PARALLAX_FACTOR 0.05f
 #define MARGIN 200
 
-const std::string LOBBY_MAP_PATH = DATA_PATH "/server/lobby.yaml";
+const char LOBBY_MAP_PATH[] = DATA_PATH "/server/lobby.yaml";
 
-RenderableMap::RenderableMap(SDL2pp::Renderer& renderer) : textures_provider(TexturesProvider::get_instance(renderer)) {
+RenderableMap::RenderableMap(SDL2pp::Renderer& renderer):
+        textures_provider(TexturesProvider::get_instance(renderer)) {
     MapLoader map_loader;
     update(map_loader.load_map(LOBBY_MAP_PATH).map_dto);
 }
@@ -79,8 +80,10 @@ void RenderableMap::update(const MapDto& new_map_dto) {
     background_texture =
             textures_provider.get_texture("background_" + std::to_string(new_map_dto.theme));
 
-    std::shared_ptr<SDL2pp::Texture> solid_blocks_texture(textures_provider.get_texture("blocks_solid"));
-    std::shared_ptr<SDL2pp::Texture> non_solid_blocks_texture(textures_provider.get_texture("blocks_non_solid"));
+    std::shared_ptr<SDL2pp::Texture> solid_blocks_texture(
+            textures_provider.get_texture("blocks_solid"));
+    std::shared_ptr<SDL2pp::Texture> non_solid_blocks_texture(
+            textures_provider.get_texture("blocks_non_solid"));
     for (int i = 0; i < MAP_HEIGHT_BLOCKS; i++) {
         for (int j = 0; j < MAP_WIDTH_BLOCKS; j++) {
             auto& block = new_map_dto.blocks[i][j];
@@ -93,7 +96,9 @@ void RenderableMap::update(const MapDto& new_map_dto) {
             // BLOCK_SIZE + 1 para que no haya espacio entre bloques por redondeo
             SDL2pp::Rect dst_rect(j * BLOCK_SIZE, i * BLOCK_SIZE, BLOCK_SIZE + 1, BLOCK_SIZE + 1);
 
-            map.push_back(RenderableBlock(animation_data.frames[0].rect, dst_rect, block.solid ? solid_blocks_texture : non_solid_blocks_texture));
+            map.push_back(
+                    RenderableBlock(animation_data.frames[0].rect, dst_rect,
+                                    block.solid ? solid_blocks_texture : non_solid_blocks_texture));
         }
     }
 }

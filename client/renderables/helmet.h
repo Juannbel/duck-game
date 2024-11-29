@@ -19,7 +19,7 @@ private:
     bool facing_right;
 
 public:
-    RenderableHelmet(SDL2pp::Renderer& renderer);
+    explicit RenderableHelmet(SDL2pp::Renderer& renderer);
 
     void update(const Duck& duck);
 

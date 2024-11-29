@@ -23,7 +23,8 @@ private:
 
     bool facing_right;
 
-    void load_animation(const std::string& name, AnimationDataProvider& anim_provider, TexturesProvider& text_provider);
+    void load_animation(const std::string& name, AnimationDataProvider& anim_provider,
+                        TexturesProvider& text_provider);
 
 public:
     RenderableWings(uint8_t duck_id, SDL2pp::Renderer& renderer);

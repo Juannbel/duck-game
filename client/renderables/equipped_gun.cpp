@@ -20,10 +20,10 @@ RenderableEquippedGun::RenderableEquippedGun(SDL2pp::Renderer& renderer):
     curr_animation = guns[None];
 }
 
-void RenderableEquippedGun::load_gun_animation(const GunType& gun, AnimationDataProvider& anim_prov, TexturesProvider& text_prov) {
-    guns[gun] =
-            new Animation(*text_prov.get_texture("guns"),
-                          anim_prov.get_animation_data("guns_" + gun_to_string[gun]));
+void RenderableEquippedGun::load_gun_animation(const GunType& gun, AnimationDataProvider& anim_prov,
+                                               TexturesProvider& text_prov) {
+    guns[gun] = new Animation(*text_prov.get_texture("guns"),
+                              anim_prov.get_animation_data("guns_" + gun_to_string[gun]));
 }
 
 std::unordered_map<GunType, std::string> RenderableEquippedGun::gun_to_string{

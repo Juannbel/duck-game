@@ -34,8 +34,8 @@ bool CollisionChecks::out_of_map(float x, float y) {
 }
 
 bool CollisionChecks::out_of_background(float x, float y) {
-    return x < -MAP_EDGE_X*2 || x > MAP_WIDTH_PIXELS + MAP_EDGE_X*2 ||
-           y > MAP_HEIGHT_PIXELS + MAP_EDGE_Y*2.5 || y < -MAP_EDGE_Y*3;
+    return x < -MAP_EDGE_X * 2 || x > MAP_WIDTH_PIXELS + MAP_EDGE_X * 2 ||
+           y > MAP_HEIGHT_PIXELS + MAP_EDGE_Y * 2.5 || y < -MAP_EDGE_Y * 3;
 }
 
 bool check_collision_with_no_solid(float new_y, const Rectangle& entity,

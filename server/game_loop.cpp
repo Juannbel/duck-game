@@ -8,6 +8,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/config.h"
@@ -24,7 +25,7 @@ const milliseconds RATE(1000 / TICKS);
 const uint its_after_round = 3000 / (1000 / TICKS);
 const uint8_t ROUNDS_TO_WIN = config.get_rounds_to_win();
 const uint8_t ROUNDS_BETWEEN_STATS = config.get_rounds_between_stats();
-const std::string LOBBY_MAP = DATA_PATH "/server/lobby.yaml";
+const char LOBBY_MAP[] = DATA_PATH "/server/lobby.yaml";
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
@@ -76,7 +77,6 @@ void GameLoop::run() {
             std::this_thread::sleep_for(rest);
         }
         t1 += RATE;
-
     }
 
     round_finished = true;
@@ -216,9 +216,7 @@ void GameLoop::start_game() {
     game_operator.initialize_boxes(curr_map);
 }
 
-void GameLoop::stop() {
-    _keep_running = false;
-}
+void GameLoop::stop() { _keep_running = false; }
 
 void GameLoop::notify_not_started() {
     Snapshot status = {};
@@ -231,9 +229,7 @@ void GameLoop::notify_not_started() {
     push_responce(status);
 }
 
-GameLoop::~GameLoop() {
-    actions_queue.close();
-}
+GameLoop::~GameLoop() { actions_queue.close(); }
 
 void GameLoop::sleep_checking(const milliseconds& time) {
     uint its_to_sleep = time / RATE;
@@ -243,7 +239,7 @@ void GameLoop::sleep_checking(const milliseconds& time) {
     }
 }
 
-void GameLoop::create_new_map(std::map<uint8_t, uint8_t> &players_readys) {
+void GameLoop::create_new_map(std::map<uint8_t, uint8_t>& players_readys) {
     std::lock_guard<std::mutex> lock(map_lock);
     for (auto [id, name]: ducks_info) {
         players_readys[id] = 0;

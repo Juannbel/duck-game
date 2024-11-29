@@ -13,10 +13,10 @@ private:
     // El map para almacenar las texturas, clave: nombre de la textura, valor: puntero a la textura
     std::unordered_map<std::string, std::shared_ptr<SDL2pp::Texture>> textures;
 
-    explicit TexturesProvider(SDL2pp::Renderer &renderer) { load_textures(renderer); }
+    explicit TexturesProvider(SDL2pp::Renderer& renderer) { load_textures(renderer); }
 
 public:
-    static TexturesProvider& get_instance(SDL2pp::Renderer &renderer) {
+    static TexturesProvider& get_instance(SDL2pp::Renderer& renderer) {
         static TexturesProvider instance(renderer);
         return instance;
     }

@@ -1,6 +1,7 @@
 #include "duck_controller.h"
 
 #include <algorithm>
+
 #include <SDL_events.h>
 #include <SDL_gamecontroller.h>
 #include <SDL_joystick.h>
@@ -23,7 +24,7 @@ DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapsh
     if (duck_id != INVALID_DUCK_ID)
         update_duck_status();
 
-    if (joystick_id == 0) // lo añadimos solo una vez
+    if (joystick_id == 0)  // lo añadimos solo una vez
         SDL_GameControllerAddMappingsFromFile(DATA_PATH "/gamepad_mappings.txt");
 
     if (SDL_IsGameController(joystick_id)) {
@@ -192,8 +193,24 @@ void DuckController::process_joystick_event(const SDL_Event& event) {
     }
 
     SDL_Event fake_event;
-    if (event.type == SDL_CONTROLLERAXISMOTION) {
-        if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX) {
+    switch (event.type) {
+        case SDL_CONTROLLERAXISMOTION:
+            handle_joy_axis_motion(event, fake_event);
+            break;
+
+        case SDL_CONTROLLERBUTTONDOWN:
+            handle_joy_button_down(event, fake_event);
+            break;
+
+        case SDL_CONTROLLERBUTTONUP:
+            handle_joy_button_up(event, fake_event);
+            break;
+    }
+}
+
+void DuckController::handle_joy_axis_motion(const SDL_Event& event, SDL_Event& fake_event) {
+    switch (event.caxis.axis) {
+        case SDL_CONTROLLER_AXIS_LEFTX:
             if (event.caxis.value < -3200) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.move_left;
@@ -208,7 +225,9 @@ void DuckController::process_joystick_event(const SDL_Event& event) {
                 move_command = true;
                 last_move_command = StopMoving;
             }
-        } else if (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT) {
+            break;
+
+        case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
             if (event.caxis.value > 16000) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.pick_up;
@@ -218,7 +237,9 @@ void DuckController::process_joystick_event(const SDL_Event& event) {
                 fake_event.key.keysym.sym = controls.pick_up;
                 handle_key_up(fake_event);
             }
-        } else if (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT) {
+            break;
+
+        case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
             if (event.caxis.value > 16000) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.shoot;
@@ -228,46 +249,44 @@ void DuckController::process_joystick_event(const SDL_Event& event) {
                 fake_event.key.keysym.sym = controls.shoot;
                 handle_key_up(fake_event);
             }
-        }
+            break;
     }
+}
 
-    if (event.type == SDL_CONTROLLERBUTTONDOWN) {
-        SDL_Event fake_event;
-        fake_event.type = SDL_KEYDOWN;
+void DuckController::handle_joy_button_down(const SDL_Event& event, SDL_Event& fake_event) {
+    fake_event.type = SDL_KEYDOWN;
 
-        switch (event.cbutton.button) {
-            case SDL_CONTROLLER_BUTTON_A:
-                fake_event.key.keysym.sym = controls.jump;
-                handle_key_down(fake_event);
-                break;
-            case SDL_CONTROLLER_BUTTON_B:
-                fake_event.key.keysym.sym = controls.lay_down;
-                handle_key_down(fake_event);
-                break;
-            case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-                fake_event.key.keysym.sym = controls.look_up;
-                handle_key_down(fake_event);
-                break;
-        }
+    switch (event.cbutton.button) {
+        case SDL_CONTROLLER_BUTTON_A:
+            fake_event.key.keysym.sym = controls.jump;
+            handle_key_down(fake_event);
+            break;
+        case SDL_CONTROLLER_BUTTON_B:
+            fake_event.key.keysym.sym = controls.lay_down;
+            handle_key_down(fake_event);
+            break;
+        case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+            fake_event.key.keysym.sym = controls.look_up;
+            handle_key_down(fake_event);
+            break;
     }
+}
 
-    if (event.type == SDL_CONTROLLERBUTTONUP) {
-        SDL_Event fake_event;
-        fake_event.type = SDL_KEYUP;
+void DuckController::handle_joy_button_up(const SDL_Event& event, SDL_Event& fake_event) {
+    fake_event.type = SDL_KEYUP;
 
-        switch (event.cbutton.button) {
-            case SDL_CONTROLLER_BUTTON_A:
-                fake_event.key.keysym.sym = controls.jump;
-                handle_key_up(fake_event);
-                break;
-            case SDL_CONTROLLER_BUTTON_B:
-                fake_event.key.keysym.sym = controls.lay_down;
-                handle_key_up(fake_event);
-                break;
-            case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-                fake_event.key.keysym.sym = controls.look_up;
-                handle_key_up(fake_event);
-                break;
-        }
+    switch (event.cbutton.button) {
+        case SDL_CONTROLLER_BUTTON_A:
+            fake_event.key.keysym.sym = controls.jump;
+            handle_key_up(fake_event);
+            break;
+        case SDL_CONTROLLER_BUTTON_B:
+            fake_event.key.keysym.sym = controls.lay_down;
+            handle_key_up(fake_event);
+            break;
+        case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+            fake_event.key.keysym.sym = controls.look_up;
+            handle_key_up(fake_event);
+            break;
     }
 }

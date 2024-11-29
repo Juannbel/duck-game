@@ -21,10 +21,11 @@ RenderableWings::RenderableWings(uint8_t duck_id, SDL2pp::Renderer& renderer):
     curr_animation = animations["standing"];
 }
 
-void RenderableWings::load_animation(const std::string& name, AnimationDataProvider& anim_provider, TexturesProvider& text_provider) {
-    animations[name] = new Animation(*text_provider.get_texture("wings"),
-                                     anim_provider.get_animation_data(
-                                             "wings_" + std::to_string(duck_id) + "_" + name));
+void RenderableWings::load_animation(const std::string& name, AnimationDataProvider& anim_provider,
+                                     TexturesProvider& text_provider) {
+    animations[name] = new Animation(
+            *text_provider.get_texture("wings"),
+            anim_provider.get_animation_data("wings_" + std::to_string(duck_id) + "_" + name));
 }
 
 void RenderableWings::update(const Duck& duck) {

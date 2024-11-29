@@ -73,10 +73,13 @@ private:
     void handle_stop_look_up();
 
     void process_joystick_event(const SDL_Event& event);
+    void handle_joy_axis_motion(const SDL_Event& event, SDL_Event& fake_event);
+    void handle_joy_button_up(const SDL_Event& event, SDL_Event& fake_event);
+    void handle_joy_button_down(const SDL_Event& event, SDL_Event& fake_event);
 
 public:
     DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
-                ControlScheme controls, int joystick_id = -1);
+                   ControlScheme controls, int joystick_id = -1);
 
     void update_duck_status();
 

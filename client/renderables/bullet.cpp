@@ -10,7 +10,8 @@
 RenderableBullet::RenderableBullet(uint32_t id, GunType type, SDL2pp::Renderer& renderer):
         id(id),
         animation(*TexturesProvider::get_instance(renderer).get_texture("bullets"),
-                  AnimationDataProvider::get_instance().get_animation_data("bullets_" + gun_to_string[type])),
+                  AnimationDataProvider::get_instance().get_animation_data("bullets_" +
+                                                                           gun_to_string[type])),
         position(0, 0),
         angle() {}
 

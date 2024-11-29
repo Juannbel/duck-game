@@ -3,7 +3,8 @@
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
 
-RenderableHelmet::RenderableHelmet(SDL2pp::Renderer& renderer): curr_animation(nullptr), position(0, 0), facing_right(true) {
+RenderableHelmet::RenderableHelmet(SDL2pp::Renderer& renderer):
+        curr_animation(nullptr), position(0, 0), facing_right(true) {
     auto& animation_data_provider = AnimationDataProvider::get_instance();
     auto& textures_provider = TexturesProvider::get_instance(renderer);
 

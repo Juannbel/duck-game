@@ -14,8 +14,8 @@
 #include "client/renderables/map.h"
 #include "client/textures_provider.h"
 #include "common/config.h"
-#include "common/snapshot.h"
 #include "common/shared_constants.h"
+#include "common/snapshot.h"
 
 #define END_GAME_DELAY 1000
 
@@ -109,7 +109,8 @@ void ScreenManager::render_duck_stat(const Duck& duck, SDL2pp::Rect rect,
 }
 
 bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
-    std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_instance(renderer).get_texture("duck"));
+    std::shared_ptr<SDL2pp::Texture> duck_texture(
+            TexturesProvider::get_instance(renderer).get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
 
     std::vector<Duck> ducks;
@@ -173,7 +174,8 @@ bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_sna
 }
 
 bool ScreenManager::end_game_screen(Snapshot& last_snapshot) {
-    std::shared_ptr<SDL2pp::Texture> duck_texture(TexturesProvider::get_instance(renderer).get_texture("duck"));
+    std::shared_ptr<SDL2pp::Texture> duck_texture(
+            TexturesProvider::get_instance(renderer).get_texture("duck"));
     std::vector<AnimationData> animations(MAX_DUCKS);
     std::vector<Duck> ducks;
     auto& animation_data_provider = AnimationDataProvider::get_instance();
@@ -410,27 +412,29 @@ void ScreenManager::show_lobby_text(Snapshot& last_snapshot) {
     else if (last_snapshot.boxes.size() == MAX_DUCKS - last_snapshot.ducks.size())
         message = "Starting game...";
 
-    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid(message,
-                                                                 SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture info(renderer,
+                         primary_font.RenderText_Solid(message, SDL_Color{255, 255, 255, 255}));
 
     SDL2pp::Rect info_rect;
 
-    info_rect.w = info.GetSize().x*0.6;
-    info_rect.h = info.GetSize().y*0.6;
+    info_rect.w = info.GetSize().x * 0.6;
+    info_rect.h = info.GetSize().y * 0.6;
     info_rect.x = LOBBY_MAP_X + (LOBBY_MAP_WIDTH - info_rect.w) / 2;
     info_rect.y = LOBBY_MAP_Y + (LOBBY_MAP_HEIGHT - info_rect.h) / 2;
     camera.transform_rect(info_rect);
     renderer.Copy(info, SDL2pp::NullOpt, info_rect);
 
     for (const auto& duck: last_snapshot.ducks) {
-        SDL2pp::Texture duck_name(renderer, primary_font.RenderText_Solid(duck.player_name,
-                                                                         SDL_Color{255, 255, 255, 255}));
+        SDL2pp::Texture duck_name(
+                renderer,
+                primary_font.RenderText_Solid(duck.player_name, SDL_Color{255, 255, 255, 255}));
         SDL2pp::Rect duck_name_rect;
-        duck_name_rect.w = duck_name.GetSize().x*0.27;
-        duck_name_rect.h = duck_name.GetSize().y*0.27;
+        duck_name_rect.w = duck_name.GetSize().x * 0.27;
+        duck_name_rect.h = duck_name.GetSize().y * 0.27;
 
         duck_name_rect.x = LOBBY_MAP_X;
-        duck_name_rect.x += duck.duck_id % 2 == 0 ? 75 - duck_name_rect.w/2 : LOBBY_MAP_WIDTH - 80 - duck_name_rect.w/2;
+        duck_name_rect.x += duck.duck_id % 2 == 0 ? 75 - duck_name_rect.w / 2 :
+                                                    LOBBY_MAP_WIDTH - 80 - duck_name_rect.w / 2;
         duck_name_rect.y = LOBBY_MAP_Y + (LOBBY_MAP_HEIGHT / 2) - 19;
         duck_name_rect.y += duck.duck_id >= 2 ? ((LOBBY_MAP_HEIGHT / 2) - 8) : 0;
 

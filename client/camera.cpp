@@ -21,8 +21,7 @@ using SDL2pp::Renderer;
 
 Camera::Camera(Renderer& renderer):
         renderer(renderer),
-        current_rect(LOBBY_MAP_X * SCALE, LOBBY_MAP_Y * SCALE,
-                     LOBBY_MAP_WIDTH * SCALE,
+        current_rect(LOBBY_MAP_X * SCALE, LOBBY_MAP_Y * SCALE, LOBBY_MAP_WIDTH * SCALE,
                      LOBBY_MAP_HEIGHT * SCALE),
         target_rect(current_rect),
         zoom_x((float)renderer.GetOutputWidth() / current_rect.w),

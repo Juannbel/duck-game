@@ -12,8 +12,8 @@ const static int RENDER_ITERATIONS = config.get_client_fps();
 
 RenderableFeathers::RenderableFeathers(uint8_t duck_id, SDL2pp::Renderer& renderer):
         animation(*TexturesProvider::get_instance(renderer).get_texture("feathers"),
-                  AnimationDataProvider::get_instance().get_animation_data("feathers_" + std::to_string(duck_id) +
-                                                            "_damaged")),
+                  AnimationDataProvider::get_instance().get_animation_data(
+                          "feathers_" + std::to_string(duck_id) + "_damaged")),
         position(0, 0),
         last_hp(INIT_DUCK_HP),
         iterations_left(0) {}

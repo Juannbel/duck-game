@@ -2,6 +2,7 @@
 #define GAMES_MONITOR_H
 
 #include <map>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <vector>

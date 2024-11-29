@@ -26,7 +26,8 @@ private:
 
     static std::unordered_map<GunType, std::string> gun_to_string;
 
-    void load_gun_animation(const GunType& gun, AnimationDataProvider& anim_prov, TexturesProvider& text_prov);
+    void load_gun_animation(const GunType& gun, AnimationDataProvider& anim_prov,
+                            TexturesProvider& text_prov);
 
 public:
     explicit RenderableEquippedGun(SDL2pp::Renderer& renderer);

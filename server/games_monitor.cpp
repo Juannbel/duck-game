@@ -1,5 +1,6 @@
 #include "games_monitor.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -12,7 +13,8 @@ GameInfo GamesMonitor::player_create_game(const int id_player, Queue<Snapshot>& 
                                           const std::vector<std::string>& players_names) {
     std::lock_guard<std::mutex> lck(m);
     const int id_game = create_game(players_names[0], id_player);
-    const GameInfo game_info = map_games[id_game]->add_player(id_player, player_sender_queue, players_names);
+    const GameInfo game_info =
+            map_games[id_game]->add_player(id_player, player_sender_queue, players_names);
     return game_info;
 }
 

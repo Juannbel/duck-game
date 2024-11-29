@@ -40,7 +40,8 @@ private:
 
     void load_animations(AnimationDataProvider& anim_prov, TexturesProvider& text_prov);
 
-    void load_animation(const std::string& animation_name, AnimationDataProvider& anim_prov, TexturesProvider& text_prov);
+    void load_animation(const std::string& animation_name, AnimationDataProvider& anim_prov,
+                        TexturesProvider& text_prov);
 
 
 public:

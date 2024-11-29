@@ -57,7 +57,7 @@ private:
 
     void sleep_checking(const std::chrono::milliseconds& time);
 
-    void create_new_map(std::map<uint8_t, uint8_t> &players_readys);
+    void create_new_map(std::map<uint8_t, uint8_t>& players_readys);
 
     void wait_ready();
 

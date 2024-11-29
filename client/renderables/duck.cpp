@@ -25,16 +25,17 @@ RenderableDuck::RenderableDuck(uint8_t duck_id, SDL2pp::Renderer& renderer):
     curr_animation = animations["standing"];
 }
 
-void RenderableDuck::load_animation(const std::string& animation_name, AnimationDataProvider& anim_prov, TexturesProvider& text_prov) {
-    animations[animation_name] =
-            new Animation(*text_prov.get_texture("duck"),
-                          anim_prov.get_animation_data(
-                                  "duck_" + std::to_string(duck_id) + "_" + animation_name));
+void RenderableDuck::load_animation(const std::string& animation_name,
+                                    AnimationDataProvider& anim_prov, TexturesProvider& text_prov) {
+    animations[animation_name] = new Animation(
+            *text_prov.get_texture("duck"),
+            anim_prov.get_animation_data("duck_" + std::to_string(duck_id) + "_" + animation_name));
 }
 
 uint8_t RenderableDuck::get_id() { return duck_id; }
 
-void RenderableDuck::load_animations(AnimationDataProvider& anim_prov, TexturesProvider& text_prov) {
+void RenderableDuck::load_animations(AnimationDataProvider& anim_prov,
+                                     TexturesProvider& text_prov) {
     load_animation("dead", anim_prov, text_prov);
     load_animation("falling", anim_prov, text_prov);
     load_animation("jumping", anim_prov, text_prov);

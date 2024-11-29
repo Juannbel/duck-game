@@ -42,7 +42,8 @@ void GameOperator::load_map(const Map& map_info) {
 }
 
 void GameOperator::initialize_players(
-        const std::vector<std::pair<uint8_t, std::string>>& ducks_info, const Map& map_info, bool first_round) {
+        const std::vector<std::pair<uint8_t, std::string>>& ducks_info, const Map& map_info,
+        bool first_round) {
     const std::vector<std::pair<int16_t, int16_t>>& spawn_points = map_info.duck_spawns;
     players.clear();
     for (auto& [duck_id, name]: ducks_info) {
@@ -50,12 +51,14 @@ void GameOperator::initialize_players(
     }
 }
 
-void GameOperator::add_player(const std::vector<std::pair<int16_t, int16_t>>& spawn_points, uint8_t duck_id, const std::basic_string<char>& name, bool first_round) {
+void GameOperator::add_player(const std::vector<std::pair<int16_t, int16_t>>& spawn_points,
+                              uint8_t duck_id, const std::basic_string<char>& name,
+                              bool first_round) {
     DuckPlayer player(collectables, collisions, spawn_points[duck_id].first * BLOCK_SIZE,
-                          spawn_points[duck_id].second * BLOCK_SIZE, duck_id, name);
+                      spawn_points[duck_id].second * BLOCK_SIZE, duck_id, name);
     players.emplace(duck_id, std::move(player));
-    if (first_round) 
-        players.at(duck_id).cheats_on.infiniteHP = true;       
+    if (first_round)
+        players.at(duck_id).cheats_on.infiniteHP = true;
 }
 
 void GameOperator::initialize_boxes(const Map& map_info) {
@@ -71,17 +74,18 @@ void GameOperator::initialize_boxes(const Map& map_info) {
 void GameOperator::delete_duck_player(uint8_t id_duck) { players.erase(id_duck); }
 
 void GameOperator::initialize_game(const Map& map_info,
-                                   const std::vector<std::pair<uint8_t, std::string>>& ducks_info, bool first_round) {
+                                   const std::vector<std::pair<uint8_t, std::string>>& ducks_info,
+                                   bool first_round) {
     load_map(map_info);
     initialize_players(ducks_info, map_info, first_round);
-    if (!first_round) 
+    if (!first_round)
         initialize_boxes(map_info);
-    
+
     collectables.reset_collectables();
 }
 
 bool GameOperator::check_start_game() {
-    if (players.size() > MAX_DUCKS-boxes.size()) {
+    if (players.size() > MAX_DUCKS - boxes.size()) {
         return false;
     }
     return true;

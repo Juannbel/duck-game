@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include "common/map_dto.h"
 #include "common/config.h"
+#include "common/map_dto.h"
 
 static Config& config = Config::get_instance();
 

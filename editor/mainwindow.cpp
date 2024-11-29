@@ -1,12 +1,12 @@
 #include "mainwindow.h"
 
+#include <QFontDatabase>
 #include <QInputDialog>
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <QFontDatabase>
 
 #include "../common/map_loader.h"
 
@@ -54,12 +54,8 @@ MainWindow::~MainWindow() { delete ui; }
 
 
 std::unordered_map<int, QString> MainWindow::themeToName = {
-        {0, "Forest"},       {1, "Castle"},
-        {2, "Office"},       {3, "Bunker"},
-        {4, "Lobby"}, {5, "Industrial"},
-        {6, "Wood"}, {7, "Space"},
-        {8, "Piramid"}
-};
+        {0, "Forest"},     {1, "Castle"}, {2, "Office"}, {3, "Bunker"}, {4, "Lobby"},
+        {5, "Industrial"}, {6, "Wood"},   {7, "Space"},  {8, "Piramid"}};
 
 void MainWindow::loadTiles() {
 
@@ -70,8 +66,7 @@ void MainWindow::loadTiles() {
         QString themeName = themeToName[i];
         loadThemeTiles(i);
         int floor2 = static_cast<int>(Floor2) - 1;
-        ui->themeSelector->addItem(QIcon(themeTiles[i][floor2]),themeName);
-
+        ui->themeSelector->addItem(QIcon(themeTiles[i][floor2]), themeName);
     }
 }
 
@@ -463,8 +458,7 @@ bool MainWindow::isMapValid() {
 QString MainWindow::requestFileName() {
     bool ok;
     QString fileName = QInputDialog::getText(
-            nullptr, "Save MapDto", "Insert filename:", QLineEdit::Normal, lastLoadMapName,
-            &ok);
+            nullptr, "Save MapDto", "Insert filename:", QLineEdit::Normal, lastLoadMapName, &ok);
 
     if (!ok || fileName.isEmpty()) {
         return NULL;
@@ -499,7 +493,7 @@ void MainWindow::on_saveMapButton_clicked() {
 
     bool saved = loader.save_map(filePath.toStdString(), mapToSave);
 
-    if(!saved){
+    if (!saved) {
         QMessageBox::warning(this, "Error", "The map could not be saved.");
         return;
     }

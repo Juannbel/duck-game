@@ -10,9 +10,13 @@
 #include "common/lobby.h"
 
 Game::Game(const int id, const std::string& creator, const int owner_id):
-        gameloop(gameloop_q, sv_msg_queues), creator(creator), owner_id(owner_id), owner_queue(nullptr), game_id(id) {
-    open = true;
-    cant_players = 0;
+        gameloop(gameloop_q, sv_msg_queues),
+        cant_players(0),
+        creator(creator),
+        owner_id(owner_id),
+        owner_queue(nullptr),
+        open(true),
+        game_id(id) {
     gameloop.start();
 }
 
@@ -29,11 +33,11 @@ GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
     }
 
     game_info.game_id = game_id;
-    if (player_id != owner_id) 
+    if (player_id != owner_id)
         sv_msg_queues.add_element(&player_sender_queue, player_id);
-    else 
+    else
         owner_queue = &player_sender_queue;
-    
+
 
     std::pair<uint8_t, uint8_t> duck_ids = {INVALID_DUCK_ID, INVALID_DUCK_ID};
     duck_ids.first = gameloop.add_player(players_names[0]);
