@@ -77,20 +77,22 @@ void GunEntity::add_bullet(const Rectangle& player_hb, int16_t angle, bool facin
         b_hb.coords.x = facing_right ? player_hb.coords.x + DUCK_HITBOX_WIDTH + 1 :
                                        player_hb.coords.x - BULLET_HITBOX_WIDTH - 1;
         b_hb.coords.y = facing_up ? player_hb.coords.y - BULLET_HITBOX_HEIGHT - 1 :
-                                    player_hb.coords.y + DUCK_LAYED_HITBOX_HEIGHT;
+                                    player_hb.coords.y + DUCK_LAYED_HITBOX_HEIGHT - 2;
         b_hb.height = BULLET_HITBOX_HEIGHT;
         b_hb.width = BULLET_HITBOX_WIDTH;
-        Collision verify_coords =
-                collisions.check_near_blocks_collision(b_hb, b_hb.coords.x, b_hb.coords.x);
-        if (verify_coords.horizontal_collision && verify_coords.vertical_collision) {
-            return;
-        }
-        bullets->add_bullet(b_hb, angle, type);
         it_since_shoot = it_to_shoot;
         --shooted_bullets;
         if (!infinite_ammo_activated && type != DeathLaser) {
             --ammo;
         }
+        if (type == LaserRifle || type == PewPewLaser || type == DeathLaser) {
+            Collision verify_coords =
+                    collisions.check_near_blocks_collision(b_hb, b_hb.coords.x, b_hb.coords.y);
+            if (verify_coords.horizontal_collision && verify_coords.vertical_collision) {
+                return;
+            }
+        }
+        bullets->add_bullet(b_hb, angle, type);
     }
     if (it_to_shoot && it_since_shoot) {
         --it_since_shoot;
