@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
+#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,7 +23,6 @@ Game::Game(const int id, const std::string& creator, const int owner_id):
 
 Queue<action>& Game::get_gameloop_queue() { return gameloop_q; }
 
-// RES: De ambos lugares donde se llama a add_player ya se tiene el lock.
 GameInfo Game::add_player(int player_id, Queue<Snapshot>& player_sender_queue,
                           const std::vector<std::string>& players_names) {
 
@@ -69,9 +69,13 @@ bool Game::delete_player(const int id_player) {
     if (player_sender_q) {
         player_sender_q->close();
     }
+    // indica si el owner se fue antes de que el juego arranque
+    bool owner_left = false;
     if (!gameloop.is_initialized() &&
         id_player == owner_id) {  // si el dueño se va, se cierra el juego
-        gameloop.notify_not_started();
+        assert(owner_queue != nullptr);
+        owner_queue->close();
+        owner_left = true;
     }
     const std::pair<uint8_t, uint8_t> duck_ids = player_to_duck_ids[id_player];
     gameloop.delete_duck(duck_ids.first);
@@ -82,15 +86,21 @@ bool Game::delete_player(const int id_player) {
             cant_players--;
         }
     }
-    if (cant_players < MAX_DUCKS && !gameloop.is_initialized()) {
+    if (cant_players < MAX_DUCKS && !gameloop.is_initialized() && !owner_left) {
         open = true;
     }
-    return cant_players == 0;
+    return cant_players == 0 || owner_left;
 }
 
 Game::~Game() {
     gameloop.stop();            // siempre se puede hacer stop por el wrapper
     if (gameloop.joinable()) {  // NO siempre se puede hacer join
         gameloop.join();
+    }
+
+    for (auto& [player_id, _] : player_to_duck_ids) {
+        Queue<Snapshot>* sender_q = sv_msg_queues.remove_element(player_id);
+        if (sender_q)
+            sender_q->close();
     }
 }

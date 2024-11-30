@@ -3,7 +3,6 @@
 
 #include <chrono>
 #include <cstdint>
-#include <functional>
 #include <map>
 #include <string>
 #include <utility>

@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -84,11 +85,11 @@ void GameLoop::run() {
     game_finished = true;
     it = 0;
     round_number = 0;
-    if (!game_initialized) 
+    if (!game_initialized)
         notify_not_started();
     else
         create_and_push_snapshot(it);
-    
+
     _is_alive = false;
 }
 
@@ -113,8 +114,11 @@ void GameLoop::pop_and_process_all() {
 void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
-    if (first_round && game_initialized)
+    if (first_round && game_initialized) {
+        std::cout << "SOY EL GAMELLOP; A VER SI ARRACAMO" << std::endl;
+
         round_finished = game_operator.check_start_game();
+    }
     check_for_winner(actual_status);
 
     actual_status.round_finished = its_since_finish == 0 ? round_finished : false;
@@ -189,6 +193,7 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
 }
 
 uint8_t GameLoop::add_player(const std::string& player_name) {
+    std::cout << "ADD PLAYER TO GAMELOOP" << std::endl;
     std::lock_guard<std::mutex> lock(map_lock);
     if (ducks_info.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
@@ -197,6 +202,7 @@ uint8_t GameLoop::add_player(const std::string& player_name) {
     ducks_id_available.pop_back();
     ducks_info.emplace_back(duck_id, player_name);
     game_operator.add_player(curr_map.duck_spawns, duck_id, player_name, first_round);
+    std::cout << "AGREGADO: " << player_name << std::endl;
     return duck_id;
 }
 
@@ -208,8 +214,6 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
     if (it != ducks_info.end()) {
         ducks_info.erase(it);
         ducks_id_available.push_back(duck_id);
-        if (duck_id == 0 && !game_initialized) 
-            _keep_running = false;
     }
 
     if (ducks_info.size() <= 1 && game_initialized) {
@@ -229,7 +233,6 @@ void GameLoop::notify_not_started() {
     status.game_finished = true;
     status.round_finished = true;
     status.show_stats = true;
-    status.maps.push_back(curr_map.map_dto);
 
     // es necesario enviar 1 para desbloquearlo de la waiting screen
     push_responce(status);
