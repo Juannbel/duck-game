@@ -3,7 +3,6 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
-#include <iostream>
 #include <random>
 #include <stdexcept>
 #include <string>
@@ -114,11 +113,9 @@ void GameLoop::pop_and_process_all() {
 void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
-    if (first_round && game_initialized) {
-        std::cout << "SOY EL GAMELLOP; A VER SI ARRACAMO" << std::endl;
-
+    if (first_round && game_initialized) 
         round_finished = game_operator.check_start_game();
-    }
+    
     check_for_winner(actual_status);
 
     actual_status.round_finished = its_since_finish == 0 ? round_finished : false;
@@ -193,7 +190,6 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
 }
 
 uint8_t GameLoop::add_player(const std::string& player_name) {
-    std::cout << "ADD PLAYER TO GAMELOOP" << std::endl;
     std::lock_guard<std::mutex> lock(map_lock);
     if (ducks_info.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
@@ -202,7 +198,6 @@ uint8_t GameLoop::add_player(const std::string& player_name) {
     ducks_id_available.pop_back();
     ducks_info.emplace_back(duck_id, player_name);
     game_operator.add_player(curr_map.duck_spawns, duck_id, player_name, first_round);
-    std::cout << "AGREGADO: " << player_name << std::endl;
     return duck_id;
 }
 
