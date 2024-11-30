@@ -102,7 +102,7 @@ private:
     bool handlerMouseEvents(QEvent* event);
     bool handlerClickType(QPointF scenePos, Qt::MouseButton button);
 
-    bool isPositionOccupied(std::pair<int16_t, int16_t> pos);
+    bool isPositionOccupied(std::pair<int16_t, int16_t> pos, bool only_ducks = false);
     bool isBlockOccupied(std::pair<int16_t, int16_t> pos);
     bool validatePosition(std::pair<int16_t, int16_t> pos, bool checkBlocks);
 
