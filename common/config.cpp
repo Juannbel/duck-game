@@ -15,8 +15,8 @@ void Config::load_config() try {
     window_height = config["window_height"].as<int>();
     non_solid_opacity = config["non_solid_opacity"].as<uint8_t>();
     first_gamepad_player = config["first_gamepad_player"].as<uint8_t>();
-    stick_dead_zone = config["stick_dead_zone"].as<int>();
-    trigger_dead_zone = config["trigger_dead_zone"].as<int>();
+    stick_dead_zone = config["stick_dead_zone"].as<float>();
+    trigger_dead_zone = config["trigger_dead_zone"].as<float>();
 
     server_ticks = config["server_ticks"].as<int>();
     rounds_to_win = config["rounds_to_win"].as<int>();
@@ -60,9 +60,9 @@ uint8_t Config::get_non_solid_opacity() { return non_solid_opacity; }
 
 uint8_t Config::get_first_gamepad_player() { return first_gamepad_player; }
 
-int Config::get_stick_dead_zone() { return stick_dead_zone; }
+float Config::get_stick_dead_zone() { return stick_dead_zone; }
 
-int Config::get_trigger_dead_zone() { return trigger_dead_zone; }
+float Config::get_trigger_dead_zone() { return trigger_dead_zone; }
 
 uint8_t Config::get_rounds_to_win() { return rounds_to_win; }
 

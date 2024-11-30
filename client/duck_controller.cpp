@@ -10,9 +10,12 @@
 #include "common/config.h"
 #include "common/lobby.h"
 
+#define MAX_TRIGGER_VALUE 32767
+#define MAX_STICK_VALUE 32767
+
 static Config& config = Config::get_instance();
-const int STICK_DEAD_ZONE = config.get_stick_dead_zone();
-const int TRIGGER_DEAD_ZONE = config.get_trigger_dead_zone();
+const int STICK_DEAD_ZONE = config.get_stick_dead_zone() * MAX_STICK_VALUE;
+const int TRIGGER_DEAD_ZONE = config.get_trigger_dead_zone() * MAX_TRIGGER_VALUE;
 
 DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
                                ControlScheme controls, int joystick_id):

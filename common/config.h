@@ -17,8 +17,8 @@ private:
     int window_height;
     uint8_t non_solid_opacity;
     uint8_t first_gamepad_player;
-    int stick_dead_zone;
-    int trigger_dead_zone;
+    float stick_dead_zone;
+    float trigger_dead_zone;
 
     int server_ticks;
     uint8_t rounds_to_win;
@@ -71,8 +71,8 @@ public:
     int get_client_fps();
     uint8_t get_non_solid_opacity();
     uint8_t get_first_gamepad_player();
-    int get_stick_dead_zone();
-    int get_trigger_dead_zone();
+    float get_stick_dead_zone();
+    float get_trigger_dead_zone();
 
     // Server
     int get_server_ticks();
