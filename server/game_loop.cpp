@@ -23,6 +23,7 @@ static Config& config = Config::get_instance();
 const static int TICKS = config.get_server_ticks();
 const milliseconds RATE(1000 / TICKS);
 const uint its_after_round = 3000 / (1000 / TICKS);
+const milliseconds STATS_TIME(3000);
 const uint8_t ROUNDS_TO_WIN = config.get_rounds_to_win();
 const uint8_t ROUNDS_BETWEEN_STATS = config.get_rounds_between_stats();
 const char LOBBY_MAP[] = DATA_PATH "/server/lobby.yaml";
@@ -267,11 +268,13 @@ void GameLoop::wait_ready() {
         }
         if (readys == ducks_info.size() && first_ready) {
             if (!round_number)
-                sleep_checking(milliseconds(3000));
+                sleep_checking(milliseconds(STATS_TIME));
             readys = 0;
             first_ready = false;
             initialice_new_round();
             initial_snapshot();
+            sleep_checking(milliseconds(COUNTDOWN_TIME));
+            while (actions_queue.try_pop(action)) {}
         }
         std::this_thread::sleep_for(RATE);
     }

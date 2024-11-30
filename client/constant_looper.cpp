@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -83,6 +84,9 @@ bool ConstantLooper::run() try {
             camera.update(last_snapshot, !is_first_round);
             p1_controller.restart_movement();
             p2_controller.restart_movement();
+
+            keep_running = screen_manager.round_start_screen(snapshot_q, last_snapshot, [this](Camera& camera, RenderableMap& map) { render(camera, map); });
+
             continue;
         }
 
@@ -94,6 +98,8 @@ bool ConstantLooper::run() try {
         }
 
         render(camera, map);
+
+        renderer.Present();
 
         sound_manager.update();
 
@@ -265,8 +271,6 @@ void ConstantLooper::render(Camera& camera, RenderableMap& map) {
 
     if (is_first_round)
         screen_manager.show_lobby_text(last_snapshot);
-
-    renderer.Present();
 }
 
 

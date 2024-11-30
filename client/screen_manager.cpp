@@ -440,3 +440,67 @@ void ScreenManager::show_lobby_text(Snapshot& last_snapshot) {
         renderer.Copy(duck_name, SDL2pp::NullOpt, duck_name_rect);
     }
 }
+
+bool ScreenManager::round_start_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot, std::function<void(Camera&, RenderableMap&)> aditional_render) {
+    const uint time_per_number = COUNTDOWN_TIME / 3;
+
+    for (uint8_t i = 3 ; i > 0 ; i--) {
+        uint start_time = SDL_GetTicks();
+        uint elapsed_time = 0;
+
+        SDL2pp::Texture countdown_texture(
+            renderer,
+            primary_font.RenderText_Solid(
+                std::to_string(i),
+                SDL_Color{255, 255, 255, 255}
+            )
+        );
+
+        while (elapsed_time < time_per_number) {
+            if (snapshot_q.try_pop(last_snapshot)) {
+                return true;
+            }
+
+            SDL_Event event;
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_QUIT) {
+                    return false;
+                }
+                if (event.type == SDL_KEYDOWN) {
+                    if (event.key.keysym.sym == SDLK_1) {
+                        sound_manager.toggle_mute();
+                    } else if (event.key.keysym.sym == SDLK_2) {
+                        window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+                    }
+                }
+            }
+
+            camera.update(last_snapshot, true);
+            aditional_render(camera, map);
+
+            int window_width = renderer.GetOutputWidth();
+            int window_height = renderer.GetOutputHeight();
+
+            int text_width = countdown_texture.GetWidth()*2;
+            int text_height = countdown_texture.GetHeight()*2;
+            SDL2pp::Rect dst_rect(
+                (window_width - text_width) / 2,
+                (window_height - text_height) / 2,
+                text_width*2,
+                text_height*2
+            );
+
+            renderer.Copy(countdown_texture, SDL2pp::NullOpt, dst_rect);
+
+            renderer.Present();
+
+            SDL_Delay(RATE);
+
+            // no necesitamos que el tiempo de espera sea exacto ni respetar
+            // el framerate porque es solo texto
+            elapsed_time = SDL_GetTicks() - start_time;
+        }
+    }
+
+    return true;
+}
