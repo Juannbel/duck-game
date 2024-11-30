@@ -24,6 +24,9 @@ Juego de disparos multijugador 2D desarrollado como trabajo práctico para Talle
   <img src="./docs/images/readme/banner.gif" alt="duck game gif" />
 </p>
 
+## 🍿 Demo
+
+https://github.com/user-attachments/assets/0e95e24d-0317-434f-a039-949b980d9127
 
 ## ⚡️ Dependencias
 Las dependencias necesarias para instalar y correr el juego son las siguientes:
