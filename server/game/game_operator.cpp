@@ -94,7 +94,7 @@ bool GameOperator::check_start_game() {
     return true;
 }
 
-void GameOperator::process_action(action& action) {
+void GameOperator::process_action(action& action, bool first_round) {
     if (players.find(action.duck_id) == players.end()) {
         return;
     }
@@ -137,7 +137,8 @@ void GameOperator::process_action(action& action) {
             check_spawn_picked(player.drop_and_pickup());
             break;
         default:
-            handle_cheat(player, action.command);
+            if (!first_round) 
+                handle_cheat(player, action.command);
             break;
     }
 }

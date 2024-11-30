@@ -102,7 +102,7 @@ void GameLoop::pop_and_process_all() {
     action action{};
     while (actions_queue.try_pop(action)) {
         std::lock_guard<std::mutex> lock(map_lock);
-        game_operator.process_action(action);
+        game_operator.process_action(action, first_round);
     }
     game_operator.update_game_status();
 }
@@ -205,6 +205,8 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
     if (it != ducks_info.end()) {
         ducks_info.erase(it);
         ducks_id_available.push_back(duck_id);
+        if (duck_id == 0 && !game_initialized) 
+            start_game();
     }
 
     if (ducks_info.size() <= 1 && game_initialized) {

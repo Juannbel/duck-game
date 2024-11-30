@@ -54,7 +54,7 @@ public:
     void add_player(const std::vector<std::pair<int16_t, int16_t>>& spawn_points, uint8_t duck_id,
                     const std::basic_string<char>& name, bool first_round);
     bool check_start_game();
-    void process_action(action& action);
+    void process_action(action& action, bool first_round);
     void update_game_status();
 
     void get_snapshot(Snapshot& snapshot);
