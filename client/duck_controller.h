@@ -53,6 +53,7 @@ private:
 
     void handle_key_down(const SDL_Event& event);
     void handle_key_up(const SDL_Event& event);
+    void handle_new_joystick();
 
     void handle_move_right();
     void handle_move_left();

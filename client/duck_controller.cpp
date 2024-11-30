@@ -71,10 +71,20 @@ void DuckController::process_event(const SDL_Event& event) {
         handle_key_down(event);
     } else if (event.type == SDL_KEYUP) {
         handle_key_up(event);
+    } else if (event.type == SDL_CONTROLLERDEVICEADDED) {
+        handle_new_joystick();
     }
 
     if (joystick_enabled) {
         switch (event.type) {
+            case SDL_CONTROLLERDEVICEREMOVED:
+                if (event.cdevice.which != joystick_instance_id)
+                    break;
+                SDL_GameControllerClose(joystick);
+                joystick = nullptr;
+                joystick_enabled = false;
+                break;
+
             case SDL_CONTROLLERAXISMOTION:
             case SDL_CONTROLLERBUTTONUP:
             case SDL_CONTROLLERBUTTONDOWN:
@@ -95,6 +105,16 @@ void DuckController::handle_key_up(const SDL_Event& event) {
     const SDL_Keycode& key = event.key.keysym.sym;
     if (key_up_handlers.find(key) != key_up_handlers.end()) {
         key_up_handlers[key]();
+    }
+}
+
+void DuckController::handle_new_joystick() {
+    if (!joystick_enabled && SDL_IsGameController(joystick_id)) {
+        joystick = SDL_GameControllerOpen(joystick_id);
+        if (joystick) {
+            joystick_enabled = true;
+            joystick_instance_id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(joystick));
+        }
     }
 }
 
