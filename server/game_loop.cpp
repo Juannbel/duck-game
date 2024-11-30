@@ -84,8 +84,11 @@ void GameLoop::run() {
     game_finished = true;
     it = 0;
     round_number = 0;
-    create_and_push_snapshot(it);
-
+    if (!game_initialized) 
+        notify_not_started();
+    else
+        create_and_push_snapshot(it);
+    
     _is_alive = false;
 }
 
@@ -206,7 +209,7 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
         ducks_info.erase(it);
         ducks_id_available.push_back(duck_id);
         if (duck_id == 0 && !game_initialized) 
-            start_game();
+            _keep_running = false;
     }
 
     if (ducks_info.size() <= 1 && game_initialized) {
