@@ -199,11 +199,8 @@ void DuckController::process_joystick_event(const SDL_Event& event) {
             break;
 
         case SDL_CONTROLLERBUTTONDOWN:
-            handle_joy_button_down(event, fake_event);
-            break;
-
         case SDL_CONTROLLERBUTTONUP:
-            handle_joy_button_up(event, fake_event);
+            handle_joy_button(event, fake_event);
             break;
     }
 }
@@ -253,40 +250,36 @@ void DuckController::handle_joy_axis_motion(const SDL_Event& event, SDL_Event& f
     }
 }
 
-void DuckController::handle_joy_button_down(const SDL_Event& event, SDL_Event& fake_event) {
-    fake_event.type = SDL_KEYDOWN;
+void DuckController::handle_joy_button(const SDL_Event& event, SDL_Event& fake_event) {
+    bool match = true;
 
     switch (event.cbutton.button) {
         case SDL_CONTROLLER_BUTTON_A:
             fake_event.key.keysym.sym = controls.jump;
-            handle_key_down(fake_event);
             break;
         case SDL_CONTROLLER_BUTTON_B:
             fake_event.key.keysym.sym = controls.lay_down;
-            handle_key_down(fake_event);
+            break;
+        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+            fake_event.key.keysym.sym = controls.move_left;
+            break;
+        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+            fake_event.key.keysym.sym = controls.move_right;
             break;
         case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
             fake_event.key.keysym.sym = controls.look_up;
-            handle_key_down(fake_event);
             break;
+        default:
+            match = false;
     }
-}
 
-void DuckController::handle_joy_button_up(const SDL_Event& event, SDL_Event& fake_event) {
-    fake_event.type = SDL_KEYUP;
-
-    switch (event.cbutton.button) {
-        case SDL_CONTROLLER_BUTTON_A:
-            fake_event.key.keysym.sym = controls.jump;
+    if (match) {
+        if (event.type == SDL_CONTROLLERBUTTONDOWN) {
+            fake_event.type = SDL_KEYDOWN;
+            handle_key_down(fake_event);
+        } else {
+            fake_event.type = SDL_KEYUP;
             handle_key_up(fake_event);
-            break;
-        case SDL_CONTROLLER_BUTTON_B:
-            fake_event.key.keysym.sym = controls.lay_down;
-            handle_key_up(fake_event);
-            break;
-        case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-            fake_event.key.keysym.sym = controls.look_up;
-            handle_key_up(fake_event);
-            break;
+        }
     }
 }

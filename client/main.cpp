@@ -1,8 +1,8 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <qapplication.h>
 #include <SDL2/SDL_gamecontroller.h>
+#include <qapplication.h>
 
 #include "pre_lobby/pre_lobby.h"
 

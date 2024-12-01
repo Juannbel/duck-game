@@ -49,7 +49,8 @@ public:
 
     void server_disconnected_screen();
 
-    bool round_start_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot, std::function<void(Camera&, RenderableMap&)> aditional_render);
+    bool round_start_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
+                            std::function<void(Camera&, RenderableMap&)> aditional_render);
 };
 
 #endif

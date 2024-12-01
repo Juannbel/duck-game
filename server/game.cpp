@@ -98,7 +98,7 @@ Game::~Game() {
         gameloop.join();
     }
 
-    for (auto& [player_id, _] : player_to_duck_ids) {
+    for (auto& [player_id, _]: player_to_duck_ids) {
         Queue<Snapshot>* sender_q = sv_msg_queues.remove_element(player_id);
         if (sender_q)
             sender_q->close();

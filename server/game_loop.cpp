@@ -113,9 +113,9 @@ void GameLoop::pop_and_process_all() {
 void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
-    if (first_round && game_initialized) 
+    if (first_round && game_initialized)
         round_finished = game_operator.check_start_game();
-    
+
     check_for_winner(actual_status);
 
     actual_status.round_finished = its_since_finish == 0 ? round_finished : false;

@@ -1,4 +1,5 @@
 #include "joystick_manager.h"
+
 #include "common/config.h"
 
 const static uint8_t FIRST_GAMEPAD_PLAYER = Config::get_instance().get_first_gamepad_player();
@@ -36,7 +37,8 @@ void JoystickManager::handle_event(const SDL_Event& event) {
 
 void JoystickManager::handle_removed(const SDL_Event& event) {
     const auto& removed_id = event.cdevice.which;
-    auto used = primary_instance && primary_instance->instance_id == removed_id ? primary_instance : NULL;
+    auto used = primary_instance && primary_instance->instance_id == removed_id ? primary_instance :
+                                                                                  NULL;
 
     if (!used && secondary_instance)
         used = secondary_instance->instance_id == removed_id ? secondary_instance : NULL;

@@ -85,7 +85,7 @@ void GameOperator::initialize_game(const Map& map_info,
 }
 
 bool GameOperator::check_start_game() {
-    for (auto& [duck_id, duck] : players) {
+    for (auto& [duck_id, duck]: players) {
         if (boxes.find(duck_id) != boxes.end()) {
             return false;
         }
@@ -137,7 +137,7 @@ void GameOperator::process_action(action& action, bool first_round) {
             check_spawn_picked(player.drop_and_pickup());
             break;
         default:
-            if (!first_round) 
+            if (!first_round)
                 handle_cheat(player, action.command);
             break;
     }

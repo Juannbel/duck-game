@@ -15,8 +15,8 @@ trigger_dead_zone: 0.9
 
 # Server side
 server_ticks: 120
-rounds_to_win: 10 # Cantidad de rondas para ganar
-rounds_between_stats: 5 # Cantidad de rondas entre que se muestran las estadisticas
+rounds_to_win: 1 # Cantidad de rondas para ganar
+rounds_between_stats: 1 # Cantidad de rondas entre que se muestran las estadisticas
 cheats: true
 
 # Las velocidades estan expresadas en bloques por segundo

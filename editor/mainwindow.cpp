@@ -316,18 +316,20 @@ bool MainWindow::validatePosition(std::pair<int16_t, int16_t> pos, bool check_bl
 }
 
 bool MainWindow::isPositionOccupied(std::pair<int16_t, int16_t> pos, bool only_ducks) {
-    
-    bool isDuck =  std::find(map.duck_spawns.begin(), map.duck_spawns.end(), pos) != map.duck_spawns.end();
+
+    bool isDuck =
+            std::find(map.duck_spawns.begin(), map.duck_spawns.end(), pos) != map.duck_spawns.end();
     if (only_ducks) {
         return isDuck;
     }
     if (isDuck)
         return true;
-    bool isCollectable = std::find(map.collectables_spawns.begin(), map.collectables_spawns.end(), pos) !=
-                         map.collectables_spawns.end();
+    bool isCollectable = std::find(map.collectables_spawns.begin(), map.collectables_spawns.end(),
+                                   pos) != map.collectables_spawns.end();
     if (isCollectable)
         return true;
-    bool isBox = std::find(map.boxes_spawns.begin(), map.boxes_spawns.end(), pos) != map.boxes_spawns.end();
+    bool isBox = std::find(map.boxes_spawns.begin(), map.boxes_spawns.end(), pos) !=
+                 map.boxes_spawns.end();
     if (isBox)
         return true;
     return false;
@@ -373,7 +375,7 @@ void MainWindow::addTile(std::pair<int16_t, int16_t> gridPos) {
     std::pair<int16_t, int16_t> duck_check = gridPos;
     duck_check.second += 1;
     bool only_ducks = true;
-    if (isPositionOccupied(duck_check,only_ducks) || !validatePosition(gridPos, check_blocks))
+    if (isPositionOccupied(duck_check, only_ducks) || !validatePosition(gridPos, check_blocks))
         return;
     Block& block = map.map_dto.blocks[gridPos.second][gridPos.first];
     if (block.type == (selectedItemIndex + 1)) {

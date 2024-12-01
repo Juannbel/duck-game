@@ -111,7 +111,7 @@ duck_game_client
 </p>
 
 - **Bloques traspasables:** Los bloques traspasables se marcan en el mapa con un nivel de transparencia que permite reconocerlos.
- Al presionar la tecla de tirarse al suelo (`s` o `↓`) mientras se está sobre un bloque traspasable, se cae a través del mismo. 
+ Al presionar la tecla de tirarse al suelo (`s` o `↓`) mientras se está sobre un bloque traspasable, se cae a través del mismo.
  Si se tiene encima un bloque traspasable, se puede saltar a traves de el.
 
 <p align="center">
@@ -168,6 +168,9 @@ Si se conecta un solo joystick y en el cliente hay 2 jugadores, este se asigna p
 <p align="center">
   <img src="./images/manual-usuario/controls.png" alt="Controles" width="500" />
 </p>
+
+> También puede moverse a la derecha y a la izquierda con el DPAD en el caso del gamepad
+> RT (Right Trigger), LT (Left Trigger), LB (Left Bumper, delante del Left Trigger)
 
 ## 🛡️ **Cheats**
 

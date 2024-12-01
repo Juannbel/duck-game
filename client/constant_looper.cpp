@@ -51,7 +51,8 @@ ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snaps
         actions_q(actions_q),
         p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS),
         p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS),
-        joystick_manager(p1_controller.get_joystick_instance(), p2_controller.get_joystick_instance()),
+        joystick_manager(p1_controller.get_joystick_instance(),
+                         p2_controller.get_joystick_instance()),
         play_again(false),
         camera(renderer),
         screen_manager(window, sound_manager, renderer, camera, map, this->duck_ids, play_again),
@@ -83,7 +84,9 @@ bool ConstantLooper::run() try {
             p1_controller.restart_movement();
             p2_controller.restart_movement();
 
-            keep_running = screen_manager.round_start_screen(snapshot_q, last_snapshot, [this](Camera& camera, RenderableMap& map) { render(camera, map); });
+            keep_running = screen_manager.round_start_screen(
+                    snapshot_q, last_snapshot,
+                    [this](Camera& camera, RenderableMap& map) { render(camera, map); });
 
             continue;
         }
