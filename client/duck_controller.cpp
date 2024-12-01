@@ -6,6 +6,7 @@
 #include <SDL_gamecontroller.h>
 #include <SDL_joystick.h>
 
+#include "client/joystick_manager.h"
 #include "common/commands.h"
 #include "common/config.h"
 #include "common/lobby.h"
@@ -18,30 +19,17 @@ const int STICK_DEAD_ZONE = config.get_stick_dead_zone() * MAX_STICK_VALUE;
 const int TRIGGER_DEAD_ZONE = config.get_trigger_dead_zone() * MAX_TRIGGER_VALUE;
 
 DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
-                               ControlScheme controls, int joystick_id):
+                               ControlScheme controls):
         duck_id(duck_id),
         actions_q(actions_q),
         snapshot(snapshot),
         controls(controls),
-        joystick(nullptr),
-        joystick_id(joystick_id),
-        joystick_enabled(false),
+        joystick({nullptr, -1}),
         move_command(false),
         moving_left(false),
         moving_right(false) {
     if (duck_id != INVALID_DUCK_ID)
         update_duck_status();
-
-    if (joystick_id == 0)  // lo añadimos solo una vez
-        SDL_GameControllerAddMappingsFromFile(DATA_PATH "/gamepad_mappings.txt");
-
-    if (SDL_IsGameController(joystick_id)) {
-        joystick = SDL_GameControllerOpen(joystick_id);
-        if (joystick) {
-            joystick_enabled = true;
-            joystick_instance_id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(joystick));
-        }
-    }
 
     key_down_handlers = {
             {controls.move_right, std::bind(&DuckController::handle_move_right, this)},
@@ -67,30 +55,19 @@ DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapsh
 }
 
 void DuckController::process_event(const SDL_Event& event) {
-    if (event.type == SDL_KEYDOWN) {
-        handle_key_down(event);
-    } else if (event.type == SDL_KEYUP) {
-        handle_key_up(event);
-    } else if (event.type == SDL_CONTROLLERDEVICEADDED) {
-        handle_new_joystick();
-    }
-
-    if (joystick_enabled) {
-        switch (event.type) {
-            case SDL_CONTROLLERDEVICEREMOVED:
-                if (event.cdevice.which != joystick_instance_id)
-                    break;
-                SDL_GameControllerClose(joystick);
-                joystick = nullptr;
-                joystick_enabled = false;
-                break;
-
-            case SDL_CONTROLLERAXISMOTION:
-            case SDL_CONTROLLERBUTTONUP:
-            case SDL_CONTROLLERBUTTONDOWN:
+    switch (event.type) {
+        case SDL_KEYDOWN:
+            handle_key_down(event);
+            break;
+        case SDL_KEYUP:
+            handle_key_up(event);
+            break;
+        case SDL_CONTROLLERAXISMOTION:
+        case SDL_CONTROLLERBUTTONDOWN:
+        case SDL_CONTROLLERBUTTONUP:
+            if (joystick.joystick)
                 process_joystick_event(event);
-                break;
-        }
+            break;
     }
 }
 
@@ -105,16 +82,6 @@ void DuckController::handle_key_up(const SDL_Event& event) {
     const SDL_Keycode& key = event.key.keysym.sym;
     if (key_up_handlers.find(key) != key_up_handlers.end()) {
         key_up_handlers[key]();
-    }
-}
-
-void DuckController::handle_new_joystick() {
-    if (!joystick_enabled && SDL_IsGameController(joystick_id)) {
-        joystick = SDL_GameControllerOpen(joystick_id);
-        if (joystick) {
-            joystick_enabled = true;
-            joystick_instance_id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(joystick));
-        }
     }
 }
 
@@ -216,8 +183,12 @@ void DuckController::handle_stop_shoot() { actions_q.push({duck_id, StopShooting
 
 void DuckController::handle_stop_look_up() { actions_q.push({duck_id, StopLookup}); }
 
+JoystickInstance* DuckController::get_joystick_instance() {
+    return duck_id != INVALID_DUCK_ID ? &joystick : NULL;
+}
+
 void DuckController::process_joystick_event(const SDL_Event& event) {
-    if (event.cdevice.which != joystick_instance_id) {
+    if (event.cdevice.which != joystick.instance_id) {
         return;
     }
 

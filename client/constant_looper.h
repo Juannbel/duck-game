@@ -10,6 +10,7 @@
 #include "SDL2pp/SDL.hh"
 #include "SDL2pp/Window.hh"
 #include "client/camera.h"
+#include "client/joystick_manager.h"
 #include "client/renderables/box.h"
 #include "client/renderables/bullet.h"
 #include "client/renderables/collectable.h"
@@ -35,6 +36,7 @@ private:
     Snapshot last_snapshot;
     DuckController p1_controller;
     DuckController p2_controller;
+    JoystickManager joystick_manager;
     bool play_again;
     Camera camera;
     // screen_manager se encarga tambien de inicializar las texturas y data de animaciones

@@ -39,7 +39,6 @@ const static int RATE = 1000 / config.get_client_fps();
 const static std::string WIN_TITLE = config.get_window_title();
 const static int WIN_WIDTH = config.get_window_width();
 const static int WIN_HEIGHT = config.get_window_height();
-const static uint8_t FIRST_GAMEPAD_PLAYER = config.get_first_gamepad_player();
 
 ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
@@ -50,10 +49,9 @@ ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snaps
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
         snapshot_q(snapshot_q),
         actions_q(actions_q),
-        p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS,
-                      FIRST_GAMEPAD_PLAYER == 0 || duck_ids.second == INVALID_DUCK_ID ? 0 : 1),
-        p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS,
-                      FIRST_GAMEPAD_PLAYER == 0 ? 1 : 0),
+        p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS),
+        p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS),
+        joystick_manager(p1_controller.get_joystick_instance(), p2_controller.get_joystick_instance()),
         play_again(false),
         camera(renderer),
         screen_manager(window, sound_manager, renderer, camera, map, this->duck_ids, play_again),
@@ -281,17 +279,28 @@ bool ConstantLooper::process_events() {
         p2_controller.update_duck_status();
 
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-            return false;
-        }
+        switch (event.type) {
+            case SDL_QUIT: {
+                return false;
+            }
 
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_1) {
-            sound_manager.toggle_mute();
-            return true;
-        }
+            case SDL_KEYDOWN: {
+                const auto& key = event.key.keysym.sym;
+                if (key == SDLK_1) {
+                    sound_manager.toggle_mute();
+                    return true;
+                } else if (key == SDLK_2) {
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+                    return true;
+                }
+                break;
+            }
 
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_2) {
-            window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+            case SDL_CONTROLLERDEVICEADDED:
+            case SDL_CONTROLLERDEVICEREMOVED: {
+                joystick_manager.handle_event(event);
+                return true;
+            }
         }
 
         p1_controller.process_event(event);
