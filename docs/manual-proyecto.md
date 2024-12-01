@@ -21,7 +21,7 @@ Empezamos con una reunion entre todos para definir las estructuras generales nec
 - Lautaro Pedrozo: Primera implementacion de la clase YAMLLoader. Y implementacion de clases para manejar una unica partida desde el server.
 - Federico Letier: En cada iteración del game loop se crea una snapshot que los distintos objetos la llenan con su estado. Se implementan los spawns para que las armas aparezcan cada un tiempo constante mas un tiempo random extra. Implementación de aleteo de los patos y cambio a uso de coordenadas con floats del lado del server. Patos pueden agarrar armas, no pueden disparar. Primera idea para validar que si un solo jugador queda vivo, gano la ronda.
 - Juan Bel: Se hacen modificaciones para poder recibir y usar el mapa enviado por el servidor. Se empieza a agregar música y sonidos. Se agregan collectables. Modularización de varias cosas, creando clase para obtener datos de animaciones y texturas y no tener que cargarlas cada vez que se piden. Mejora de controles.
-- Facundo Lescano: Modificaciones en los vectores de patos, armas y balas en el snapshot a vectores dinamicos y agregar metodos para enviar y recibir los vectores de tipo std::vector por medio de los protocolos.
+- Facundo Lescano: Modificaciones en los vectores en el snapshot a vectores dinamicos y cambio de metodos para enviar y recibir los vectores por medio de los protocolos y tambien se implementa la comunicación para la información de la partida en que está cada cliente.
 
 #### Semana 3 (29 de Octubre al 5 de Noviembre)
 - Lautaro Pedrozo: Se implementa la comunicacion inicial para multiples partidas. Se aplican mutex a la clase gamesMonitor y me aseguro de que no haya memory leaks.
@@ -47,10 +47,10 @@ Comienzo con el editor de niveles. Se pueden editar bloques en un mapa, guardar 
 - Lautaro Pedrozo:
 - Federico Letier: Mejoro movilidad en las plataformas. Ahora el game_loop entre rondas espera a que todos los clientes conectados reciban la snapshot y ellos le devuelvan un mensaje "ready", que simboliza que ya cargaron el siguiente mapa, evitando posibles desync si a alguno no le llega por problemas de red. 
 - Juan Bel: Implementación de UI para realizar la conexión con el servidor (pre-lobby), y se permite al finalizar la partida, volver al lobby, sin necesidad de volver a ingresar los datos del servidor
-- Facundo Lescano:
+- Facundo Lescano: mejora en la ui del editor de mapas, trabajo en la documentacion y agrego mapas para jugar.
 
 #### Semana 7 (26 de Noviembre al 3 de Diciembre) -> Entrega final
 - Lautaro Pedrozo:
 - Federico Letier: Patos caen al morir. Lock al mapa de players adentro de gameloop porque habia una rc. Pre-lobby en el que los jugadores comienzan dentro de un mapa especial para esperar a que arranque la partida, cuando el owner da start game, deben romper la caja de su cuadrante para comenzar la partida. Ahora se puede bajar de una plataforma apretando la flecha para abajo.
 - Juan Bel: Mejoras sobre el README y la documentación, soporte para joysticks, varios temas mas de mapas, cambios para pasar al nuevo lobby dinámico
-- Facundo Lescano:
+- Facundo Lescano: Agrego aviso para saber si un mapa se guardó correctamente, a la hora de guardarlo sugiere el nombre del ultimo mapa cargado y validaciones con los spawns y los bloques para no generar bugs en el juego.

@@ -346,10 +346,16 @@ void MainWindow::addDuckSpawn(std::pair<int16_t, int16_t> gridPos) {
         return;
     }
     bool check_blocks = true;
+    if (!validatePosition(gridPos, check_blocks))
+        return;
+
     std::pair<int16_t, int16_t> block_check = gridPos;
     block_check.second -= 1;
-    if (isBlockOccupied(block_check) || !validatePosition(gridPos, check_blocks))
+    if (isBlockOccupied(block_check)){
+        QMessageBox::warning(this, "Error", "The duck spawn cannot be placed under a block.");
         return;
+    }
+
     map.duck_spawns.push_back(gridPos);
     renderGrid();
 }
@@ -375,8 +381,13 @@ void MainWindow::addTile(std::pair<int16_t, int16_t> gridPos) {
     std::pair<int16_t, int16_t> duck_check = gridPos;
     duck_check.second += 1;
     bool only_ducks = true;
-    if (isPositionOccupied(duck_check, only_ducks) || !validatePosition(gridPos, check_blocks))
+    if (!validatePosition(gridPos, check_blocks))
         return;
+    if(isPositionOccupied(duck_check, only_ducks)){
+        QMessageBox::warning(this, "Error", "The tile cannot be placed above a duck spawn.");
+        return;
+    } 
+    
     Block& block = map.map_dto.blocks[gridPos.second][gridPos.first];
     if (block.type == (selectedItemIndex + 1)) {
         block.solid = !block.solid;
@@ -553,7 +564,6 @@ void MainWindow::on_loadMapButton_clicked() {
             loaded_map.duck_spawns[i].second += 1;
         }
         this->map = loaded_map;
-        std::cout << static_cast<int>(map.map_dto.theme) << std::endl;
         updateThemeSelected();
         renderGrid();
         dialog.accept();
