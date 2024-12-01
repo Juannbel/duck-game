@@ -44,13 +44,13 @@ Comienzo con el editor de niveles. Se pueden editar bloques en un mapa, guardar 
 - Facundo Lescano: implementacion de los tests de los protocolos con google test.
 
 #### Semana 6 (19 al 26 de Noviembre)
-- Lautaro Pedrozo:
+- Lautaro Pedrozo: Arreglo de rc's en game, games_monitor y list_monitor.
 - Federico Letier: Mejoro movilidad en las plataformas. Ahora el game_loop entre rondas espera a que todos los clientes conectados reciban la snapshot y ellos le devuelvan un mensaje "ready", que simboliza que ya cargaron el siguiente mapa, evitando posibles desync si a alguno no le llega por problemas de red. 
 - Juan Bel: Implementación de UI para realizar la conexión con el servidor (pre-lobby), y se permite al finalizar la partida, volver al lobby, sin necesidad de volver a ingresar los datos del servidor
 - Facundo Lescano:
 
 #### Semana 7 (26 de Noviembre al 3 de Diciembre) -> Entrega final
-- Lautaro Pedrozo:
+- Lautaro Pedrozo: Correcciones de documentacion y implementacion de smart pointers en games_monitor.
 - Federico Letier: Patos caen al morir. Lock al mapa de players adentro de gameloop porque habia una rc. Pre-lobby en el que los jugadores comienzan dentro de un mapa especial para esperar a que arranque la partida, cuando el owner da start game, deben romper la caja de su cuadrante para comenzar la partida. Ahora se puede bajar de una plataforma apretando la flecha para abajo.
 - Juan Bel: Mejoras sobre el README y la documentación, soporte para joysticks, varios temas mas de mapas, cambios para pasar al nuevo lobby dinámico
 - Facundo Lescano:
