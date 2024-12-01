@@ -9,6 +9,10 @@ non_solid_opacity: 170
 # Si se juega una partida con un solo jugador, este valor no se tiene en cuenta
 first_gamepad_player: 1
 
+# Dead zones para los ticks y gatillos (0-1)
+stick_dead_zone: 0.1
+trigger_dead_zone: 0.9
+
 # Server side
 server_ticks: 120
 rounds_to_win: 10 # Cantidad de rondas para ganar

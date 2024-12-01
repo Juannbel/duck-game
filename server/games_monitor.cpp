@@ -1,7 +1,7 @@
 #include "games_monitor.h"
 
+#include <memory>
 #include <string>
-#include <utility>
 
 #include "common/lobby.h"
 
@@ -12,7 +12,8 @@ GameInfo GamesMonitor::player_create_game(const int id_player, Queue<Snapshot>& 
                                           const std::vector<std::string>& players_names) {
     std::lock_guard<std::mutex> lck(m);
     const int id_game = create_game(players_names[0], id_player);
-    const GameInfo game_info = map_games[id_game]->add_player(id_player, player_sender_queue, players_names);
+    const GameInfo game_info =
+            map_games[id_game]->add_player(id_player, player_sender_queue, players_names);
     return game_info;
 }
 
@@ -29,16 +30,18 @@ GameInfo GamesMonitor::player_join_game(const int id_player, const int id_game,
 
 void GamesMonitor::start_game(int id_game) {
     std::lock_guard<std::mutex> lck(m);
+    if (!map_games.contains(id_game)) {
+        return;
+    }
     map_games[id_game]->start();
 }
 
 std::vector<LobbyInfo> GamesMonitor::list_lobbies() {
     std::lock_guard<std::mutex> lck(m);
     std::vector<LobbyInfo> lobbies;
-    for (auto& game: map_games) {
-        Game* game_ptr = game.second.get();
-        if (game_ptr && game_ptr->is_open()) {
-            lobbies.push_back(game.second->get_info());
+    for (auto& [id, game]: map_games) {
+        if (game->is_open()) {
+            lobbies.push_back(game->get_info());
         }
     }
     return lobbies;
@@ -53,8 +56,7 @@ LobbyInfo GamesMonitor::get_lobby_info(const int32_t id_game) {
 }
 
 int GamesMonitor::create_game(const std::string& creator_name, const int id_player) {
-    std::unique_ptr<Game> game = std::make_unique<Game>(id, creator_name, id_player);
-    map_games.emplace(id, std::move(game));
+    map_games.emplace(id, std::make_unique<Game>(id, creator_name, id_player));
     id++;
     return id - 1;
 }
@@ -66,8 +68,8 @@ Queue<action>* GamesMonitor::get_gameloop_q(const int id_game) {
 
 void GamesMonitor::remove_player(const int id_game, const int id_player) {
     std::lock_guard<std::mutex> lck(m);
-    if (Game* game = map_games[id_game].get()) {
-        if (game->delete_player(id_player)) {
+    if (map_games.contains(id_game)) {
+        if (map_games[id_game]->delete_player(id_player)) {
             map_games.erase(id_game);
         }
     }

@@ -8,6 +8,9 @@
 #define QUACK_GROUP 2
 #define GRENADE_GROUP 3
 
+#define MUSIC_VOLUME 2
+#define SOUND_VOLUME 7
+
 static Config& config = Config::get_instance();
 
 const static uint BEEP_INTERVAL = config.get_client_fps() / 2;
@@ -32,12 +35,11 @@ SoundManager::SoundManager():
     other_sounds["beep"] = new SDL2pp::Chunk(DATA_PATH "/sounds/beep.wav");
     other_sounds["quack"] = new SDL2pp::Chunk(DATA_PATH "/sounds/quack.wav");
 
-    mixer.SetMusicVolume(0);
+    mixer.SetMusicVolume(MUSIC_VOLUME);
     mixer.PlayMusic(background_music);
-    mixer.PauseMusic();
 
     for (int channel = 0; channel < CHANNELS; channel++) {
-        mixer.SetVolume(channel, 0);
+        mixer.SetVolume(channel, SOUND_VOLUME);
     }
 }
 
@@ -79,10 +81,10 @@ void SoundManager::dead_sound() {
 
 void SoundManager::toggle_mute() {
     if (mixer.GetMusicVolume() == 0) {
-        mixer.SetMusicVolume(2);
+        mixer.SetMusicVolume(MUSIC_VOLUME);
         mixer.ResumeMusic();
         for (int channel = 0; channel < CHANNELS; channel++) {
-            mixer.SetVolume(channel, 7);
+            mixer.SetVolume(channel, SOUND_VOLUME);
         }
     } else {
         mixer.SetMusicVolume(0);

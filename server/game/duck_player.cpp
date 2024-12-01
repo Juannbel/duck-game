@@ -238,8 +238,8 @@ void DuckPlayer::equip_helmet() {
 
 bool DuckPlayer::fall_from_platform() {
     float prev_y = hitbox.coords.y;
-    hitbox.coords.y+=2;
-    Collision check = collisions.check_near_blocks_collision(hitbox, hitbox.coords.x, prev_y+1); 
+    hitbox.coords.y += 2;
+    Collision check = collisions.check_near_blocks_collision(hitbox, hitbox.coords.x, prev_y + 1);
     if (!check.horizontal_collision && !check.vertical_collision) {
         status.is_laying = false;
         status.is_falling = true;
@@ -259,9 +259,8 @@ void DuckPlayer::lay_down() {
 
     status.is_laying = (status.is_falling || status.is_jumping) ? false : true;
     if (status.is_laying && !it_sliding) {
-        if (fall_from_platform()) 
+        if (fall_from_platform())
             return;
-        
     }
     status.is_running = status.is_laying ? false : status.is_running;
     if (status.is_laying || it_sliding) {

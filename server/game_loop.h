@@ -3,7 +3,6 @@
 
 #include <chrono>
 #include <cstdint>
-#include <functional>
 #include <map>
 #include <string>
 #include <utility>
@@ -57,7 +56,7 @@ private:
 
     void sleep_checking(const std::chrono::milliseconds& time);
 
-    void create_new_map(std::map<uint8_t, uint8_t> &players_readys);
+    void create_new_map(std::map<uint8_t, uint8_t>& players_readys);
 
     void wait_ready();
 
@@ -77,6 +76,8 @@ public:
     void delete_duck(uint8_t duck_id);
 
     void notify_not_started();
+
+    void start_game();
 
     bool is_initialized() const { return game_initialized; }
 

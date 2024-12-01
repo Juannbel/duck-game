@@ -12,7 +12,7 @@ std::vector<std::string> MapLoader::list_maps(const std::string& path_to_dir) {
             std::filesystem::directory_iterator(path_to_dir), std::filesystem::directory_iterator(),
             std::back_inserter(maps),
             [](const std::filesystem::directory_entry& map_name) { return map_name.path(); });
-    
+
     return maps;
 }
 
@@ -119,7 +119,7 @@ bool MapLoader::save_map(const std::string& path, const Map& map) {
         return false;
     }
     file << root;
-    if (file.fail()){
+    if (file.fail()) {
         return false;
     }
     file.close();

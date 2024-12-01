@@ -2,8 +2,6 @@
 #define RENDERABLE_MAP_H
 
 #include <memory>
-#include <string>
-#include <unordered_map>
 #include <vector>
 
 #include <SDL2pp/SDL2pp.hh>
@@ -21,7 +19,7 @@ private:
     std::vector<RenderableBlock> map;
 
 public:
-    explicit RenderableMap(const MapDto& map_dto);
+    RenderableMap();
 
     void render(SDL2pp::Renderer& renderer, Camera& camera);
 

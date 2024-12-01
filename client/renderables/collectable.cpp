@@ -4,7 +4,6 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "SDL2pp/Rect.hh"
 #include "client/animation_data_provider.h"
 #include "client/textures_provider.h"
 #include "common/shared_constants.h"

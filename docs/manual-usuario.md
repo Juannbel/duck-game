@@ -66,10 +66,10 @@ duck_game_client
 
 ![ingreso partida](images/manual-usuario/unirse-partida.png)
 
-- Una vez ingresados a la partida (luego de presionar *Confirmar* (Confirm), se mostrará una pantalla de espera, donde se esperará a que el creador inicie el juego.
-- Se muestra el color y ID del jugador/es
+- Una vez ingresados a la partida (luego de presionar *Confirmar* (Confirm), se ingresa a la sala de espera, donde se esperará a que el creador inicie el juego.
+- Se muestra a cada jugador conectado actualmente en su cuadrante, con su nombre de usuario abajo, pueden moverse por la sala, disparar, etc.
 
-![esperando jugadores](images/manual-usuario/esperando-jugadores.png)
+![esperando jugadores](images/manual-usuario/esperando-dinamico.png)
 
 ## 🦆 **Juego**
 
@@ -80,17 +80,18 @@ duck_game_client
 
 #### **Inicio de partida**
 
-- Una vez iniciada la partida, se muestra que pato fue asignado a cada jugador, y empieza la primera ronda.
+- Una vez que el creador decida iniciar la partida, ya será capaz de controlar a su pato en la sala de espera y aparecerán cajas en los cuadrantes de los jugadores, cuando cada jugador conectado rompa su caja, comenzará el juego
+
+![Romper cajas](images/manual-usuario/rompan-cajas.png)
 
 ![inicio juego](images/manual-usuario/inicio-juego.png)
-
-
-![Puntuacion](images/manual-usuario/puntuaciones-media.png)
 
 #### **Condición de victoria**
 
 - El jugador que obtenga 10 (nuevamente configurable, ver sección [configuración](#-configuración)) o mas puntos será el ganador. En caso de empate, se vuelven a jugar 5 rondas hasta que pueda declararse un único ganador
 - Como la partida se desarrolla en tiradas de 5 rondas, y se busca el ganador unicamente al finalizar estas tiradas, puede pasar que un jugador sea el primero en llegar a 10 rondas y otro jugador termine siendo el ganador
+
+![Puntuacion](images/manual-usuario/puntuaciones-media.png)
 
 ![victoria](images/manual-usuario/victoria.png)
 
@@ -107,6 +108,14 @@ duck_game_client
 
 <p align="center">
   <img src="./images/manual-usuario/cajas.gif" alt="Rompiendo cajas" />
+</p>
+
+- **Bloques traspasables:** Los bloques traspasables se marcan en el mapa con un nivel de transparencia que permite reconocerlos.
+ Al presionar la tecla de tirarse al suelo (`s` o `↓`) mientras se está sobre un bloque traspasable, se cae a través del mismo. 
+ Si se tiene encima un bloque traspasable, se puede saltar a traves de el.
+
+<p align="center">
+  <img src="./images/manual-usuario/bloques-traspasables.gif" alt="Boque traspasable" />
 </p>
 
 ## 🔫 **Armas**

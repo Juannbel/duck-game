@@ -3,10 +3,12 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
@@ -22,14 +24,11 @@
 #include "client/renderables/duck.h"
 #include "client/renderables/map.h"
 #include "client/screen_manager.h"
-#include "client/textures_provider.h"
 #include "common/blocking_queue.h"
 #include "common/config.h"
 #include "common/lobby.h"
-#include "common/map_dto.h"
 #include "common/snapshot.h"
 
-#include "animation_data_provider.h"
 #include "controls_config.h"
 
 #define USE_CAMERA true
@@ -40,7 +39,6 @@ const static int RATE = 1000 / config.get_client_fps();
 const static std::string WIN_TITLE = config.get_window_title();
 const static int WIN_WIDTH = config.get_window_width();
 const static int WIN_HEIGHT = config.get_window_height();
-const static uint8_t FIRST_GAMEPAD_PLAYER = config.get_first_gamepad_player();
 
 ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
@@ -51,32 +49,16 @@ ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snaps
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
         snapshot_q(snapshot_q),
         actions_q(actions_q),
-        p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS, FIRST_GAMEPAD_PLAYER == 0 || duck_ids.second == INVALID_DUCK_ID ? 0 : 1),
-        p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS, FIRST_GAMEPAD_PLAYER == 0 ? 1 : 0),
+        p1_controller(duck_ids.first, actions_q, last_snapshot, P1_CONTROLS),
+        p2_controller(duck_ids.second, actions_q, last_snapshot, P2_CONTROLS),
+        joystick_manager(p1_controller.get_joystick_instance(), p2_controller.get_joystick_instance()),
         play_again(false),
-        map_dto(),
         camera(renderer),
-        map(map_dto),
         screen_manager(window, sound_manager, renderer, camera, map, this->duck_ids, play_again),
         is_first_round(true) {}
 
 bool ConstantLooper::run() try {
-    TexturesProvider::load_textures(renderer);
-    AnimationDataProvider::load_animations_data();
-
-    if (!screen_manager.waiting_screen(snapshot_q, last_snapshot))
-        return false;
-
-    process_snapshot();
-
-    map.update(map_dto);
-
     bool keep_running = true;
-    if (last_snapshot.game_finished) {
-        // partida no iniciada
-        screen_manager.between_rounds_screen(snapshot_q, last_snapshot);
-        return play_again;
-    }
 
     while (keep_running) {
         uint32_t t1 = SDL_GetTicks();
@@ -97,10 +79,12 @@ bool ConstantLooper::run() try {
                 continue;
             clear_renderables();
             process_snapshot();
-            map.update(map_dto);
             camera.update(last_snapshot, !is_first_round);
             p1_controller.restart_movement();
             p2_controller.restart_movement();
+
+            keep_running = screen_manager.round_start_screen(snapshot_q, last_snapshot, [this](Camera& camera, RenderableMap& map) { render(camera, map); });
+
             continue;
         }
 
@@ -112,6 +96,8 @@ bool ConstantLooper::run() try {
         }
 
         render(camera, map);
+
+        renderer.Present();
 
         sound_manager.update();
 
@@ -149,7 +135,7 @@ void ConstantLooper::sleep_or_catch_up(uint32_t& t1) {
 
 void ConstantLooper::process_snapshot() {
     if (!last_snapshot.maps.empty()) {
-        map_dto = last_snapshot.maps[0];
+        map.update(last_snapshot.maps[0]);
         actions_q.push({duck_ids.first, Ready});
         if (duck_ids.second != INVALID_DUCK_ID)
             actions_q.push({duck_ids.second, Ready});
@@ -263,14 +249,19 @@ void ConstantLooper::render(Camera& camera, RenderableMap& map) {
     }
 
     for (auto& duck: ducks_renderables) {
-        if (duck.first == duck_ids.first || duck.first == duck_ids.second)
+        if (duck.first == duck_ids.first || duck.first == duck_ids.second) {
             continue;
+        }
         duck.second->render(renderer, camera);
     }
-    ducks_renderables[duck_ids.first]->render(renderer, camera);
-    if (duck_ids.second != INVALID_DUCK_ID) {
+
+    if (ducks_renderables.find(duck_ids.first) != ducks_renderables.end()) {
+        ducks_renderables[duck_ids.first]->render(renderer, camera);
+    }
+    if (ducks_renderables.find(duck_ids.second) != ducks_renderables.end()) {
         ducks_renderables[duck_ids.second]->render(renderer, camera);
     }
+
 
     for (auto& collectable: collectables_renderables) {
         collectable.second->render(renderer, camera);
@@ -278,8 +269,6 @@ void ConstantLooper::render(Camera& camera, RenderableMap& map) {
 
     if (is_first_round)
         screen_manager.show_lobby_text(last_snapshot);
-
-    renderer.Present();
 }
 
 
@@ -290,17 +279,28 @@ bool ConstantLooper::process_events() {
         p2_controller.update_duck_status();
 
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-            return false;
-        }
+        switch (event.type) {
+            case SDL_QUIT: {
+                return false;
+            }
 
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_1) {
-            sound_manager.toggle_mute();
-            return true;
-        }
+            case SDL_KEYDOWN: {
+                const auto& key = event.key.keysym.sym;
+                if (key == SDLK_1) {
+                    sound_manager.toggle_mute();
+                    return true;
+                } else if (key == SDLK_2) {
+                    window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+                    return true;
+                }
+                break;
+            }
 
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_2) {
-            window.SetFullscreen(!(window.GetFlags() & SDL_WINDOW_FULLSCREEN));
+            case SDL_CONTROLLERDEVICEADDED:
+            case SDL_CONTROLLERDEVICEREMOVED: {
+                joystick_manager.handle_event(event);
+                return true;
+            }
         }
 
         p1_controller.process_event(event);

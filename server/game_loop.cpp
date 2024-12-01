@@ -8,6 +8,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/config.h"
@@ -22,16 +23,17 @@ static Config& config = Config::get_instance();
 const static int TICKS = config.get_server_ticks();
 const milliseconds RATE(1000 / TICKS);
 const uint its_after_round = 3000 / (1000 / TICKS);
+const milliseconds STATS_TIME(3000);
 const uint8_t ROUNDS_TO_WIN = config.get_rounds_to_win();
 const uint8_t ROUNDS_BETWEEN_STATS = config.get_rounds_between_stats();
-const std::string FIRST_MAP = "/server/lobby.yaml";
+const char LOBBY_MAP[] = DATA_PATH "/server/lobby.yaml";
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),
         snaps_queue_list(queue_list),
         round_number(ROUNDS_BETWEEN_STATS),
-        round_finished(),
-        game_finished(),
+        round_finished(false),
+        game_finished(false),
         first_round(true),
         paths_to_maps(map_loader.list_maps(MAPS_PATH)),
         curr_map(),
@@ -39,6 +41,9 @@ GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_lis
     for (uint8_t i = MAX_DUCKS; i > 0; i--) {
         ducks_id_available.push_back(i - 1);
     }
+
+    curr_map = map_loader.load_map(LOBBY_MAP);
+    game_operator.initialize_game(curr_map, ducks_info, first_round);
 }
 
 std::string get_rand_string(const std::vector<std::string>& v_strings) {
@@ -49,22 +54,12 @@ std::string get_rand_string(const std::vector<std::string>& v_strings) {
 }
 
 void GameLoop::initialice_new_round() {
-    if (first_round) {
-        std::string lobby = DATA_PATH;
-        lobby.append(FIRST_MAP);
-        curr_map = map_loader.load_map(lobby);
-        
-        } else {
-        curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
-    }
+    curr_map = map_loader.load_map(get_rand_string(paths_to_maps));
     std::lock_guard<std::mutex> lock(map_lock);
     game_operator.initialize_game(curr_map, ducks_info, first_round);
 }
 
 void GameLoop::run() {
-    game_initialized = true;
-    initialice_new_round();
-
     uint it = its_after_round;
     auto t1 = high_resolution_clock::now();
     initial_snapshot();
@@ -89,7 +84,10 @@ void GameLoop::run() {
     game_finished = true;
     it = 0;
     round_number = 0;
-    create_and_push_snapshot(it);
+    if (!game_initialized)
+        notify_not_started();
+    else
+        create_and_push_snapshot(it);
 
     _is_alive = false;
 }
@@ -107,7 +105,7 @@ void GameLoop::pop_and_process_all() {
     action action{};
     while (actions_queue.try_pop(action)) {
         std::lock_guard<std::mutex> lock(map_lock);
-        game_operator.process_action(action);
+        game_operator.process_action(action, first_round);
     }
     game_operator.update_game_status();
 }
@@ -115,8 +113,9 @@ void GameLoop::pop_and_process_all() {
 void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
     Snapshot actual_status = {};
     game_operator.get_snapshot(actual_status);
-    if (first_round)
+    if (first_round && game_initialized) 
         round_finished = game_operator.check_start_game();
+    
     check_for_winner(actual_status);
 
     actual_status.round_finished = its_since_finish == 0 ? round_finished : false;
@@ -191,12 +190,14 @@ void GameLoop::check_for_winner(const Snapshot& actual_status) {
 }
 
 uint8_t GameLoop::add_player(const std::string& player_name) {
+    std::lock_guard<std::mutex> lock(map_lock);
     if (ducks_info.size() >= MAX_DUCKS) {
         throw std::runtime_error("Exceso de jugadores");
     }
     uint8_t duck_id = ducks_id_available.back();
     ducks_id_available.pop_back();
     ducks_info.emplace_back(duck_id, player_name);
+    game_operator.add_player(curr_map.duck_spawns, duck_id, player_name, first_round);
     return duck_id;
 }
 
@@ -215,24 +216,24 @@ void GameLoop::delete_duck(const uint8_t duck_id) {
     }
 }
 
-void GameLoop::stop() {
-    _keep_running = false;
+void GameLoop::start_game() {
+    game_initialized = true;
+    game_operator.initialize_boxes(curr_map);
 }
+
+void GameLoop::stop() { _keep_running = false; }
 
 void GameLoop::notify_not_started() {
     Snapshot status = {};
     status.game_finished = true;
     status.round_finished = true;
     status.show_stats = true;
-    status.maps.push_back(curr_map.map_dto);
 
     // es necesario enviar 1 para desbloquearlo de la waiting screen
     push_responce(status);
 }
 
-GameLoop::~GameLoop() {
-    actions_queue.close();
-}
+GameLoop::~GameLoop() { actions_queue.close(); }
 
 void GameLoop::sleep_checking(const milliseconds& time) {
     uint its_to_sleep = time / RATE;
@@ -242,7 +243,7 @@ void GameLoop::sleep_checking(const milliseconds& time) {
     }
 }
 
-void GameLoop::create_new_map(std::map<uint8_t, uint8_t> &players_readys) {
+void GameLoop::create_new_map(std::map<uint8_t, uint8_t>& players_readys) {
     std::lock_guard<std::mutex> lock(map_lock);
     for (auto [id, name]: ducks_info) {
         players_readys[id] = 0;
@@ -270,11 +271,13 @@ void GameLoop::wait_ready() {
         }
         if (readys == ducks_info.size() && first_ready) {
             if (!round_number)
-                sleep_checking(milliseconds(3000));
+                sleep_checking(milliseconds(STATS_TIME));
             readys = 0;
             first_ready = false;
             initialice_new_round();
             initial_snapshot();
+            sleep_checking(milliseconds(COUNTDOWN_TIME));
+            while (actions_queue.try_pop(action)) {}
         }
         std::this_thread::sleep_for(RATE);
     }

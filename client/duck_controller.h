@@ -7,10 +7,13 @@
 #include <SDL2/SDL.h>
 #include <SDL_events.h>
 #include <SDL_gamecontroller.h>
+#include <SDL_joystick.h>
 
 #include "common/blocking_queue.h"
 #include "common/commands.h"
 #include "common/snapshot.h"
+
+#include "joystick_manager.h"
 
 struct ControlScheme {
     SDL_Keycode move_right;
@@ -36,10 +39,7 @@ private:
     Queue<action>& actions_q;
     Snapshot& snapshot;
     ControlScheme controls;
-
-    SDL_GameController* joystick;
-    int joystick_id;
-    bool joystick_enabled;
+    JoystickInstance joystick;
 
     Command last_move_command;
     bool move_command;
@@ -73,10 +73,13 @@ private:
     void handle_stop_look_up();
 
     void process_joystick_event(const SDL_Event& event);
+    void handle_joy_axis_motion(const SDL_Event& event, SDL_Event& fake_event);
+    void handle_joy_button_up(const SDL_Event& event, SDL_Event& fake_event);
+    void handle_joy_button_down(const SDL_Event& event, SDL_Event& fake_event);
 
 public:
     DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
-                ControlScheme controls, int joystick_id = -1);
+                   ControlScheme controls);
 
     void update_duck_status();
 
@@ -86,11 +89,9 @@ public:
 
     void restart_movement();
 
-    ~DuckController() {
-        if (joystick) {
-            SDL_GameControllerClose(joystick);
-        }
-    }
+    JoystickInstance* get_joystick_instance();
+
+    ~DuckController() {}
 };
 
 #endif

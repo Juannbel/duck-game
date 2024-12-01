@@ -25,7 +25,7 @@ bool BoxEntity::get_hit(const Rectangle& b_rec, uint8_t damage) {
     Collision coll = collisions.rectangles_collision(hitbox, b_rec);
     if (coll.horizontal_collision || coll.vertical_collision) {
         if (!damage || !health) {  // Para que la banana no se rompa si le pega a una caja
-            return false;          // Ni que absorba todas las balas de una explosion en una iteracion
+            return false;  // Ni que absorba todas las balas de una explosion en una iteracion
         }
         if (damage > health) {
             health = 0;

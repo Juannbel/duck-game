@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include <qapplication.h>
+#include <SDL2/SDL_gamecontroller.h>
 
 #include "pre_lobby/pre_lobby.h"
 
@@ -25,6 +26,8 @@ int main(int argc, char* argv[]) {
         if (!connected) {
             return EXIT_SUCCESS;
         }
+
+        SDL_GameControllerAddMappingsFromFile(DATA_PATH "/gamepad_mappings.txt");
 
         bool play_again = true;
         while (play_again) {

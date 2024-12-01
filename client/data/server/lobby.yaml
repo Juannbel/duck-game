@@ -775,9 +775,9 @@ collectables_spawns:
 boxes_spawns:
   - x: 12
     y: 7
+  - x: 20
+    y: 7
   - x: 12
     y: 13
   - x: 20
     y: 13
-  - x: 20
-    y: 7

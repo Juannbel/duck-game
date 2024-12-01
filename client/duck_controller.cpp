@@ -1,37 +1,35 @@
 #include "duck_controller.h"
 
 #include <algorithm>
+
 #include <SDL_events.h>
 #include <SDL_gamecontroller.h>
 #include <SDL_joystick.h>
 
+#include "client/joystick_manager.h"
 #include "common/commands.h"
+#include "common/config.h"
 #include "common/lobby.h"
 
+#define MAX_TRIGGER_VALUE 32767
+#define MAX_STICK_VALUE 32767
+
+static Config& config = Config::get_instance();
+const int STICK_DEAD_ZONE = config.get_stick_dead_zone() * MAX_STICK_VALUE;
+const int TRIGGER_DEAD_ZONE = config.get_trigger_dead_zone() * MAX_TRIGGER_VALUE;
+
 DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
-                               ControlScheme controls, int joystick_id):
+                               ControlScheme controls):
         duck_id(duck_id),
         actions_q(actions_q),
         snapshot(snapshot),
         controls(controls),
-        joystick(nullptr),
-        joystick_id(joystick_id),
-        joystick_enabled(false),
+        joystick({nullptr, -1}),
         move_command(false),
         moving_left(false),
         moving_right(false) {
     if (duck_id != INVALID_DUCK_ID)
         update_duck_status();
-
-    if (joystick_id == 0) // lo añadimos solo una vez
-        SDL_GameControllerAddMappingsFromFile(DATA_PATH "/gamepad_mappings.txt");
-
-    if (SDL_IsGameController(joystick_id)) {
-        joystick = SDL_GameControllerOpen(joystick_id);
-        if (joystick) {
-            joystick_enabled = true;
-        }
-    }
 
     key_down_handlers = {
             {controls.move_right, std::bind(&DuckController::handle_move_right, this)},
@@ -57,20 +55,19 @@ DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapsh
 }
 
 void DuckController::process_event(const SDL_Event& event) {
-    if (event.type == SDL_KEYDOWN) {
-        handle_key_down(event);
-    } else if (event.type == SDL_KEYUP) {
-        handle_key_up(event);
-    }
-
-    if (joystick_enabled) {
-        switch (event.type) {
-            case SDL_CONTROLLERAXISMOTION:
-            case SDL_CONTROLLERBUTTONUP:
-            case SDL_CONTROLLERBUTTONDOWN:
+    switch (event.type) {
+        case SDL_KEYDOWN:
+            handle_key_down(event);
+            break;
+        case SDL_KEYUP:
+            handle_key_up(event);
+            break;
+        case SDL_CONTROLLERAXISMOTION:
+        case SDL_CONTROLLERBUTTONDOWN:
+        case SDL_CONTROLLERBUTTONUP:
+            if (joystick.joystick)
                 process_joystick_event(event);
-                break;
-        }
+            break;
     }
 }
 
@@ -186,19 +183,39 @@ void DuckController::handle_stop_shoot() { actions_q.push({duck_id, StopShooting
 
 void DuckController::handle_stop_look_up() { actions_q.push({duck_id, StopLookup}); }
 
+JoystickInstance* DuckController::get_joystick_instance() {
+    return duck_id != INVALID_DUCK_ID ? &joystick : NULL;
+}
+
 void DuckController::process_joystick_event(const SDL_Event& event) {
-    if (event.cdevice.which != joystick_id) {
+    if (event.cdevice.which != joystick.instance_id) {
         return;
     }
 
     SDL_Event fake_event;
-    if (event.type == SDL_CONTROLLERAXISMOTION) {
-        if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX) {
-            if (event.caxis.value < -3200) {
+    switch (event.type) {
+        case SDL_CONTROLLERAXISMOTION:
+            handle_joy_axis_motion(event, fake_event);
+            break;
+
+        case SDL_CONTROLLERBUTTONDOWN:
+            handle_joy_button_down(event, fake_event);
+            break;
+
+        case SDL_CONTROLLERBUTTONUP:
+            handle_joy_button_up(event, fake_event);
+            break;
+    }
+}
+
+void DuckController::handle_joy_axis_motion(const SDL_Event& event, SDL_Event& fake_event) {
+    switch (event.caxis.axis) {
+        case SDL_CONTROLLER_AXIS_LEFTX:
+            if (event.caxis.value < -STICK_DEAD_ZONE) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.move_left;
                 handle_key_down(fake_event);
-            } else if (event.caxis.value > 3200) {
+            } else if (event.caxis.value > STICK_DEAD_ZONE) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.move_right;
                 handle_key_down(fake_event);
@@ -208,8 +225,10 @@ void DuckController::process_joystick_event(const SDL_Event& event) {
                 move_command = true;
                 last_move_command = StopMoving;
             }
-        } else if (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT) {
-            if (event.caxis.value > 16000) {
+            break;
+
+        case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
+            if (event.caxis.value > TRIGGER_DEAD_ZONE) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.pick_up;
                 handle_key_down(fake_event);
@@ -218,8 +237,10 @@ void DuckController::process_joystick_event(const SDL_Event& event) {
                 fake_event.key.keysym.sym = controls.pick_up;
                 handle_key_up(fake_event);
             }
-        } else if (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT) {
-            if (event.caxis.value > 16000) {
+            break;
+
+        case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
+            if (event.caxis.value > TRIGGER_DEAD_ZONE) {
                 fake_event.type = SDL_KEYDOWN;
                 fake_event.key.keysym.sym = controls.shoot;
                 handle_key_down(fake_event);
@@ -228,46 +249,44 @@ void DuckController::process_joystick_event(const SDL_Event& event) {
                 fake_event.key.keysym.sym = controls.shoot;
                 handle_key_up(fake_event);
             }
-        }
+            break;
     }
+}
 
-    if (event.type == SDL_CONTROLLERBUTTONDOWN) {
-        SDL_Event fake_event;
-        fake_event.type = SDL_KEYDOWN;
+void DuckController::handle_joy_button_down(const SDL_Event& event, SDL_Event& fake_event) {
+    fake_event.type = SDL_KEYDOWN;
 
-        switch (event.cbutton.button) {
-            case SDL_CONTROLLER_BUTTON_A:
-                fake_event.key.keysym.sym = controls.jump;
-                handle_key_down(fake_event);
-                break;
-            case SDL_CONTROLLER_BUTTON_B:
-                fake_event.key.keysym.sym = controls.lay_down;
-                handle_key_down(fake_event);
-                break;
-            case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-                fake_event.key.keysym.sym = controls.look_up;
-                handle_key_down(fake_event);
-                break;
-        }
+    switch (event.cbutton.button) {
+        case SDL_CONTROLLER_BUTTON_A:
+            fake_event.key.keysym.sym = controls.jump;
+            handle_key_down(fake_event);
+            break;
+        case SDL_CONTROLLER_BUTTON_B:
+            fake_event.key.keysym.sym = controls.lay_down;
+            handle_key_down(fake_event);
+            break;
+        case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+            fake_event.key.keysym.sym = controls.look_up;
+            handle_key_down(fake_event);
+            break;
     }
+}
 
-    if (event.type == SDL_CONTROLLERBUTTONUP) {
-        SDL_Event fake_event;
-        fake_event.type = SDL_KEYUP;
+void DuckController::handle_joy_button_up(const SDL_Event& event, SDL_Event& fake_event) {
+    fake_event.type = SDL_KEYUP;
 
-        switch (event.cbutton.button) {
-            case SDL_CONTROLLER_BUTTON_A:
-                fake_event.key.keysym.sym = controls.jump;
-                handle_key_up(fake_event);
-                break;
-            case SDL_CONTROLLER_BUTTON_B:
-                fake_event.key.keysym.sym = controls.lay_down;
-                handle_key_up(fake_event);
-                break;
-            case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-                fake_event.key.keysym.sym = controls.look_up;
-                handle_key_up(fake_event);
-                break;
-        }
+    switch (event.cbutton.button) {
+        case SDL_CONTROLLER_BUTTON_A:
+            fake_event.key.keysym.sym = controls.jump;
+            handle_key_up(fake_event);
+            break;
+        case SDL_CONTROLLER_BUTTON_B:
+            fake_event.key.keysym.sym = controls.lay_down;
+            handle_key_up(fake_event);
+            break;
+        case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+            fake_event.key.keysym.sym = controls.look_up;
+            handle_key_up(fake_event);
+            break;
     }
 }
