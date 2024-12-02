@@ -43,7 +43,8 @@ DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapsh
             {controls.infinite_ammo, std::bind(&DuckController::handle_infinite_ammo, this)},
             {controls.kill_everyone, std::bind(&DuckController::handle_kill_everyone, this)},
             {controls.infinite_hp, std::bind(&DuckController::handle_infinite_hp, this)},
-            {controls.get_death_laser, std::bind(&DuckController::handle_get_death_laser, this)}};
+            {controls.get_death_laser, std::bind(&DuckController::handle_get_death_laser, this)},
+            {controls.heal_and_revive, std::bind(&DuckController::handle_heal_and_revive, this)}};
 
     key_up_handlers = {
             {controls.move_right, std::bind(&DuckController::handle_stop_move_right, this)},
@@ -150,6 +151,8 @@ void DuckController::handle_kill_everyone() { actions_q.push({duck_id, KillEvery
 void DuckController::handle_infinite_hp() { actions_q.push({duck_id, InfiniteHP}); }
 
 void DuckController::handle_get_death_laser() { actions_q.push({duck_id, GetDeathLaser}); }
+
+void DuckController::handle_heal_and_revive() { actions_q.push({duck_id, HealAndRevive}); }
 
 // Handlers para key up
 

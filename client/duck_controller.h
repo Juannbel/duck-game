@@ -30,6 +30,7 @@ struct ControlScheme {
     SDL_KeyCode kill_everyone;
     SDL_KeyCode infinite_hp;
     SDL_KeyCode get_death_laser;
+    SDL_KeyCode heal_and_revive;
 };
 
 class DuckController {
@@ -64,6 +65,7 @@ private:
     void handle_kill_everyone();
     void handle_infinite_hp();
     void handle_get_death_laser();
+    void handle_heal_and_revive();
 
     void handle_stop_move_right();
     void handle_stop_move_left();
