@@ -546,6 +546,8 @@ void MainWindow::on_loadMapButton_clicked() {
         QFileInfo fileInfo(fullPath);
         comboBox->addItem(fileInfo.fileName());
     }
+
+    comboBox->setStyleSheet("combobox-popup: 0;");
     connect(loadButton, &QPushButton::clicked, [&]() {
         if (comboBox->currentIndex() == -1) {
             QMessageBox::warning(this, "Error", "Please select a map.");
