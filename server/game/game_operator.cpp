@@ -168,8 +168,13 @@ void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
     } else if (command == FlyMode) {
         duck.fly_mode();
     } else if (command == HealAndRevive) {
-        if (collisions.out_of_map(duck.hitbox.coords.x, duck.hitbox.coords.y))
-            return;
+        if (collisions.out_of_map(duck.hitbox.coords.x, duck.hitbox.coords.y)) {
+            Spawn& spawn = spawns.at(duck.status.duck_id);
+            duck.hitbox.coords.x = spawn.x;
+            duck.hitbox.coords.y = spawn.y;
+            duck.status.x = spawn.x;
+            duck.status.y = spawn.y;
+        }
         duck.status.duck_hp = config.get_initial_duck_hp();
         duck.status.helmet_equiped = true;
         duck.status.armor_equiped = true;
