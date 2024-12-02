@@ -139,7 +139,6 @@ void GunEntity::destroy() {
 void GunEntity::drop_gun(float x, float y) {
     infinite_ammo_activated = false;
     shooted_bullets = 0;
-    it_since_shoot = it_to_shoot;
     stop_shooting(); 
     stuck = false;
     float new_x = x;
