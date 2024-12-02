@@ -9,6 +9,7 @@
 
 #include <SDL_keycode.h>
 
+#include "SDL2pp/Texture.hh"
 #include "client/animation_data_provider.h"
 #include "client/renderables/map.h"
 #include "client/textures_provider.h"
@@ -25,7 +26,7 @@ const static int RATE = 1000 / config.get_client_fps();
 
 ScreenManager::ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager,
                              SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map,
-                             std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again):
+                             std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again, std::function<void(Camera&, RenderableMap&)> aditional_render) :
         window(window),
         sound_manager(sound_manager),
         renderer(renderer),
@@ -34,14 +35,15 @@ ScreenManager::ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager
         map(map),
         camera(camera),
         play_again(play_again),
-        owner_started_game(false) {
+        owner_started_game(false),
+        aditional_render(aditional_render) {
     TexturesProvider::load_textures(renderer);
     AnimationDataProvider::load_animations_data();
 }
 
 bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     if (last_snapshot.game_finished) {
-        if (last_snapshot.ducks.size() == 0) {
+        if (last_snapshot.ducks.size() <= 1) {
             return end_game_no_winner_screen();
         }
         return end_game_screen(last_snapshot);
@@ -68,7 +70,8 @@ bool ScreenManager::between_rounds_screen(Queue<Snapshot>& snapshot_q, Snapshot&
 
         renderer.Clear();
         camera.update(last_snapshot, false);
-        map.render(renderer, camera);
+        aditional_render(camera, map);
+
         renderer.Present();
         SDL_Delay(RATE);
     }
@@ -146,7 +149,7 @@ bool ScreenManager::stats_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_sna
         renderer.Clear();
 
         camera.update(last_snapshot, false);
-        map.render(renderer, camera);
+        aditional_render(camera, map);
 
         int rect_width = renderer.GetOutputWidth() * 0.8;
         int rect_height = 80;
@@ -224,7 +227,7 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot) {
 
         renderer.Clear();
         camera.update(last_snapshot, false);
-        map.render(renderer, camera);
+        aditional_render(camera, map);
 
         int rect_width = renderer.GetOutputWidth() * 0.8;
         int rect_height = 80;
@@ -266,8 +269,14 @@ bool ScreenManager::end_game_screen(Snapshot& last_snapshot) {
 }
 
 bool ScreenManager::end_game_no_winner_screen() {
-    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid("Game terminated with no winner",
+    std::string message = "Not enough players to continue";
+    if (!owner_started_game) {
+        message = "Owner left the game";
+    }
+
+    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid(message,
                                                                  SDL_Color{255, 255, 255, 255}));
+
 
     SDL2pp::Texture exit_text(
             renderer,
@@ -312,7 +321,7 @@ bool ScreenManager::end_game_no_winner_screen() {
 
         renderer.Clear();
         camera.update({}, false);
-        map.render(renderer, camera);
+        aditional_render(camera, map);
         renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
         renderer.SetDrawColor(0, 0, 0, 50);
         renderer.FillRect(background_rect);
@@ -378,7 +387,7 @@ void ScreenManager::server_disconnected_screen() {
         renderer.Clear();
 
         camera.update({}, false);
-        map.render(renderer, camera);
+        aditional_render(camera, map);
         renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
         renderer.SetDrawColor(0, 0, 0, 50);
         renderer.FillRect(background_rect);
@@ -436,14 +445,20 @@ void ScreenManager::show_lobby_text(Snapshot& last_snapshot) {
         duck_name_rect.y = LOBBY_MAP_Y + (LOBBY_MAP_HEIGHT / 2) - 19;
         duck_name_rect.y += duck.duck_id >= 2 ? ((LOBBY_MAP_HEIGHT / 2) - 8) : 0;
 
+        if (duck.duck_id == 0 && !owner_started_game) {
+            std::shared_ptr<SDL2pp::Texture> computer_texture(TexturesProvider::get_texture("computer"));
+            SDL2pp::Rect computer_rect(LOBBY_MAP_X + 60, duck_name_rect.y - 30, 20, (20.0f/computer_texture->GetWidth()) * computer_texture->GetHeight());
+            camera.transform_rect(computer_rect);
+            renderer.Copy(*computer_texture, SDL2pp::NullOpt, computer_rect);
+        }
+
         camera.transform_rect(duck_name_rect);
         renderer.Copy(duck_name, SDL2pp::NullOpt, duck_name_rect);
     }
 }
 
 bool ScreenManager::round_start_screen(
-        Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot,
-        std::function<void(Camera&, RenderableMap&)> aditional_render) {
+        Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     const uint time_per_number = COUNTDOWN_TIME / 3;
 
     for (uint8_t i = 3; i > 0; i--) {
@@ -455,6 +470,7 @@ bool ScreenManager::round_start_screen(
                 primary_font.RenderText_Solid(std::to_string(i), SDL_Color{255, 255, 255, 255}));
 
         while (elapsed_time < time_per_number) {
+            // Si hay una nueva snapshot, salimos directamente
             if (snapshot_q.try_pop(last_snapshot)) {
                 return true;
             }
