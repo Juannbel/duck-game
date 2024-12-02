@@ -28,7 +28,8 @@ const static bool SHOW_HUD = config.get_show_hud();
 
 ScreenManager::ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager,
                              SDL2pp::Renderer& renderer, Camera& camera, RenderableMap& map,
-                             std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again, std::function<void(Camera&, RenderableMap&)> aditional_render) :
+                             std::pair<uint8_t, uint8_t>& duck_ids, bool& play_again,
+                             std::function<void(Camera&, RenderableMap&)> aditional_render):
         window(window),
         sound_manager(sound_manager),
         renderer(renderer),
@@ -276,8 +277,8 @@ bool ScreenManager::end_game_no_winner_screen() {
         message = "Owner left the game";
     }
 
-    SDL2pp::Texture info(renderer, primary_font.RenderText_Solid(message,
-                                                                 SDL_Color{255, 255, 255, 255}));
+    SDL2pp::Texture info(renderer,
+                         primary_font.RenderText_Solid(message, SDL_Color{255, 255, 255, 255}));
 
 
     SDL2pp::Texture exit_text(
@@ -448,8 +449,11 @@ void ScreenManager::show_lobby_text(Snapshot& last_snapshot) {
         duck_name_rect.y += duck.duck_id >= 2 ? ((LOBBY_MAP_HEIGHT / 2) - 8) : 0;
 
         if (duck.duck_id == 0 && !owner_started_game) {
-            std::shared_ptr<SDL2pp::Texture> computer_texture(TexturesProvider::get_texture("computer"));
-            SDL2pp::Rect computer_rect(LOBBY_MAP_X + 60, duck_name_rect.y - 30, 20, (20.0f/computer_texture->GetWidth()) * computer_texture->GetHeight());
+            std::shared_ptr<SDL2pp::Texture> computer_texture(
+                    TexturesProvider::get_texture("computer"));
+            SDL2pp::Rect computer_rect(
+                    LOBBY_MAP_X + 60, duck_name_rect.y - 29, 20,
+                    (20.0f / computer_texture->GetWidth()) * computer_texture->GetHeight());
             camera.transform_rect(computer_rect);
             renderer.Copy(*computer_texture, SDL2pp::NullOpt, computer_rect);
         }
@@ -459,8 +463,7 @@ void ScreenManager::show_lobby_text(Snapshot& last_snapshot) {
     }
 }
 
-bool ScreenManager::round_start_screen(
-        Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
+bool ScreenManager::round_start_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot) {
     const uint time_per_number = COUNTDOWN_TIME / 3;
 
     for (uint8_t i = 3; i > 0; i--) {
@@ -524,14 +527,18 @@ bool ScreenManager::round_start_screen(
 void ScreenManager::show_hud(Snapshot& last_snapshot) {
     // buscamos el pato del jugador con un iterador por referencia
     auto it = std::find_if(last_snapshot.ducks.begin(), last_snapshot.ducks.end(),
-                                    [this](const Duck& duck) {
-                                        return duck.duck_id == duck_ids.first;
-                                    });
+                           [this](const Duck& duck) { return duck.duck_id == duck_ids.first; });
 
     if (it != last_snapshot.ducks.end()) {
-        SDL2pp::Texture hp(renderer, primary_font.RenderText_Solid(std::to_string(it->duck_hp), SDL_Color{255, 255, 255, 255}));
+        SDL2pp::Texture hp(renderer, primary_font.RenderText_Solid(std::to_string(it->duck_hp),
+                                                                   SDL_Color{255, 255, 255, 255}));
         SDL2pp::Rect rect(4, -3, 64, 64);
-        renderer.Copy(*TexturesProvider::get_texture("duck"), AnimationDataProvider::get_animation_data("duck_" + std::to_string(duck_ids.first) + "_standing").frames[0].rect, rect);
+        renderer.Copy(*TexturesProvider::get_texture("duck"),
+                      AnimationDataProvider::get_animation_data(
+                              "duck_" + std::to_string(duck_ids.first) + "_standing")
+                              .frames[0]
+                              .rect,
+                      rect);
         renderer.Copy(hp, SDL2pp::NullOpt, SDL2pp::Rect(64, 20, hp.GetSize().x, hp.GetSize().y));
     }
 
@@ -539,14 +546,20 @@ void ScreenManager::show_hud(Snapshot& last_snapshot) {
         return;
 
     it = std::find_if(last_snapshot.ducks.begin(), last_snapshot.ducks.end(),
-                                    [this](const Duck& duck) {
-                                        return duck.duck_id == duck_ids.second;
-                                    });
+                      [this](const Duck& duck) { return duck.duck_id == duck_ids.second; });
 
     if (it != last_snapshot.ducks.end()) {
-        SDL2pp::Texture hp(renderer, primary_font.RenderText_Solid(std::to_string(it->duck_hp), SDL_Color{255, 255, 255, 255}));
+        SDL2pp::Texture hp(renderer, primary_font.RenderText_Solid(std::to_string(it->duck_hp),
+                                                                   SDL_Color{255, 255, 255, 255}));
         SDL2pp::Rect rect(renderer.GetOutputWidth() - 168, -3, 64, 64);
-        renderer.Copy(*TexturesProvider::get_texture("duck"), AnimationDataProvider::get_animation_data("duck_" + std::to_string(duck_ids.second) + "_standing").frames[0].rect, rect);
-        renderer.Copy(hp, SDL2pp::NullOpt, SDL2pp::Rect(renderer.GetOutputWidth() - 104, 20, hp.GetSize().x, hp.GetSize().y));
+        renderer.Copy(*TexturesProvider::get_texture("duck"),
+                      AnimationDataProvider::get_animation_data(
+                              "duck_" + std::to_string(duck_ids.second) + "_standing")
+                              .frames[0]
+                              .rect,
+                      rect);
+        renderer.Copy(
+                hp, SDL2pp::NullOpt,
+                SDL2pp::Rect(renderer.GetOutputWidth() - 104, 20, hp.GetSize().x, hp.GetSize().y));
     }
 }

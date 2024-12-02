@@ -293,7 +293,7 @@ void DuckPlayer::face_up() {
 void DuckPlayer::stop_face_up() { status.facing_up = false; }
 
 void DuckPlayer::jump() {
-    if (cheats_on.flying  && !status.is_dead) {
+    if (cheats_on.flying && !status.is_dead) {
         status.is_jumping = true;
         return;
     }

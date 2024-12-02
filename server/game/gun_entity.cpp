@@ -139,7 +139,7 @@ void GunEntity::destroy() {
 void GunEntity::drop_gun(float x, float y) {
     infinite_ammo_activated = false;
     shooted_bullets = 0;
-    stop_shooting(); 
+    stop_shooting();
     stuck = false;
     float new_x = x;
     new_x -= (static_cast<float>(DUCK_HITBOX_WIDTH) / 2);

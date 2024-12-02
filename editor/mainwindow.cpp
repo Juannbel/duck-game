@@ -182,7 +182,7 @@ void MainWindow::renderGridTiles() {
             int tileIndex = static_cast<int>(block.type) - 1;
             int offset = (static_cast<int>(HalfFloor)) * map.map_dto.theme;
 
-            QGraphicsPixmapItem* item = scene->addPixmap(grassTextures[(tileIndex)+ offset]);
+            QGraphicsPixmapItem* item = scene->addPixmap(grassTextures[(tileIndex) + offset]);
             item->setPos(x * TILE_SIZE, y * TILE_SIZE);
 
             if (!block.solid) {
@@ -351,7 +351,7 @@ void MainWindow::addDuckSpawn(std::pair<int16_t, int16_t> gridPos) {
 
     std::pair<int16_t, int16_t> block_check = gridPos;
     block_check.second -= 1;
-    if (isBlockOccupied(block_check)){
+    if (isBlockOccupied(block_check)) {
         QMessageBox::warning(this, "Error", "The duck spawn cannot be placed under a block.");
         return;
     }
@@ -383,11 +383,11 @@ void MainWindow::addTile(std::pair<int16_t, int16_t> gridPos) {
     bool only_ducks = true;
     if (!validatePosition(gridPos, check_blocks))
         return;
-    if(isPositionOccupied(duck_check, only_ducks)){
+    if (isPositionOccupied(duck_check, only_ducks)) {
         QMessageBox::warning(this, "Error", "The tile cannot be placed above a duck spawn.");
         return;
-    } 
-    
+    }
+
     Block& block = map.map_dto.blocks[gridPos.second][gridPos.first];
     if (block.type == (selectedItemIndex + 1)) {
         block.solid = !block.solid;
