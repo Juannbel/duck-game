@@ -38,7 +38,7 @@ void TexturesProvider::load_textures(SDL2pp::Renderer& renderer) {
     textures["armor"] =
             std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/sprites/equipment/armor.png");
     textures["computer"] =
-        std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/others/computer.png");
+            std::make_shared<SDL2pp::Texture>(renderer, DATA_PATH "/others/computer.png");
 }
 
 std::shared_ptr<SDL2pp::Texture> TexturesProvider::get_texture(const std::string& texture_name) {

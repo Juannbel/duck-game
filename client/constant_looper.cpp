@@ -57,7 +57,7 @@ ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snaps
         play_again(false),
         camera(renderer),
         screen_manager(window, sound_manager, renderer, camera, map, this->duck_ids, play_again,
-                [this](Camera& camera, RenderableMap& map) { render(camera, map); }),
+                       [this](Camera& camera, RenderableMap& map) { render(camera, map); }),
         is_first_round(true) {}
 
 bool ConstantLooper::run() try {
@@ -76,8 +76,8 @@ bool ConstantLooper::run() try {
                 if (duck_ids.second != INVALID_DUCK_ID)
                     actions_q.push({duck_ids.second, Ready});
             }
-            is_first_round = false;
             keep_running = screen_manager.between_rounds_screen(snapshot_q, last_snapshot);
+            is_first_round = false;
             if (!keep_running)
                 continue;
             clear_renderables();
