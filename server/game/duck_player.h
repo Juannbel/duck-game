@@ -29,6 +29,8 @@ private:
     uint8_t it_sliding;
     bool ready_to_jump;
     Rectangle hitbox;
+    int16_t spawn_x;
+    int16_t spawn_y;
     CollisionChecks& collisions;
     CollectablesManager& collectables;
     std::shared_ptr<GunEntity> equipped_gun;
@@ -39,6 +41,7 @@ private:
     void die();
     void infinite_hp();
     void fly_mode();
+    void revive();
     void equip_armor();
     void equip_helmet();
     bool fall_from_platform();

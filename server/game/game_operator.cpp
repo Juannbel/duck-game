@@ -24,7 +24,7 @@ const static int TICKS = config.get_server_ticks();
 const static int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
 const static int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 const static bool CHEATS = config.get_cheats_on();
-
+const float SPAWN_Y_DIFF = 2*BLOCK_SIZE-DUCK_HITBOX_HEIGHT;
 
 GameOperator::GameOperator(): collisions(), collectables(collisions, players, boxes) {}
 
@@ -56,7 +56,7 @@ void GameOperator::add_player(const std::vector<std::pair<int16_t, int16_t>>& sp
                               uint8_t duck_id, const std::basic_string<char>& name,
                               bool first_round) {
     DuckPlayer player(collectables, collisions, spawn_points[duck_id].first * BLOCK_SIZE,
-                      spawn_points[duck_id].second * BLOCK_SIZE, duck_id, name);
+                      spawn_points[duck_id].second * BLOCK_SIZE + SPAWN_Y_DIFF, duck_id, name);
     players.emplace(duck_id, std::move(player));
     if (first_round)
         players.at(duck_id).cheats_on.infiniteHP = true;
@@ -168,17 +168,7 @@ void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
     } else if (command == FlyMode) {
         duck.fly_mode();
     } else if (command == HealAndRevive) {
-        if (collisions.out_of_map(duck.hitbox.coords.x, duck.hitbox.coords.y)) {
-            Spawn& spawn = spawns.at(duck.status.duck_id);
-            duck.hitbox.coords.x = spawn.x;
-            duck.hitbox.coords.y = spawn.y;
-            duck.status.x = spawn.x;
-            duck.status.y = spawn.y;
-        }
-        duck.status.duck_hp = config.get_initial_duck_hp();
-        duck.status.helmet_equiped = true;
-        duck.status.armor_equiped = true;
-        duck.status.is_dead = false;
+        duck.revive();
     }
 }
 

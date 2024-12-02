@@ -269,16 +269,17 @@ void GameLoop::wait_ready() {
                 ++readys;
             }
         }
-        if (readys == ducks_info.size() && first_ready) {
+        if (readys >= ducks_info.size() && first_ready) {
             if (!round_number)
                 sleep_checking(milliseconds(STATS_TIME));
             readys = 0;
             first_ready = false;
             initialice_new_round();
             initial_snapshot();
-            sleep_checking(milliseconds(COUNTDOWN_TIME));
-            while (actions_queue.try_pop(action)) {}
         }
         std::this_thread::sleep_for(RATE);
     }
+    action action{};
+    sleep_checking(milliseconds(COUNTDOWN_TIME));
+    while (actions_queue.try_pop(action)) {}
 }

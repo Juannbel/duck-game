@@ -44,6 +44,8 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& colli
     hitbox.width = DUCK_HITBOX_WIDTH;
     status.x = x;
     status.y = y;
+    spawn_x = x;
+    spawn_y = x;
     status.duck_id = id;
     std::strncpy(status.player_name, name.c_str(), MAX_PLAYER_NAME);
     status.player_name[MAX_PLAYER_NAME - 1] = '\0';
@@ -52,6 +54,7 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& colli
 void DuckPlayer::die() {
     status.is_dead = true;
     status.duck_hp = 0;
+    stop_running();
     drop_collectable();
 }
 
@@ -64,6 +67,19 @@ void DuckPlayer::fly_mode() {
         it_flapping = 0;
     }
     cheats_on.flying = !cheats_on.flying;
+}
+
+void DuckPlayer::revive() {
+    if (collisions.out_of_map(hitbox.coords.x, hitbox.coords.y)) {
+        hitbox.coords.x = spawn_x;
+        hitbox.coords.y = spawn_y;
+        status.x = spawn_x;
+        status.y = spawn_y;
+    }
+    status.duck_hp = config.get_initial_duck_hp();
+    status.helmet_equiped = true;
+    status.armor_equiped = true;
+    status.is_dead = false;
 }
 
 void DuckPlayer::status_after_move(struct Collision& collision) {
