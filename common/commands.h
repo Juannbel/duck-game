@@ -20,6 +20,7 @@ enum Command {
     KillEveryone,
     InfiniteHP,
     GetDeathLaser,
+    HealAndRevive,
     Ready
 };
 

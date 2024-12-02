@@ -167,6 +167,13 @@ void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
         duck.infinite_hp();
     } else if (command == FlyMode) {
         duck.fly_mode();
+    } else if (command == HealAndRevive) {
+        if (collisions.out_of_map(duck.hitbox.coords.x, duck.hitbox.coords.y)) 
+            return;
+        duck.status.duck_hp = config.get_initial_duck_hp();
+        duck.status.helmet_equiped = true;
+        duck.status.armor_equiped = true;
+        duck.status.is_dead = false;
     }
 }
 
