@@ -52,7 +52,6 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& colli
 void DuckPlayer::die() {
     status.is_dead = true;
     status.duck_hp = 0;
-    status.is_laying = true;
     drop_collectable();
 }
 
@@ -228,12 +227,14 @@ void DuckPlayer::equip_armor() {
     if (!status.armor_equiped)
         drop_collectable();
     status.armor_equiped = true;
+    status.is_shooting = false;
 }
 
 void DuckPlayer::equip_helmet() {
     if (!status.helmet_equiped)
         drop_collectable();
     status.helmet_equiped = true;
+    status.is_shooting = false;
 }
 
 bool DuckPlayer::fall_from_platform() {
