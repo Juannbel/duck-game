@@ -57,7 +57,7 @@ public:
     void process_action(action& action, bool first_round);
     void update_game_status();
 
-    void get_snapshot(Snapshot& snapshot);
+    void get_snapshot(Snapshot& snapshot, std::mutex& map_lock);
     void delete_duck_player(uint8_t id_duck);
     ~GameOperator();
 };

@@ -94,7 +94,7 @@ void GameLoop::run() {
 
 void GameLoop::initial_snapshot() {
     Snapshot actual_status = {};
-    game_operator.get_snapshot(actual_status);
+    game_operator.get_snapshot(actual_status, map_lock);
     actual_status.maps.push_back(curr_map.map_dto);
     actual_status.round_finished = false;
     add_rounds_won(actual_status);
@@ -112,7 +112,7 @@ void GameLoop::pop_and_process_all() {
 
 void GameLoop::create_and_push_snapshot(const uint& its_since_finish) {
     Snapshot actual_status = {};
-    game_operator.get_snapshot(actual_status);
+    game_operator.get_snapshot(actual_status, map_lock);
     if (first_round && game_initialized)
         round_finished = game_operator.check_start_game();
 

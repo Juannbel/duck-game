@@ -1,6 +1,7 @@
 #include "game_operator.h"
 
 #include <cstdint>
+#include <mutex>
 #include <random>
 #include <string>
 #include <utility>
@@ -235,7 +236,8 @@ void GameOperator::verify_spawn() {
     }
 }
 
-void GameOperator::get_snapshot(Snapshot& snapshot) {
+void GameOperator::get_snapshot(Snapshot& snapshot, std::mutex& map_lock) {
+    std::lock_guard<std::mutex> lock(map_lock);
     for (auto& [id, duck]: players) {
         snapshot.ducks.push_back(duck.get_status());
     }
