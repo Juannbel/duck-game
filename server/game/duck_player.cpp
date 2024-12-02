@@ -367,8 +367,6 @@ void DuckPlayer::knockback() {
 uint32_t DuckPlayer::drop_and_pickup() {
     if (status.is_dead)
         return 0;
-
-    stop_shooting();
     std::shared_ptr<GunEntity> old_gun = equipped_gun;
     equipped_gun = collectables.pickup(hitbox);
     if (old_gun != nullptr) {
@@ -388,7 +386,6 @@ void DuckPlayer::drop_collectable() {
         return;
     if (!status.is_dead)
         equipped_gun->destroy();
-    stop_shooting();
     collectables.drop_gun(equipped_gun, hitbox);
     status.gun = None;
     equipped_gun = nullptr;
