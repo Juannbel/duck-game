@@ -144,7 +144,7 @@ void GameOperator::process_action(action& action, bool first_round) {
 }
 
 void GameOperator::handle_cheat(DuckPlayer& duck, Command command) {
-    if (!CHEATS)
+    if (!CHEATS || duck.status.is_dead)
         return;
     if (command == KillEveryone) {
         for (auto& [id, other_duck]: players) {
