@@ -107,7 +107,6 @@ std::unordered_map<BlockType, QString> MainWindow::blockToString = {
 void MainWindow::updateThemeSelected() {
 
     ui->itemSelector->clear();
-    ui->themeSelector->setCurrentIndex(map.map_dto.theme);
     updateItemSelector();
     updateBackground();
     renderGrid();
