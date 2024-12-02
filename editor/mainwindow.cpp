@@ -110,7 +110,6 @@ void MainWindow::updateThemeSelected() {
     ui->themeSelector->setCurrentIndex(map.map_dto.theme);
     updateItemSelector();
     updateBackground();
-
     renderGrid();
 }
 
@@ -566,8 +565,7 @@ void MainWindow::on_loadMapButton_clicked() {
             loaded_map.duck_spawns[i].second += 1;
         }
         this->map = loaded_map;
-        updateThemeSelected();
-        renderGrid();
+        ui->themeSelector->setCurrentIndex(map.map_dto.theme);
         dialog.accept();
     });
 
