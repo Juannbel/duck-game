@@ -182,7 +182,7 @@ void MainWindow::renderGridTiles() {
             int tileIndex = static_cast<int>(block.type) - 1;
             int offset = (static_cast<int>(HalfFloor)) * map.map_dto.theme;
 
-            QGraphicsPixmapItem* item = scene->addPixmap(grassTextures[tileIndex + offset]);
+            QGraphicsPixmapItem* item = scene->addPixmap(grassTextures[(tileIndex-1)+ offset]);
             item->setPos(x * TILE_SIZE, y * TILE_SIZE);
 
             if (!block.solid) {
