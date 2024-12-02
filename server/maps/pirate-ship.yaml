@@ -2,6 +2,334 @@ width: 35
 height: 20
 theme: 6
 blocks:
+  - x: 14
+    y: 1
+    type: 12
+    solid: false
+  - x: 15
+    y: 1
+    type: 12
+    solid: false
+  - x: 16
+    y: 1
+    type: 12
+    solid: false
+  - x: 1
+    y: 2
+    type: 12
+    solid: false
+  - x: 2
+    y: 2
+    type: 12
+    solid: false
+  - x: 3
+    y: 2
+    type: 12
+    solid: false
+  - x: 27
+    y: 2
+    type: 12
+    solid: false
+  - x: 28
+    y: 2
+    type: 12
+    solid: false
+  - x: 29
+    y: 2
+    type: 12
+    solid: false
+  - x: 30
+    y: 2
+    type: 12
+    solid: false
+  - x: 13
+    y: 3
+    type: 12
+    solid: false
+  - x: 14
+    y: 3
+    type: 12
+    solid: false
+  - x: 15
+    y: 3
+    type: 12
+    solid: false
+  - x: 16
+    y: 3
+    type: 12
+    solid: false
+  - x: 17
+    y: 3
+    type: 12
+    solid: false
+  - x: 0
+    y: 4
+    type: 1
+    solid: true
+  - x: 1
+    y: 4
+    type: 2
+    solid: true
+  - x: 2
+    y: 4
+    type: 2
+    solid: true
+  - x: 3
+    y: 4
+    type: 3
+    solid: true
+  - x: 26
+    y: 4
+    type: 1
+    solid: true
+  - x: 27
+    y: 4
+    type: 2
+    solid: true
+  - x: 28
+    y: 4
+    type: 2
+    solid: true
+  - x: 29
+    y: 4
+    type: 2
+    solid: true
+  - x: 30
+    y: 4
+    type: 2
+    solid: true
+  - x: 31
+    y: 4
+    type: 2
+    solid: true
+  - x: 32
+    y: 4
+    type: 3
+    solid: true
+  - x: 2
+    y: 5
+    type: 4
+    solid: true
+  - x: 3
+    y: 5
+    type: 5
+    solid: true
+  - x: 4
+    y: 5
+    type: 3
+    solid: true
+  - x: 12
+    y: 5
+    type: 12
+    solid: false
+  - x: 13
+    y: 5
+    type: 12
+    solid: false
+  - x: 14
+    y: 5
+    type: 12
+    solid: false
+  - x: 15
+    y: 5
+    type: 12
+    solid: false
+  - x: 16
+    y: 5
+    type: 12
+    solid: false
+  - x: 17
+    y: 5
+    type: 12
+    solid: false
+  - x: 18
+    y: 5
+    type: 12
+    solid: false
+  - x: 24
+    y: 5
+    type: 1
+    solid: true
+  - x: 25
+    y: 5
+    type: 2
+    solid: true
+  - x: 26
+    y: 5
+    type: 2
+    solid: true
+  - x: 27
+    y: 5
+    type: 2
+    solid: true
+  - x: 28
+    y: 5
+    type: 2
+    solid: true
+  - x: 29
+    y: 5
+    type: 2
+    solid: true
+  - x: 30
+    y: 5
+    type: 2
+    solid: true
+  - x: 31
+    y: 5
+    type: 2
+    solid: true
+  - x: 32
+    y: 5
+    type: 11
+    solid: true
+  - x: 3
+    y: 6
+    type: 4
+    solid: true
+  - x: 4
+    y: 6
+    type: 6
+    solid: true
+  - x: 5
+    y: 6
+    type: 12
+    solid: false
+  - x: 6
+    y: 6
+    type: 12
+    solid: false
+  - x: 7
+    y: 6
+    type: 12
+    solid: false
+  - x: 8
+    y: 6
+    type: 12
+    solid: false
+  - x: 9
+    y: 6
+    type: 1
+    solid: true
+  - x: 22
+    y: 6
+    type: 12
+    solid: false
+  - x: 23
+    y: 6
+    type: 12
+    solid: false
+  - x: 32
+    y: 6
+    type: 11
+    solid: true
+  - x: 9
+    y: 7
+    type: 11
+    solid: true
+  - x: 21
+    y: 7
+    type: 12
+    solid: false
+  - x: 32
+    y: 7
+    type: 11
+    solid: true
+  - x: 9
+    y: 8
+    type: 4
+    solid: true
+  - x: 10
+    y: 8
+    type: 5
+    solid: true
+  - x: 11
+    y: 8
+    type: 5
+    solid: true
+  - x: 12
+    y: 8
+    type: 5
+    solid: true
+  - x: 13
+    y: 8
+    type: 5
+    solid: true
+  - x: 14
+    y: 8
+    type: 5
+    solid: true
+  - x: 15
+    y: 8
+    type: 5
+    solid: true
+  - x: 16
+    y: 8
+    type: 5
+    solid: true
+  - x: 17
+    y: 8
+    type: 5
+    solid: true
+  - x: 18
+    y: 8
+    type: 5
+    solid: true
+  - x: 19
+    y: 8
+    type: 5
+    solid: true
+  - x: 20
+    y: 8
+    type: 5
+    solid: true
+  - x: 21
+    y: 8
+    type: 5
+    solid: true
+  - x: 22
+    y: 8
+    type: 6
+    solid: true
+  - x: 23
+    y: 8
+    type: 12
+    solid: false
+  - x: 24
+    y: 8
+    type: 12
+    solid: false
+  - x: 25
+    y: 8
+    type: 12
+    solid: false
+  - x: 26
+    y: 8
+    type: 12
+    solid: false
+  - x: 27
+    y: 8
+    type: 12
+    solid: false
+  - x: 28
+    y: 8
+    type: 12
+    solid: false
+  - x: 29
+    y: 8
+    type: 12
+    solid: false
+  - x: 30
+    y: 8
+    type: 1
+    solid: true
+  - x: 31
+    y: 8
+    type: 2
+    solid: true
+  - x: 32
+    y: 8
+    type: 3
+    solid: true
   - x: 3
     y: 9
     type: 1
@@ -13,6 +341,14 @@ blocks:
   - x: 5
     y: 9
     type: 3
+    solid: true
+  - x: 10
+    y: 9
+    type: 4
+    solid: true
+  - x: 11
+    y: 9
+    type: 6
     solid: true
   - x: 30
     y: 9
@@ -29,6 +365,10 @@ blocks:
   - x: 3
     y: 10
     type: 11
+    solid: true
+  - x: 4
+    y: 10
+    type: 5
     solid: true
   - x: 5
     y: 10
@@ -66,6 +406,10 @@ blocks:
     y: 11
     type: 5
     solid: true
+  - x: 6
+    y: 11
+    type: 5
+    solid: true
   - x: 7
     y: 11
     type: 2
@@ -77,15 +421,15 @@ blocks:
   - x: 18
     y: 11
     type: 12
-    solid: true
+    solid: false
   - x: 19
     y: 11
     type: 12
-    solid: true
+    solid: false
   - x: 20
     y: 11
     type: 12
-    solid: true
+    solid: false
   - x: 21
     y: 11
     type: 1
@@ -226,6 +570,18 @@ blocks:
     y: 13
     type: 5
     solid: true
+  - x: 8
+    y: 13
+    type: 5
+    solid: true
+  - x: 9
+    y: 13
+    type: 5
+    solid: true
+  - x: 10
+    y: 13
+    type: 5
+    solid: true
   - x: 11
     y: 13
     type: 2
@@ -286,6 +642,22 @@ blocks:
     y: 14
     type: 11
     solid: true
+  - x: 8
+    y: 14
+    type: 5
+    solid: true
+  - x: 9
+    y: 14
+    type: 5
+    solid: true
+  - x: 10
+    y: 14
+    type: 5
+    solid: true
+  - x: 11
+    y: 14
+    type: 5
+    solid: true
   - x: 12
     y: 14
     type: 2
@@ -342,6 +714,18 @@ blocks:
     y: 15
     type: 5
     solid: true
+  - x: 10
+    y: 15
+    type: 5
+    solid: true
+  - x: 11
+    y: 15
+    type: 5
+    solid: true
+  - x: 12
+    y: 15
+    type: 5
+    solid: true
   - x: 13
     y: 15
     type: 11
@@ -369,6 +753,18 @@ blocks:
   - x: 9
     y: 16
     type: 11
+    solid: true
+  - x: 10
+    y: 16
+    type: 5
+    solid: true
+  - x: 11
+    y: 16
+    type: 5
+    solid: true
+  - x: 12
+    y: 16
+    type: 5
     solid: true
   - x: 13
     y: 16
@@ -511,16 +907,12 @@ duck_spawns:
     y: 10
   - x: 25
     y: 9
-  - x: 16
-    y: 14
-  - x: 17
-    y: 14
+  - x: 0
+    y: 2
+  - x: 25
+    y: 3
 collectables_spawns:
-  - x: 22
-    y: 16
   - x: 23
-    y: 16
-  - x: 24
     y: 16
   - x: 7
     y: 9
@@ -528,9 +920,33 @@ collectables_spawns:
     y: 11
   - x: 27
     y: 10
-boxes_spawns:
+  - x: 18
+    y: 7
+  - x: 24
+    y: 4
+  - x: 32
+    y: 3
+  - x: 4
+    y: 3
+  - x: 2
+    y: 1
+  - x: 16
+    y: 2
+  - x: 14
+    y: 0
+  - x: 13
+    y: 4
+  - x: 25
+    y: 7
+  - x: 28
+    y: 1
+  - x: 29
+    y: 1
   - x: 25
     y: 15
+  - x: 1
+    y: 16
+boxes_spawns:
   - x: 29
     y: 10
   - x: 28
@@ -539,3 +955,31 @@ boxes_spawns:
     y: 9
   - x: 6
     y: 9
+  - x: 17
+    y: 7
+  - x: 16
+    y: 7
+  - x: 16
+    y: 6
+  - x: 13
+    y: 7
+  - x: 13
+    y: 6
+  - x: 14
+    y: 6
+  - x: 14
+    y: 7
+  - x: 12
+    y: 7
+  - x: 6
+    y: 5
+  - x: 5
+    y: 5
+  - x: 4
+    y: 4
+  - x: 5
+    y: 4
+  - x: 24
+    y: 16
+  - x: 22
+    y: 16
