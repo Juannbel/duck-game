@@ -15,8 +15,8 @@
 #define MAX_STICK_VALUE 32767
 
 static Config& config = Config::get_instance();
-const int STICK_DEAD_ZONE = config.get_stick_dead_zone() * MAX_STICK_VALUE;
-const int TRIGGER_DEAD_ZONE = config.get_trigger_dead_zone() * MAX_TRIGGER_VALUE;
+const static int STICK_DEAD_ZONE = config.get_stick_dead_zone() * MAX_STICK_VALUE;
+const static int TRIGGER_DEAD_ZONE = config.get_trigger_dead_zone() * MAX_TRIGGER_VALUE;
 
 DuckController::DuckController(uint8_t duck_id, Queue<action>& actions_q, Snapshot& snapshot,
                                ControlScheme controls):
@@ -74,12 +74,16 @@ void DuckController::process_event(const SDL_Event& event) {
 
 void DuckController::handle_key_down(const SDL_Event& event) {
     const SDL_Keycode& key = event.key.keysym.sym;
+    if (duck.is_dead && key != controls.heal_and_revive)
+        return;
     if (key_down_handlers.find(key) != key_down_handlers.end()) {
         key_down_handlers[key]();
     }
 }
 
 void DuckController::handle_key_up(const SDL_Event& event) {
+    if (duck.is_dead)
+        return;
     const SDL_Keycode& key = event.key.keysym.sym;
     if (key_up_handlers.find(key) != key_up_handlers.end()) {
         key_up_handlers[key]();
@@ -95,7 +99,7 @@ void DuckController::restart_movement() {
 void DuckController::update_duck_status() {
     auto it = std::find_if(snapshot.ducks.begin(), snapshot.ducks.end(),
                            [this](const Duck& duck) { return duck.duck_id == duck_id; });
-    if (it == snapshot.ducks.end() || it->is_dead)
+    if (it == snapshot.ducks.end())
         return;
 
     duck = *it;

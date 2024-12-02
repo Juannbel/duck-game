@@ -19,6 +19,7 @@ private:
     uint8_t first_gamepad_player;
     float stick_dead_zone;
     float trigger_dead_zone;
+    bool show_hud;
 
     int server_ticks;
     uint8_t rounds_to_win;
@@ -73,6 +74,7 @@ public:
     uint8_t get_first_gamepad_player();
     float get_stick_dead_zone();
     float get_trigger_dead_zone();
+    bool get_show_hud();
 
     // Server
     int get_server_ticks();

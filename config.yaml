@@ -17,6 +17,9 @@ first_gamepad_player: 1
 stick_dead_zone: 0.1
 trigger_dead_zone: 0.9
 
+# Muestra la vida del jugador
+show_hud: false
+
 # ========== Server side ===========
 
 server_ticks: 120

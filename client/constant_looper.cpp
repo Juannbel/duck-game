@@ -39,6 +39,7 @@ const static int RATE = 1000 / config.get_client_fps();
 const static std::string WIN_TITLE = config.get_window_title();
 const static int WIN_WIDTH = config.get_window_width();
 const static int WIN_HEIGHT = config.get_window_height();
+const static bool SHOW_HUD = config.get_show_hud();
 
 ConstantLooper::ConstantLooper(std::pair<uint8_t, uint8_t> duck_ids, Queue<Snapshot>& snapshot_q,
                                Queue<action>& actions_q):
@@ -93,11 +94,13 @@ bool ConstantLooper::run() try {
         // Actualizar el estado de todo lo que se renderiza
         process_snapshot();
 
-        if (USE_CAMERA) {
+        if (USE_CAMERA)
             camera.update(last_snapshot, !is_first_round);
-        }
 
         render(camera, map);
+
+        if (SHOW_HUD)
+            screen_manager.show_hud(last_snapshot);
 
         renderer.Present();
 

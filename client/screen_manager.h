@@ -38,7 +38,6 @@ private:
 
     bool end_game_screen(Snapshot& last_snapshot);
 
-
 public:
     ScreenManager(SDL2pp::Window& window, SoundManager& sound_manager, SDL2pp::Renderer& renderer,
                   Camera& camera, RenderableMap& map, std::pair<uint8_t, uint8_t>& duck_ids,
@@ -51,6 +50,8 @@ public:
     void server_disconnected_screen();
 
     bool round_start_screen(Queue<Snapshot>& snapshot_q, Snapshot& last_snapshot);
+
+    void show_hud(Snapshot& last_snapshot);
 };
 
 #endif
