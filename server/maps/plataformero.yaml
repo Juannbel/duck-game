@@ -118,6 +118,10 @@ blocks:
     y: 10
     type: 11
     solid: false
+  - x: 26
+    y: 10
+    type: 12
+    solid: false
   - x: 11
     y: 11
     type: 11
