@@ -90,10 +90,6 @@ blocks:
     y: 6
     type: 11
     solid: true
-  - x: 1
-    y: 7
-    type: 12
-    solid: false
   - x: 2
     y: 7
     type: 11
@@ -130,10 +126,6 @@ blocks:
     y: 7
     type: 11
     solid: true
-  - x: 33
-    y: 7
-    type: 12
-    solid: false
   - x: 2
     y: 8
     type: 11
@@ -182,10 +174,6 @@ blocks:
     y: 10
     type: 11
     solid: true
-  - x: 1
-    y: 11
-    type: 12
-    solid: false
   - x: 2
     y: 11
     type: 11
@@ -278,10 +266,6 @@ blocks:
     y: 11
     type: 11
     solid: true
-  - x: 33
-    y: 11
-    type: 12
-    solid: false
   - x: 2
     y: 12
     type: 11
@@ -322,10 +306,6 @@ blocks:
     y: 14
     type: 11
     solid: true
-  - x: 1
-    y: 15
-    type: 12
-    solid: false
   - x: 2
     y: 15
     type: 11
@@ -342,10 +322,6 @@ blocks:
     y: 15
     type: 11
     solid: true
-  - x: 33
-    y: 15
-    type: 12
-    solid: false
   - x: 5
     y: 16
     type: 1
