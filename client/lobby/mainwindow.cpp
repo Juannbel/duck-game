@@ -28,6 +28,9 @@ MainWindow::MainWindow(QWidget* parent, ClientProtocol& protocol,
         ready_to_play(ready_to_play) {
     ui->setupUi(this);
 
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::onRefreshConnectedClicked);
+
     int id = QFontDatabase::addApplicationFont(DATA_PATH "/fonts/primary.ttf");
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     QFont font(family);
@@ -138,6 +141,9 @@ void MainWindow::onCreateGameConfirmed() {
     duck_ids.second = gameInfo.duck_id_2;
     game_id = gameInfo.game_id;
     onRefreshConnectedClicked();
+
+    timer->start(1000);
+
     ui->stackedWidget->setCurrentIndex(2);
 }
 
@@ -184,6 +190,7 @@ void MainWindow::onJoinGameConfirmed() {
     if (gameInfo.game_id != INVALID_GAME_ID) {
         duck_ids.first = gameInfo.duck_id_1;
         duck_ids.second = gameInfo.duck_id_2;
+
         ready_to_play = true;
         close();
     } else {
@@ -193,10 +200,14 @@ void MainWindow::onJoinGameConfirmed() {
 
 void MainWindow::onJoinGameClicked() {
     onRefreshLobbiesClicked();
+
     ui->stackedWidget->setCurrentIndex(1);
 }
 
-void MainWindow::onBackClicked() { ui->stackedWidget->setCurrentIndex(0); }
+void MainWindow::onBackClicked() {
+    timer->stop();
+    ui->stackedWidget->setCurrentIndex(0);
+}
 
 void MainWindow::onJoinLobbyClicked() {
     selected_lobby_row = ui->lobbiesList->currentRow();
@@ -207,6 +218,7 @@ void MainWindow::onJoinLobbyClicked() {
 
     disconnect(ui->namesConfirmButton, nullptr, this, nullptr);
     connect(ui->namesConfirmButton, &QPushButton::clicked, this, &MainWindow::onJoinGameConfirmed);
+
     ui->stackedWidget->setCurrentIndex(3);
 }
 
@@ -225,6 +237,7 @@ void MainWindow::onStartGameClicked() {
         return;
     }
 
+    timer->stop();
     ready_to_play = true;
     close();
 }

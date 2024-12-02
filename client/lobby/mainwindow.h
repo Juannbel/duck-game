@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QTimer>
 #include <utility>
 #include <vector>
 
@@ -38,6 +39,7 @@ private slots:
 
 private:
     Ui::MainWindow* ui;
+    QTimer* timer;
     ClientProtocol& protocol;
     std::pair<uint8_t, uint8_t>& duck_ids;
     std::vector<LobbyInfo> lobbies_info;
