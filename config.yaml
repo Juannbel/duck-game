@@ -1,22 +1,33 @@
-# Client side
+# ========= Client side ===========
+
 client_fps: 120
 window_title: Duck Game
 window_width: 1200
 window_height: 690
+
 # Opacidad de los bloques no solidos (0-255), 0 es transparente, 255 es opaco
 non_solid_opacity: 170
+
 # A que jugador se le asigna el primer gamepad conectado (0 para el jugador 1, 1 para el jugador 2)
 # Si se juega una partida con un solo jugador, este valor no se tiene en cuenta
 first_gamepad_player: 1
 
-# Dead zones para los ticks y gatillos (0-1)
+# Dead zones para los trigger y gatillos joystick (0-1)
+# A partir de donde se detecta que se esta presionando el gatillo o el joystick
 stick_dead_zone: 0.1
 trigger_dead_zone: 0.9
 
-# Server side
+# ========== Server side ===========
+
 server_ticks: 120
-rounds_to_win: 1 # Cantidad de rondas para ganar
-rounds_between_stats: 1 # Cantidad de rondas entre que se muestran las estadisticas
+
+# Cantidad de rondas para ganar
+rounds_to_win: 10
+
+# Cantidad de rondas entre que se muestran las estadisticas
+rounds_between_stats: 5
+
+# True para que los jugadores puedan usar cheats
 cheats: true
 
 # Las velocidades estan expresadas en bloques por segundo

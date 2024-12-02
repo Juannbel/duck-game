@@ -26,7 +26,7 @@ const uint its_after_round = 3000 / (1000 / TICKS);
 const milliseconds STATS_TIME(3000);
 const uint8_t ROUNDS_TO_WIN = config.get_rounds_to_win();
 const uint8_t ROUNDS_BETWEEN_STATS = config.get_rounds_between_stats();
-const char LOBBY_MAP[] = DATA_PATH "/server/lobby.yaml";
+const char LOBBY_MAP[] = DATA_PATH "/lobby_map.yaml";
 
 GameLoop::GameLoop(Queue<struct action>& game_queue, QueueListMonitor& queue_list):
         actions_queue(game_queue),

@@ -14,7 +14,7 @@
 #define PARALLAX_FACTOR 0.05f
 #define MARGIN 200
 
-const char LOBBY_MAP_PATH[] = DATA_PATH "/server/lobby.yaml";
+const char LOBBY_MAP_PATH[] = DATA_PATH "/lobby_map.yaml";
 
 RenderableMap::RenderableMap() {
     MapLoader map_loader;
