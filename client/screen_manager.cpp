@@ -324,7 +324,7 @@ bool ScreenManager::end_game_no_winner_screen() {
 
         renderer.Clear();
         camera.update({}, false);
-        aditional_render(camera, map);
+        map.render(renderer, camera);
         renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
         renderer.SetDrawColor(0, 0, 0, 50);
         renderer.FillRect(background_rect);
