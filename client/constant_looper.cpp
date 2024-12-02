@@ -159,6 +159,8 @@ void ConstantLooper::update_ducks() {
         if (ducks_renderables.find(duck.duck_id) != ducks_renderables.end()) {
             if (!ducks_renderables[duck.duck_id]->is_dead() && duck.is_dead)
                 sound_manager.dead_sound();
+            if (ducks_renderables[duck.duck_id]->is_dead() && !duck.is_dead)
+                sound_manager.revive_sound();
             if (duck.gun == ActiveGrenade)
                 sound_manager.active_grenade_sound();
         } else {

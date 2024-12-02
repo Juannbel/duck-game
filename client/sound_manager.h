@@ -27,6 +27,8 @@ public:
 
     void dead_sound();
 
+    void revive_sound();
+
     void toggle_mute();
 
     void update();

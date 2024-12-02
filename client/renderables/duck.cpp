@@ -47,9 +47,10 @@ void RenderableDuck::update(const Duck& duck) {
 
     is_facing_right = duck.facing_right;
 
+    is_alive = !duck.is_dead;
+
     if (duck.is_dead) {
         curr_animation = animations["dead"];
-        is_alive = false;
     } else if (duck.is_jumping) {
         curr_animation = animations["jumping"];
     } else if (duck.is_falling) {

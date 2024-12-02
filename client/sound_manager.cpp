@@ -34,6 +34,7 @@ SoundManager::SoundManager():
     gun_sounds[ActiveGrenade] = new SDL2pp::Chunk(DATA_PATH "/sounds/explosion.wav");
     other_sounds["beep"] = new SDL2pp::Chunk(DATA_PATH "/sounds/beep.wav");
     other_sounds["quack"] = new SDL2pp::Chunk(DATA_PATH "/sounds/quack.wav");
+    other_sounds["revive"] = new SDL2pp::Chunk(DATA_PATH "/sounds/revive.wav");
 
     mixer.SetMusicVolume(MUSIC_VOLUME);
     mixer.PlayMusic(background_music);
@@ -74,6 +75,15 @@ void SoundManager::dead_sound() {
     try {
         int channel = mixer.GetGroupAvailableChannel(QUACK_GROUP);
         mixer.PlayChannel(channel, *other_sounds["quack"]);
+    } catch (const SDL2pp::Exception& e) {
+        // No quedan canales
+    }
+}
+
+void SoundManager::revive_sound() {
+    try {
+        int channel = mixer.GetGroupAvailableChannel(QUACK_GROUP);
+        mixer.PlayChannel(channel, *other_sounds["revive"]);
     } catch (const SDL2pp::Exception& e) {
         // No quedan canales
     }
