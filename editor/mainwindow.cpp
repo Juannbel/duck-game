@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget* parent):
     font.setPointSize(12);
 
     this->setFont(font);
-    grassTextures.resize(MAP_THEMES * (static_cast<int>(HalfFloor)));
+    grassTextures.resize(MAP_THEMES * (BLOCKS_PER_THEME));
 
     loadTiles();
     loadDuckTexture();
@@ -125,7 +125,7 @@ void MainWindow::updateTilesItems() {
     int themeIndex = map.map_dto.theme;
     if (themeTiles.contains(themeIndex)) {
         auto& tiles = themeTiles[themeIndex];
-        for (int i = 0; i < static_cast<int>(HalfFloor); i++) {
+        for (int i = 0; i < BLOCKS_PER_THEME; i++) {
             ui->itemSelector->addItem(tiles[i], blockToString[static_cast<BlockType>(i + 1)]);
         }
     }
@@ -178,7 +178,7 @@ void MainWindow::renderGridTiles() {
             }
 
             int tileIndex = static_cast<int>(block.type) - 1;
-            int offset = (static_cast<int>(HalfFloor)) * map.map_dto.theme;
+            int offset = (BLOCKS_PER_THEME) * map.map_dto.theme;
 
             QGraphicsPixmapItem* item = scene->addPixmap(grassTextures[(tileIndex) + offset]);
             item->setPos(x * TILE_SIZE, y * TILE_SIZE);
@@ -397,7 +397,7 @@ void MainWindow::addTile(std::pair<int16_t, int16_t> gridPos) {
 }
 
 void MainWindow::placeTile(int x, int y, BlockType blockType, bool solid) {
-    if (blockType < static_cast<int>(HalfFloor))
+    if (blockType < BLOCKS_PER_THEME)
         map.map_dto.blocks[y][x] = {static_cast<BlockType>(blockType + 1), solid};
 }
 
@@ -560,7 +560,10 @@ void MainWindow::on_loadMapButton_clicked() {
             return;
         }
         if (index == 0) {
-            temporalLastLoadMapName = "";
+            temporalLastLoadMapName = lastLoadMapName;
+            this->map = currentMap;
+            ui->themeSelector->setCurrentIndex(map.map_dto.theme);
+            renderGrid();
             return;
         }
         QString selectedFile = temporalLastLoadMapName = comboBox->currentText();
