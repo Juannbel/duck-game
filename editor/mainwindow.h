@@ -60,7 +60,7 @@ private slots:
 private:
     Ui::MainWindow* ui;
     QGraphicsScene* scene;
-    Map map; //
+    Map map;  //
     MapLoader loader;
     QString lastLoadMapName = "";
 
@@ -72,7 +72,7 @@ private:
 
     QPoint lastProcessedTile = QPoint(-1, -1);
 
-    QPixmap currentBackground; //
+    QPixmap currentBackground;  //
     QPixmap duckTexture;
     QPixmap gunTexture;
     QPixmap boxTexture;

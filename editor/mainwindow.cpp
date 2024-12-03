@@ -160,11 +160,11 @@ void MainWindow::renderBackground() {
 void MainWindow::renderGridLines() {
     for (int x = 0; x <= MAP_WIDTH_BLOCKS; ++x) {
         scene->addLine(x * TILE_SIZE, 0, x * TILE_SIZE, MAP_HEIGHT_BLOCKS * TILE_SIZE,
-                       QPen(QColor(40,40,40), 1));
+                       QPen(QColor(40, 40, 40), 1));
     }
     for (int y = 0; y <= MAP_HEIGHT_BLOCKS; ++y) {
         scene->addLine(0, y * TILE_SIZE, MAP_WIDTH_BLOCKS * TILE_SIZE, y * TILE_SIZE,
-                       QPen(QColor(40,40,40), 1));
+                       QPen(QColor(40, 40, 40), 1));
     }
 }
 
@@ -178,7 +178,7 @@ void MainWindow::renderGridTiles() {
             }
 
             int tileIndex = static_cast<int>(block.type) - 1;
-            int offset = (BLOCKS_PER_THEME) * map.map_dto.theme;
+            int offset = (BLOCKS_PER_THEME)*map.map_dto.theme;
 
             QGraphicsPixmapItem* item = scene->addPixmap(grassTextures[(tileIndex) + offset]);
             item->setPos(x * TILE_SIZE, y * TILE_SIZE);
@@ -579,22 +579,21 @@ void MainWindow::on_loadMapButton_clicked() {
         }
         this->map = loaded_map;
         ui->themeSelector->setCurrentIndex(map.map_dto.theme);
-        renderGrid();    
+        renderGrid();
     });
     connect(okButton, &QPushButton::clicked, [&]() {
         lastLoadMapName = temporalLastLoadMapName;
         dialog.accept();
     });
-    connect(cancelButton, &QPushButton::clicked, [&]() { 
+    connect(cancelButton, &QPushButton::clicked, [&]() {
         this->map = currentMap;
         ui->themeSelector->setCurrentIndex(map.map_dto.theme);
         renderGrid();
-        dialog.accept(); 
+        dialog.accept();
     });
 
     dialog.exec();
 }
-
 
 
 void MainWindow::on_itemSelector_currentIndexChanged(int index) { selectedItemIndex = index; }

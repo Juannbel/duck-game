@@ -35,11 +35,11 @@ void BananaG::throw_gun(bool facing_right) {
         b_hitbox.coords.x = facing_right ? b_hitbox.coords.x + DUCK_HITBOX_WIDTH + 2 :
                                            b_hitbox.coords.x - BULLET_HITBOX_WIDTH - 2;
         int16_t angle = facing_right ? 0 : 180;
-        Collision col = collisions.check_near_blocks_collision(b_hitbox, b_hitbox.coords.x, b_hitbox.coords.y);
+        Collision col = collisions.check_near_blocks_collision(b_hitbox, b_hitbox.coords.x,
+                                                               b_hitbox.coords.y);
         if (col.vertical_collision || col.horizontal_collision) {
-            b_hitbox.coords.x = facing_right ? b_hitbox.coords.x - 2 :
-                                           b_hitbox.coords.x + 2;
-        }   
+            b_hitbox.coords.x = facing_right ? b_hitbox.coords.x - 2 : b_hitbox.coords.x + 2;
+        }
         type = Banana;
         bullets->add_bullet(b_hitbox, angle, type);
         destroy();

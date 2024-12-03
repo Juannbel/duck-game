@@ -24,7 +24,7 @@ const static int TICKS = config.get_server_ticks();
 const static int16_t COLLECTABLE_SPAWN_IT = TICKS * 15;
 const static int16_t COLLECTABLE_EXTRA_SPAWN_TIME = TICKS * 5;
 const static bool CHEATS = config.get_cheats_on();
-const float SPAWN_Y_DIFF = 2*BLOCK_SIZE-DUCK_HITBOX_HEIGHT;
+const float SPAWN_Y_DIFF = 2 * BLOCK_SIZE - DUCK_HITBOX_HEIGHT;
 
 GameOperator::GameOperator(): collisions(), collectables(collisions, players, boxes) {}
 
