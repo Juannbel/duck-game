@@ -53,12 +53,12 @@ void RenderableDuck::update(const Duck& duck) {
         curr_animation = animations["dead"];
     } else if (duck.is_jumping) {
         curr_animation = animations["jumping"];
+    } else if (duck.is_laying) {
+        curr_animation = animations["laying"];
     } else if (duck.is_falling) {
         curr_animation = animations["falling"];
     } else if (duck.is_running) {
         curr_animation = animations["walking"];
-    } else if (duck.is_laying) {
-        curr_animation = animations["laying"];
     } else if (duck.facing_up) {
         curr_animation = animations["facing_up"];
     } else {
