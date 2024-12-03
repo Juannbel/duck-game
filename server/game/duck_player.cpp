@@ -71,7 +71,9 @@ void DuckPlayer::fly_mode() {
 }
 
 void DuckPlayer::revive() {
+    uint8_t aux_id = status.duck_id;
     status = {};
+    status.duck_id = aux_id;
     it_flapping = 0;
     it_sliding = 0;
     it_jumping = 0;
