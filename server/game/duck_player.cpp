@@ -71,9 +71,11 @@ void DuckPlayer::fly_mode() {
 }
 
 void DuckPlayer::revive() {
-    uint8_t aux_id = status.duck_id;
-    status = {};
-    status.duck_id = aux_id;
+    status.facing_up = false;
+    status.is_falling = false;
+    status.is_flapping = false;
+    status.is_dead = false;
+    stand_up();
     it_flapping = 0;
     it_sliding = 0;
     it_jumping = 0;
@@ -86,7 +88,6 @@ void DuckPlayer::revive() {
     status.duck_hp = config.get_initial_duck_hp();
     status.helmet_equiped = true;
     status.armor_equiped = true;
-    status.is_dead = false;
 }
 
 void DuckPlayer::status_after_move(struct Collision& collision) {
