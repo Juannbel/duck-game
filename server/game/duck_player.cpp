@@ -55,6 +55,7 @@ void DuckPlayer::die() {
     status.is_dead = true;
     status.duck_hp = 0;
     stop_running();
+    stop_jump();
     drop_collectable();
 }
 
@@ -70,6 +71,10 @@ void DuckPlayer::fly_mode() {
 }
 
 void DuckPlayer::revive() {
+    status = {};
+    it_flapping = 0;
+    it_sliding = 0;
+    it_jumping = 0;
     if (collisions.out_of_map(hitbox.coords.x, hitbox.coords.y)) {
         hitbox.coords.x = spawn_x;
         hitbox.coords.y = spawn_y;
