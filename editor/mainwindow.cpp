@@ -160,11 +160,11 @@ void MainWindow::renderBackground() {
 void MainWindow::renderGridLines() {
     for (int x = 0; x <= MAP_WIDTH_BLOCKS; ++x) {
         scene->addLine(x * TILE_SIZE, 0, x * TILE_SIZE, MAP_HEIGHT_BLOCKS * TILE_SIZE,
-                       QPen(Qt::black, 1));
+                       QPen(QColor(40,40,40), 1));
     }
     for (int y = 0; y <= MAP_HEIGHT_BLOCKS; ++y) {
         scene->addLine(0, y * TILE_SIZE, MAP_WIDTH_BLOCKS * TILE_SIZE, y * TILE_SIZE,
-                       QPen(Qt::black, 1));
+                       QPen(QColor(40,40,40), 1));
     }
 }
 
@@ -293,6 +293,7 @@ bool MainWindow::eventFilter(QObject* watched, QEvent* event) {
 }
 
 void MainWindow::on_clearMapButton_clicked() {
+    lastLoadMapName = "";
     map.duck_spawns.clear();
     map.collectables_spawns.clear();
     map.boxes_spawns.clear();
@@ -524,7 +525,6 @@ void MainWindow::on_saveMapButton_clicked() {
     QMessageBox::information(this, "Success", "Map saved successfully.");
 }
 
-
 void MainWindow::on_loadMapButton_clicked() {
 
     QDialog dialog(this);
@@ -532,13 +532,18 @@ void MainWindow::on_loadMapButton_clicked() {
 
     QVBoxLayout* layout = new QVBoxLayout(&dialog);
     QComboBox* comboBox = new QComboBox(&dialog);
-    QPushButton* loadButton = new QPushButton("Load", &dialog);
+    QPushButton* cancelButton = new QPushButton("Cancel", &dialog);
+    QPushButton* okButton = new QPushButton("Ok", &dialog);
+
+    QHBoxLayout* buttonLayout = new QHBoxLayout();
+    buttonLayout->addWidget(cancelButton);
+    buttonLayout->addWidget(okButton);
 
     layout->addWidget(comboBox);
-    layout->addWidget(loadButton);
+    layout->addLayout(buttonLayout);
 
     std::vector<std::string> files = loader.list_maps(MAPS_PATH);
-
+    comboBox->addItem(QString("Select map"));
     for (const auto& file: files) {
         QString fullPath = QString::fromStdString(file);
         QFileInfo fileInfo(fullPath);
@@ -546,13 +551,19 @@ void MainWindow::on_loadMapButton_clicked() {
     }
 
     comboBox->setStyleSheet("combobox-popup: 0;");
-    connect(loadButton, &QPushButton::clicked, [&]() {
-        if (comboBox->currentIndex() == -1) {
-            QMessageBox::warning(this, "Error", "Please select a map.");
+
+    Map currentMap = map;
+    QString temporalLastLoadMapName = "";
+
+    connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [&](int index) {
+        if (index == -1) {
             return;
         }
-
-        QString selectedFile = lastLoadMapName = comboBox->currentText();
+        if (index == 0) {
+            temporalLastLoadMapName = "";
+            return;
+        }
+        QString selectedFile = temporalLastLoadMapName = comboBox->currentText();
         if (!selectedFile.endsWith(".yaml", Qt::CaseInsensitive)) {
             selectedFile += ".yaml";
         }
@@ -565,11 +576,23 @@ void MainWindow::on_loadMapButton_clicked() {
         }
         this->map = loaded_map;
         ui->themeSelector->setCurrentIndex(map.map_dto.theme);
+        renderGrid();    
+    });
+    connect(okButton, &QPushButton::clicked, [&]() {
+        lastLoadMapName = temporalLastLoadMapName;
         dialog.accept();
+    });
+    connect(cancelButton, &QPushButton::clicked, [&]() { 
+        this->map = currentMap;
+        ui->themeSelector->setCurrentIndex(map.map_dto.theme);
+        renderGrid();
+        dialog.accept(); 
     });
 
     dialog.exec();
 }
+
+
 
 void MainWindow::on_itemSelector_currentIndexChanged(int index) { selectedItemIndex = index; }
 
