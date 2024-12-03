@@ -45,7 +45,7 @@ DuckPlayer::DuckPlayer(CollectablesManager& collectables, CollisionChecks& colli
     status.x = x;
     status.y = y;
     spawn_x = x;
-    spawn_y = x;
+    spawn_y = y;
     status.duck_id = id;
     std::strncpy(status.player_name, name.c_str(), MAX_PLAYER_NAME);
     status.player_name[MAX_PLAYER_NAME - 1] = '\0';
