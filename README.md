@@ -101,7 +101,7 @@ Para correr un cliente del juego, ejecutar el siguiente comando:
 duck_game_client
 ```
 
-  En caso de no haber realizado la instalación se debe usar `./build/duck_game_server` y `./build/duck_game_client` en lugar de `duck_game_server` y `duck_game_client`.
+  En caso de no haber realizado la instalación se debe usar `./build/duck_game_server` y `./build/duck_game_client` en lugar de `duck_game_server` y `duck_game_client`.  
   Pues los binarios no se instalan en el PATH del sistema.
 
 ### 🗺️ Editor de niveles
@@ -109,7 +109,7 @@ Para correr el editor de niveles, ejecutar el siguiente comando:
 
 ```bash
 duck_game_editor
-```
+```  
   Al igual que con el juego, en caso de no haber realizado la instalación se debe correr `./build/duck_game_editor` en lugar de `duck_game_editor`
 
 ## 📚 Documentación
@@ -118,3 +118,15 @@ Se presentan los siguientes documentos
 - [Manual de usuario](/docs/manual-usuario.md)
 - [Manual de proyecto](/docs/manual-proyecto.md)
 - [Documentación técnica](/docs/documentacion-tecnica.md)
+
+## 🏆 Créditos
+
+Para las clases Socket, Resolver, ResolverError, LibError, Thread y Queue, utilizamos código provisto por la cátedra, el mismo se encuentra en los siguientes repositorios.
+
+- [Sockets](https://github.com/eldipa/hands-on-sockets-in-cpp).
+
+- [Thread y Queue](https://github.com/eldipa/hands-on-threads).
+
+Ambos están bajo la licencia [GPL v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+
+También queremos hacer una mencion especial a los docentes de la materia por darnos las herramientas para llevar esto a cabo. En especial a [Leo](https://github.com/leogm99), por ser nuestro corrector y [Martin](https://github.com/eldipa), el docente de cabecera. 👑
